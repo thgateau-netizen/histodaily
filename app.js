@@ -298,9 +298,23 @@ function setReadingMode(mode) {
   if (!["express", "complete"].includes(mode)) return;
   setState({ readingMode: mode, lessonView: mode === "complete" ? "complete" : "express" });
 }
+function lessonSpoilsMystery(lesson, mystery) {
+  if (!lesson || !mystery) return false;
+  if (mystery.lessonId && lesson.id === mystery.lessonId) return true;
+  const lessonText = normalize(`${lesson.id || ""} ${lesson.title || ""} ${lesson.shortTitle || ""}`);
+  const answer = normalize(mystery.answer || "");
+  const title = normalize(mystery.title || "");
+  if (answer && lessonText.includes(answer)) return true;
+  if (title && lessonText.includes(title)) return true;
+  return false;
+}
 function dailyLesson() {
   const mystery = dailyMystery();
-  return mystery ? relatedLessonForMystery(mystery) : null;
+  const lessons = allLessons().filter(lesson => !lessonSpoilsMystery(lesson, mystery));
+  if (!lessons.length) return null;
+  // Décalage volontaire : le cours du jour n'est pas le cours-réponse du mystère.
+  const index = ((todayIndex() * 7 + 11) % lessons.length + lessons.length) % lessons.length;
+  return lessons[index];
 }
 function dailyChecklistMarkup() {
   const mystery = dailyMystery();
@@ -713,22 +727,20 @@ function navButton(tab, icon, label) { return `<button data-tab="${tab}" class="
 
 function renderHome() {
   const mystery = dailyMystery();
-  const claim = todayClaim();
   const reward = dailyRewardPreview();
   const lesson = dailyLesson();
   const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
-  const lessonUnlocked = Boolean(lesson && solvedToday);
-  const lessonContent = lessonUnlocked ? buildLessonContent(lesson) : null;
-  const lessonDoneToday = Boolean(lessonUnlocked && lessonDone(lesson.id));
+  const lessonContent = lesson ? buildLessonContent(lesson) : null;
+  const lessonDoneToday = Boolean(lesson && lessonDone(lesson.id));
   const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} 💎 si tu résous aujourd’hui`;
-  const courseText = lessonUnlocked && lessonContent
-    ? short((lessonContent.express && lessonContent.express[0]) || lessonContent.hook || "Cours débloqué", 168)
-    : "Le cours lié au mystère reste masqué pour ne pas te donner la réponse. Résous le dossier, puis choisis Express ou Complet.";
+  const courseText = lessonContent
+    ? short((lessonContent.express && lessonContent.express[0]) || lessonContent.hook || "Cours court", 178)
+    : "Le cours du jour est indépendant du mystère, pour apprendre sans te donner la réponse.";
   renderShell(`
     <header class="hero compact home-clean-hero">
       <div>
-        <p class="eyebrow">HistoDaily · beta 49 contenu</p>
-        <h1>Un mystère. Un cours. Rien de plus.</h1>
+        <p class="eyebrow">HistoDaily · beta 50 contenu</p>
+        <h1>Un mystère à résoudre. Un cours séparé.</h1>
         <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
       </div>
     </header>
@@ -742,15 +754,15 @@ function renderHome() {
       <div class="home-card-footer"><span>${escapeHtml(nextLabel)}</span><button>${solvedToday ? "Revoir" : "Jouer"}</button></div>
     </section>` : `<section class="card home-main-card"><h2>Aucun mystère chargé</h2><p>La donnée mystère est vide ou inaccessible.</p></section>`}
 
-    <section class="card home-main-card home-lesson-card ${lessonDoneToday ? "done" : ""} ${!lessonUnlocked ? "locked" : ""}">
+    <section class="card home-main-card home-lesson-card ${lessonDoneToday ? "done" : ""}">
       <div class="section-title-row">
-        <div><span class="card-label">📚 Cours du jour</span><h2>${lessonUnlocked ? `${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}` : "Cours verrouillé anti-spoil"}</h2></div>
-        <small>${lessonDoneToday ? "validé" : lessonUnlocked ? "express" : "après résolution"}</small>
+        <div><span class="card-label">📚 Cours du jour · sans spoiler</span><h2>${lesson ? `${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}` : "Cours indisponible"}</h2></div>
+        <small>${lessonDoneToday ? "validé" : "indépendant"}</small>
       </div>
       <p>${escapeHtml(courseText)}</p>
       <div class="home-card-footer">
-        <span>${lessonUnlocked ? escapeHtml(lesson.period || lessonContent?.period || "lecture rapide") : "pas de réponse affichée"}</span>
-        ${lessonUnlocked ? `<button data-home-lesson="${escapeHtml(lesson.id)}">⚡ Lire l’express</button>` : mystery ? `<button data-home-mystery-button>Résoudre le mystère</button>` : `<button data-go-learn>Parcours</button>`}
+        <span>${lessonContent ? escapeHtml(lesson.period || lessonContent.period || "lecture rapide") : "pas lié au mystère"}</span>
+        ${lesson ? `<button data-home-lesson="${escapeHtml(lesson.id)}">⚡ Lire le cours</button>` : `<button data-go-learn>Parcours</button>`}
       </div>
     </section>
 
@@ -16055,14 +16067,16 @@ function lessonKeyFacts(lesson = {}, content = {}) {
 }
 function lessonTakeaways(lesson = {}, content = {}) {
   const explicit = Array.isArray(content.takeaways) ? content.takeaways.filter(Boolean) : [];
-  if (explicit.length) return explicit.slice(0, 3);
+  if (explicit.length) return explicit.slice(0, 3).map((item, index) => {
+    const labels = ["Idée", "Repère", "Conséquence"];
+    return typeof item === "string" ? { label: labels[index] || "À retenir", text: item } : { ...item, label: labels[index] || item.label || "À retenir" };
+  });
   const title = content.title || lesson.title || "ce sujet";
-  const proof = content.profile?.traces || "des traces datées, localisées et comparées";
-  const trap = content.profile?.mistake || "répondre par une idée trop large sans preuve";
+  const transformation = content.profile?.transformation || "il change une organisation, une pratique ou un rapport de pouvoir";
   return [
-    { label: "Idée centrale", text: `${title} compte surtout par ce qu’il permet d’expliquer, pas comme une date isolée.` },
-    { label: "Trace utile", text: `Appuie-toi sur du concret : ${proof}.` },
-    { label: "Erreur à éviter", text: `Ne tombe pas dans le raccourci suivant : ${trap}.` }
+    { label: "Idée", text: `${title} sert à comprendre un mécanisme historique, pas seulement une date.` },
+    { label: "Repère", text: `Situe le sujet : ${content.period || lesson.period || "période"}, ${content.place || lesson.location || "lieu"}.` },
+    { label: "Conséquence", text: transformation }
   ];
 }
 
@@ -16155,7 +16169,7 @@ function buildLessonContent(lesson) {
   const express = [
     `Cadre rapide : ${title} se situe dans ${place}, pendant ${period}. C’est le minimum à retenir pour ne pas mélanger les époques, les espaces et les sociétés.`,
     `L’idée importante : ${profile.transformation}. Les acteurs à garder en tête sont ${profile.actors}.`,
-    `Les preuves ne viennent pas d’une seule anecdote : on regarde surtout ${profile.traces}. ${mysteryLine} Le piège à éviter : ${profile.mistake}.`
+    mystery ? `${mysteryLine} Ce qu’il faut retenir : la bonne réponse relie une situation, des acteurs et une conséquence historique.` : `Ce qu’il faut retenir : le sujet devient intéressant quand tu peux expliquer ce qui change concrètement avant / pendant / après.`
   ];
   const complete = mystery ? [
     { title: "1. De l’énigme au problème historique", text: `Le mystère dit : ${mystery.prompt} Ce n’est pas seulement une devinette. C’est une manière rapide de faire surgir un vrai problème historique : ${profile.question}.` },
@@ -16218,10 +16232,10 @@ function lessonMemoMarkup(lesson, content, takeaways, quizItems) {
   return `<section class="lesson-memo-card" aria-label="Fiche mémo">
     <div class="section-title-row"><h2>🧠 Fiche mémo</h2><small>à relire avant le quiz</small></div>
     <div class="memo-grid">
-      <div><b>Trace utile</b><span>${escapeHtml(proof?.text || proof || "Appuie ta réponse sur un élément concret du cours.")}</span></div>
-      <div><b>Erreur à éviter</b><span>${escapeHtml(trap?.text || trap || "Évite la réponse trop vague ou anachronique.")}</span></div>
+      <div><b>Repère concret</b><span>${escapeHtml(proof?.text || proof || "Appuie ta réponse sur un élément du cours.")}</span></div>
+      <div><b>À ne pas confondre</b><span>${escapeHtml(trap?.text || trap || "Garde une réponse située et précise.")}</span></div>
     </div>
-    <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p><strong>Réponse attendue :</strong> ${escapeHtml(control.a || "Une réponse située, avec preuve et nuance.")}</p></details>
+    <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p><strong>Réponse attendue :</strong> ${escapeHtml(control.a || "Une réponse située, avec raisonnement clair.")}</p></details>
     ${mystery && isAccessibleMystery(mystery.id) ? `<button class="ghost wide" data-open-linked-mystery="${escapeHtml(mystery.id)}">🕵️ Revoir le mystère lié</button>` : ""}
   </section>`;
 }
@@ -16265,31 +16279,27 @@ function renderLessonText(lesson, content) {
   if (view === "quiz") {
     return `${intro}${tabs}${keyFactsMarkup}
       <section class="quiz-section isolated-quiz" data-focus-target="quiz">
-        <div class="section-title-row"><h2>Quiz · 5 questions</h2><small>raisonnement, traces, erreurs</small></div>
-        <div class="quiz-coach"><b>Mini-défi</b><span>Réponds mentalement avant d’ouvrir : le but n’est pas de réciter, mais de repérer la trace utile, l’erreur possible et la nuance.</span></div>
-        ${quizItems.map((item, index) => `<details class="quiz-item"><summary><b>${index + 1}</b>${item.kind ? ` <em>${escapeHtml(item.kind)}</em>` : ""} ${escapeHtml(item.q)}</summary><p><strong>Réponse :</strong> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>Piège :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Indice dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}</details>`).join("")}
+        <div class="section-title-row"><h2>Quiz · 5 questions</h2><small>raisonnement et compréhension</small></div>
+        <div class="quiz-coach"><b>Mini-défi</b><span>Réponds mentalement avant d’ouvrir : date, acteurs, mécanisme, conséquence. C’est ça qu’on vérifie.</span></div>
+        ${quizItems.map((item, index) => `<details class="quiz-item"><summary><b>${index + 1}</b>${item.kind ? ` <em>${escapeHtml(item.kind)}</em>` : ""} ${escapeHtml(item.q)}</summary><p><strong>Réponse :</strong> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>À ne pas confondre :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Où regarder dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}</details>`).join("")}
       </section>`;
   }
   const expressBits = Array.isArray(content.express) && content.express.length ? content.express.slice(0, 3) : [content.hook || "Sujet à replacer dans son contexte."];
-  const proof = takeaways.find(item => safeLower(item.label || "").includes("preuve")) || takeaways[1] || takeaways[0];
-  const trap = takeaways.find(item => safeLower(item.label || "").includes("piège")) || takeaways[2] || takeaways[0];
-  const whyItMatters = content.complete?.[3]?.text || content.complete?.[0]?.text || content.hook || expressBits[0];
+  const consequence = expressBits[2] || content.complete?.[3]?.text || content.complete?.[0]?.text || content.hook || expressBits[0];
+  const remember = content.deeper?.find(block => /question de fond|ce qu/i.test(block.title || ""))?.text
+    || content.complete?.at(-1)?.text
+    || consequence;
   return `${intro}${tabs}
     <section class="express-debug-card" data-focus-target="express">
-      <div class="section-title-row"><div><span class="card-label">⚡ Express utile</span><h2>Comprendre sans spoiler ni blabla</h2></div><small>1 min utile</small></div>
+      <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>Comprendre vite, sans fiche gadget</h2></div><small>1 min</small></div>
       ${keyFactsMarkup}
       <div class="express-steps">
-        <div><b>1 · Le cadre</b><p>${escapeHtml(expressBits[0] || content.hook)}</p></div>
-        <div><b>2 · Pourquoi ça compte</b><p>${escapeHtml(short(whyItMatters, 260))}</p></div>
-        <div><b>3 · La trace utile</b><p>${escapeHtml(proof?.text || proof || expressBits[1] || "Cherche une trace concrète, datée et située.")}</p></div>
-        <div><b>4 · L’erreur à éviter</b><p>${escapeHtml(trap?.text || trap || expressBits[2] || "Évite la réponse vague ou anachronique.")}</p></div>
+        <div><b>1 · Le contexte</b><p>${escapeHtml(expressBits[0] || content.hook)}</p></div>
+        <div><b>2 · Le mécanisme</b><p>${escapeHtml(expressBits[1] || content.complete?.[1]?.text || content.hook)}</p></div>
+        <div><b>3 · La conséquence</b><p>${escapeHtml(consequence)}</p></div>
+        <div><b>4 · À retenir</b><p>${escapeHtml(short(remember, 260))}</p></div>
       </div>
     </section>
-    <section class="takeaway-strip" aria-label="À retenir en 30 secondes">
-      <div class="section-title-row"><h2>À retenir en 30 s</h2><small>idée + trace + erreur</small></div>
-      <div class="takeaway-grid">${takeaways.map(item => `<div><b>${escapeHtml(item.label || "Repère")}</b><span>${escapeHtml(item.text || item)}</span></div>`).join("")}</div>
-    </section>
-    ${lessonMemoMarkup(lesson, content, takeaways, quizItems)}
     <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">📚 Lire le complet</button><button type="button" data-lesson-view="quiz">✅ Passer au quiz</button></section>`;
 }
 

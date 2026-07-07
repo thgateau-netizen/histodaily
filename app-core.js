@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.49",
-  assetsVersion: "1.0.0-beta.49",
+  version: "1.0.0-beta.50",
+  assetsVersion: "1.0.0-beta.50",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -14,12 +14,12 @@ window.HISTODAILY_CORE = {
     friendNames: ["Manon", "PapyHistoire", "Louise", "Anatole"]
   },
   ui: {
-    versionLabel: "beta 49",
+    versionLabel: "beta 50",
     shareBaseUrl: "https://histodaily.app",
     releaseNotes: [
-      "Anti-spoil : le cours du jour reste verrouillé tant que le mystère n’est pas résolu",
-      "Indices réécrits : progression sans donner la réponse au troisième indice",
-      "Contenu clarifié : on parle de trace utile et d’erreur à éviter, plus de blocs preuve/piège artificiels"
+      "Accueil anti-spoil réel : le cours du jour est indépendant du mystère du jour",
+      "Le cours lié au mystère n’apparaît qu’après résolution, dans l’écran mystère",
+      "Express réécrit : contexte, mécanisme, conséquence et idée à retenir — plus de fiche gadget"
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

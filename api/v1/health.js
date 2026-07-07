@@ -2,7 +2,7 @@ const { mysteries } = require('./_data');
 module.exports = (req, res) => res.status(200).json({
   ok: true,
   app: "HistoDaily",
-  version: "1.0.0-beta.49",
+  version: "1.0.0-beta.50",
   target: "vercel",
   content: {
     mysteries: mysteries.length,
@@ -26,14 +26,17 @@ module.exports = (req, res) => res.status(200).json({
     keyFactsEveryCourse: true,
     contentWeakPointPass: true,
     premiumKeyFactsRendered: true,
-    thirtySecondTakeaways: true,
-    lessonMemoCards: true,
+    thirtySecondTakeaways: false,
+    lessonMemoCards: false,
     beta44FoundationsContentPass: true,
     beta46NavigationMemoPass: true,
     beta47InputFocusFix: true,
     beta47LessonTabs: true,
     beta49DebugHomeCleanup: true,
     beta49CourseValidateFix: true,
-    beta49ExpressStrengthened: true
+    beta49ExpressStrengthened: true,
+    beta50IndependentDailyCourse: true,
+    beta50NoTraceTrapExpress: true,
+    beta50MysteryLinkedCourseAfterSolveOnly: true
   }
 });
