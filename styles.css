@@ -105,3 +105,19 @@ button,.chip,.nav-item,.lesson-card,.mystery-mini,[role="button"],summary{touch-
 .home-lesson-card.locked { opacity: 0.96; border-style: dashed; }
 .home-lesson-card.locked h2::before { content: "🔒 "; }
 .home-lesson-card.locked .home-card-footer span { color: var(--muted); }
+
+
+/* beta51: stabilité, anti-spoil, debug */
+.locked-course-card { border: 1px solid rgba(245, 158, 11, .35); background: linear-gradient(145deg, rgba(245,158,11,.10), rgba(15,23,42,.92)); }
+.lesson-card.locked { cursor: pointer; border-color: rgba(245,158,11,.30); opacity: .96; }
+.lesson-card.locked h2 { color: #fde68a; }
+.debug-card { border-color: rgba(56,189,248,.35); background: linear-gradient(145deg, rgba(14,165,233,.10), rgba(15,23,42,.94)); }
+.debug-card small { display:block; color: var(--muted); margin-top: .5rem; }
+.debug-actions { display:flex; gap:.6rem; flex-wrap:wrap; margin-top: .75rem; }
+button.danger, .danger { color:#fecaca; border-color: rgba(248,113,113,.45); }
+.clean-express > div { border-left: 3px solid rgba(56,189,248,.35); }
+.home-clean-hero h1 { max-width: 760px; }
+.locked-course-card .after-actions, .debug-card .debug-actions { display:flex; gap:.65rem; flex-wrap:wrap; }
+@media (max-width: 640px) {
+  .locked-course-card .after-actions, .debug-card .debug-actions { flex-direction: column; }
+}

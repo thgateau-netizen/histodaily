@@ -301,20 +301,30 @@ function setReadingMode(mode) {
 function lessonSpoilsMystery(lesson, mystery) {
   if (!lesson || !mystery) return false;
   if (mystery.lessonId && lesson.id === mystery.lessonId) return true;
-  const lessonText = normalize(`${lesson.id || ""} ${lesson.title || ""} ${lesson.shortTitle || ""}`);
-  const answer = normalize(mystery.answer || "");
-  const title = normalize(mystery.title || "");
-  if (answer && lessonText.includes(answer)) return true;
-  if (title && lessonText.includes(title)) return true;
-  return false;
+  const pack = PREMIUM_LESSON_PACKS?.[lesson.id] || {};
+  const fields = [
+    lesson.id, lesson.title, lesson.shortTitle, lesson.period, lesson.location,
+    pack.hook,
+    ...(Array.isArray(pack.keyFacts) ? pack.keyFacts : []),
+    ...(Array.isArray(pack.express) ? pack.express : [])
+  ];
+  const text = fields.filter(Boolean).join(" ");
+  if (textLeaksMystery(text, mystery)) return true;
+  const linked = relatedMysteryForLesson(lesson.id);
+  return Boolean(linked && linked.id === mystery.id);
 }
 function dailyLesson() {
   const mystery = dailyMystery();
-  const lessons = allLessons().filter(lesson => !lessonSpoilsMystery(lesson, mystery));
-  if (!lessons.length) return null;
-  // Décalage volontaire : le cours du jour n'est pas le cours-réponse du mystère.
-  const index = ((todayIndex() * 7 + 11) % lessons.length + lessons.length) % lessons.length;
-  return lessons[index];
+  const candidates = allLessons().filter(lesson => !lessonSpoilsMystery(lesson, mystery));
+  if (!candidates.length) return null;
+  // Décalage volontaire : le cours du jour n'est jamais le cours-réponse du mystère.
+  // On avance si le choix tombe malgré tout sur un cours qui contient la réponse dans son titre/contenu.
+  let index = ((todayIndex() * 13 + 17) % candidates.length + candidates.length) % candidates.length;
+  for (let guard = 0; guard < candidates.length; guard += 1) {
+    const lesson = candidates[(index + guard) % candidates.length];
+    if (!lessonSpoilsMystery(lesson, mystery)) return lesson;
+  }
+  return candidates[index];
 }
 function dailyChecklistMarkup() {
   const mystery = dailyMystery();
@@ -324,8 +334,8 @@ function dailyChecklistMarkup() {
   const quizLabel = lessonDoneToday ? "cours validé" : (lesson ? "quiz disponible" : "cours lié absent");
   const items = [
     { ok: mysteryDone, label: mysteryDone ? "Mystère résolu" : "Résoudre le mystère", sub: mysteryDone ? "Rituel validé" : "2 minutes, score maximum sans indice" },
-    { ok: lessonDoneToday, label: lessonDoneToday ? "Lecture validée" : "Lire l’express", sub: lesson ? "1 minute après le dossier" : "Quand un cours est lié" },
-    { ok: lessonDoneToday, label: quizLabel, sub: lessonDoneToday ? "+XP et progression" : "5 questions, réponses dans le texte" }
+    { ok: lessonDoneToday, label: lessonDoneToday ? "Lecture validée" : "Lire l’express", sub: lesson ? "1 minute, sans spoiler le dossier" : "Cours indépendant absent" },
+    { ok: lessonDoneToday, label: quizLabel, sub: lessonDoneToday ? "+XP et progression" : "Quiz séparé si tu veux continuer" }
   ];
   return `<section class="card daily-checklist-card soft-panel"><div class="section-title-row"><div><span class="card-label">Boucle idéale</span><h2>La session parfaite sans forcer.</h2></div><small>${readingModeLabel()}</small></div><div class="daily-checklist">${items.map(item => `<div class="${item.ok ? "done" : ""}"><b>${item.ok ? "✓" : "•"}</b><span>${escapeHtml(item.label)}<small>${escapeHtml(item.sub)}</small></span></div>`).join("")}</div></section>`;
 }
@@ -340,8 +350,8 @@ function nextActionMarkup() {
   let action = "Lancer le dossier";
   let attr = "data-next-mystery";
   if (mysteryDone && lesson && !lessonDoneToday) {
-    title = "Transforme le mystère en vraie connaissance";
-    text = "Lis l’express lié au dossier : une minute suffit, puis tu peux ouvrir le cours premium si le sujet t’accroche.";
+    title = "Continue avec le cours du jour";
+    text = "Lis le cours indépendant du jour : une minute suffit, sans révéler la réponse du mystère.";
     action = "Lire l’express";
     attr = `data-next-lesson="${escapeHtml(lesson.id)}"`;
   } else if (mysteryDone) {
@@ -662,7 +672,7 @@ function installPromptMarkup() {
 function releaseNotesMarkup() {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
   if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
-  return `<section class="card release-card soft-panel"><div><span class="card-label">Nouveautés bêta 46</span><h2>Recherche de cours, fiche-mémo et révision plus claire.</h2><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul></div><button class="ghost" data-dismiss-release>OK</button></section>`;
+  return `<section class="card release-card soft-panel"><div><span class="card-label">Nouveautés bêta 51</span><h2>Stabilité, anti-spoil et contenu plus propre.</h2><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul></div><button class="ghost" data-dismiss-release>OK</button></section>`;
 }
 function performanceMode() { return state.performanceMode === "light" ? "light" : "balanced"; }
 function applyPerformanceMode() {
@@ -739,8 +749,8 @@ function renderHome() {
   renderShell(`
     <header class="hero compact home-clean-hero">
       <div>
-        <p class="eyebrow">HistoDaily · beta 50 contenu</p>
-        <h1>Un mystère à résoudre. Un cours séparé.</h1>
+        <p class="eyebrow">HistoDaily · beta 51 stable</p>
+        <h1>Le rituel propre : mystère, cours séparé, progression.</h1>
         <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
       </div>
     </header>
@@ -776,7 +786,8 @@ function renderHome() {
         <button data-go-learn>Parcours</button>
         <button class="ghost" data-home-profile>Profil</button>
       </div>
-    </section>`);
+    </section>
+    ${debugPanelMarkup()}`);
 
   const openMystery = () => mystery && setState({ tab: "mystery", currentMysteryId: mystery.id });
   const mysteryCard = $(`[data-home-mystery]`);
@@ -789,6 +800,8 @@ function renderHome() {
   }));
   document.querySelectorAll("[data-go-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn" })));
   $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
+  $(`[data-reset-local]`)?.addEventListener("click", resetLocalProgress);
+  $(`[data-copy-content-report]`)?.addEventListener("click", () => copyText(JSON.stringify(contentQualityReport(), null, 2), "Audit contenu copié.", "profileFeedback"));
 }
 
 function renderLearn() {
@@ -816,14 +829,23 @@ function renderLearn() {
   $(`[data-clear-learn-search]`)?.addEventListener("click", () => setState({ learnSearch: "" }));
   document.querySelectorAll("[data-premium-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: btn.dataset.premiumLesson, lessonFocus: "express", lessonView: "express" })));
   document.querySelectorAll("[data-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: btn.dataset.lesson, lessonFocus: "express", lessonView: "express" })));
+  document.querySelectorAll("[data-locked-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null })));
 }
 function lessonCard(lesson, index) {
   const done = lessonDone(lesson.id);
   const mystery = relatedMysteryForLesson(lesson.id);
   const premium = Boolean(PREMIUM_LESSON_PACKS[lesson.id]);
-  return `<article class="card lesson-card ${done ? "done" : ""}" data-lesson="${lesson.id}">
+  const locked = lessonLockedByDailyMystery(lesson);
+  if (locked) {
+    return `<article class="card lesson-card locked" data-locked-lesson="${escapeHtml(lesson.id)}">
+      <span class="lesson-index">🔒</span>
+      <div><h2>Cours verrouillé anti-spoil</h2><p>Ce cours explique le mystère du jour. Résous le dossier pour l’ouvrir.</p><small>🕵️ mystère d’abord · 📚 cours après résolution</small></div>
+      <strong>bloqué</strong>
+    </article>`;
+  }
+  return `<article class="card lesson-card ${done ? "done" : ""}" data-lesson="${escapeHtml(lesson.id)}">
     <span class="lesson-index">${done ? "✓" : index + 1}</span>
-    <div><h2>${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</h2><p>${escapeHtml(lesson.period || lesson.location || "Leçon courte")}</p><small>${premium ? "⭐ premium · " : ""}${mystery ? "🕵️ liée à un mystère · " : ""}⚡ express · 📚 complet · ✅ quiz</small></div>
+    <div><h2>${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</h2><p>${escapeHtml(lesson.period || lesson.location || "Leçon courte")}</p><small>${premium ? "⭐ premium · " : ""}${mystery ? "🕵️ cours-réponse à ouvrir après mystère · " : ""}⚡ express · 📚 complet · ✅ quiz</small></div>
     <strong>${done ? "fait" : `${lesson.xp || 55} XP`}</strong>
   </article>`;
 }
@@ -852,6 +874,116 @@ function sentenceList(items) {
 function normalizeDetailText(text) { return String(text || "").replace(/\s+/g, " ").trim(); }
 function safeLower(text) { return String(text || "").toLocaleLowerCase("fr-FR"); }
 
+function significantTokens(text = "") {
+  const stop = new Set(["les","des","une","un","le","la","du","de","d","l","et","ou","en","au","aux","dans","sur","par","pour","avec","sans","vers","apres","avant","entre","monde","guerre","revolution","empire","royaume","ville","civilisation","histoire"]);
+  return normalize(text).split(" ").filter(token => token.length >= 4 && !stop.has(token));
+}
+function answerLeakTokens(mystery = {}) {
+  return Array.from(new Set([...(significantTokens(mystery.answer || "")), ...(significantTokens(mystery.title || ""))])).slice(0, 8);
+}
+function textLeaksMystery(text = "", mystery = {}) {
+  const haystack = normalize(text);
+  if (!haystack || !mystery) return false;
+  const answer = normalize(mystery.answer || "");
+  const title = normalize(mystery.title || "");
+  if (answer && haystack.includes(answer)) return true;
+  if (title && haystack.includes(title)) return true;
+  const tokens = answerLeakTokens(mystery);
+  return tokens.length >= 2 && tokens.filter(token => haystack.includes(token)).length >= 2;
+}
+function maskMysteryAnswer(text = "", mystery = {}) {
+  let out = String(text || "");
+  const replacements = [mystery.answer, mystery.title, ...(mystery.aliases || [])]
+    .filter(Boolean)
+    .sort((a, b) => String(b).length - String(a).length);
+  replacements.forEach(value => {
+    const escaped = String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (escaped.length > 2) out = out.replace(new RegExp(escaped, "gi"), "ce dossier");
+  });
+  return out.replace(/\s+/g, " ").trim();
+}
+function lessonLockedByDailyMystery(lesson = {}) {
+  const mystery = dailyMystery();
+  return Boolean(lesson && mystery && !mysterySolved(mystery.id) && mystery.lessonId && lesson.id === mystery.lessonId);
+}
+function lessonLockMarkup(lesson) {
+  const mystery = dailyMystery();
+  return `<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">Anti-spoil</p><h1>🔒 Cours verrouillé</h1></div></header>
+    <section class="card locked-course-card"><span class="card-label">Mystère du jour d’abord</span><h2>Ce cours contient la réponse ou son explication.</h2><p>Pour garder le jeu intéressant, il ne s’ouvre qu’après résolution du mystère du jour. Tu peux tenter le dossier maintenant ou choisir un autre cours dans le parcours.</p><div class="after-actions"><button data-open-daily-mystery>Résoudre le mystère</button><button class="ghost" data-back-learn>Autre cours</button></div></section>`;
+}
+function mysteryPromptKernel(mystery = {}) {
+  const prompt = maskMysteryAnswer(mystery.prompt || mystery.explanation || mystery.caseTitle || "", mystery);
+  const chunks = prompt.split(/[.!?]/).map(s => s.trim()).filter(Boolean);
+  const best = chunks.find(chunk => chunk.length > 80) || chunks[0] || prompt;
+  return short(best, 210);
+}
+function buildProgressiveClues(mystery = {}) {
+  const lesson = relatedLessonForMystery(mystery) || {};
+  const period = lesson.period || "sa période précise";
+  const place = lesson.location || "son espace historique";
+  const prompt = mysteryPromptKernel(mystery);
+  const difficulty = difficultyLabel(mystery.difficulty);
+  const clues = [
+    `Commence par classer le dossier : événement, institution, technique, crise, empire, pratique sociale ou basculement politique. Ici le niveau est ${difficulty}, donc évite la réponse trop large.`,
+    `Resserre le cadre : ${period} · ${place}. Cherche le nom précis qui relie ces repères aux acteurs du texte.`,
+    `Dernier indice sans spoiler : ${prompt}. La bonne réponse doit expliquer pourquoi ces éléments vont ensemble.`
+  ];
+  return clues.map(clue => maskMysteryAnswer(clue, mystery)).map(clue => clue.replace(/\s+/g, " ").trim());
+}
+function applyContentQualityPass() {
+  (data.mysteries || []).forEach(mystery => {
+    mystery.originalClues = mystery.originalClues || (mystery.clues || []).slice(0, 3);
+    mystery.clues = buildProgressiveClues(mystery);
+    mystery.caseTitle = maskMysteryAnswer(mystery.caseTitle || "Dossier à identifier", mystery) || "Dossier à identifier";
+    mystery.contentQuality51 = true;
+  });
+}
+function contentQualityReport() {
+  const today = dailyMystery();
+  const all = allLessons();
+  const dailyCourse = dailyLesson();
+  const spoilerLessons = today ? all.filter(lesson => lessonSpoilsMystery(lesson, today)).map(lesson => lesson.id) : [];
+  const dailyCourseSpoils = Boolean(today && dailyCourse && lessonSpoilsMystery(dailyCourse, today));
+  const exactHintLeaks = (data.mysteries || []).filter(m => (m.clues || []).some(clue => {
+    const n = normalize(clue);
+    const answer = normalize(m.answer || "");
+    const title = normalize(m.title || "");
+    return (answer && n.includes(answer)) || (title && n.includes(title));
+  })).map(m => m.id);
+  const lockedToday = today ? all.filter(lesson => lessonLockedByDailyMystery(lesson)).map(lesson => lesson.id) : [];
+  return {
+    version: APP_VERSION,
+    mysteries: data.mysteries.length,
+    lessons: all.length,
+    todayMysteryId: today?.id || null,
+    dailyCourseId: dailyCourse?.id || null,
+    spoilerLessons: spoilerLessons.length,
+    dailyCourseSpoils,
+    lockedToday: lockedToday.length,
+    leakingHints: exactHintLeaks.length,
+    status: !dailyCourseSpoils && exactHintLeaks.length === 0 ? "OK" : "À corriger"
+  };
+}
+function debugModeEnabled() {
+  try { return new URLSearchParams(window.location.search).get("debug") === "1"; }
+  catch { return false; }
+}
+function resetLocalProgress() {
+  if (!window.confirm("Réinitialiser la progression locale HistoDaily sur ce navigateur ?")) return;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(`${STORAGE_KEY}_backup`);
+  } catch {}
+  state = mergeState(defaultState, {});
+  saveState();
+  render();
+}
+function debugPanelMarkup() {
+  if (!debugModeEnabled()) return "";
+  const report = contentQualityReport();
+  return `<section class="card debug-card"><div><span class="card-label">Debug bêta</span><h2>Audit contenu : ${escapeHtml(report.status)}</h2><p>${report.mysteries} mystères · ${report.lessons} cours · ${report.leakingHints} indice(s) révélateurs · ${report.spoilerLessons} cours potentiellement spoilants masqués.</p><small>Mystère : ${escapeHtml(report.todayMysteryId || "—")} · Cours du jour : ${escapeHtml(report.dailyCourseId || "—")}</small></div><div class="debug-actions"><button data-copy-content-report>Copier audit</button><button class="ghost danger" data-reset-local>Reset local</button></div></section>`;
+}
+applyContentQualityPass();
 
 const PREMIUM_LESSON_PACKS = {
   "prehistory-fire": {
@@ -16169,12 +16301,12 @@ function buildLessonContent(lesson) {
   const express = [
     `Cadre rapide : ${title} se situe dans ${place}, pendant ${period}. C’est le minimum à retenir pour ne pas mélanger les époques, les espaces et les sociétés.`,
     `L’idée importante : ${profile.transformation}. Les acteurs à garder en tête sont ${profile.actors}.`,
-    mystery ? `${mysteryLine} Ce qu’il faut retenir : la bonne réponse relie une situation, des acteurs et une conséquence historique.` : `Ce qu’il faut retenir : le sujet devient intéressant quand tu peux expliquer ce qui change concrètement avant / pendant / après.`
+    mystery ? `${mysteryLine} À retenir : la réponse n’a de sens que si tu sais expliquer le contexte, les acteurs et le changement produit.` : `À retenir : le sujet devient utile quand tu peux dire ce qui change, pour qui, et avec quelles conséquences.`
   ];
   const complete = mystery ? [
     { title: "1. De l’énigme au problème historique", text: `Le mystère dit : ${mystery.prompt} Ce n’est pas seulement une devinette. C’est une manière rapide de faire surgir un vrai problème historique : ${profile.question}.` },
     { title: "2. Le cadre à poser avant d’interpréter", text: `Le sujet se place dans ${place}, pendant ${period}. Ce cadre évite de transformer la réponse en simple anecdote. En histoire, une même trace ne signifie pas la même chose selon son lieu, sa date et la société qui l’a produite.` },
-    { title: "3. Les indices à assembler", text: `Les indices du mystère sont : ${sentenceList(mystery.clues || [])}. Ils fonctionnent comme des traces. On ne les additionne pas au hasard : on les compare, on les date, on les localise, puis on vérifie qu’ils mènent bien à une même explication.` },
+    { title: "3. Les indices à assembler", text: `Les indices du mystère sont : ${sentenceList(mystery.clues || [])}. Ils ne sont pas là pour décorer : ils obligent à croiser date, lieu, acteurs et conséquence avant de nommer le phénomène.` },
     { title: "4. La réponse et ce qu’elle révèle", text: `La réponse est « ${mystery.answer} ». ${mystery.explanation || "Cette réponse permet de relier les indices entre eux."} Elle compte parce qu’elle révèle ceci : ${profile.transformation}.` },
     { title: "5. Ce qu’il faut savoir redire", text: `Pour maîtriser le sujet, il faut pouvoir redire trois choses : le cadre ${sentenceList([period, place])}, les indices qui conduisent à « ${mystery.answer} », et la transformation historique principale. C’est exactement ce que le quiz vérifie.` }
   ] : [
@@ -16182,7 +16314,7 @@ function buildLessonContent(lesson) {
     { title: "2. Le cadre chronologique et spatial", text: `Le repère chronologique est ${period}. Le repère spatial est ${place}. Ces deux informations sont essentielles : un phénomène historique change de sens selon le moment, le lieu, les contacts avec d’autres sociétés et les sources disponibles.` },
     { title: "3. Les acteurs et les choix", text: `Les acteurs à observer sont ${profile.actors}. Ils ne jouent pas tous le même rôle : certains décident, d’autres produisent, transmettent, combattent, résistent, subissent ou adaptent les changements à leur quotidien.` },
     { title: "4. La transformation principale", text: `Ce sujet est important parce que ${profile.transformation}. Pour apprendre efficacement, compare toujours l’avant, le basculement et l’après : qu’est-ce qui devient plus efficace, plus violent, plus organisé, plus fragile ou plus durable ?` },
-    { title: "5. Les traces qui permettent de savoir", text: `Pour le prouver, on mobilise des traces : ${profile.traces}. Une trace ne parle jamais toute seule. Elle doit être datée, localisée, comparée et replacée dans son contexte pour éviter le piège suivant : ${profile.mistake}.` }
+    { title: "5. Les traces qui permettent de savoir", text: `Pour comprendre le sujet, pars d’éléments concrets : ${profile.traces}. Ils doivent être datés, localisés et comparés, sinon on retombe dans le raccourci suivant : ${profile.mistake}.` }
   ];
   const deeper = [
     { title: "Vocabulaire utile", text: `Repère chronologique : période ou date qui situe le sujet. Repère spatial : lieu ou aire culturelle concernée. Source : trace utilisée pour construire une connaissance historique. Contexte : ensemble des conditions qui donnent du sens à une trace.` },
@@ -16203,6 +16335,12 @@ function scrollLessonPart(focus) {
 function renderLesson() {
   const lesson = allLessons().find(l => l.id === state.currentLessonId) || lessonsFor(state.currentWorld)[0];
   if (!lesson) return renderLearn();
+  if (lessonLockedByDailyMystery(lesson)) {
+    renderShell(lessonLockMarkup(lesson));
+    document.querySelectorAll("[data-back-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "express" })));
+    $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null }));
+    return;
+  }
   if (!state.lessonView) state.lessonView = state.lessonFocus || "express";
   const content = buildLessonContent(lesson);
   renderShell(`
@@ -16232,8 +16370,8 @@ function lessonMemoMarkup(lesson, content, takeaways, quizItems) {
   return `<section class="lesson-memo-card" aria-label="Fiche mémo">
     <div class="section-title-row"><h2>🧠 Fiche mémo</h2><small>à relire avant le quiz</small></div>
     <div class="memo-grid">
-      <div><b>Repère concret</b><span>${escapeHtml(proof?.text || proof || "Appuie ta réponse sur un élément du cours.")}</span></div>
-      <div><b>À ne pas confondre</b><span>${escapeHtml(trap?.text || trap || "Garde une réponse située et précise.")}</span></div>
+      <div><b>Idée à maîtriser</b><span>${escapeHtml(proof?.text || proof || "Appuie ta réponse sur un élément du cours.")}</span></div>
+      <div><b>Nuance importante</b><span>${escapeHtml(trap?.text || trap || "Garde une réponse située et précise.")}</span></div>
     </div>
     <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p><strong>Réponse attendue :</strong> ${escapeHtml(control.a || "Une réponse située, avec raisonnement clair.")}</p></details>
     ${mystery && isAccessibleMystery(mystery.id) ? `<button class="ghost wide" data-open-linked-mystery="${escapeHtml(mystery.id)}">🕵️ Revoir le mystère lié</button>` : ""}
@@ -16263,9 +16401,9 @@ function renderLessonText(lesson, content) {
       </div>
     </section>`;
   const intro = `<section class="lesson-hook">
-      <span class="card-label">${content.premium ? "⭐ Cours premium" : fastLabel}</span>
+      <span class="card-label">${content.premium ? "⭐ Cours rédigé" : fastLabel}</span>
       <p>${escapeHtml(content.hook)}</p>
-      <div class="lesson-meta"><span>${content.premium ? "⭐ rédigé main" : "🧭 standard structuré"}</span><span>⚡ express</span><span>📚 complet à la demande</span><span>✅ quiz séparé</span></div>
+      <div class="lesson-meta"><span>${content.premium ? "⭐ rédigé" : "🧭 structuré"}</span><span>⚡ express</span><span>📚 complet à la demande</span><span>✅ quiz séparé</span></div>
     </section>`;
   if (view === "complete") {
     return `${intro}${tabs}
@@ -16280,7 +16418,7 @@ function renderLessonText(lesson, content) {
     return `${intro}${tabs}${keyFactsMarkup}
       <section class="quiz-section isolated-quiz" data-focus-target="quiz">
         <div class="section-title-row"><h2>Quiz · 5 questions</h2><small>raisonnement et compréhension</small></div>
-        <div class="quiz-coach"><b>Mini-défi</b><span>Réponds mentalement avant d’ouvrir : date, acteurs, mécanisme, conséquence. C’est ça qu’on vérifie.</span></div>
+        <div class="quiz-coach"><b>Mini-défi</b><span>Réponds mentalement avant d’ouvrir : cadre, acteurs, mécanisme, conséquence. C’est ça qu’on vérifie.</span></div>
         ${quizItems.map((item, index) => `<details class="quiz-item"><summary><b>${index + 1}</b>${item.kind ? ` <em>${escapeHtml(item.kind)}</em>` : ""} ${escapeHtml(item.q)}</summary><p><strong>Réponse :</strong> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>À ne pas confondre :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Où regarder dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}</details>`).join("")}
       </section>`;
   }
@@ -16291,13 +16429,13 @@ function renderLessonText(lesson, content) {
     || consequence;
   return `${intro}${tabs}
     <section class="express-debug-card" data-focus-target="express">
-      <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>Comprendre vite, sans fiche gadget</h2></div><small>1 min</small></div>
+      <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>La version utile, pas la fiche automatique</h2></div><small>1 min</small></div>
       ${keyFactsMarkup}
-      <div class="express-steps">
-        <div><b>1 · Le contexte</b><p>${escapeHtml(expressBits[0] || content.hook)}</p></div>
-        <div><b>2 · Le mécanisme</b><p>${escapeHtml(expressBits[1] || content.complete?.[1]?.text || content.hook)}</p></div>
-        <div><b>3 · La conséquence</b><p>${escapeHtml(consequence)}</p></div>
-        <div><b>4 · À retenir</b><p>${escapeHtml(short(remember, 260))}</p></div>
+      <div class="express-steps clean-express">
+        <div><b>1 · Situation</b><p>${escapeHtml(expressBits[0] || content.hook)}</p></div>
+        <div><b>2 · Ce qui bouge</b><p>${escapeHtml(expressBits[1] || content.complete?.[1]?.text || content.hook)}</p></div>
+        <div><b>3 · Pourquoi ça compte</b><p>${escapeHtml(consequence)}</p></div>
+        <div><b>4 · Phrase à savoir redire</b><p>${escapeHtml(short(remember, 260))}</p></div>
       </div>
     </section>
     <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">📚 Lire le complet</button><button type="button" data-lesson-view="quiz">✅ Passer au quiz</button></section>`;

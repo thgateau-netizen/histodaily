@@ -1,45 +1,42 @@
-# HistoDaily beta 50 — debug accueil et cours
+# HistoDaily — beta51 stabilité + contenu
 
-Cette beta corrige deux retours de test importants : le champ de réponse du mystère doit être parfaitement utilisable sur ordinateur, et les cours ne doivent plus donner l’impression d’un gros pavé imposé.
+Version : `1.0.0-beta.51`
 
-## Base héritée beta 47
+## Objectif de cette passe
 
-- Champ de réponse du mystère renforcé : `type="text"`, focus forcé au clic, meilleure priorité CSS, validation clavier avec Entrée.
-- Les cours sont maintenant séparés en trois onglets : **Rapide**, **Complet**, **Quiz**.
-- Le mode rapide n’affiche plus le cours complet, ni les approfondissements, ni le quiz en bloc sous le texte.
-- Après un mystère résolu, le bouton “Résumé 1 min” ouvre vraiment l’onglet rapide, et “Cours complet” ouvre vraiment l’onglet complet.
-- Ajout de styles dédiés pour garder le rendu propre sur ordinateur et mobile.
+Cette version arrête d'ajouter des gadgets et remet l'app sur des rails propres :
 
-## Pourquoi cette passe
+- accueil réduit à l'essentiel : mystère du jour, cours indépendant, progression ;
+- cours-réponse verrouillé si le mystère du jour n'est pas résolu ;
+- indices régénérés avec une logique progressive, sans donner directement la réponse ;
+- disparition des blocs de type `Trace utile` / `Erreur à éviter` dans l'interface Express ;
+- mode debug avec `?debug=1` : audit contenu + reset local ;
+- endpoint de base pour futur multi : `/api/v1/leaderboard/submit`, volontairement en mode local-demo tant que Supabase n'est pas configuré.
 
-Le contenu est devenu riche, mais il ne faut pas que l’app donne une sensation de manuel scolaire interminable. Le mystère doit rester immédiat, et le cours doit laisser choisir : lire vite, creuser, ou réviser.
+## Déploiement
 
-## Vérifications
+Avec GitHub Desktop :
 
-- Syntaxe JS vérifiée.
-- API health passée en beta 50.
-- Cache/service-worker passés en beta 50.
-- Navigation Express / Complet / Quiz intégrée sans animation lourde.
+1. Dézipper le paquet.
+2. Remplacer le contenu du dossier local du repo par ce contenu.
+3. Ne pas supprimer `.git` si tu le vois.
+4. Commit : `Beta51 stability content pass`.
+5. Push origin.
+6. Vercel redéploie automatiquement.
 
-## Note GitHub/Vercel
-Cette variante retire `vercel.json` pour éviter l'erreur "Invalid Vercel file provided". Vercel déploie automatiquement les fichiers statiques et les fonctions présentes dans `/api`.
+## Tests rapides
 
+- `/api/v1/health` doit afficher `1.0.0-beta.51`.
+- `/api/v1/daily-mystery` ne doit pas révéler la réponse.
+- Accueil : pas de cours-réponse du mystère affiché en clair.
+- `/?debug=1` affiche l'audit contenu.
+- Un cours lié au mystère du jour reste verrouillé avant résolution.
 
-## Beta 48 debug
-- Accueil simplifié : mystère du jour, cours du jour, progression.
-- Correction du bouton Valider XP.
-- Express renforcé avec cadre, enjeu, preuve et piège.
-- Service worker beta50 pour éviter les caches beta47 mélangés.
+## Multi
 
+Le multi réel n'est pas activé ici. Il faut d'abord Supabase et variables Vercel :
 
-## Beta 49 — contenu et anti-spoil
-- Le cours du jour n’affiche plus son titre ni son résumé tant que le mystère du jour n’est pas résolu.
-- Les indices des mystères ont été réécrits pour progresser sans donner directement la réponse.
-- Le contenu ne cherche pas à ajouter des blocs : il nettoie ce qui cassait l’expérience de jeu.
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-
-## Beta 50 - correction contenu réelle
-- Le cours du jour est indépendant du mystère du jour : il ne peut plus afficher la réponse juste sous le dossier.
-- Le cours lié au mystère reste uniquement dans l’écran de résolution, après succès.
-- Suppression des fiches gadget dans l’Express : remplacement par contexte, mécanisme, conséquence, à retenir.
-- Cache PWA beta50 pour éviter les mélanges de versions.
+Sans ça, les classements restent locaux/démo.

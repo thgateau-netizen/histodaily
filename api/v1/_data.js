@@ -4067,6 +4067,33 @@ const mysteries = [
     "contentQuality49": true
   }
 ];
+
+function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
+function short(s,n=210){ s=String(s||''); return s.length>n ? s.slice(0,n-1)+'…' : s; }
+function maskAnswer(text, mystery){
+  let out = String(text||'');
+  [mystery.answer, mystery.title, ...(mystery.aliases||[])].filter(Boolean).sort((a,b)=>String(b).length-String(a).length).forEach(value=>{
+    const escaped = String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (escaped.length > 2) out = out.replace(new RegExp(escaped, 'gi'), 'ce dossier');
+  });
+  return out.replace(/\s+/g,' ').trim();
+}
+function promptKernel(mystery){
+  const text = maskAnswer(mystery.prompt || mystery.explanation || mystery.caseTitle || '', mystery);
+  const chunks = text.split(/[.!?]/).map(s=>s.trim()).filter(Boolean);
+  return short(chunks.find(c=>c.length>80) || chunks[0] || text, 210);
+}
+function progressiveClues(mystery){
+  const difficulty = mystery.difficulty === 'expert' ? 'expert' : mystery.difficulty === 'difficile' ? 'difficile' : mystery.difficulty === 'facile' ? 'accessible' : 'corsé';
+  const clues = [
+    `Commence par classer le dossier : événement, institution, technique, crise, empire, pratique sociale ou basculement politique. Niveau ${difficulty} : évite le thème trop large.`,
+    `Resserre avec les repères donnés dans le texte : date, lieu, acteurs, puis cherche seulement le nom précis.`,
+    `Dernier indice sans spoiler : ${promptKernel(mystery)}. La bonne réponse explique pourquoi ces éléments vont ensemble.`
+  ];
+  return clues.map(c => maskAnswer(c, mystery));
+}
+mysteries.forEach(m => { m.originalClues = m.originalClues || (m.clues || []).slice(0,3); m.clues = progressiveClues(m); m.caseTitle = maskAnswer(m.caseTitle || 'Dossier à identifier', m) || 'Dossier à identifier'; m.contentQuality51 = true; });
+
 function dailyIndex(){
   const parts = new Intl.DateTimeFormat("fr-CA", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).reduce((acc, part) => { acc[part.type] = part.value; return acc; }, {});
   return Math.abs(Math.floor(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)) / 86400000));
