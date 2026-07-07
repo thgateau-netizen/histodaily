@@ -1,7 +1,7 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_QUALITY = window.HISTODAILY_QUALITY || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.54";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.55";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_v100_beta14_state";
 
 const $ = (selector) => document.querySelector(selector);
@@ -82,6 +82,22 @@ const defaultState = {
   achievements: { firstLesson: false, firstMystery: false, streak3: false, streak7: false, noHint: false, expertMystery: false, firstArchive: false }
 };
 
+function applyStartupDebugActions() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const shouldReset = params.get("reset") === "1" || params.get("clear") === "1" || params.get("resetLocal") === "1";
+    if (!shouldReset) return;
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(`${STORAGE_KEY}_backup`);
+    localStorage.removeItem(`${STORAGE_KEY}_last_ok`);
+    params.delete("reset");
+    params.delete("clear");
+    params.delete("resetLocal");
+    const next = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}${window.location.hash || ""}`;
+    window.history.replaceState({}, "", next);
+  } catch {}
+}
+applyStartupDebugActions();
 let state = loadState();
 const leaderboardFetchInFlight = new Set();
 applyStartupSocialLinks();
@@ -726,6 +742,23 @@ async function installApp() {
     setState({ installFeedback: platformInstallHint() });
   }
 }
+function isTextControl(element) {
+  return Boolean(element && element.closest && element.closest("input, textarea, select, [contenteditable='true']"));
+}
+function activateTextControls(root = document) {
+  root.querySelectorAll("input, textarea, select").forEach(control => {
+    control.classList.add("text-entry-safe");
+    control.setAttribute("data-text-entry-safe", "true");
+    control.addEventListener("pointerdown", event => event.stopPropagation(), true);
+    control.addEventListener("mousedown", event => event.stopPropagation(), true);
+    control.addEventListener("touchstart", event => event.stopPropagation(), { capture: true, passive: true });
+    control.addEventListener("click", event => { event.stopPropagation(); event.currentTarget.focus(); }, true);
+  });
+}
+document.addEventListener("pointerdown", event => { if (isTextControl(event.target)) event.stopPropagation(); }, true);
+document.addEventListener("mousedown", event => { if (isTextControl(event.target)) event.stopPropagation(); }, true);
+document.addEventListener("click", event => { if (isTextControl(event.target)) event.stopPropagation(); }, true);
+
 function renderShell(content) {
   applyPerformanceMode();
   app.innerHTML = `
@@ -746,6 +779,7 @@ function renderShell(content) {
     if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
     setState(patch);
   }));
+  activateTextControls(app);
 }
 function navButton(tab, icon, label) { return `<button data-tab="${tab}" class="nav-item ${state.tab === tab ? "active" : ""}"><span>${icon}</span><small>${label}</small></button>`; }
 
@@ -763,7 +797,7 @@ function renderHome() {
   renderShell(`
     <header class="hero compact home-clean-hero">
       <div>
-        <p class="eyebrow">HistoDaily · beta 53 sociale</p>
+        <p class="eyebrow">HistoDaily · beta 55 stable</p>
         <h1>Mystère, cours séparé, classement, amis.</h1>
         <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
       </div>
@@ -996,7 +1030,7 @@ function resetLocalProgress() {
 function debugPanelMarkup() {
   if (!debugModeEnabled()) return "";
   const report = contentQualityReport();
-  return `<section class="card debug-card"><div><span class="card-label">Debug bêta</span><h2>Audit contenu : ${escapeHtml(report.status)}</h2><p>${report.mysteries} mystères · ${report.lessons} cours · ${report.leakingHints} indice(s) révélateurs · ${report.spoilerLessons} cours potentiellement spoilants masqués.</p><small>Mystère : ${escapeHtml(report.todayMysteryId || "—")} · Cours du jour : ${escapeHtml(report.dailyCourseId || "—")}</small></div><div class="debug-actions"><button data-copy-content-report>Copier audit</button><button class="ghost danger" data-reset-local>Reset local</button></div></section>`;
+  return `<section class="card debug-card"><div><span class="card-label">Debug bêta · reset local</span><h2>Audit contenu : ${escapeHtml(report.status)}</h2><p>${report.mysteries} mystères · ${report.lessons} cours · ${report.leakingHints} indice(s) révélateurs · ${report.spoilerLessons} cours potentiellement spoilants masqués.</p><small>Mystère : ${escapeHtml(report.todayMysteryId || "—")} · Cours du jour : ${escapeHtml(report.dailyCourseId || "—")}</small></div><div class="debug-actions"><button data-copy-content-report>Copier audit</button><button class="ghost danger" data-reset-local>Reset local</button></div></section>`;
 }
 applyContentQualityPass();
 
@@ -16842,6 +16876,13 @@ function updatePseudo(event) {
   }
   setState({ pseudo, profileFeedback: `Pseudo local mis à jour : ${pseudo}` });
 }
+function promptPseudoEdit() {
+  const value = window.prompt("Ton pseudo HistoDaily", state.pseudo || "");
+  if (value === null) return;
+  const pseudo = sanitizePseudo(value);
+  if (pseudo.length < 3) return setState({ profileFeedback: "Choisis un pseudo d’au moins 3 caractères." });
+  setState({ pseudo, profileFeedback: `Pseudo local mis à jour : ${pseudo}` });
+}
 
 function appPublicUrl() {
   try { return `${location.origin}${location.pathname || "/"}`.replace(/\/?$/, "/"); }
@@ -17048,7 +17089,7 @@ function renderProfile() {
   const friends = friendProfiles();
   renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Profil social</p><h1>${escapeHtml(state.pseudo)}</h1></div></header>
     ${publicProfileMarkup(myPlayerProfile())}
-    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Pas besoin de mail pour cette phase.</p></div><form data-pseudo-form><input value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo"/><button>Enregistrer</button></form>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
+    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Pas besoin de mail pour cette phase.</p></div><form data-pseudo-form><input name="pseudo" type="text" value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo" autocomplete="nickname" autocapitalize="words" enterkeyhint="done"/><button>Enregistrer</button></form><button type="button" class="ghost wide" data-pseudo-prompt>Modifier via fenêtre simple</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
     ${addFriendMarkup()}
     ${socialInviteLinkMarkup()}
     ${friendListMarkup()}
@@ -17067,6 +17108,7 @@ function renderProfile() {
     </section>`);
   $(`[data-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
   $(`[data-pseudo-form]`)?.addEventListener("submit", updatePseudo);
+  $(`[data-pseudo-prompt]`)?.addEventListener("click", promptPseudoEdit);
   $(`[data-add-friend]`)?.addEventListener("submit", addFriend);
   $(`[data-share-invite]`)?.addEventListener("click", shareInviteCode);
   $(`[data-copy-invite-link]`)?.addEventListener("click", copyInviteLink);

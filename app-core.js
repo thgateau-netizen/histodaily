@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.54",
-  assetsVersion: "1.0.0-beta.54",
+  version: "1.0.0-beta.55",
+  assetsVersion: "1.0.0-beta.55",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -14,14 +14,14 @@ window.HISTODAILY_CORE = {
     friendNames: ["Manon", "PapyHistoire", "Louise", "Anatole"]
   },
   ui: {
-    versionLabel: "beta 53",
+    versionLabel: "beta 55",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Multi léger consolidé : code ami, lien d’invitation, profils publics et classement amis",
-      "Score envoyé automatiquement vers l’API leaderboard avec fallback local si la base n’est pas branchée",
-      "Statut social plus clair : local, hors-ligne ou prêt serveur",
-      "Profils joueurs enrichis avec badges, rangs et comparaison ami",
-      "Préparation Supabase côté API sans exposer de clé dans GitHub"
+      "Correction forte des champs texte : pseudo, réponse mystère, recherche et ajout ami restent tapables",
+      "Reset de test fiable via ?debug=1 ou ?reset=1 pour rejouer le mystère après branchement Supabase",
+      "Bouton de secours pour modifier le pseudo via une fenêtre simple si un navigateur bloque encore le clavier",
+      "Cache PWA renouvelé pour éviter les mélanges beta54/beta55",
+      "Multi Supabase conservé : amis et classements sans chat"
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

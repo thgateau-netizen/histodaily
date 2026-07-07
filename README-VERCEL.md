@@ -1,6 +1,6 @@
-# HistoDaily — beta54 social-ready
+# HistoDaily — beta55 social-ready
 
-Version : `1.0.0-beta.54`
+Version : `1.0.0-beta.55`
 
 ## Objectif
 
@@ -31,7 +31,7 @@ Avec GitHub Desktop :
 
 ## Tests rapides
 
-- `/api/v1/health` doit afficher `1.0.0-beta.54`.
+- `/api/v1/health` doit afficher `1.0.0-beta.55`.
 - Résoudre un mystère doit afficher un statut de score : envoyé / local / hors-ligne.
 - Profil : le code ami et le lien d’invitation doivent être copiables.
 - Ouvrir `/?friend=MANON-A7K9` doit ajouter Manon en ami localement.
@@ -57,3 +57,10 @@ Cette version lit le classement jour/semaine/année depuis Supabase quand les va
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 Le multi reste volontairement limité à : amis, profils, classements. Aucun chat.
+
+
+## Beta55
+- Correction forte des champs texte : pseudo, réponse du mystère, recherche et code ami.
+- Reset test fiable : ouvrir `/?reset=1` pour effacer la progression locale puis rejouer le mystère.
+- Mode debug : `/?debug=1`.
+- Fallback pseudo : bouton “Modifier via fenêtre simple”.

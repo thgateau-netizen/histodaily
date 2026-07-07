@@ -1,7 +1,7 @@
 const { configured } = require('./_supabase');
 module.exports = (req, res) => res.status(200).json({
   ok: true,
-  version: '1.0.0-beta.54',
+  version: '1.0.0-beta.55',
   mode: configured() ? 'server-ready' : 'local-profile',
   profile: {
     pseudo: 'Invité',
