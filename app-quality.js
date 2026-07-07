@@ -1,5 +1,5 @@
 window.HISTODAILY_QUALITY = {
-  version: "1.0.0-beta.47",
+  version: "1.0.0-beta.48",
   audit(data = {}, premiumIds = []) {
     const lessons = Object.values(data.lessons || {}).flat();
     const mysteries = Array.isArray(data.mysteries) ? data.mysteries : [];

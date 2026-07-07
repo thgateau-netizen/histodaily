@@ -1,7 +1,7 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_QUALITY = window.HISTODAILY_QUALITY || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.47";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.48";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_v100_beta14_state";
 
 const $ = (selector) => document.querySelector(selector);
@@ -712,123 +712,69 @@ function renderShell(content) {
 function navButton(tab, icon, label) { return `<button data-tab="${tab}" class="nav-item ${state.tab === tab ? "active" : ""}"><span>${icon}</span><small>${label}</small></button>`; }
 
 function renderHome() {
-  const lessons = allLessons();
-  const done = lessons.filter(l => lessonDone(l.id)).length;
-  const world = activeWorld();
-  const wLessons = lessonsFor(world.id);
-  const wDone = wLessons.filter(l => lessonDone(l.id)).length;
   const mystery = dailyMystery();
-  const mStats = mysteryStats();
-  const reward = dailyRewardPreview();
   const claim = todayClaim();
-  const firstSession = Object.keys(state.solvedMysteries || {}).length === 0 && Object.keys(state.completedLessons || {}).length === 0;
-  const premiumCount = premiumLessonCount();
+  const reward = dailyRewardPreview();
+  const lesson = dailyLesson();
+  const lessonContent = lesson ? buildLessonContent(lesson) : null;
+  const lessonDoneToday = Boolean(lesson && lessonDone(lesson.id));
+  const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
+  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} 💎 si tu résous aujourd’hui`;
+  const courseText = lessonContent
+    ? short((lessonContent.express && lessonContent.express[0]) || lessonContent.hook || "Cours du jour", 168)
+    : "Le cours lié apparaîtra ici quand un mystère du jour sera disponible.";
   renderShell(`
-    <header class="hero compact">
+    <header class="hero compact home-clean-hero">
       <div>
-        <p class="eyebrow">HistoDaily · beta 47</p>
-        <h1>Résous le dossier du jour.</h1>
-        <div class="hero-metrics"><span>🕵️ 1 dossier/jour</span><span>⚡ 2 min</span><span>📚 cours optionnel</span></div>
+        <p class="eyebrow">HistoDaily · beta 48 debug</p>
+        <h1>Un mystère. Un cours. Rien de plus.</h1>
+        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
       </div>
-      <div class="avatar">${level()}</div>
     </header>
 
-    <section class="card mission-card glass-prime">
-      <div>
-        <span class="card-label">Mission du jour</span>
-        <h2>${claim ? "Tu as ton rituel du jour" : "Un dossier. Une réponse précise."}</h2>
-        <p>${claim ? `Tu peux lire le cours lié ou revenir demain dans ${timeToNextDaily()}.` : "Commence par le mystère : 2 minutes pour accrocher, puis lecture express ou cours complet seulement si tu veux."}</p>
+    ${mystery ? `<section class="card home-main-card home-mystery-card" data-home-mystery role="button" tabindex="0">
+      <div class="section-title-row">
+        <div><span class="card-label">🕵️ Mystère du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
+        <small>${solvedToday ? "résolu" : difficultyStars(mystery.difficulty)}</small>
       </div>
-      <button data-primary-mystery>${claim ? "Revoir" : "Jouer"}</button>
-    </section>
+      <p>${escapeHtml(short(mysteryTeaser(mystery), 190))}</p>
+      <div class="home-card-footer"><span>${escapeHtml(nextLabel)}</span><button>${solvedToday ? "Revoir" : "Jouer"}</button></div>
+    </section>` : `<section class="card home-main-card"><h2>Aucun mystère chargé</h2><p>La donnée mystère est vide ou inaccessible.</p></section>`}
 
-    ${nextActionMarkup()}
-
-    ${sessionCoachMarkup()}
-
-    ${installPromptMarkup()}
-
-    ${releaseNotesMarkup()}
-
-    ${firstSession ? `<section class="card first-session-card soft-panel"><span class="card-label">Première session</span><h2>3 minutes pour comprendre le jeu</h2><div class="first-steps"><div><b>1</b><span>Lis le dossier sans titre révélé.</span></div><div><b>2</b><span>Tente sans indice si tu veux scorer.</span></div><div><b>3</b><span>Après résolution, lis l’express ou le cours premium lié.</span></div></div><button class="wide" data-first-mystery>Commencer par le mystère</button></section>` : ""}
-
-    ${dailyChecklistMarkup()}
-
-    ${performanceMode() === "light" ? `<section class="card performance-slim"><span>⚡ Mode fluide actif</span><button data-performance-mode="balanced">Réactiver les animations</button></section>` : ""}
-
-    <section class="card reading-preference-card soft-panel">
-      <div><span class="card-label">Préférence de lecture</span><h2>${readingMode() === "complete" ? "Tu ouvres les cours riches." : "Tu restes en lecture rapide."}</h2><p>${readingModeHint()}</p></div>
-      <div class="reading-mode-buttons">
-        <button data-reading-mode="express" class="${readingMode() === "express" ? "active" : ""}">⚡ Rapide</button>
-        <button data-reading-mode="complete" class="${readingMode() === "complete" ? "active" : ""}">📚 Approfondi</button>
+    <section class="card home-main-card home-lesson-card ${lessonDoneToday ? "done" : ""}">
+      <div class="section-title-row">
+        <div><span class="card-label">📚 Cours du jour</span><h2>${lesson ? `${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}` : "Aucun cours lié"}</h2></div>
+        <small>${lessonDoneToday ? "validé" : "express"}</small>
+      </div>
+      <p>${escapeHtml(courseText)}</p>
+      <div class="home-card-footer">
+        <span>${lesson ? escapeHtml(lesson.period || lessonContent?.period || "lecture rapide") : "—"}</span>
+        ${lesson ? `<button data-home-lesson="${escapeHtml(lesson.id)}">⚡ Lire l’express</button>` : `<button data-go-learn>Parcours</button>`}
       </div>
     </section>
 
-    <section class="card player-card glass-prime">
-      <div class="player-top"><strong>Niveau ${level()}</strong><span>${state.xp} XP</span></div>
+    <section class="card home-main-card home-progress-card">
+      <div class="section-title-row">
+        <div><span class="card-label">Progression</span><h2>Niveau ${level()} · ${state.xp} XP</h2></div>
+        <small>${levelProgress()}%</small>
+      </div>
       <div class="progress"><i style="width:${levelProgress()}%"></i></div>
-      <div class="stats-row"><span>🔥 ${state.streak || 0} jour${(state.streak || 0) > 1 ? "s" : ""}</span><span>💎 ${state.gems}</span><span>🏆 #${userRank("daily")}</span></div>
-    </section>
-
-    <section class="card daily-status ${claim ? "done" : "todo"} glass-prime">
-      <div><span class="card-label">Rythme quotidien</span><h2>${claim ? "Mystère du jour validé" : "Récompense du jour"}</h2><p>${claim ? `${claim.gems} 💎 gagnée(s). Nouveau dossier dans ${timeToNextDaily()}.` : `Résous le dossier du jour pour gagner ${reward.gems} 💎 et monter ta série à ${reward.nextStreak}.`}</p></div>
-      <strong>${claim ? "✓" : "+" + reward.gems + " 💎"}</strong>
-    </section>
-
-    ${dailyRoadmapMarkup()}
-
-    ${recentDailyCalendarMarkup({ compact: true })}
-
-    ${premiumSpotlightMarkup()}
-
-    ${premiumProgressMarkup()}
-
-    ${mystery ? `
-    <section class="card mystery-card featured spotlight-card" role="button" data-open-mystery>
-      <div class="card-label">🕵️ Mystère du jour · 2 min · rendez-vous quotidien</div>
-      <h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2>
-      <p>${escapeHtml(short(mysteryTeaser(mystery), 150))}</p>
-      <div class="card-footer"><span>${difficultyStars(mystery.difficulty)} · ${mysterySolved(mystery.id) ? "résolu" : `+${reward.gems} 💎 aujourd’hui`}</span><button>${mysterySolved(mystery.id) ? "Revoir" : "Jouer"}</button></div>
-    </section>` : ""}
-
-    <section class="card learning-promise soft-panel">
-      <div class="card-label">Deux vitesses</div>
-      <h2>Pas de pavé imposé.</h2>
-      <p>${premiumCount} cours premium servent de vitrine qualité ; le reste garde le format express/complet sans forcer la lecture.</p>
-      <div class="promise-grid">
-        <div><b>⚡ 60-90 s</b><span>l’essentiel pour continuer</span></div>
-        <div><b>📚 cours complet</b><span>pour apprendre vraiment</span></div>
+      <div class="home-actions-row">
+        <button data-go-learn>Parcours</button>
+        <button class="ghost" data-home-profile>Profil</button>
       </div>
-    </section>
-
-    <section class="card continue-card soft-panel">
-      <div class="card-label">📖 Continuer</div>
-      <div class="world-line"><span class="world-emoji">${world.emoji || "📚"}</span><div><h2>${escapeHtml(world.title || "Parcours")}</h2><p>${escapeHtml(world.subtitle || "Reprendre la progression")}</p></div></div>
-      <div class="progress"><i style="width:${percent(wDone, wLessons.length)}%"></i></div>
-      <button class="wide" data-go-learn>${wDone ? "Continuer" : "Commencer"}</button>
-    </section>
-
-    <section class="mini-grid stat-strip">
-      <div class="card mini"><strong>${done}/${lessons.length}</strong><span>leçons</span></div>
-      <div class="card mini"><strong>${mStats.solved}/${mStats.total}</strong><span>mystères</span></div>
-      <div class="card mini"><strong>${unlockedAchievements()}</strong><span>succès</span></div>
     </section>`);
-  $(`[data-open-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: mystery.id }));
-  $(`[data-primary-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: mystery.id }));
-  $(`[data-first-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: mystery.id }));
-  document.querySelectorAll("[data-reading-mode]").forEach(btn => btn.addEventListener("click", () => setReadingMode(btn.dataset.readingMode)));
-  $(`[data-go-learn]`)?.addEventListener("click", () => setState({ tab: "learn" }));
-  $(`[data-next-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: mystery.id }));
-  $(`[data-next-archives]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: mystery.id }));
-  document.querySelectorAll("[data-next-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: btn.dataset.nextLesson, lessonFocus: "express", lessonView: "express" })));
-  document.querySelectorAll("[data-premium-spotlight]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: btn.dataset.premiumSpotlight, lessonFocus: "express", lessonView: "express" })));
-  document.querySelectorAll("[data-coach-action]").forEach(btn => btn.addEventListener("click", () => handleCoachAction(btn.dataset.coachAction)));
-  $(`[data-dismiss-coach]`)?.addEventListener("click", () => setState({ dismissedCoachVersion: APP_VERSION }));
-  $(`[data-open-premium-list]`)?.addEventListener("click", () => setState({ tab: "learn", learnFilter: "premium" }));
-  $(`[data-install-app]`)?.addEventListener("click", installApp);
-  $(`[data-dismiss-install]`)?.addEventListener("click", () => setState({ installDismissed: true }));
-  $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
-  document.querySelectorAll("[data-performance-mode]").forEach(btn => btn.addEventListener("click", () => setPerformanceMode(btn.dataset.performanceMode)));
+
+  const openMystery = () => mystery && setState({ tab: "mystery", currentMysteryId: mystery.id });
+  const mysteryCard = $(`[data-home-mystery]`);
+  mysteryCard?.addEventListener("click", openMystery);
+  mysteryCard?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openMystery(); } });
+  document.querySelectorAll("[data-home-lesson]").forEach(btn => btn.addEventListener("click", event => {
+    event.stopPropagation();
+    setState({ tab: "lesson", currentLessonId: btn.dataset.homeLesson, lessonFocus: "express", lessonView: "express" });
+  }));
+  document.querySelectorAll("[data-go-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn" })));
+  $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
 }
 
 function renderLearn() {
@@ -16244,7 +16190,7 @@ function renderLesson() {
     <header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(content.period)}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(content.title)}</h1></div></header>
     <article class="card reading-card two-speed-course lesson-tabbed-card">
       ${renderLessonText(lesson, content)}
-      <button class="wide success" data-complete>${lessonDone(lesson.id) ? "Leçon validée" : "Valider +${lesson.xp || 55} XP"}</button>
+      <button type="button" class="wide success" data-complete>${lessonDone(lesson.id) ? "Leçon validée" : `Valider +${lesson.xp || 55} XP`}</button>
     </article>`);
   $("[data-back-learn]")?.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "express" }));
   $("[data-complete]")?.addEventListener("click", () => completeLesson(lesson.id));
@@ -16319,18 +16265,27 @@ function renderLessonText(lesson, content) {
         ${quizItems.map((item, index) => `<details class="quiz-item"><summary><b>${index + 1}</b>${item.kind ? ` <em>${escapeHtml(item.kind)}</em>` : ""} ${escapeHtml(item.q)}</summary><p><strong>Réponse :</strong> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>Piège :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Indice dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}</details>`).join("")}
       </section>`;
   }
+  const expressBits = Array.isArray(content.express) && content.express.length ? content.express.slice(0, 3) : [content.hook || "Sujet à replacer dans son contexte."];
+  const proof = takeaways.find(item => safeLower(item.label || "").includes("preuve")) || takeaways[1] || takeaways[0];
+  const trap = takeaways.find(item => safeLower(item.label || "").includes("piège")) || takeaways[2] || takeaways[0];
+  const whyItMatters = content.complete?.[3]?.text || content.complete?.[0]?.text || content.hook || expressBits[0];
   return `${intro}${tabs}
-    <section class="text-block express-block" data-focus-target="express">
-      <div class="section-title-row"><h2>⚡ Version express · 60-90 s</h2><small>l’essentiel sans pavé</small></div>
+    <section class="express-debug-card" data-focus-target="express">
+      <div class="section-title-row"><div><span class="card-label">⚡ Express renforcé</span><h2>Ce qu’il faut vraiment comprendre</h2></div><small>1 min utile</small></div>
       ${keyFactsMarkup}
-      ${content.express.map(text => `<p>${escapeHtml(text)}</p>`).join("")}
+      <div class="express-steps">
+        <div><b>1 · Le cadre</b><p>${escapeHtml(expressBits[0] || content.hook)}</p></div>
+        <div><b>2 · Pourquoi ça compte</b><p>${escapeHtml(short(whyItMatters, 260))}</p></div>
+        <div><b>3 · La preuve</b><p>${escapeHtml(proof?.text || proof || expressBits[1] || "Cherche une trace concrète, datée et située.")}</p></div>
+        <div><b>4 · Le piège</b><p>${escapeHtml(trap?.text || trap || expressBits[2] || "Évite la réponse vague ou anachronique.")}</p></div>
+      </div>
     </section>
     <section class="takeaway-strip" aria-label="À retenir en 30 secondes">
-      <div class="section-title-row"><h2>À retenir en 30 s</h2><small>preuve + piège + idée forte</small></div>
+      <div class="section-title-row"><h2>À retenir en 30 s</h2><small>idée + preuve + piège</small></div>
       <div class="takeaway-grid">${takeaways.map(item => `<div><b>${escapeHtml(item.label || "Repère")}</b><span>${escapeHtml(item.text || item)}</span></div>`).join("")}</div>
     </section>
     ${lessonMemoMarkup(lesson, content, takeaways, quizItems)}
-    <section class="lesson-next-choice"><button data-lesson-view="complete" class="ghost">📚 Lire le complet</button><button data-lesson-view="quiz">✅ Passer au quiz</button></section>`;
+    <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">📚 Lire le complet</button><button type="button" data-lesson-view="quiz">✅ Passer au quiz</button></section>`;
 }
 
 function renderMystery() {

@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.47",
-  assetsVersion: "1.0.0-beta.47",
+  version: "1.0.0-beta.48",
+  assetsVersion: "1.0.0-beta.48",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -14,12 +14,12 @@ window.HISTODAILY_CORE = {
     friendNames: ["Manon", "PapyHistoire", "Louise", "Anatole"]
   },
   ui: {
-    versionLabel: "beta 47",
+    versionLabel: "beta 48",
     shareBaseUrl: "https://histodaily.app",
     releaseNotes: [
-      "Correction saisie mystère : le champ réponse reprend bien le focus au clic clavier/souris et reste prioritaire sur les cartes cliquables",
-      "Cours transformés en vrai choix Express / Complet / Quiz : le mode rapide n’affiche plus tout le pavé d’un coup",
-      "Objectif beta 47 : rendre l’usage ordinateur et mobile moins lourd avant d’ajouter encore du contenu"
+      "Debug prioritaire : accueil réduit à 3 cartes utiles au lieu d’un empilement de blocs",
+      "Correction du bouton de validation des cours : plus de texte brut Valider +${lesson.xp}",
+      "Express renforcé : cadrage, enjeu, preuve et piège visibles sans ouvrir le cours complet"
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
