@@ -5,12 +5,14 @@ const issues = [];
 for (const word of ['Trace utile','Erreur à éviter','+$ lesson.xp']) {
   if (lessonsLite.includes(word) || dataApi.includes(word)) issues.push(`Motif interdit présent: ${word}`);
 }
-const versionOk = ['app-core.js','index.html','service-worker.js','api/v1/health.js'].every(file => fs.readFileSync(file,'utf8').includes('1.0.0-beta.51'));
-if (!versionOk) issues.push('Version beta51 absente dans au moins un fichier critique');
+const versionOk = ['app-core.js','index.html','service-worker.js','api/v1/health.js'].every(file => fs.readFileSync(file,'utf8').includes('1.0.0-beta.54'));
+if (!versionOk) issues.push('Version beta54 absente dans au moins un fichier critique');
 if (!fs.existsSync('api/v1/leaderboard/submit.js')) issues.push('Endpoint leaderboard submit manquant');
+if (!fs.existsSync('api/v1/_supabase.js')) issues.push('Helper Supabase manquant');
+if (!fs.existsSync('tools/supabase-schema.sql')) issues.push('Schéma Supabase manquant');
 if (issues.length) {
   console.error('Audit contenu échoué:');
   issues.forEach(i => console.error(' - '+i));
   process.exit(1);
 }
-console.log('Audit contenu OK — beta51');
+console.log('Audit contenu OK — beta54 social-ready');

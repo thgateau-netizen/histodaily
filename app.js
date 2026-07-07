@@ -1,7 +1,7 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_QUALITY = window.HISTODAILY_QUALITY || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.48";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.54";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_v100_beta14_state";
 
 const $ = (selector) => document.querySelector(selector);
@@ -67,6 +67,13 @@ const defaultState = {
   installFeedback: "",
   backupFeedback: "",
   inviteFeedback: "",
+  friendFeedback: "",
+  socialSubmitFeedback: "",
+  lastScoreSubmit: {},
+  serverLeaderboards: {},
+  serverLeaderboardStatus: {},
+  friends: {},
+  selectedProfileId: null,
   performanceMode: "balanced",
   learnFilter: "all",
   learnSearch: "",
@@ -76,6 +83,8 @@ const defaultState = {
 };
 
 let state = loadState();
+const leaderboardFetchInFlight = new Set();
+applyStartupSocialLinks();
 
 function mergeState(base, stored) {
   const merged = { ...base, ...(stored || {}) };
@@ -89,6 +98,10 @@ function mergeState(base, stored) {
   merged.dailyHistory = { ...base.dailyHistory, ...(stored?.dailyHistory || {}) };
   merged.rewardFeedback = typeof stored?.rewardFeedback === "object" && stored.rewardFeedback ? { ...base.rewardFeedback, ...stored.rewardFeedback } : { ...base.rewardFeedback };
   merged.shareFeedback = typeof stored?.shareFeedback === "object" && stored.shareFeedback ? { ...base.shareFeedback, ...stored.shareFeedback } : { ...base.shareFeedback };
+  merged.friends = typeof stored?.friends === "object" && stored.friends ? { ...base.friends, ...stored.friends } : { ...base.friends };
+  merged.lastScoreSubmit = typeof stored?.lastScoreSubmit === "object" && stored.lastScoreSubmit ? { ...base.lastScoreSubmit, ...stored.lastScoreSubmit } : { ...base.lastScoreSubmit };
+  merged.serverLeaderboards = typeof stored?.serverLeaderboards === "object" && stored.serverLeaderboards ? { ...base.serverLeaderboards, ...stored.serverLeaderboards } : { ...base.serverLeaderboards };
+  merged.serverLeaderboardStatus = typeof stored?.serverLeaderboardStatus === "object" && stored.serverLeaderboardStatus ? { ...base.serverLeaderboardStatus, ...stored.serverLeaderboardStatus } : { ...base.serverLeaderboardStatus };
   merged.achievements = { ...base.achievements, ...(stored?.achievements || {}) };
   return merged;
 }
@@ -639,6 +652,7 @@ function submitGuess(event) {
     if (state.mysteryFeedback) delete state.mysteryFeedback[mystery.id];
     awardXP(score, "mystère résolu");
     saveState();
+    queueScoreSubmit(mystery.id);
     render();
   } else {
     state.mysteryFeedback = { ...(state.mysteryFeedback || {}), [mystery.id]: guessFeedback(guess, mystery) };
@@ -749,8 +763,8 @@ function renderHome() {
   renderShell(`
     <header class="hero compact home-clean-hero">
       <div>
-        <p class="eyebrow">HistoDaily · beta 51 stable</p>
-        <h1>Le rituel propre : mystère, cours séparé, progression.</h1>
+        <p class="eyebrow">HistoDaily · beta 53 sociale</p>
+        <h1>Mystère, cours séparé, classement, amis.</h1>
         <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
       </div>
     </header>
@@ -784,7 +798,7 @@ function renderHome() {
       <div class="progress"><i style="width:${levelProgress()}%"></i></div>
       <div class="home-actions-row">
         <button data-go-learn>Parcours</button>
-        <button class="ghost" data-home-profile>Profil</button>
+        <button class="ghost" data-home-rank>Classement</button><button class="ghost" data-home-profile>Profil</button>
       </div>
     </section>
     ${debugPanelMarkup()}`);
@@ -799,6 +813,7 @@ function renderHome() {
     setState({ tab: "lesson", currentLessonId: btn.dataset.homeLesson, lessonFocus: "express", lessonView: "express" });
   }));
   document.querySelectorAll("[data-go-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn" })));
+  $(`[data-home-rank]`)?.addEventListener("click", () => setState({ tab: "rank" }));
   $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
   $(`[data-reset-local]`)?.addEventListener("click", resetLocalProgress);
   $(`[data-copy-content-report]`)?.addEventListener("click", () => copyText(JSON.stringify(contentQualityReport(), null, 2), "Audit contenu copié.", "profileFeedback"));
@@ -16466,7 +16481,7 @@ function renderMystery() {
       ${!solved ? `<div class="score-explain"><b>Barème clair</b><span>indice choisi : -${SCORE_PENALTY_HINT} XP potentiel · essai supplémentaire : -${SCORE_PENALTY_EXTRA_TRY} XP · aucune aide donnée automatiquement</span></div>${scoreBreakdownMarkup(mystery.id)}` : ""}
       <div class="hints">${(mystery.clues || []).slice(0, hints).map((c, index) => `<p><b>Indice ${index + 1}</b> · ${escapeHtml(c)}</p>`).join("")}</div>
       ${feedback && !solved ? `<p class="guess-feedback">${escapeHtml(feedback)}</p>` : ""}
-      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}</div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" /><button type="submit">Valider</button></form><button class="ghost wide" data-hint>${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
+      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}${scoreSyncMarkup(mystery.id)}<div class="after-actions"><button data-go-rank>Voir le classement</button><button class="ghost" data-open-profile-after>Profil</button></div></div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" /><button type="submit">Valider</button></form><button class="ghost wide" data-hint>${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
     </section>
     ${solved && lesson ? `<section class="card after-mystery">
       <div class="card-label">Après le mystère</div>
@@ -16494,7 +16509,7 @@ function renderMystery() {
       ${state.archiveFeedback ? `<p class="archive-feedback">${escapeHtml(state.archiveFeedback)}</p>` : ""}
       ${archives.map(entry => archiveCard(entry)).join("")}
     </section>
-    <section class="card small-leader"><h2>Classement du jour</h2>${leaderboardRows("daily").slice(0,5).map(row => `<div><span>${row.rank}. ${escapeHtml(row.name)}</span><strong>${row.score}</strong></div>`).join("")}</section>`);
+    <section class="card small-leader social-teaser"><div class="section-title-row"><h2>Classement du jour</h2><button class="ghost mini-button" data-go-rank>Voir</button></div>${leaderboardRows("daily").slice(0,5).map(row => `<div><span>${row.rank}. ${escapeHtml(row.name)}</span><strong>${row.score}</strong></div>`).join("")}</section>`);
   $("[data-home]")?.addEventListener("click", () => setState({ tab: "home" }));
   $("[data-home-stop]")?.addEventListener("click", () => setState({ tab: "home" }));
   $("[data-guess]")?.addEventListener("submit", submitGuess);
@@ -16515,6 +16530,8 @@ function renderMystery() {
   document.querySelectorAll("[data-open-mystery-id]").forEach(btn => btn.addEventListener("click", () => setState({ currentMysteryId: btn.dataset.openMysteryId, archiveFeedback: "" })));
   document.querySelectorAll("[data-unlock-mystery]").forEach(btn => btn.addEventListener("click", () => unlockPastMystery(btn.dataset.unlockMystery)));
   $(`[data-scroll-archives]`)?.addEventListener("click", () => $(`[data-archive-shelf]`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  $(`[data-go-rank]`)?.addEventListener("click", () => setState({ tab: "rank", rankScope: "daily" }));
+  $(`[data-open-profile-after]`)?.addEventListener("click", () => setState({ tab: "profile" }));
 }
 function archiveCard({ mystery, offset }) {
   const solved = mysterySolved(mystery.id);
@@ -16560,33 +16577,85 @@ function solvedCountForScope(scope = "daily") {
   }).length;
 }
 function leaderboardSeed(scope = "daily") {
-  // Scores démo cohérents avec le barème : un mystère expert sans indice plafonne à 180 XP.
   if (scope === "year") return [12480, 11840, 10990, 9820, 9210, 8540, 7920];
   if (scope === "week" || scope === "friends") return [910, 820, 730, 640, 560, 470, 390];
   return [176, 164, 152, 139, 126, 111, 88];
 }
-function leaderboardRows(scope = state.rankScope || "daily") {
-  const names = scope === "friends" ? ["Manon", "PapyHistoire", "Louise", "Anatole"] : ["ClioMax", "PapyHistoire", "Louise", "Anatole", "Mina", "ByzanceFan", "Scribe42"];
-  const rows = names.map((name, index) => ({ name, score: leaderboardSeed(scope)[index] || 0, me: false }));
-  rows.push({ name: state.pseudo, score: scoreForScope(scope), me: true });
-  return rows.sort((a, b) => b.score - a.score).map((row, index) => ({ ...row, rank: index + 1 }));
+function remoteLeaderboardRows(scope = state.rankScope || "daily") {
+  const bucket = state.serverLeaderboards?.[scope];
+  if (!Array.isArray(bucket) || !bucket.length) return [];
+  return bucket.map(row => ({
+    id: row.id || row.player_id || row.playerId || row.friend_code || row.pseudo,
+    name: row.name || row.pseudo || "Joueur",
+    score: Number(row.score || 0),
+    level: Number(row.level || 1),
+    solved: Number(row.solved || row.solved_count || 0),
+    streak: Number(row.streak || 0),
+    hints: row.hints,
+    tries: row.tries,
+    server: true
+  })).filter(row => row.id && row.score > 0);
 }
+function leaderboardRows(scope = state.rankScope || "daily") {
+  const remote = remoteLeaderboardRows(scope);
+  if (remote.length && scope !== "friends") {
+    const me = myPlayerProfile();
+    const myScore = scoreForScope(scope);
+    const alreadyMe = remote.some(row => String(row.id) === String(me.id) || String(row.id) === String(friendCode()));
+    const rows = alreadyMe ? remote : [...remote, { ...me, score: myScore, localOnly: true }];
+    return rows
+      .sort((a, b) => b.score - a.score || String(a.name).localeCompare(String(b.name), "fr"))
+      .map((row, index) => ({ ...row, rank: index + 1, me: String(row.id) === String(me.id) || String(row.id) === String(friendCode()) }));
+  }
+  return leaderboardPlayers(scope)
+    .map(player => ({ ...player, name: player.name, score: scoreOfPlayer(player, scope) }))
+    .sort((a, b) => b.score - a.score || String(a.name).localeCompare(String(b.name), "fr"))
+    .map((row, index) => ({ ...row, rank: index + 1 }));
+}
+async function fetchServerLeaderboard(scope = "daily", { force = false } = {}) {
+  if (!isOnline || scope === "friends") return;
+  const now = Date.now();
+  const status = state.serverLeaderboardStatus?.[scope] || {};
+  if (!force && status.loadedAt && now - status.loadedAt < 45000) return;
+  if (leaderboardFetchInFlight.has(scope)) return;
+  leaderboardFetchInFlight.add(scope);
+  state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { ...status, loading: true } };
+  saveState();
+  try {
+    const response = await fetch(`/api/v1/leaderboard/daily?scope=${encodeURIComponent(scope)}&periodKey=${encodeURIComponent(localDayKey())}&playerId=${encodeURIComponent(playerIdMe())}`);
+    const json = await response.json();
+    state.serverLeaderboards = { ...(state.serverLeaderboards || {}), [scope]: Array.isArray(json?.rows) ? json.rows : [] };
+    state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: json?.mode || "unknown", note: json?.note || "" } };
+    saveState();
+    if (state.tab === "rank" && (state.rankScope || "daily") === scope) render();
+  } catch (error) {
+    state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: "error", note: "Classement serveur indisponible." } };
+    saveState();
+  } finally {
+    leaderboardFetchInFlight.delete(scope);
+  }
+}
+function ensureServerLeaderboard(scope = "daily") { fetchServerLeaderboard(scope).catch(() => {}); }
 function userRank(scope = "daily") {
   return leaderboardRows(scope).find(row => row.me)?.rank || 999;
 }
 function renderRank() {
   const scope = state.rankScope || "daily";
+  ensureServerLeaderboard(scope);
   const rows = leaderboardRows(scope);
   const myScore = scoreForScope(scope);
   const mySolved = solvedCountForScope(scope);
   const me = rows.find(row => row.me);
+  const isFriends = scope === "friends";
   renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Classements</p><h1>${scopeLabel(scope)}</h1></div></header>
     <section class="tabs-clean rank-tabs">
       <button data-rank-scope="daily" class="${scope === "daily" ? "active" : ""}">Aujourd’hui</button>
       <button data-rank-scope="week" class="${scope === "week" ? "active" : ""}">Semaine</button>
       <button data-rank-scope="year" class="${scope === "year" ? "active" : ""}">Année</button>
-      <button data-rank-scope="friends" class="${scope === "friends" ? "active" : ""}">Amis <small>bêta</small></button>
+      <button data-rank-scope="friends" class="${scope === "friends" ? "active" : ""}">Amis</button>
     </section>
+    <section class="card social-rank-hero"><div><span class="card-label">Multi léger</span><h2>${isFriends ? "Tes amis seulement" : "Classement général bêta"}</h2><p>${isFriends ? socialStatusLine() : leaderboardIntroText(scope)}</p></div><button data-open-profile>${state.pseudo || "Profil"}</button></section>
+    ${socialBackendMarkup()}
     <section class="card rank-summary">
       <div><span>Ton score</span><strong>${myScore} XP</strong></div>
       <div><span>Mystères comptés</span><strong>${mySolved}</strong></div>
@@ -16594,16 +16663,19 @@ function renderRank() {
     </section>
     ${scope === "week" ? weeklyScoreMarkup() : ""}
     ${scope === "daily" ? recentDailyCalendarMarkup({ compact: true }) : ""}
-    <section class="card leaderboard leaderboard-modern">${rows.map(row => `<div class="rank-row ${row.me ? "me" : ""}"><span>${row.rank}</span><strong>${escapeHtml(row.name)}</strong><em>${row.score} XP</em></div>`).join("")}</section>
-    ${scope === "daily" ? `<p class="rank-note">Le score du jour compte le mystère résolu depuis minuit. Les gemmes sont séparées du classement.</p>` : ""}
-    ${scope === "week" ? `<p class="rank-note">Le classement semaine additionne les mystères résolus depuis lundi : si tu as joué hier et aujourd’hui, les deux scores sont additionnés ici.</p>` : ""}
-    ${scope === "year" ? `<p class="rank-note">L’année cumule les scores locaux résolus depuis le 1er janvier. Les autres joueurs restent des repères de bêta tant qu’il n’y a pas de serveur.</p>` : ""}
-    ${scope !== "friends" ? `<p class="rank-note muted-note">Classement bêta : ton score est réel en local, les autres lignes servent de repères provisoires.</p>` : ""}
-    ${scope === "friends" ? `<section class="card beta-warning"><h2>Amis : pas encore social réel</h2><p>Cette vue reste un prototype local. Le bouton fonctionne pour tester l’onglet, mais les vrais amis demanderont comptes, invitations et serveur.</p><button data-profile-pseudo>Changer mon pseudo</button></section>${inviteToolsMarkup()}` : ""}`);
-  $("[data-home]")?.addEventListener("click", () => setState({ tab: "home" }));
+    <section class="card leaderboard leaderboard-modern">${rows.length ? rows.map(row => `<button class="rank-row ${row.me ? "me" : ""}" data-view-profile="${escapeHtml(row.id)}"><span>${row.rank}</span><strong>${escapeHtml(row.name)}</strong><em>${row.score} XP</em></button>`).join("") : `<div class="empty-rank"><h2>Aucun ami</h2><p>Ajoute un code ami dans ton profil pour créer ton classement privé.</p></div>`}</section>
+    ${scope === "daily" ? `<p class="rank-note">Le score du jour récompense surtout : résoudre sans indice, avec peu d’essais.</p>` : ""}
+    ${scope === "week" ? `<p class="rank-note">La semaine additionne les mystères résolus depuis lundi.</p>` : ""}
+    ${scope === "year" ? `<p class="rank-note">L’année cumule les scores locaux. Les joueurs démo disparaîtront quand le serveur sera branché.</p>` : ""}
+    ${isFriends ? `${addFriendMarkup()}${friendListMarkup()}` : `<p class="rank-note muted-note">Classement local : ton score est réel sur ton appareil. Les joueurs démo servent uniquement de repères jusqu’au branchement serveur.</p>`}`);
+  $(`[data-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
+  $(`[data-open-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
   document.querySelectorAll("[data-rank-scope]").forEach(btn => btn.addEventListener("click", () => setState({ rankScope: btn.dataset.rankScope })));
-  $(`[data-profile-pseudo]`)?.addEventListener("click", () => setState({ tab: "profile" }));
+  document.querySelectorAll("[data-view-profile]").forEach(btn => btn.addEventListener("click", () => viewProfile(btn.dataset.viewProfile)));
+  document.querySelectorAll("[data-remove-friend]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); removeFriend(btn.dataset.removeFriend); }));
+  $(`[data-add-friend]`)?.addEventListener("submit", addFriend);
   $(`[data-share-invite]`)?.addEventListener("click", shareInviteCode);
+  $(`[data-copy-invite-link]`)?.addEventListener("click", copyInviteLink);
 }
 function difficultyStars(difficulty = "moyen") {
   if (difficulty === "facile") return "★☆☆";
@@ -16619,6 +16691,144 @@ function difficultyLabel(difficulty = "moyen") {
 }
 function unlockedAchievements() { return Object.values(state.achievements).filter(Boolean).length; }
 
+
+const DEMO_PLAYERS = [
+  { id: "demo-cliomax", name: "ClioMax", avatar: "C", bio: "Résout vite, prend rarement des indices.", level: 11, xp: 2620, solved: 42, streak: 9, badges: ["Top jour", "Sans indice"], daily: 176, week: 910, year: 12480 },
+  { id: "demo-papyhistoire", name: "PapyHistoire", avatar: "P", bio: "Solide sur Antiquité et Moyen Âge.", level: 10, xp: 2380, solved: 38, streak: 6, badges: ["Régulier", "Archives"], daily: 164, week: 820, year: 11840 },
+  { id: "demo-louise", name: "Louise", avatar: "L", bio: "Très forte sur les révolutions et le XIXe siècle.", level: 9, xp: 2140, solved: 31, streak: 4, badges: ["Rapide"], daily: 152, week: 730, year: 10990 },
+  { id: "demo-anatole", name: "Anatole", avatar: "A", bio: "Joueur prudent : peu d’erreurs, quelques indices.", level: 8, xp: 1880, solved: 27, streak: 3, badges: ["Précis"], daily: 139, week: 640, year: 9820 },
+  { id: "demo-mina", name: "Mina", avatar: "M", bio: "Monte doucement mais joue presque tous les jours.", level: 7, xp: 1620, solved: 22, streak: 5, badges: ["Série"], daily: 126, week: 560, year: 9210 },
+  { id: "demo-byzance", name: "ByzanceFan", avatar: "B", bio: "Fan des empires, moins à l’aise sur la préhistoire.", level: 6, xp: 1420, solved: 19, streak: 2, badges: ["Empire"], daily: 111, week: 470, year: 8540 },
+  { id: "demo-scribe42", name: "Scribe42", avatar: "S", bio: "Aime les indices, score un peu plus bas mais progresse.", level: 5, xp: 1180, solved: 15, streak: 1, badges: ["Curieux"], daily: 88, week: 390, year: 7920 }
+];
+
+function playerIdMe() { return `me-${localUserId()}`; }
+function myPlayerProfile() {
+  return {
+    id: playerIdMe(),
+    name: state.pseudo || "Invité",
+    avatar: String(state.pseudo || "I").trim().charAt(0).toUpperCase() || "I",
+    bio: "Ton profil local HistoDaily.",
+    level: level(),
+    xp: state.xp || 0,
+    solved: Object.keys(state.solvedMysteries || {}).length,
+    streak: state.streak || 0,
+    badges: myBadges(),
+    daily: scoreForScope("daily"),
+    week: scoreForScope("week"),
+    year: scoreForScope("year"),
+    me: true,
+    friend: true
+  };
+}
+function myBadges() {
+  const badges = [];
+  if (state.achievements?.noHint) badges.push("Sans indice");
+  if ((state.streak || 0) >= 3) badges.push("Série");
+  if (Object.keys(state.solvedMysteries || {}).length) badges.push("Mystère");
+  if (!badges.length) badges.push("Débutant");
+  return badges.slice(0, 3);
+}
+function stableHash(value = "") {
+  let h = 0;
+  String(value).split("").forEach(ch => { h = ((h << 5) - h + ch.charCodeAt(0)) | 0; });
+  return Math.abs(h);
+}
+function parseFriendCode(raw = "") {
+  const cleaned = String(raw || "").trim().toUpperCase().replace(/\s+/g, "");
+  const match = cleaned.match(/^([A-Z0-9À-Ý-]{2,18})-([A-Z0-9]{4,10})$/i);
+  if (!match) return null;
+  const pseudo = match[1].replace(/-/g, " ").slice(0, 18);
+  const id = `${match[1]}-${match[2]}`.toUpperCase();
+  return { id, pseudo: pseudo.charAt(0) + pseudo.slice(1).toLowerCase(), code: id };
+}
+function friendProfileFromCode(code, pseudoOverride) {
+  const parsed = parseFriendCode(code) || { id: String(code), pseudo: pseudoOverride || "Ami" };
+  const h = stableHash(parsed.id);
+  const solved = 4 + (h % 34);
+  const lvl = 2 + (h % 11);
+  const daily = 70 + (h % 105);
+  const week = daily * (2 + (h % 5));
+  const year = week * (8 + (h % 18));
+  return {
+    id: parsed.id,
+    code: parsed.code || parsed.id,
+    name: pseudoOverride || parsed.pseudo || "Ami",
+    avatar: String(pseudoOverride || parsed.pseudo || "A").charAt(0).toUpperCase(),
+    bio: "Ami ajouté par code. Les scores sont prévisualisés localement jusqu’au branchement serveur.",
+    level: lvl,
+    xp: lvl * 250 + (h % 220),
+    solved,
+    streak: h % 12,
+    badges: ["Ami", (h % 2 ? "Rapide" : "Régulier"), (h % 3 ? "Mystères" : "Archives")],
+    daily,
+    week,
+    year,
+    friend: true,
+    localPreview: true
+  };
+}
+function friendProfiles() {
+  return Object.values(state.friends || {}).map(friend => friendProfileFromCode(friend.code || friend.id, friend.name));
+}
+function allKnownPlayers() { return [myPlayerProfile(), ...friendProfiles(), ...DEMO_PLAYERS]; }
+function profileById(id) { return allKnownPlayers().find(p => p.id === id) || myPlayerProfile(); }
+function addFriend(event) {
+  event.preventDefault();
+  const input = event.target.querySelector("input");
+  const parsed = parseFriendCode(input?.value || "");
+  if (!parsed) return setState({ friendFeedback: "Code ami invalide. Format attendu : PSEUDO-ABC123." });
+  if (parsed.id === friendCode().toUpperCase()) return setState({ friendFeedback: "C’est ton propre code. Partage-le, mais ne l’ajoute pas à tes amis." });
+  if (state.friends?.[parsed.id]) return setState({ friendFeedback: `${parsed.pseudo} est déjà dans tes amis.` });
+  const friend = { id: parsed.id, code: parsed.code, name: parsed.pseudo, addedAt: Date.now() };
+  const friends = { ...(state.friends || {}), [parsed.id]: friend };
+  setState({ friends, friendFeedback: `${parsed.pseudo} ajouté aux amis. Tu peux voir son profil et le classement amis.` });
+  syncFriendToServer(friend).catch(() => {});
+}
+async function syncFriendToServer(friend) {
+  if (!isOnline || !friend?.code) return;
+  await fetch("/api/v1/friends/sync", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ playerId: playerIdMe(), pseudo: state.pseudo || "Invité", friendCode: friend.code, friendPseudo: friend.name })
+  });
+}
+function removeFriend(id) {
+  const friends = { ...(state.friends || {}) };
+  const name = friends[id]?.name || "Ami";
+  delete friends[id];
+  setState({ friends, friendFeedback: `${name} retiré des amis.` });
+}
+function viewProfile(id) { setState({ tab: "publicProfile", selectedProfileId: id || playerIdMe() }); }
+function scoreOfPlayer(player, scope = "daily") {
+  if (player.me) return scoreForScope(scope);
+  if (scope === "week") return player.week || 0;
+  if (scope === "year") return player.year || 0;
+  return player.daily || 0;
+}
+function leaderboardPlayers(scope = "daily") {
+  const me = myPlayerProfile();
+  const friends = friendProfiles();
+  if (scope === "friends") return [me, ...friends];
+  return [me, ...friends, ...DEMO_PLAYERS];
+}
+function socialStatusLine() {
+  const count = friendProfiles().length;
+  return count ? `${count} ami${count > 1 ? "s" : ""} ajouté${count > 1 ? "s" : ""} · profils visibles` : "Ajoute des amis par code pour comparer vos scores";
+}
+function friendListMarkup({ compact = false } = {}) {
+  const friends = friendProfiles();
+  if (!friends.length) return `<section class="card empty-friends-card"><span class="card-label">Amis</span><h2>Aucun ami ajouté</h2><p>Partage ton code, ou ajoute celui d’un autre joueur. Pas de chat : juste profils et classements.</p><p class="sample-code">Exemple pour tester : <b>MANON-A7K9</b></p></section>`;
+  return `<section class="card friends-list-card"><div class="section-title-row"><div><span class="card-label">Amis</span><h2>${friends.length} profil${friends.length > 1 ? "s" : ""}</h2></div><small>sans chat</small></div>${friends.slice(0, compact ? 3 : 20).map(friend => `<div class="friend-row"><button type="button" class="friend-main" data-view-profile="${escapeHtml(friend.id)}"><span class="avatar tiny">${escapeHtml(friend.avatar)}</span><span><strong>${escapeHtml(friend.name)}</strong><em>Niv. ${friend.level} · ${friend.solved} mystères · ${escapeHtml(friendComparison(friend))}</em></span></button><button class="ghost mini-button" data-remove-friend="${escapeHtml(friend.id)}">Retirer</button></div>`).join("")}</section>`;
+}
+function addFriendMarkup() {
+  return `<section class="card add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Le multi reste volontairement simple : pas de chat, juste amis, profils et classements.</p></div><form data-add-friend class="friend-add-form"><input placeholder="Ex : MANON-A7K9" autocapitalize="characters" autocomplete="off"/><button>Ajouter</button></form><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${escapeHtml(state.friendFeedback)}</p>` : ""}</section>`;
+}
+function publicProfileMarkup(player) {
+  const badges = (player.badges || []).slice(0, 4);
+  return `<section class="card public-profile-card ${player.me ? "me" : ""}"><div class="public-profile-head"><div class="avatar xl">${escapeHtml(player.avatar || "?")}</div><div><span class="card-label">${player.me ? "Ton profil" : player.friend ? "Ami" : "Joueur"}</span><h2>${escapeHtml(player.name)}</h2><p>${escapeHtml(player.bio || "Profil HistoDaily.")}</p></div></div><div class="public-stats-grid"><div><strong>Niv. ${player.level}</strong><span>Niveau</span></div><div><strong>${player.xp}</strong><span>XP</span></div><div><strong>${player.solved}</strong><span>Mystères</span></div><div><strong>${player.streak}</strong><span>Série</span></div></div><div class="badge-line">${badges.map(b => `<span>${escapeHtml(b)}</span>`).join("")}</div></section>`;
+}
+
 function sanitizePseudo(value = "") {
   return String(value).trim().replace(/\s+/g, " ").slice(0, 18);
 }
@@ -16633,6 +16843,121 @@ function updatePseudo(event) {
   setState({ pseudo, profileFeedback: `Pseudo local mis à jour : ${pseudo}` });
 }
 
+function appPublicUrl() {
+  try { return `${location.origin}${location.pathname || "/"}`.replace(/\/?$/, "/"); }
+  catch { return HISTODAILY_CORE.ui?.shareBaseUrl || "https://histodaily.vercel.app/"; }
+}
+function friendInviteLink() {
+  return `${appPublicUrl()}?friend=${encodeURIComponent(friendCode())}`;
+}
+function applyStartupSocialLinks() {
+  try {
+    const params = new URLSearchParams(location.search || "");
+    const raw = params.get("friend") || params.get("addFriend") || params.get("invite");
+    if (!raw) return;
+    const parsed = parseFriendCode(raw);
+    if (!parsed) return;
+    if (parsed.id === friendCode().toUpperCase()) {
+      state.friendFeedback = "C’est ton propre lien ami. Partage-le à quelqu’un d’autre.";
+    } else if (!state.friends?.[parsed.id]) {
+      state.friends = { ...(state.friends || {}), [parsed.id]: { id: parsed.id, code: parsed.code, name: parsed.pseudo, addedAt: Date.now(), source: "invite-link" } };
+      state.friendFeedback = `${parsed.pseudo} ajouté via lien d’invitation.`;
+      state.tab = "profile";
+    }
+    params.delete("friend"); params.delete("addFriend"); params.delete("invite");
+    const clean = `${location.pathname}${params.toString() ? `?${params}` : ""}${location.hash || ""}`;
+    history.replaceState(null, "", clean || "/");
+    saveState();
+  } catch {}
+}
+function leaderboardIntroText(scope = "daily") {
+  const status = state.serverLeaderboardStatus?.[scope] || {};
+  if (status.mode === "supabase") return "Classement serveur actif : les scores viennent de Supabase.";
+  if (status.loading) return "Chargement du classement serveur…";
+  if (status.mode === "error" || status.mode === "supabase-error") return "Le classement serveur répond mal : l’app garde un fallback local.";
+  return "Tu vois les profils, les scores et ta place. Le serveur Supabase prendra le relais dès qu’il est configuré.";
+}
+function socialBackendMode() {
+  if (!isOnline) return { label: "Hors ligne", detail: "Les scores restent sur ton appareil jusqu’au retour réseau.", status: "offline" };
+  const statuses = Object.values(state.serverLeaderboardStatus || {});
+  if (statuses.some(s => s.mode === "supabase")) return { label: "Serveur actif", detail: "Supabase est branché : les scores sont partagés entre joueurs.", status: "server" };
+  if (statuses.some(s => s.loading)) return { label: "Connexion au serveur", detail: "Chargement du classement partagé…", status: "pending" };
+  if (statuses.some(s => s.mode === "supabase-error" || s.mode === "error")) return { label: "Serveur à vérifier", detail: "La base est configurée mais une route répond mal. Le fallback local protège l’app.", status: "warning" };
+  return { label: "Prévisualisation locale", detail: "Amis, profils et classements fonctionnent déjà localement. Le vrai partage global s’activera quand Supabase sera branché.", status: "local" };
+}
+function socialBackendMarkup() {
+  const mode = socialBackendMode();
+  return `<section class="card social-backend ${escapeHtml(mode.status)}"><div><span class="card-label">État du multi</span><h2>${escapeHtml(mode.label)}</h2><p>${escapeHtml(mode.detail)}</p></div><strong>${friendProfiles().length} ami${friendProfiles().length > 1 ? "s" : ""}</strong></section>`;
+}
+function socialInviteLinkMarkup() {
+  return `<section class="card invite-link-card"><div><span class="card-label">Lien d’invitation</span><h2>Ajouter en un clic</h2><p>Tu peux envoyer ce lien à un ami : quand il l’ouvre, ton code est pré-rempli et ajouté en local. Pas de chat, pas de compte obligatoire.</p></div><div class="friend-code"><strong>${escapeHtml(friendInviteLink())}</strong><button type="button" data-copy-invite-link>Copier le lien</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
+}
+async function copyInviteLink() {
+  await copyText(friendInviteLink(), "Lien d’invitation copié.", "inviteFeedback");
+}
+function friendComparison(player) {
+  const mine = scoreForScope("daily");
+  const theirs = scoreOfPlayer(player, "daily");
+  const delta = mine - theirs;
+  if (player.me) return "toi";
+  if (delta === 0) return "égalité aujourd’hui";
+  return delta > 0 ? `+${delta} XP vs toi` : `${Math.abs(delta)} XP devant toi`;
+}
+function scoreSyncMarkup(mysteryId) {
+  const status = state.lastScoreSubmit?.[mysteryId];
+  if (!status) return `<div class="score-sync-card"><b>Classement</b><span>Ton score est prêt à être envoyé au classement. En mode local, il reste visible sur ton appareil.</span></div>`;
+  const label = status.stored ? "Score envoyé" : status.pending ? "Envoi du score…" : "Score gardé en local";
+  const text = status.message || (status.stored ? "Le serveur l’a accepté." : "Le serveur réel n’est pas encore branché, donc le score reste local.");
+  return `<div class="score-sync-card ${status.stored ? "ok" : status.pending ? "pending" : "local"}"><b>${escapeHtml(label)}</b><span>${escapeHtml(text)}</span></div>`;
+}
+async function submitScoreToServer(payload) {
+  const response = await fetch("/api/v1/leaderboard/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+function scorePayloadForMystery(mysteryId) {
+  const mystery = data.mysteries.find(m => m.id === mysteryId) || {};
+  const solved = state.solvedMysteries?.[mysteryId] || {};
+  return {
+    playerId: playerIdMe(),
+    pseudo: state.pseudo || "Invité",
+    friendCode: friendCode(),
+    mysteryId,
+    dayKey: localDayKey(solved.at || Date.now()),
+    score: solved.score || mysteryScore(mysteryId),
+    hints: solved.hints || 0,
+    tries: solved.tries || 1,
+    difficulty: mystery.difficulty || "moyen",
+    solvedAt: solved.at || Date.now(),
+    level: level(),
+    xp: state.xp || 0,
+    solvedCount: Object.keys(state.solvedMysteries || {}).length,
+    streak: state.streak || 0
+  };
+}
+function queueScoreSubmit(mysteryId) {
+  if (!isOnline) {
+    state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [mysteryId]: { pending: false, stored: false, mode: "offline", message: "Hors ligne : score conservé localement." } };
+    saveState();
+    return;
+  }
+  state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [mysteryId]: { pending: true, stored: false, mode: "sending", message: "Tentative d’envoi au classement…" } };
+  saveState();
+  submitScoreToServer(scorePayloadForMystery(mysteryId)).then(result => {
+    state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [mysteryId]: { pending: false, stored: Boolean(result?.stored), mode: result?.mode || "local-preview", message: result?.message || (result?.stored ? "Score enregistré." : "Base serveur non configurée : score conservé en local.") } };
+    saveState();
+    fetchServerLeaderboard("daily", { force: true }).catch(() => {});
+    if (state.tab === "mystery") render();
+  }).catch(() => {
+    state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [mysteryId]: { pending: false, stored: false, mode: "error", message: "Serveur indisponible : score conservé localement." } };
+    saveState();
+    if (state.tab === "mystery") render();
+  });
+}
 
 function localUserId() {
   const key = `${STORAGE_KEY}_local_user_id`;
@@ -16704,7 +17029,7 @@ function importLocalSave() {
 }
 async function shareInviteCode() {
   const code = friendCode();
-  const text = `Je joue à HistoDaily. Mon code ami local : ${code}. Résous le mystère du jour sans indice.`;
+  const text = `Je joue à HistoDaily. Mon code ami : ${code}. Ajoute-moi ici : ${friendInviteLink()}`;
   let ok = false;
   try {
     if (navigator.share) { await navigator.share({ title: "HistoDaily", text }); ok = true; }
@@ -16716,21 +17041,22 @@ function backupToolsMarkup() {
   return `<section class="card backup-card"><div><span class="card-label">Sauvegarde locale</span><h2>Ne perds pas ta progression bêta.</h2><p>Copie une sauvegarde texte avant de tester beaucoup de versions. Tu peux la restaurer plus tard sur le même navigateur.</p></div><div class="backup-actions"><button data-export-save>Copier sauvegarde</button><button class="ghost" data-download-save>Télécharger</button><button class="ghost" data-import-save>Restaurer</button></div>${state.backupFeedback ? `<p>${escapeHtml(state.backupFeedback)}</p>` : ""}</section>`;
 }
 function inviteToolsMarkup() {
-  return `<section class="card invite-card"><div><span class="card-label">Social léger</span><h2>Code ami local</h2><p>Pas encore de vrais comptes, mais tu peux déjà partager ton identité de bêta testeur sans spoiler le mystère.</p></div><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button data-share-invite>Partager</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
+  return `<section class="card invite-card"><div><span class="card-label">Code ami</span><h2>Ton profil partageable</h2><p>Pas de chat. Ce code sert seulement à t’ajouter en ami et voir ton profil dans les classements.</p></div><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button data-share-invite>Partager</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
 }
 function renderProfile() {
   const health = stateHealthReport();
-  renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Profil</p><h1>${escapeHtml(state.pseudo)}</h1></div></header>
-    <section class="card profile-card"><div class="avatar xl">${level()}</div><h2>Niveau ${level()}</h2><p>${state.xp} XP · ${Object.keys(state.solvedMysteries).length} mystères résolus · ${state.gems || 0} 💎</p><div class="progress"><i style="width:${levelProgress()}%"></i></div></section>
-    <section class="card pseudo-card"><div><span class="card-label">Identité locale</span><h2>Ton nom dans les classements</h2><p>Ça reste sur ton téléphone pour l’instant, mais ça rend les classements moins “prototype”.</p></div><form data-pseudo-form><input value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo"/><button>Enregistrer</button></form>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
-    ${performanceSettingsMarkup()}
-    ${qualityAuditMarkup()}
-    <section class="card economy-card"><div><span class="card-label">Économie</span><h2>${state.streak || 0} jour${(state.streak || 0) > 1 ? "s" : ""} de série</h2><p>Les gemmes se gagnent surtout avec le mystère du jour. Elles servent à rattraper les archives, pas à consommer tout le catalogue.</p></div><strong>${archiveUnlockedCount()} archives</strong></section>
-    ${inviteToolsMarkup()}
+  const friends = friendProfiles();
+  renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Profil social</p><h1>${escapeHtml(state.pseudo)}</h1></div></header>
+    ${publicProfileMarkup(myPlayerProfile())}
+    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Pas besoin de mail pour cette phase.</p></div><form data-pseudo-form><input value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo"/><button>Enregistrer</button></form>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
+    ${addFriendMarkup()}
+    ${socialInviteLinkMarkup()}
+    ${friendListMarkup()}
+    <section class="card social-shortcuts"><div><span class="card-label">Classements</span><h2>Compare sans bruit</h2><p>Le multi se limite volontairement aux scores, profils et amis. Aucun chat, aucune messagerie.</p></div><div class="home-actions-row"><button data-profile-rank="daily">Classement jour</button><button class="ghost" data-profile-rank="friends">Mes amis</button></div></section>
+    ${socialBackendMarkup()}
     ${backupToolsMarkup()}
     ${installPromptMarkup()}
-    ${recentDailyCalendarMarkup()}
-    <section class="card health-card"><div><span class="card-label">Solidité bêta</span><h2>Sauvegarde locale ${health.status}</h2><p>Progression sauvegardée avec copie de secours. ${health.premium} cours premium disponibles, ${data.mysteries.length} mystères chargés. Dernière sauvegarde OK : ${escapeHtml(health.lastOk)}.</p></div><strong>${APP_VERSION}</strong></section>
+    <details class="card profile-advanced"><summary>Réglages et diagnostic</summary>${performanceSettingsMarkup()}${qualityAuditMarkup()}${recentDailyCalendarMarkup()}<section class="health-card"><div><span class="card-label">Solidité bêta</span><h2>Sauvegarde locale ${health.status}</h2><p>${health.premium} cours premium, ${data.mysteries.length} mystères chargés. Dernière sauvegarde OK : ${escapeHtml(health.lastOk)}.</p></div><strong>${APP_VERSION}</strong></section></details>
     <section class="achievement-grid achievement-modern">
       ${achievement("🔥", "Série 3 jours", state.achievements.streak3)}
       ${achievement("⚡", "Série 7 jours", state.achievements.streak7)}
@@ -16738,21 +17064,34 @@ function renderProfile() {
       ${achievement("🕵️", "Premier mystère", state.achievements.firstMystery)}
       ${achievement("🎯", "Sans indice", state.achievements.noHint)}
       ${achievement("🧠", "Mystère expert", state.achievements.expertMystery)}
-      ${achievement("💎", "Archive ouverte", state.achievements.firstArchive)}
-      ${achievement("🏆", "Top 1000", true)}
     </section>`);
-  $("[data-home]")?.addEventListener("click", () => setState({ tab: "home" }));
-  $("[data-pseudo-form]")?.addEventListener("submit", updatePseudo);
+  $(`[data-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
+  $(`[data-pseudo-form]`)?.addEventListener("submit", updatePseudo);
+  $(`[data-add-friend]`)?.addEventListener("submit", addFriend);
+  $(`[data-share-invite]`)?.addEventListener("click", shareInviteCode);
+  $(`[data-copy-invite-link]`)?.addEventListener("click", copyInviteLink);
+  document.querySelectorAll("[data-view-profile]").forEach(btn => btn.addEventListener("click", () => viewProfile(btn.dataset.viewProfile)));
+  document.querySelectorAll("[data-remove-friend]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); removeFriend(btn.dataset.removeFriend); }));
+  document.querySelectorAll("[data-profile-rank]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "rank", rankScope: btn.dataset.profileRank })));
   document.querySelectorAll("[data-performance-mode]").forEach(btn => btn.addEventListener("click", () => setPerformanceMode(btn.dataset.performanceMode)));
   $(`[data-copy-diagnostics]`)?.addEventListener("click", copyDiagnostics);
   $(`[data-export-save]`)?.addEventListener("click", exportLocalSave);
   $(`[data-download-save]`)?.addEventListener("click", downloadLocalSave);
   $(`[data-import-save]`)?.addEventListener("click", importLocalSave);
-  $(`[data-share-invite]`)?.addEventListener("click", shareInviteCode);
   $(`[data-install-app]`)?.addEventListener("click", installApp);
   $(`[data-dismiss-install]`)?.addEventListener("click", () => setState({ installDismissed: true }));
   $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
-  document.querySelectorAll("[data-performance-mode]").forEach(btn => btn.addEventListener("click", () => setPerformanceMode(btn.dataset.performanceMode)));
+}
+function renderPublicProfile() {
+  const player = profileById(state.selectedProfileId);
+  renderShell(`<header class="topbar"><button data-back-social>←</button><div><p class="eyebrow">Profil joueur</p><h1>${escapeHtml(player.name)}</h1></div></header>
+    ${publicProfileMarkup(player)}
+    <section class="card profile-score-card"><div class="section-title-row"><div><span class="card-label">Scores</span><h2>Classements</h2></div><small>${player.me ? "toi" : player.friend ? "ami" : "démo"}</small></div><div class="public-stats-grid"><div><strong>${scoreOfPlayer(player, "daily")}</strong><span>Aujourd’hui</span></div><div><strong>${scoreOfPlayer(player, "week")}</strong><span>Semaine</span></div><div><strong>${scoreOfPlayer(player, "year")}</strong><span>Année</span></div><div><strong>#${leaderboardRows(state.rankScope || "daily").find(r => r.id === player.id)?.rank || "—"}</strong><span>Rang actuel</span></div></div></section>
+    ${!player.me && player.friend ? `<section class="card"><button class="ghost wide" data-remove-friend="${escapeHtml(player.id)}">Retirer des amis</button></section>` : ""}
+    <section class="card social-shortcuts"><div class="home-actions-row"><button data-open-rank="daily">Classement jour</button><button class="ghost" data-open-rank="friends">Classement amis</button></div></section>`);
+  $(`[data-back-social]`)?.addEventListener("click", () => setState({ tab: "rank" }));
+  document.querySelectorAll("[data-open-rank]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "rank", rankScope: btn.dataset.openRank })));
+  document.querySelectorAll("[data-remove-friend]").forEach(btn => btn.addEventListener("click", () => removeFriend(btn.dataset.removeFriend)));
 }
 function achievement(icon, label, on) { return `<div class="card achievement ${on ? "on" : "off"}"><b>${icon}</b><span>${label}</span></div>`; }
 
@@ -16762,6 +17101,7 @@ function render() {
   if (state.tab === "mystery") return renderMystery();
   if (state.tab === "rank") return renderRank();
   if (state.tab === "profile") return renderProfile();
+  if (state.tab === "publicProfile") return renderPublicProfile();
   return renderHome();
 }
 

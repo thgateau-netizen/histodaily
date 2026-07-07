@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.51",
-  assetsVersion: "1.0.0-beta.51",
+  version: "1.0.0-beta.54",
+  assetsVersion: "1.0.0-beta.54",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -14,14 +14,14 @@ window.HISTODAILY_CORE = {
     friendNames: ["Manon", "PapyHistoire", "Louise", "Anatole"]
   },
   ui: {
-    versionLabel: "beta 51",
-    shareBaseUrl: "https://histodaily.app",
+    versionLabel: "beta 53",
+    shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Accueil gardé volontairement court : mystère, cours indépendant, progression seulement",
-      "Cours-réponse verrouillé tant que le mystère du jour n’est pas résolu",
-      "Indices régénérés côté interface et API pour éviter de donner la réponse",
-      "Mode debug avec reset local et audit contenu via ?debug=1",
-      "Base multi préparée, sans compte obligatoire et sans faux serveur"
+      "Multi léger consolidé : code ami, lien d’invitation, profils publics et classement amis",
+      "Score envoyé automatiquement vers l’API leaderboard avec fallback local si la base n’est pas branchée",
+      "Statut social plus clair : local, hors-ligne ou prêt serveur",
+      "Profils joueurs enrichis avec badges, rangs et comparaison ami",
+      "Préparation Supabase côté API sans exposer de clé dans GitHub"
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

@@ -1,7 +1,7 @@
 {
   "name": "HistoDaily Beta",
   "short_name": "HistoDaily",
-  "description": "HistoDaily — mystère historique quotidien, cours séparé anti-spoil, progression locale, PWA installable, classements bêta et mode debug.",
+  "description": "HistoDaily — mystère historique quotidien, cours séparé anti-spoil, progression locale, PWA installable, amis, profils, classements, amis, profils publics et mode debug.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -38,5 +38,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "1.0.0-beta.51"
+  "version": "1.0.0-beta.54"
 }

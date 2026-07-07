@@ -2,7 +2,7 @@ const { mysteries } = require('./_data');
 module.exports = (req, res) => res.status(200).json({
   ok: true,
   app: "HistoDaily",
-  version: "1.0.0-beta.51",
+  version: "1.0.0-beta.54",
   target: "vercel",
   content: {
     mysteries: mysteries.length,
@@ -42,6 +42,13 @@ module.exports = (req, res) => res.status(200).json({
     beta51DebugAudit: true,
     beta51LockedSpoilerCourse: true,
     beta51MultiplayerFoundationOnly: true,
-    serverMultiplayerReady: false
+    beta52FriendsProfilesLeaderboards: true,
+    friendProfilesLocal: true,
+    noChatByDesign: true,
+    serverMultiplayerReady: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+    beta54InviteLinks: true,
+    beta54ScoreSubmitApi: true,
+    beta54SupabaseOptional: true,
+    beta54NoChatStill: true
   }
 });
