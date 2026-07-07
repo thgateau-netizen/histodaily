@@ -1,4 +1,4 @@
--- HistoDaily beta58 — schéma Supabase minimal
+-- HistoDaily beta59 — schéma Supabase minimal
 -- À exécuter dans Supabase SQL Editor quand tu voudras activer le vrai multi.
 
 create table if not exists public.hd_profiles (

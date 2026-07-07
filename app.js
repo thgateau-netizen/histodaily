@@ -1,7 +1,7 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_QUALITY = window.HISTODAILY_QUALITY || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.58";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.59";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_v100_beta14_state";
 
 const $ = (selector) => document.querySelector(selector);

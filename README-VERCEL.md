@@ -1,6 +1,6 @@
-# HistoDaily — Vercel / GitHub beta58
+# HistoDaily — Vercel / GitHub beta59
 
-Version : `1.0.0-beta.58`
+Version : `1.0.0-beta.59`
 
 ## Objectif
 
@@ -31,7 +31,7 @@ Avec GitHub Desktop :
 
 ## Tests rapides
 
-- `/api/v1/health` doit afficher `1.0.0-beta.58`.
+- `/api/v1/health` doit afficher `1.0.0-beta.59`.
 - Résoudre un mystère doit afficher un statut de score : envoyé / local / hors-ligne.
 - Profil : le code ami et le lien d’invitation doivent être copiables.
 - Ouvrir `/?friend=CODE_REEL` doit ajouter le vrai code partagé par un autre joueur.
@@ -86,3 +86,8 @@ Le multi reste volontairement limité à : amis, profils, classements. Aucun cha
 - Ajout d’un reset progression visible dans Profil → Tests bêta.
 - Ajout d’un endpoint `/api/v1/progress/reset` pour effacer le score serveur du jour d’un joueur pendant les tests.
 - Le submit score remplace le score du même joueur/mystère/jour au lieu d’empiler des doublons.
+
+
+## Beta59
+
+Correction Vercel Hobby : toutes les routes API passent maintenant par une seule fonction `api/v1/[...path].js`, donc le déploiement reste sous la limite Hobby de 12 Serverless Functions.

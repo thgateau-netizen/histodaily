@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.58",
-  assetsVersion: "1.0.0-beta.58",
+  version: "1.0.0-beta.59",
+  assetsVersion: "1.0.0-beta.59",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
