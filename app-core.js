@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.64",
-  assetsVersion: "1.0.0-beta.64",
+  version: "1.0.0-beta.63",
+  assetsVersion: "1.0.0-beta.63",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -14,14 +14,13 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 64",
+    versionLabel: "beta 63",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Cours express redevenu court",
-      "Cours complet enrichi pour une vraie lecture de 5 minutes",
-      "Quiz à choix multiples restauré",
-      "Validation du cours verrouillée tant que les 5 réponses ne sont pas réussies",
-      "Le quiz ne donne plus la réponse directement"
+      "Ajout et retrait d’amis plus fiables",
+      "Noms des joueurs mieux actualisés dans les classements",
+      "Interface nettoyée des formulations de chantier",
+      "Rafraîchissement social plus clair après modification du profil"
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

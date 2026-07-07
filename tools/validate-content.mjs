@@ -15,8 +15,8 @@ for (const file of filesToScan.filter(file => fs.existsSync(file))) {
 }
 
 const versionFiles = ['app-core.js', 'index.html', 'service-worker.js', 'lib/hd-api.js', 'manifest.webmanifest'];
-const versionOk = versionFiles.every(file => fs.existsSync(file) && fs.readFileSync(file, 'utf8').includes('1.0.0-beta.64'));
-if (!versionOk) issues.push('Version beta64 absente dans au moins un fichier critique');
+const versionOk = versionFiles.every(file => fs.existsSync(file) && fs.readFileSync(file, 'utf8').includes('1.0.0-beta.63'));
+if (!versionOk) issues.push('Version beta63 absente dans au moins un fichier critique');
 
 const routeFiles = [
   'api/v1/leaderboard/[action].js',
@@ -40,4 +40,4 @@ if (issues.length) {
   issues.forEach(i => console.error(' - ' + i));
   process.exit(1);
 }
-console.log('Audit contenu OK — beta64 learning-quiz-fix');
+console.log('Audit contenu OK — beta63 social-debug-cleanup');

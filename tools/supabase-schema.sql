@@ -1,4 +1,4 @@
--- HistoDaily beta64 — schéma Supabase minimal
+-- HistoDaily beta63 — schéma Supabase minimal
 -- À exécuter dans Supabase SQL Editor pour activer/mettre à jour le vrai multi.
 -- Idempotent : tu peux le relancer après une beta précédente.
 

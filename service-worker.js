@@ -1,6 +1,6 @@
-const CACHE_NAME = "histodaily-beta64-learning-quiz-fix";
-const APP_VERSION = "1.0.0-beta.64";
-const ASSETS = ["/", "/index.html", "/styles.css?v=1.0.0-beta.64", "/app-core.js?v=1.0.0-beta.64", "/app-quality.js?v=1.0.0-beta.64", "/app-onboarding.js?v=1.0.0-beta.64", "/app.js?v=1.0.0-beta.64", "/lessons-lite.js?v=1.0.0-beta.64", "/manifest.webmanifest"];
+const CACHE_NAME = "histodaily-beta63-social-debug-cleanup";
+const APP_VERSION = "1.0.0-beta.63";
+const ASSETS = ["/", "/index.html", "/styles.css?v=1.0.0-beta.63", "/app-core.js?v=1.0.0-beta.63", "/app-quality.js?v=1.0.0-beta.63", "/app-onboarding.js?v=1.0.0-beta.63", "/app.js?v=1.0.0-beta.63", "/lessons-lite.js?v=1.0.0-beta.63", "/manifest.webmanifest"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });

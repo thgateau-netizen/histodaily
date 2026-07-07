@@ -1,7 +1,7 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_QUALITY = window.HISTODAILY_QUALITY || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.64";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.63";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_v100_beta14_state";
 
 const $ = (selector) => document.querySelector(selector);
@@ -44,8 +44,6 @@ const defaultState = {
   gems: 12,
   pseudo: "Invité",
   completedLessons: {},
-  quizProgress: {},
-  quizFeedback: {},
   solvedMysteries: {},
   currentWorld: "prehistory",
   currentLessonId: null,
@@ -109,8 +107,6 @@ applyStartupSocialLinks();
 function mergeState(base, stored) {
   const merged = { ...base, ...(stored || {}) };
   merged.completedLessons = { ...base.completedLessons, ...(stored?.completedLessons || {}) };
-  merged.quizProgress = typeof stored?.quizProgress === "object" && stored.quizProgress ? { ...base.quizProgress, ...stored.quizProgress } : { ...base.quizProgress };
-  merged.quizFeedback = typeof stored?.quizFeedback === "object" && stored.quizFeedback ? { ...base.quizFeedback, ...stored.quizFeedback } : { ...base.quizFeedback };
   merged.solvedMysteries = { ...base.solvedMysteries, ...(stored?.solvedMysteries || {}) };
   merged.seenHints = { ...base.seenHints, ...(stored?.seenHints || {}) };
   merged.mysteryTries = { ...base.mysteryTries, ...(stored?.mysteryTries || {}) };
@@ -307,32 +303,8 @@ function awardXP(amount, label) {
   setTimeout(() => toast.remove(), 1400);
 }
 
-function lessonQuizState(id) {
-  const key = String(id);
-  const current = state.quizProgress?.[key];
-  if (current && typeof current === "object") {
-    return { answers: {}, correct: {}, attempts: 0, passed: false, ...current };
-  }
-  return { answers: {}, correct: {}, attempts: 0, passed: false };
-}
-function lessonQuizPassed(id) {
-  if (lessonDone(id)) return true;
-  const progress = lessonQuizState(id);
-  if (progress.passed) return true;
-  const lesson = allLessons().find(l => l.id === id);
-  if (!lesson) return false;
-  const content = buildLessonContent(lesson);
-  const total = normalizeQuizPack(content.quiz, lesson, content).length;
-  return Object.values(progress.correct || {}).filter(Boolean).length >= total;
-}
 function completeLesson(id) {
   const lesson = allLessons().find(l => l.id === id);
-  if (!lesson) return;
-  if (!lessonQuizPassed(id)) {
-    const quizFeedback = { ...(state.quizFeedback || {}), [id]: "Valide les 5 questions du quiz pour terminer le cours." };
-    setState({ tab: "lesson", currentLessonId: id, lessonView: "quiz", lessonFocus: null, quizFeedback });
-    return;
-  }
   if (!lessonDone(id)) {
     state.completedLessons[id] = true;
     state.achievements.firstLesson = true;
@@ -391,13 +363,13 @@ function dailyChecklistMarkup() {
   const lesson = dailyLesson();
   const mysteryDone = Boolean(mystery && mysterySolved(mystery.id));
   const lessonDoneToday = Boolean(lesson && lessonDone(lesson.id));
-  const quizLabel = lessonDoneToday ? "cours validé" : (lesson ? "quiz à réussir" : "cours lié absent");
+  const quizLabel = lessonDoneToday ? "cours validé" : (lesson ? "quiz disponible" : "cours lié absent");
   const items = [
     { ok: mysteryDone, label: mysteryDone ? "Mystère résolu" : "Résoudre le mystère", sub: mysteryDone ? "Rituel validé" : "2 minutes, score maximum sans indice" },
-    { ok: lessonDoneToday, label: lessonDoneToday ? "Cours validé" : "Lire l’express", sub: lesson ? "intro courte avant le complet" : "Cours indépendant absent" },
-    { ok: lessonDoneToday, label: quizLabel, sub: lessonDoneToday ? "+XP et progression" : "obligatoire pour valider le cours" }
+    { ok: lessonDoneToday, label: lessonDoneToday ? "Lecture validée" : "Lire l’express", sub: lesson ? "1 minute, sans spoiler le dossier" : "Cours indépendant absent" },
+    { ok: lessonDoneToday, label: quizLabel, sub: lessonDoneToday ? "+XP et progression" : "Quiz séparé si tu veux continuer" }
   ];
-  return `<section class="card daily-checklist-card soft-panel"><div class="section-title-row"><div><span class="card-label">Aujourd’hui</span><h2>Un mystère, un express court, puis un vrai quiz pour valider.</h2></div><small>${readingModeLabel()}</small></div><div class="daily-checklist">${items.map(item => `<div class="${item.ok ? "done" : ""}"><b>${item.ok ? "✓" : "•"}</b><span>${escapeHtml(item.label)}<small>${escapeHtml(item.sub)}</small></span></div>`).join("")}</div></section>`;
+  return `<section class="card daily-checklist-card soft-panel"><div class="section-title-row"><div><span class="card-label">Aujourd’hui</span><h2>Un mystère, un cours court, puis tu t’arrêtes quand tu veux.</h2></div><small>${readingModeLabel()}</small></div><div class="daily-checklist">${items.map(item => `<div class="${item.ok ? "done" : ""}"><b>${item.ok ? "✓" : "•"}</b><span>${escapeHtml(item.label)}<small>${escapeHtml(item.sub)}</small></span></div>`).join("")}</div></section>`;
 }
 
 function nextActionMarkup() {
@@ -411,8 +383,8 @@ function nextActionMarkup() {
   let attr = "data-next-mystery";
   if (mysteryDone && lesson && !lessonDoneToday) {
     title = "Continue avec le cours du jour";
-    text = "Commence par l’express, puis passe au cours complet et au quiz si tu veux valider la leçon.";
-    action = "Ouvrir le cours";
+    text = "Lis le cours indépendant du jour : une minute suffit, sans révéler la réponse du mystère.";
+    action = "Lire l’express";
     attr = `data-next-lesson="${escapeHtml(lesson.id)}"`;
   } else if (mysteryDone) {
     title = "Rituel terminé";
@@ -16429,25 +16401,14 @@ function renderLesson() {
   }
   if (!["express", "complete", "quiz"].includes(state.lessonView)) state.lessonView = "express";
   const content = buildLessonContent(lesson);
-  const quizPassed = lessonQuizPassed(lesson.id);
-  const canComplete = lessonDone(lesson.id) || quizPassed;
-  const footer = canComplete
-    ? `<button type="button" class="wide success" data-complete>${lessonDone(lesson.id) ? "Cours validé" : `Valider le cours +${lesson.xp || 55} XP`}</button>`
-    : `<div class="lesson-validation-locked"><b>Validation verrouillée</b><span>Lis puis réussis les 5 questions. Le cours ne se valide plus par simple lecture.</span><button type="button" data-lesson-view="quiz">Passer au quiz</button></div>`;
   renderShell(`
     <header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(content.period)}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(content.title)}</h1></div></header>
     <article class="card reading-card two-speed-course lesson-tabbed-card">
       ${renderLessonText(lesson, content)}
-      ${footer}
+      <button type="button" class="wide success" data-complete>${lessonDone(lesson.id) ? "Leçon validée" : `Valider +${lesson.xp || 55} XP`}</button>
     </article>`);
   $("[data-back-learn]")?.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "express" }));
   $("[data-complete]")?.addEventListener("click", () => completeLesson(lesson.id));
-  document.querySelectorAll("[data-quiz-choice]").forEach(btn => btn.addEventListener("click", event => {
-    event.preventDefault();
-    event.stopPropagation();
-    handleQuizChoice(lesson.id, Number(btn.dataset.quizChoice), Number(btn.dataset.choiceIndex));
-  }));
-  $("[data-reset-quiz]")?.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); resetLessonQuiz(lesson.id); });
   document.querySelectorAll("[data-lesson-view]").forEach(btn => btn.addEventListener("click", event => {
     event.preventDefault();
     event.stopPropagation();
@@ -16487,7 +16448,7 @@ function lessonMemoMarkup(lesson, content, takeaways, quizItems) {
       <div><b>Idée à maîtriser</b><span>${escapeHtml(proof?.text || proof || "Appuie ta réponse sur un élément du cours.")}</span></div>
       <div><b>Nuance importante</b><span>${escapeHtml(trap?.text || trap || "Garde une réponse située et précise.")}</span></div>
     </div>
-    <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p>Retrouve la réponse dans le cours puis vérifie-toi avec le quiz final.</p></details>
+    <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p><strong>Réponse attendue :</strong> ${escapeHtml(control.a || "Une réponse située, avec raisonnement clair.")}</p></details>
     ${mystery && isAccessibleMystery(mystery.id) ? `<button class="ghost wide" data-open-linked-mystery="${escapeHtml(mystery.id)}">🕵️ Revoir le mystère lié</button>` : ""}
   </section>`;
 }
@@ -16499,136 +16460,6 @@ function lessonTabButton(view, label, sub) {
   const active = lessonView() === view ? "active" : "";
   return `<button data-lesson-view="${view}" class="${active}"><b>${label}</b><span>${sub}</span></button>`;
 }
-function quizSeed(value = "") {
-  let h = 2166136261;
-  String(value).split("").forEach(ch => { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); });
-  return h >>> 0;
-}
-function seededShuffle(items = [], seed = 1) {
-  const arr = items.slice();
-  let x = seed || 1;
-  for (let i = arr.length - 1; i > 0; i -= 1) {
-    x = (Math.imul(x, 1664525) + 1013904223) >>> 0;
-    const j = x % (i + 1);
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-function compactAnswer(value = "") {
-  return String(value).replace(/\s+/g, " ").trim();
-}
-function genericWrongChoices(item = {}, lesson = {}, content = {}) {
-  const title = lesson.title || content.title || "le sujet";
-  return [
-    "Une simple anecdote isolée, sans conséquence historique durable.",
-    "Une explication trop vague qui oublie les dates, les lieux et les acteurs.",
-    "Un phénomène apparu partout d’un coup, sans traces ni contexte.",
-    `Une réponse qui confond ${safeLower(title)} avec un thème beaucoup plus large.`,
-    "Un détail décoratif intéressant, mais sans lien avec l’organisation des sociétés.",
-    "Une cause unique qui expliquerait tout sans nuance."
-  ];
-}
-function quizChoicesFor(item = {}, quizItems = [], lesson = {}, content = {}, index = 0) {
-  const correct = compactAnswer(item.a || item.answer || "Réponse à retrouver dans le cours.");
-  const fromItem = Array.isArray(item.choices) ? item.choices : [];
-  const pool = [correct, ...fromItem, ...quizItems.filter((_, i) => i !== index).map(other => other.a || other.answer), ...genericWrongChoices(item, lesson, content)]
-    .map(compactAnswer)
-    .filter(Boolean);
-  const unique = [];
-  const seen = new Set();
-  pool.forEach(text => {
-    const key = normalize(text);
-    if (!key || seen.has(key)) return;
-    seen.add(key);
-    unique.push({ text, correct: normalize(text) === normalize(correct) });
-  });
-  if (!unique.some(choice => choice.correct)) unique.unshift({ text: correct, correct: true });
-  const correctChoice = unique.find(choice => choice.correct);
-  const wrongChoices = unique.filter(choice => !choice.correct).slice(0, 8);
-  const four = [correctChoice, ...wrongChoices].filter(Boolean).slice(0, 4);
-  while (four.length < 4) four.push({ text: genericWrongChoices(item, lesson, content)[four.length] || "Une réponse trop générale.", correct: false });
-  return seededShuffle(four, quizSeed(`${lesson.id || content.title}-${index}-${item.q || correct}`));
-}
-function quizProgressForLesson(lessonId, total = 5) {
-  const progress = lessonQuizState(lessonId);
-  const correctCount = Object.values(progress.correct || {}).filter(Boolean).length;
-  return { ...progress, correctCount, total, passed: Boolean(progress.passed || correctCount >= total) };
-}
-function quizItemMarkup(item, index, quizItems, lesson, content) {
-  const progress = lessonQuizState(lesson.id);
-  const selected = progress.answers?.[index];
-  const correctMap = progress.correct || {};
-  const isDone = Boolean(correctMap[index]);
-  const choices = quizChoicesFor(item, quizItems, lesson, content, index);
-  const selectedChoice = Number.isInteger(selected) ? choices[selected] : null;
-  const wrongSelected = Number.isInteger(selected) && selectedChoice && !selectedChoice.correct && !isDone;
-  const status = isDone ? "correct" : wrongSelected ? "wrong" : "open";
-  return `<article class="quiz-card ${status}">
-    <div class="quiz-question-head"><b>${index + 1}</b><div>${item.kind ? `<em>${escapeHtml(item.kind)}</em>` : ""}<h3>${escapeHtml(item.q)}</h3></div></div>
-    <div class="quiz-choices" role="group" aria-label="Question ${index + 1}">
-      ${choices.map((choice, choiceIndex) => {
-        const chosen = selected === choiceIndex;
-        const cls = chosen ? (choice.correct ? "selected correct" : "selected wrong") : "";
-        return `<button type="button" class="quiz-choice ${cls}" data-quiz-choice="${index}" data-choice-index="${choiceIndex}" ${isDone ? "disabled" : ""}><span>${String.fromCharCode(65 + choiceIndex)}</span>${escapeHtml(choice.text)}</button>`;
-      }).join("")}
-    </div>
-    ${isDone ? `<p class="quiz-result good"><b>Correct.</b> ${escapeHtml(item.why || "Tu as retrouvé l’idée importante du cours.")}</p>${item.evidence ? `<p class="quiz-evidence"><strong>À retrouver :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : wrongSelected ? `<p class="quiz-result bad"><b>Pas encore.</b> Relis le passage concerné puis retente : je ne donne pas la bonne réponse directement.</p>${item.trap ? `<p class="quiz-trap"><strong>Piège :</strong> ${escapeHtml(item.trap)}</p>` : ""}` : `<p class="quiz-result neutral">Choisis une réponse. La bonne réponse n’apparaît qu’après réussite.</p>`}
-  </article>`;
-}
-function handleQuizChoice(lessonId, questionIndex, choiceIndex) {
-  const lesson = allLessons().find(l => l.id === lessonId);
-  if (!lesson) return;
-  const content = buildLessonContent(lesson);
-  const quizItems = normalizeQuizPack(content.quiz, lesson, content);
-  const item = quizItems[questionIndex];
-  if (!item) return;
-  const choices = quizChoicesFor(item, quizItems, lesson, content, questionIndex);
-  const choice = choices[choiceIndex];
-  if (!choice) return;
-  const key = String(lessonId);
-  const progress = lessonQuizState(key);
-  const answers = { ...(progress.answers || {}), [questionIndex]: choiceIndex };
-  const correct = { ...(progress.correct || {}) };
-  if (choice.correct) correct[questionIndex] = true;
-  const correctCount = Object.values(correct).filter(Boolean).length;
-  const passed = correctCount >= quizItems.length;
-  const quizProgress = { ...(state.quizProgress || {}), [key]: { ...progress, answers, correct, attempts: (progress.attempts || 0) + 1, passed } };
-  const quizFeedback = { ...(state.quizFeedback || {}), [key]: passed ? "Quiz réussi : tu peux valider le cours." : choice.correct ? `${correctCount}/${quizItems.length} bonnes réponses.` : "Mauvaise réponse : relis puis retente, sans correction automatique." };
-  setState({ quizProgress, quizFeedback, lessonView: "quiz", lessonFocus: null });
-}
-function resetLessonQuiz(lessonId) {
-  const quizProgress = { ...(state.quizProgress || {}) };
-  const quizFeedback = { ...(state.quizFeedback || {}) };
-  delete quizProgress[String(lessonId)];
-  delete quizFeedback[String(lessonId)];
-  setState({ quizProgress, quizFeedback, lessonView: "quiz", lessonFocus: null });
-}
-function expandedCompleteBlocks(lesson = {}, content = {}) {
-  const base = Array.isArray(content.complete) ? content.complete.filter(Boolean) : [];
-  const profile = content.profile || {};
-  const keyFacts = lessonKeyFacts(lesson, content);
-  const title = content.title || lesson.title || "ce sujet";
-  const period = content.period || lesson.period || "une période à situer";
-  const place = content.place || lesson.location || "un espace à situer";
-  const introText = `${title} mérite plus qu’une fiche de révision. Pour le comprendre correctement, il faut tenir ensemble le cadre, les acteurs, les traces et les conséquences. Le sujet se situe dans ${period}, autour de ${place}. Ce repère évite de transformer l’histoire en résumé flottant : une même idée ne veut pas dire la même chose selon le siècle, le lieu, les groupes concernés et les sources disponibles.`;
-  const expanded = [
-    { title: "1. Poser le cadre", text: introText },
-    ...base.map((block, index) => {
-      const titleBlock = block.title || `Partie ${index + 2}`;
-      const text = block.text || String(block || "");
-      const needsMore = text.length < 520;
-      const add = needsMore ? ` Ce point doit être lu comme un mécanisme : qui agit, avec quels moyens, et qu’est-ce que cela change ? Les acteurs ne sont pas abstraits : ${profile.actors || "des groupes, institutions et individus prennent des décisions, transmettent des pratiques ou subissent des contraintes"}. Pour ne pas rester dans la formule, rattache cette partie à des traces concrètes : ${profile.traces || keyFacts.join(", ") || "sources, objets, lieux, textes ou indices matériels"}.` : "";
-      return { title: titleBlock, text: `${text}${add}` };
-    }),
-    { title: "Repères à garder pendant la lecture", text: keyFacts.length ? `Garde ces repères en tête : ${sentenceList(keyFacts)}. Ils servent de garde-fou. Sans eux, on retient des mots mais on perd le raisonnement : dates, lieux, acteurs et traces doivent rester liés.` : `Garde toujours quatre questions en tête : où ? quand ? qui agit ? qu’est-ce que cela change ? C’est ce qui transforme un résumé en vraie compréhension.` },
-    { title: "Acteurs, décisions et rapports de force", text: `Un cours utile ne parle pas seulement d’une “civilisation” ou d’une “époque” comme si elle pensait toute seule. Il faut imaginer des acteurs concrets : ${profile.actors || "dirigeants, artisans, croyants, soldats, marchands, familles, scribes ou groupes dominés selon le sujet"}. Certains décident, d’autres exécutent, transmettent, résistent ou adaptent. C’est souvent dans ces écarts que le sujet devient intéressant.` },
-    { title: "Sources et preuves", text: `Ce que l’on sait dépend des traces disponibles : ${profile.traces || "textes, objets, monuments, images, archives, vestiges ou données matérielles"}. Une trace ne parle jamais toute seule. Elle doit être datée, localisée, comparée et interprétée. C’est pour cela qu’une bonne réponse historique n’est pas seulement “la bonne idée”, mais une idée appuyée sur des éléments vérifiables.` },
-    { title: "Piège fréquent", text: `Le raccourci à éviter : ${profile.mistake || "réduire le sujet à une définition propre mais trop simple"}. C’est séduisant parce que c’est rapide, mais cela écrase les nuances. À la place, cherche toujours le basculement : ce qui existait avant, ce qui change, ce qui résiste, et ce qui reste après.` },
-    { title: "Synthèse", text: `À la fin, tu dois pouvoir expliquer ${safeLower(title)} en cinq phrases : le cadre, le problème historique, les acteurs, les traces, puis la conséquence. La bonne maîtrise n’est pas de réciter tout le cours ; c’est de reconstruire le raisonnement sans te tromper de période, sans confondre les acteurs et sans oublier pourquoi le sujet compte.` }
-  ];
-  return expanded.slice(0, 12);
-}
-
 function renderLessonText(lesson, content) {
   const fastLabel = content.mystery ? "Après le mystère" : "Lecture rapide";
   const keyFacts = lessonKeyFacts(lesson, content);
@@ -16637,43 +16468,33 @@ function renderLessonText(lesson, content) {
   const view = lessonView();
   const keyFactsMarkup = keyFacts.length ? `<div class="key-facts"><b>Repères clés</b>${keyFacts.map(fact => `<span>${escapeHtml(fact)}</span>`).join("")}</div>` : "";
   const tabs = `<section class="lesson-choice-panel" aria-label="Choisir le format du cours">
-      <div><span class="card-label">Choisis ton format</span><h2>${view === "complete" ? "Cours complet" : view === "quiz" ? "Quiz final" : "Cours express"}</h2><p>${view === "complete" ? "Une vraie lecture d’environ 5 minutes, avec contexte, acteurs, traces, pièges et synthèse." : view === "quiz" ? "5 questions à choix multiples. Il faut tout réussir pour valider le cours." : "Le format court : l’essentiel, comme une bonne introduction avant le vrai cours."}</p></div>
+      <div><span class="card-label">Choisis ton format</span><h2>${view === "complete" ? "Cours complet" : view === "quiz" ? "Quiz uniquement" : "Mode rapide"}</h2><p>${view === "complete" ? "Lecture riche, mais volontaire : tu ne la subis plus par défaut." : view === "quiz" ? "Tu peux réviser directement sans remanger tout le cours." : "L’essentiel d’abord. Tu peux valider ou passer au complet seulement si tu veux."}</p></div>
       <div class="lesson-view-tabs">
-        ${lessonTabButton("express", "⚡ Express", "court")}
-        ${lessonTabButton("complete", "📚 Complet", "5 min")}
-        ${lessonTabButton("quiz", "✅ Quiz", "obligatoire")}
+        ${lessonTabButton("express", "⚡ Rapide", "1 min")}
+        ${lessonTabButton("complete", "📚 Complet", "4-6 min")}
+        ${lessonTabButton("quiz", "✅ Quiz", "5 questions")}
       </div>
     </section>`;
   const intro = `<section class="lesson-hook">
       <span class="card-label">${content.premium ? "⭐ Cours rédigé" : fastLabel}</span>
       <p>${escapeHtml(content.hook)}</p>
-      <div class="lesson-meta"><span>${content.premium ? "⭐ rédigé" : "🧭 structuré"}</span><span>⚡ express court</span><span>📚 lecture complète</span><span>✅ quiz obligatoire</span></div>
+      <div class="lesson-meta"><span>${content.premium ? "⭐ rédigé" : "🧭 structuré"}</span><span>⚡ express</span><span>📚 complet à la demande</span><span>✅ quiz séparé</span></div>
     </section>`;
   if (view === "complete") {
-    const completeBlocks = expandedCompleteBlocks(lesson, content);
-    const estimatedMinutes = Math.max(4, Math.min(7, Math.round(completeBlocks.map(block => block.text || "").join(" ").split(/\s+/).filter(Boolean).length / 180)));
     return `${intro}${tabs}
-      <section class="text-block express-block compact-reminder"><div class="section-title-row"><h2>Avant de creuser</h2><small>repères</small></div>${keyFactsMarkup || ""}<p>${escapeHtml(content.express[0] || content.hook)}</p></section>
+      <section class="text-block express-block compact-reminder"><div class="section-title-row"><h2>Avant de creuser</h2><small>2 repères</small></div>${keyFactsMarkup || ""}<p>${escapeHtml(content.express[0] || content.hook)}</p></section>
       <section class="complete-course-panel" data-focus-target="complete">
-        <div class="section-title-row"><h2>📚 Cours complet</h2><small>${estimatedMinutes} min de lecture</small></div>
-        ${completeBlocks.map(block => `<section class="text-block deep-reading-block"><h2>${escapeHtml(block.title)}</h2><p>${escapeHtml(block.text)}</p></section>`).join("")}
+        <div class="section-title-row"><h2>📚 Version complète</h2><small>lecture riche</small></div>
+        ${content.complete.map(block => `<section class="text-block"><h2>${escapeHtml(block.title)}</h2><p>${escapeHtml(block.text)}</p></section>`).join("")}
       </section>
-      <section class="further-list"><h2>Pour aller plus loin</h2>${content.deeper.map(block => `<details class="further"><summary>${escapeHtml(block.title)}</summary><p>${escapeHtml(block.text)}</p></details>`).join("")}</section>
-      <section class="lesson-next-choice"><button type="button" data-lesson-view="quiz">✅ Faire le quiz final</button></section>`;
+      <section class="further-list"><h2>Pour aller plus loin</h2>${content.deeper.map(block => `<details class="further"><summary>${escapeHtml(block.title)}</summary><p>${escapeHtml(block.text)}</p></details>`).join("")}</section>`;
   }
   if (view === "quiz") {
-    const progress = quizProgressForLesson(lesson.id, quizItems.length);
-    const feedback = state.quizFeedback?.[lesson.id] || state.quizFeedback?.[String(lesson.id)] || "";
     return `${intro}${tabs}${keyFactsMarkup}
-      <section class="quiz-section isolated-quiz final-quiz" data-focus-target="quiz">
-        <div class="section-title-row"><h2>Quiz final · 5 questions</h2><small>${progress.correctCount}/${quizItems.length} réussies</small></div>
-        <div class="quiz-coach"><b>Passage obligé</b><span>Choix multiples, pas de réponse donnée d’avance. Le cours se valide uniquement quand les 5 questions sont justes.</span></div>
-        ${feedback ? `<p class="quiz-global-feedback ${progress.passed ? "good" : ""}">${escapeHtml(feedback)}</p>` : ""}
-        ${quizItems.map((item, index) => quizItemMarkup(item, index, quizItems, lesson, content)).join("")}
-        <div class="quiz-footer">
-          <button type="button" class="ghost" data-reset-quiz>Recommencer le quiz</button>
-          ${progress.passed ? `<button type="button" class="success" data-complete>Valider le cours</button>` : `<span>Encore ${quizItems.length - progress.correctCount} question(s) à réussir.</span>`}
-        </div>
+      <section class="quiz-section isolated-quiz" data-focus-target="quiz">
+        <div class="section-title-row"><h2>Quiz · 5 questions</h2><small>raisonnement et compréhension</small></div>
+        <div class="quiz-coach"><b>Mini-défi</b><span>Réponds mentalement avant d’ouvrir : cadre, acteurs, mécanisme, conséquence. C’est ça qu’on vérifie.</span></div>
+        ${quizItems.map((item, index) => `<details class="quiz-item"><summary><b>${index + 1}</b>${item.kind ? ` <em>${escapeHtml(item.kind)}</em>` : ""} ${escapeHtml(item.q)}</summary><p><strong>Réponse :</strong> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>À ne pas confondre :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Où regarder dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}</details>`).join("")}
       </section>`;
   }
   const expressBits = Array.isArray(content.express) && content.express.length ? content.express.slice(0, 3) : [content.hook || "Sujet à replacer dans son contexte."];
@@ -16683,7 +16504,7 @@ function renderLessonText(lesson, content) {
     || consequence;
   return `${intro}${tabs}
     <section class="express-debug-card" data-focus-target="express">
-      <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>Le court express</h2></div><small>intro courte</small></div>
+      <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>La version utile, pas la fiche automatique</h2></div><small>1 min</small></div>
       ${keyFactsMarkup}
       <div class="express-steps clean-express">
         <div><b>1 · Situation</b><p>${escapeHtml(expressBits[0] || content.hook)}</p></div>
@@ -16692,7 +16513,7 @@ function renderLessonText(lesson, content) {
         <div><b>4 · Phrase à savoir redire</b><p>${escapeHtml(short(remember, 260))}</p></div>
       </div>
     </section>
-    <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">📚 Lire le vrai cours complet</button><button type="button" data-lesson-view="quiz">✅ Faire le quiz</button></section>`;
+    <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">📚 Lire le complet</button><button type="button" data-lesson-view="quiz">✅ Passer au quiz</button></section>`;
 }
 
 function renderMystery() {

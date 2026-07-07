@@ -1,12 +1,12 @@
-# HistoDaily — Vercel / GitHub beta64
+# HistoDaily — Vercel / GitHub beta63
 
-Version : `1.0.0-beta.64`
+Version : `1.0.0-beta.63`
 
 ## Contenu de la version
 
-Cette version corrige le cœur pédagogique après la beta63 : le cours express redevient court, le cours complet devient une vraie lecture, et le quiz redevient un passage obligé à choix multiples.
+Cette version améliore le social, nettoie les textes visibles et renforce les tests.
 
-Elle stabilise aussi :
+Elle stabilise surtout :
 
 - profil joueur local ;
 - code ami ;
@@ -25,16 +25,13 @@ Avec GitHub Desktop :
 1. Dézipper le paquet.
 2. Remplacer le contenu du dossier local du repo par ce contenu.
 3. Ne pas supprimer `.git` si tu le vois.
-4. Commit : `Beta64 learning quiz fix`.
+4. Commit : `Beta63 social cleanup friends fix`.
 5. Push origin.
 6. Vercel redéploie automatiquement.
 
 ## Tests rapides
 
-- `/api/v1/health` doit afficher `1.0.0-beta.64`.
-- Ouvrir un cours : Express doit rester court, Complet doit afficher une vraie lecture longue.
-- Le quiz doit afficher 5 questions à choix multiples, sans réponse visible avant choix.
-- Le bouton de validation du cours doit rester verrouillé tant que les 5 questions ne sont pas réussies.
+- `/api/v1/health` doit afficher `1.0.0-beta.63`.
 - Résoudre un mystère doit afficher un statut de score : envoyé / local / hors-ligne.
 - Profil : le code ami et le lien d’invitation doivent être copiables.
 - Ouvrir `/?friend=CODE_REEL` doit ajouter le code partagé par un autre joueur.
@@ -51,15 +48,6 @@ Pour brancher la synchronisation Supabase, ajouter dans Vercel :
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 Puis créer les tables avec `tools/supabase-schema.sql`.
-
-## Beta64 — cours et quiz
-
-- Le format Express redevient le court express.
-- Le cours complet est enrichi pour viser une vraie lecture d’environ 5 minutes.
-- Le quiz est de nouveau à choix multiples.
-- Le cours ne peut plus être validé par simple lecture : il faut réussir les 5 questions.
-- Une mauvaise réponse ne révèle plus la bonne réponse.
-
 
 ## Beta54 — Supabase live mode
 
