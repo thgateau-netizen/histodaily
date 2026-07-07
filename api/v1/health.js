@@ -2,7 +2,7 @@ const { mysteries } = require('./_data');
 module.exports = (req, res) => res.status(200).json({
   ok: true,
   app: "HistoDaily",
-  version: "1.0.0-beta.55",
+  version: "1.0.0-beta.57",
   target: "vercel",
   content: {
     mysteries: mysteries.length,
@@ -52,6 +52,11 @@ module.exports = (req, res) => res.status(200).json({
     beta54NoChatStill: true,
     beta55TextInputHardening: true,
     beta55ResetUrl: true,
-    beta55PseudoPromptFallback: true
+    beta55PseudoPromptFallback: true,
+    beta56ProfileSaveFix: true,
+    beta57LessonDisclosureFix: true,
+    beta57NoAutoRerenderOnLessonFocus: true,
+    beta56PseudoNormalSaveFix: true,
+    beta56ProfilePostApi: true
   }
 });

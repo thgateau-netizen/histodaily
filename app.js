@@ -1,7 +1,7 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_QUALITY = window.HISTODAILY_QUALITY || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.55";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.57";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_v100_beta14_state";
 
 const $ = (selector) => document.querySelector(selector);
@@ -797,7 +797,7 @@ function renderHome() {
   renderShell(`
     <header class="hero compact home-clean-hero">
       <div>
-        <p class="eyebrow">HistoDaily · beta 55 stable</p>
+        <p class="eyebrow">HistoDaily · beta 57 stable</p>
         <h1>Mystère, cours séparé, classement, amis.</h1>
         <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
       </div>
@@ -16390,7 +16390,13 @@ function renderLesson() {
     $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null }));
     return;
   }
-  if (!state.lessonView) state.lessonView = state.lessonFocus || "express";
+  const requestedLessonFocus = state.lessonFocus;
+  if (requestedLessonFocus) {
+    state.lessonView = ["express", "complete", "quiz"].includes(requestedLessonFocus) ? requestedLessonFocus : "express";
+    state.lessonFocus = null;
+    saveState();
+  }
+  if (!["express", "complete", "quiz"].includes(state.lessonView)) state.lessonView = "express";
   const content = buildLessonContent(lesson);
   renderShell(`
     <header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(content.period)}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(content.title)}</h1></div></header>
@@ -16400,16 +16406,33 @@ function renderLesson() {
     </article>`);
   $("[data-back-learn]")?.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "express" }));
   $("[data-complete]")?.addEventListener("click", () => completeLesson(lesson.id));
-  document.querySelectorAll("[data-lesson-view]").forEach(btn => btn.addEventListener("click", () => setState({ lessonView: btn.dataset.lessonView, lessonFocus: null })));
-  document.querySelectorAll("[data-reading-mode]").forEach(btn => btn.addEventListener("click", () => setReadingMode(btn.dataset.readingMode)));
-  document.querySelectorAll("[data-open-linked-mystery]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: btn.dataset.openLinkedMystery })));
-  if (state.lessonFocus) {
-    const focus = state.lessonFocus;
-    state.lessonFocus = null;
-    state.lessonView = ["express", "complete", "quiz"].includes(focus) ? focus : "express";
-    saveState();
-    setTimeout(render, 0);
-  }
+  document.querySelectorAll("[data-lesson-view]").forEach(btn => btn.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    const nextView = btn.dataset.lessonView;
+    if (nextView && nextView !== state.lessonView) setState({ lessonView: nextView, lessonFocus: null });
+  }));
+  document.querySelectorAll("[data-reading-mode]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); setReadingMode(btn.dataset.readingMode); }));
+  document.querySelectorAll("[data-open-linked-mystery]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); setState({ tab: "mystery", currentMysteryId: btn.dataset.openLinkedMystery }); }));
+  bindLessonDisclosureControls();
+}
+function bindLessonDisclosureControls() {
+  document.querySelectorAll(".lesson-tabbed-card details").forEach(detail => {
+    detail.addEventListener("click", event => event.stopPropagation());
+    const summary = detail.querySelector("summary");
+    if (summary) {
+      summary.setAttribute("role", "button");
+      summary.setAttribute("tabindex", "0");
+      summary.addEventListener("click", event => event.stopPropagation());
+      summary.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          event.stopPropagation();
+          detail.open = !detail.open;
+        }
+      });
+    }
+  });
 }
 function lessonMemoMarkup(lesson, content, takeaways, quizItems) {
   const mystery = content.mystery || relatedMysteryForLesson(lesson.id);
@@ -16866,22 +16889,55 @@ function publicProfileMarkup(player) {
 function sanitizePseudo(value = "") {
   return String(value).trim().replace(/\s+/g, " ").slice(0, 18);
 }
-function updatePseudo(event) {
-  event.preventDefault();
-  const input = event.target.querySelector("input");
-  const pseudo = sanitizePseudo(input?.value || "");
+function pseudoInputValue(event) {
+  const target = event?.target || event?.currentTarget || null;
+  const form = target?.closest?.("form") || document.querySelector("[data-pseudo-form]");
+  const input = document.querySelector("[data-pseudo-input]") || form?.querySelector("input[name='pseudo']") || target;
+  return input?.value || "";
+}
+function savePseudoValue(rawValue, { source = "normal" } = {}) {
+  const pseudo = sanitizePseudo(rawValue);
   if (pseudo.length < 3) {
+    const input = document.querySelector("[data-pseudo-input]");
+    input?.focus?.();
     setState({ profileFeedback: "Choisis un pseudo d’au moins 3 caractères." });
-    return;
+    return false;
   }
-  setState({ pseudo, profileFeedback: `Pseudo local mis à jour : ${pseudo}` });
+  const nextState = mergeState(defaultState, { ...state, pseudo, profileFeedback: `Pseudo enregistré : ${pseudo}` });
+  state = nextState;
+  saveState();
+  syncMyProfileToServer({ source }).catch(() => {});
+  render();
+  return true;
+}
+function updatePseudo(event) {
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+  return savePseudoValue(pseudoInputValue(event), { source: "form" });
 }
 function promptPseudoEdit() {
   const value = window.prompt("Ton pseudo HistoDaily", state.pseudo || "");
   if (value === null) return;
-  const pseudo = sanitizePseudo(value);
-  if (pseudo.length < 3) return setState({ profileFeedback: "Choisis un pseudo d’au moins 3 caractères." });
-  setState({ pseudo, profileFeedback: `Pseudo local mis à jour : ${pseudo}` });
+  savePseudoValue(value, { source: "prompt" });
+}
+async function syncMyProfileToServer({ source = "profile" } = {}) {
+  if (!isOnline) return;
+  try {
+    await fetch("/api/v1/me", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        playerId: playerIdMe(),
+        pseudo: state.pseudo || "Invité",
+        friendCode: friendCode(),
+        level: level(),
+        xp: state.xp || 0,
+        solvedCount: Object.keys(state.solvedMysteries || {}).length,
+        streak: state.streak || 0,
+        source
+      })
+    });
+  } catch {}
 }
 
 function appPublicUrl() {
@@ -17089,7 +17145,7 @@ function renderProfile() {
   const friends = friendProfiles();
   renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Profil social</p><h1>${escapeHtml(state.pseudo)}</h1></div></header>
     ${publicProfileMarkup(myPlayerProfile())}
-    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Pas besoin de mail pour cette phase.</p></div><form data-pseudo-form><input name="pseudo" type="text" value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo" autocomplete="nickname" autocapitalize="words" enterkeyhint="done"/><button>Enregistrer</button></form><button type="button" class="ghost wide" data-pseudo-prompt>Modifier via fenêtre simple</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
+    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Pas besoin de mail pour cette phase.</p></div><form data-pseudo-form novalidate><input data-pseudo-input name="pseudo" type="text" value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo" autocomplete="nickname" autocapitalize="words" enterkeyhint="done"/><button type="button" data-save-pseudo>Enregistrer</button></form><button type="button" class="ghost wide" data-pseudo-prompt>Modifier via fenêtre simple</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
     ${addFriendMarkup()}
     ${socialInviteLinkMarkup()}
     ${friendListMarkup()}
@@ -17107,7 +17163,12 @@ function renderProfile() {
       ${achievement("🧠", "Mystère expert", state.achievements.expertMystery)}
     </section>`);
   $(`[data-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
-  $(`[data-pseudo-form]`)?.addEventListener("submit", updatePseudo);
+  const pseudoForm = $(`[data-pseudo-form]`);
+  const pseudoInput = $(`[data-pseudo-input]`);
+  pseudoForm?.addEventListener("submit", updatePseudo);
+  $(`[data-save-pseudo]`)?.addEventListener("click", updatePseudo);
+  pseudoInput?.addEventListener("keydown", event => { if (event.key === "Enter") updatePseudo(event); });
+  pseudoInput?.addEventListener("change", event => savePseudoValue(event.currentTarget.value, { source: "change" }));
   $(`[data-pseudo-prompt]`)?.addEventListener("click", promptPseudoEdit);
   $(`[data-add-friend]`)?.addEventListener("submit", addFriend);
   $(`[data-share-invite]`)?.addEventListener("click", shareInviteCode);

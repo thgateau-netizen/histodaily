@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.55",
-  assetsVersion: "1.0.0-beta.55",
+  version: "1.0.0-beta.57",
+  assetsVersion: "1.0.0-beta.57",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -14,13 +14,13 @@ window.HISTODAILY_CORE = {
     friendNames: ["Manon", "PapyHistoire", "Louise", "Anatole"]
   },
   ui: {
-    versionLabel: "beta 55",
+    versionLabel: "beta 57",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Correction forte des champs texte : pseudo, réponse mystère, recherche et ajout ami restent tapables",
-      "Reset de test fiable via ?debug=1 ou ?reset=1 pour rejouer le mystère après branchement Supabase",
-      "Bouton de secours pour modifier le pseudo via une fenêtre simple si un navigateur bloque encore le clavier",
-      "Cache PWA renouvelé pour éviter les mélanges beta54/beta55",
+      "Correction des sous-parties de cours : quiz, vocabulaire et détails restent ouverts au lieu de disparaître",
+      "Sauvegarde pseudo conservée, reset de test via ?reset=1 conservé",
+      "Clics sur les détails de cours isolés pour éviter les re-rendus parasites",
+      "Cache PWA renouvelé beta57 pour éviter les mélanges beta56/beta57",
       "Multi Supabase conservé : amis et classements sans chat"
     ]
   },

@@ -162,3 +162,6 @@ input:focus, textarea:focus, select:focus {
 }
 .pseudo-card .wide { margin-top: 2px; }
 .debug-card .danger { border-color: rgba(251,113,133,.35); color: #ffd0d8; }
+
+/* beta57: détails de cours stables sur desktop/mobile */
+.lesson-tabbed-card details,.lesson-tabbed-card summary{position:relative;z-index:3;pointer-events:auto!important}.lesson-tabbed-card summary{user-select:none;-webkit-user-select:none}.lesson-tabbed-card details[open]{scroll-margin-top:18px}.lesson-tabbed-card details p,.lesson-tabbed-card details .text-block{pointer-events:auto}.lesson-tabbed-card .quiz-item,.lesson-tabbed-card .further,.lesson-tabbed-card .memo-question{contain:layout style}.lesson-tabbed-card .quiz-item[open],.lesson-tabbed-card .further[open],.lesson-tabbed-card .memo-question[open]{animation:none!important}
