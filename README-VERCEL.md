@@ -1,12 +1,12 @@
-# HistoDaily — Vercel / GitHub beta60
+# HistoDaily — Vercel / GitHub beta64
 
-Version : `1.0.0-beta.60`
+Version : `1.0.0-beta.64`
 
-## Objectif
+## Contenu de la version
 
-Cette version continue la direction “app finale + multi léger”, sans chat et sans nouveau contenu massif.
+Cette version corrige le cœur pédagogique après la beta63 : le cours express redevient court, le cours complet devient une vraie lecture, et le quiz redevient un passage obligé à choix multiples.
 
-Elle stabilise surtout :
+Elle stabilise aussi :
 
 - profil joueur local ;
 - code ami ;
@@ -25,29 +25,41 @@ Avec GitHub Desktop :
 1. Dézipper le paquet.
 2. Remplacer le contenu du dossier local du repo par ce contenu.
 3. Ne pas supprimer `.git` si tu le vois.
-4. Commit : `Beta58 real friends reset`.
+4. Commit : `Beta64 learning quiz fix`.
 5. Push origin.
 6. Vercel redéploie automatiquement.
 
 ## Tests rapides
 
-- `/api/v1/health` doit afficher `1.0.0-beta.60`.
+- `/api/v1/health` doit afficher `1.0.0-beta.64`.
+- Ouvrir un cours : Express doit rester court, Complet doit afficher une vraie lecture longue.
+- Le quiz doit afficher 5 questions à choix multiples, sans réponse visible avant choix.
+- Le bouton de validation du cours doit rester verrouillé tant que les 5 questions ne sont pas réussies.
 - Résoudre un mystère doit afficher un statut de score : envoyé / local / hors-ligne.
 - Profil : le code ami et le lien d’invitation doivent être copiables.
-- Ouvrir `/?friend=CODE_REEL` doit ajouter le vrai code partagé par un autre joueur.
+- Ouvrir `/?friend=CODE_REEL` doit ajouter le code partagé par un autre joueur.
 - Classement amis : ton profil et les amis ajoutés doivent apparaître.
 - Aucun chat, aucune messagerie.
 
 ## Multi réel
 
-Avec Supabase configuré, le classement est réel. Sans score envoyé, il reste vide : aucun faux joueur n’est injecté.
+Avec Supabase configuré, les classements se synchronisent. Sans score envoyé, ils restent vides : aucun joueur fictif n’est injecté.
 
-Pour brancher le vrai serveur plus tard, ajouter dans Vercel :
+Pour brancher la synchronisation Supabase, ajouter dans Vercel :
 
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 Puis créer les tables avec `tools/supabase-schema.sql`.
+
+## Beta64 — cours et quiz
+
+- Le format Express redevient le court express.
+- Le cours complet est enrichi pour viser une vraie lecture d’environ 5 minutes.
+- Le quiz est de nouveau à choix multiples.
+- Le cours ne peut plus être validé par simple lecture : il faut réussir les 5 questions.
+- Une mauvaise réponse ne révèle plus la bonne réponse.
+
 
 ## Beta54 — Supabase live mode
 
@@ -56,7 +68,7 @@ Cette version lit le classement jour/semaine/année depuis Supabase quand les va
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
-Le multi reste volontairement limité à : amis, profils, classements. Aucun chat.
+Le social reste limité à : amis, profils, classements. Aucun chat.
 
 
 ## Beta56
@@ -79,7 +91,7 @@ Le multi reste volontairement limité à : amis, profils, classements. Aucun cha
 - Garde les corrections beta56 : pseudo, Entrée, reset `?reset=1`, Supabase.
 
 
-## Beta58 — vrais amis / reset testeur
+## Beta58 — amis / reset testeur
 
 - Suppression des faux amis et faux joueurs inventés dans l’interface.
 - Les classements restent vides tant qu’aucun score réel n’est enregistré.
@@ -88,12 +100,12 @@ Le multi reste volontairement limité à : amis, profils, classements. Aucun cha
 - Le submit score remplace le score du même joueur/mystère/jour au lieu d’empiler des doublons.
 
 
-## Beta60
+## Beta61
 
 Correction Vercel Hobby : toutes les routes API passent maintenant par une seule fonction `api/v1/[...path].js`, donc le déploiement reste sous la limite Hobby de 12 Serverless Functions.
 
 
-## Beta60
+## Beta61
 
 Correction Vercel Hobby : le catch-all `api/v1/[...path].js` ne capturait pas correctement les routes imbriquées comme `/api/v1/leaderboard/daily`. Les routes sont maintenant explicites mais restent sous la limite Hobby.
 
@@ -102,3 +114,12 @@ Correction Vercel Hobby : le catch-all `api/v1/[...path].js` ne capturait pas co
 - `/api/v1/health`
 - `/api/v1/leaderboard/daily?scope=daily`
 - `/api/v1/leaderboard/submit` après résolution d'un mystère
+
+
+## Beta63 — nettoyage social et textes visibles
+
+- Nettoyage des formulations de chantier visibles sur l’accueil et le parcours.
+- Ajout serveur plus robuste pour les amis ajoutés par code ou lien d’invitation.
+- Suppression d’ami synchronisée côté `/api/v1/friends/sync` avec méthode `DELETE`.
+- Rafraîchissement du classement amis après modification de pseudo ou synchronisation d’amis.
+- Test local ajouté : `node tools/social-api-smoke-test.cjs`.

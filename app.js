@@ -1,7 +1,7 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_QUALITY = window.HISTODAILY_QUALITY || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.60";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.64";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_v100_beta14_state";
 
 const $ = (selector) => document.querySelector(selector);
@@ -44,6 +44,8 @@ const defaultState = {
   gems: 12,
   pseudo: "Invité",
   completedLessons: {},
+  quizProgress: {},
+  quizFeedback: {},
   solvedMysteries: {},
   currentWorld: "prehistory",
   currentLessonId: null,
@@ -72,6 +74,7 @@ const defaultState = {
   lastScoreSubmit: {},
   serverLeaderboards: {},
   serverLeaderboardStatus: {},
+  serverFriendsStatus: {},
   friends: {},
   selectedProfileId: null,
   performanceMode: "balanced",
@@ -100,11 +103,14 @@ function applyStartupDebugActions() {
 applyStartupDebugActions();
 let state = loadState();
 const leaderboardFetchInFlight = new Set();
+let friendsFetchInFlight = false;
 applyStartupSocialLinks();
 
 function mergeState(base, stored) {
   const merged = { ...base, ...(stored || {}) };
   merged.completedLessons = { ...base.completedLessons, ...(stored?.completedLessons || {}) };
+  merged.quizProgress = typeof stored?.quizProgress === "object" && stored.quizProgress ? { ...base.quizProgress, ...stored.quizProgress } : { ...base.quizProgress };
+  merged.quizFeedback = typeof stored?.quizFeedback === "object" && stored.quizFeedback ? { ...base.quizFeedback, ...stored.quizFeedback } : { ...base.quizFeedback };
   merged.solvedMysteries = { ...base.solvedMysteries, ...(stored?.solvedMysteries || {}) };
   merged.seenHints = { ...base.seenHints, ...(stored?.seenHints || {}) };
   merged.mysteryTries = { ...base.mysteryTries, ...(stored?.mysteryTries || {}) };
@@ -118,6 +124,7 @@ function mergeState(base, stored) {
   merged.lastScoreSubmit = typeof stored?.lastScoreSubmit === "object" && stored.lastScoreSubmit ? { ...base.lastScoreSubmit, ...stored.lastScoreSubmit } : { ...base.lastScoreSubmit };
   merged.serverLeaderboards = typeof stored?.serverLeaderboards === "object" && stored.serverLeaderboards ? { ...base.serverLeaderboards, ...stored.serverLeaderboards } : { ...base.serverLeaderboards };
   merged.serverLeaderboardStatus = typeof stored?.serverLeaderboardStatus === "object" && stored.serverLeaderboardStatus ? { ...base.serverLeaderboardStatus, ...stored.serverLeaderboardStatus } : { ...base.serverLeaderboardStatus };
+  merged.serverFriendsStatus = typeof stored?.serverFriendsStatus === "object" && stored.serverFriendsStatus ? { ...base.serverFriendsStatus, ...stored.serverFriendsStatus } : { ...base.serverFriendsStatus };
   merged.achievements = { ...base.achievements, ...(stored?.achievements || {}) };
   return merged;
 }
@@ -300,8 +307,32 @@ function awardXP(amount, label) {
   setTimeout(() => toast.remove(), 1400);
 }
 
+function lessonQuizState(id) {
+  const key = String(id);
+  const current = state.quizProgress?.[key];
+  if (current && typeof current === "object") {
+    return { answers: {}, correct: {}, attempts: 0, passed: false, ...current };
+  }
+  return { answers: {}, correct: {}, attempts: 0, passed: false };
+}
+function lessonQuizPassed(id) {
+  if (lessonDone(id)) return true;
+  const progress = lessonQuizState(id);
+  if (progress.passed) return true;
+  const lesson = allLessons().find(l => l.id === id);
+  if (!lesson) return false;
+  const content = buildLessonContent(lesson);
+  const total = normalizeQuizPack(content.quiz, lesson, content).length;
+  return Object.values(progress.correct || {}).filter(Boolean).length >= total;
+}
 function completeLesson(id) {
   const lesson = allLessons().find(l => l.id === id);
+  if (!lesson) return;
+  if (!lessonQuizPassed(id)) {
+    const quizFeedback = { ...(state.quizFeedback || {}), [id]: "Valide les 5 questions du quiz pour terminer le cours." };
+    setState({ tab: "lesson", currentLessonId: id, lessonView: "quiz", lessonFocus: null, quizFeedback });
+    return;
+  }
   if (!lessonDone(id)) {
     state.completedLessons[id] = true;
     state.achievements.firstLesson = true;
@@ -360,13 +391,13 @@ function dailyChecklistMarkup() {
   const lesson = dailyLesson();
   const mysteryDone = Boolean(mystery && mysterySolved(mystery.id));
   const lessonDoneToday = Boolean(lesson && lessonDone(lesson.id));
-  const quizLabel = lessonDoneToday ? "cours validé" : (lesson ? "quiz disponible" : "cours lié absent");
+  const quizLabel = lessonDoneToday ? "cours validé" : (lesson ? "quiz à réussir" : "cours lié absent");
   const items = [
     { ok: mysteryDone, label: mysteryDone ? "Mystère résolu" : "Résoudre le mystère", sub: mysteryDone ? "Rituel validé" : "2 minutes, score maximum sans indice" },
-    { ok: lessonDoneToday, label: lessonDoneToday ? "Lecture validée" : "Lire l’express", sub: lesson ? "1 minute, sans spoiler le dossier" : "Cours indépendant absent" },
-    { ok: lessonDoneToday, label: quizLabel, sub: lessonDoneToday ? "+XP et progression" : "Quiz séparé si tu veux continuer" }
+    { ok: lessonDoneToday, label: lessonDoneToday ? "Cours validé" : "Lire l’express", sub: lesson ? "intro courte avant le complet" : "Cours indépendant absent" },
+    { ok: lessonDoneToday, label: quizLabel, sub: lessonDoneToday ? "+XP et progression" : "obligatoire pour valider le cours" }
   ];
-  return `<section class="card daily-checklist-card soft-panel"><div class="section-title-row"><div><span class="card-label">Boucle idéale</span><h2>La session parfaite sans forcer.</h2></div><small>${readingModeLabel()}</small></div><div class="daily-checklist">${items.map(item => `<div class="${item.ok ? "done" : ""}"><b>${item.ok ? "✓" : "•"}</b><span>${escapeHtml(item.label)}<small>${escapeHtml(item.sub)}</small></span></div>`).join("")}</div></section>`;
+  return `<section class="card daily-checklist-card soft-panel"><div class="section-title-row"><div><span class="card-label">Aujourd’hui</span><h2>Un mystère, un express court, puis un vrai quiz pour valider.</h2></div><small>${readingModeLabel()}</small></div><div class="daily-checklist">${items.map(item => `<div class="${item.ok ? "done" : ""}"><b>${item.ok ? "✓" : "•"}</b><span>${escapeHtml(item.label)}<small>${escapeHtml(item.sub)}</small></span></div>`).join("")}</div></section>`;
 }
 
 function nextActionMarkup() {
@@ -380,8 +411,8 @@ function nextActionMarkup() {
   let attr = "data-next-mystery";
   if (mysteryDone && lesson && !lessonDoneToday) {
     title = "Continue avec le cours du jour";
-    text = "Lis le cours indépendant du jour : une minute suffit, sans révéler la réponse du mystère.";
-    action = "Lire l’express";
+    text = "Commence par l’express, puis passe au cours complet et au quiz si tu veux valider la leçon.";
+    action = "Ouvrir le cours";
     attr = `data-next-lesson="${escapeHtml(lesson.id)}"`;
   } else if (mysteryDone) {
     title = "Rituel terminé";
@@ -389,7 +420,7 @@ function nextActionMarkup() {
     action = "Voir les archives";
     attr = "data-next-archives";
   }
-  return `<section class="card next-action-card"><div><span class="card-label">Prochaine meilleure action</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></div><button ${attr}>${escapeHtml(action)}</button></section>`;
+  return `<section class="card next-action-card"><div><span class="card-label">À faire maintenant</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></div><button ${attr}>${escapeHtml(action)}</button></section>`;
 }
 function dailyRoadmapMarkup() {
   const todaySolved = dailySolvedToday();
@@ -401,7 +432,7 @@ function dailyRoadmapMarkup() {
     const reward = offset === 0 ? `${dailyRewardPreview().gems} 💎` : "nouveau dossier";
     return `<div class="roadmap-day ${offset === 0 ? "today" : "locked"}"><b>${escapeHtml(label)}</b><span>${difficultyStars(mystery.difficulty)} ${difficultyLabel(mystery.difficulty)}</span><small>${escapeHtml(stateLabel)} · ${escapeHtml(reward)}</small></div>`;
   }).join("");
-  return `<section class="card daily-roadmap-card soft-panel"><div class="section-title-row"><div><span class="card-label">Rituel à venir</span><h2>Donner envie de revenir, sans spoiler.</h2></div><small>${timeToNextDaily()}</small></div><div class="roadmap-grid">${rows}</div></section>`;
+  return `<section class="card daily-roadmap-card soft-panel"><div class="section-title-row"><div><span class="card-label">Prochains dossiers</span><h2>Un nouveau dossier chaque jour.</h2></div><small>${timeToNextDaily()}</small></div><div class="roadmap-grid">${rows}</div></section>`;
 }
 
 function recentDailyCalendarMarkup({ compact = false } = {}) {
@@ -445,7 +476,7 @@ function premiumSpotlightMarkup() {
   const lesson = nextPremiumLesson();
   if (!lesson) return "";
   const world = lessonWorld(lesson);
-  return `<section class="card premium-spotlight-card soft-panel"><div><span class="card-label">Cours vitrine</span><h2>${escapeHtml(lesson.title)}</h2><p>${escapeHtml(world.title || "Parcours")} · ${lessonQualityLabel(lesson)} · à lire quand tu veux approfondir.</p></div><button data-premium-spotlight="${escapeHtml(lesson.id)}">Ouvrir</button></section>`;
+  return `<section class="card premium-spotlight-card soft-panel"><div><span class="card-label">Cours recommandé</span><h2>${escapeHtml(lesson.title)}</h2><p>${escapeHtml(world.title || "Parcours")} · ${lessonQualityLabel(lesson)} · à lire quand tu veux approfondir.</p></div><button data-premium-spotlight="${escapeHtml(lesson.id)}">Ouvrir</button></section>`;
 }
 function archiveBacklogCount() {
   return archiveEntries().filter(entry => isUnlockedMystery(entry.mystery.id) && !mysterySolved(entry.mystery.id)).length;
@@ -490,7 +521,7 @@ function premiumProgressMarkup() {
   if (!premium.length) return "";
   const done = premium.filter(lesson => lessonDone(lesson.id)).length;
   const ratio = percent(done, premium.length);
-  return `<section class="card premium-progress-card soft-panel"><div class="section-title-row"><div><span class="card-label">Qualité pédagogique</span><h2>${done}/${premium.length} cours premium validés</h2></div><small>${ratio}%</small></div><p>Objectif : mettre en avant moins de cours, mais beaucoup meilleurs, pour que l’app donne vraiment envie d’apprendre après le mystère.</p><div class="progress"><i style="width:${ratio}%"></i></div><button class="ghost wide" data-open-premium-list>Voir les premium</button></section>`;
+  return `<section class="card premium-progress-card soft-panel"><div class="section-title-row"><div><span class="card-label">Cours premium</span><h2>${done}/${premium.length} cours premium validés</h2></div><small>${ratio}%</small></div><p>Les cours premium sont les versions les plus complètes : exemples précis, pièges à éviter et quiz plus utiles.</p><div class="progress"><i style="width:${ratio}%"></i></div><button class="ghost wide" data-open-premium-list>Voir les premium</button></section>`;
 }
 function learnFilter() {
   const allowed = ["all", "premium", "linked", "todo"];
@@ -702,7 +733,7 @@ function installPromptMarkup() {
 function releaseNotesMarkup() {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
   if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
-  return `<section class="card release-card soft-panel"><div><span class="card-label">Nouveautés bêta 51</span><h2>Stabilité, anti-spoil et contenu plus propre.</h2><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul></div><button class="ghost" data-dismiss-release>OK</button></section>`;
+  return `<section class="card release-card soft-panel"><div><span class="card-label">Mise à jour</span><h2>Social plus fiable et interface plus propre.</h2><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul></div><button class="ghost" data-dismiss-release>OK</button></section>`;
 }
 function performanceMode() { return state.performanceMode === "light" ? "light" : "balanced"; }
 function applyPerformanceMode() {
@@ -797,8 +828,8 @@ function renderHome() {
   renderShell(`
     <header class="hero compact home-clean-hero">
       <div>
-        <p class="eyebrow">HistoDaily · beta 58 sociale</p>
-        <h1>Mystère, cours, vrais amis et vrais classements.</h1>
+        <p class="eyebrow">HistoDaily</p>
+        <h1>Un mystère historique par jour, puis le cours qui va avec.</h1>
         <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
       </div>
     </header>
@@ -863,9 +894,9 @@ function renderLearn() {
     <header class="topbar"><button data-back-home>←</button><div><p class="eyebrow">Parcours</p><h1>${escapeHtml(world.title || "Histoire")}</h1></div></header>
     <section class="chips">${worlds.map(w => `<button data-world="${w.id}" class="chip ${w.id === world.id ? "active" : ""}">${w.emoji || "📚"} ${escapeHtml(w.title)}</button>`).join("")}</section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    ${premiumInWorld.length ? `<section class="card premium-strip"><div><span class="card-label">⭐ Premium</span><h2>${premiumInWorld.length} cours vraiment rédigé${premiumInWorld.length > 1 ? "s" : ""} dans ce chapitre</h2><p>Ce sont les cours vitrine : plus concrets, moins génériques, meilleurs pour apprendre après un mystère.</p></div><div class="premium-mini-list">${premiumInWorld.slice(0,3).map(lesson => `<button data-premium-lesson="${lesson.id}">${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
+    ${premiumInWorld.length ? `<section class="card premium-strip"><div><span class="card-label">⭐ Premium</span><h2>${premiumInWorld.length} cours approfondi${premiumInWorld.length > 1 ? "s" : ""} dans ce chapitre</h2><p>Des cours plus concrets, moins génériques, avec de meilleurs repères pour comprendre après un mystère.</p></div><div class="premium-mini-list">${premiumInWorld.slice(0,3).map(lesson => `<button data-premium-lesson="${lesson.id}">${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
     <section class="lesson-list">
-      ${shownLessons.map((lesson, index) => lessonCard(lesson, index)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie “Tous” ou change de chapitre. Les cours premium seront ajoutés progressivement."}</p><button data-learn-filter="all">Voir tous les cours</button></div>`}
+      ${shownLessons.map((lesson, index) => lessonCard(lesson, index)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie “Tous” ou change de chapitre."}</p><button data-learn-filter="all">Voir tous les cours</button></div>`}
     </section>`);
   $("[data-back-home]")?.addEventListener("click", () => setState({ tab: "home" }));
   document.querySelectorAll("[data-world]").forEach(btn => btn.addEventListener("click", () => setState({ currentWorld: btn.dataset.world })));
@@ -16369,7 +16400,7 @@ function buildLessonContent(lesson) {
     { title: "Vocabulaire utile", text: `Repère chronologique : période ou date qui situe le sujet. Repère spatial : lieu ou aire culturelle concernée. Source : trace utilisée pour construire une connaissance historique. Contexte : ensemble des conditions qui donnent du sens à une trace.` },
     { title: "Méthode d’historien", text: `Pose quatre questions simples : où ? quand ? qui agit ? qu’est-ce que cela change ? Si tu peux répondre à ces quatre questions, tu as le squelette du cours sans apprendre un pavé par cœur.` },
     { title: "Erreur fréquente", text: `Le piège est de ${profile.mistake}. Pour l’éviter, rattache toujours la réponse à un lieu, une période, des acteurs et des traces concrètes.` },
-    { title: mystery ? "Lien direct avec le mystère" : "Lien avec le jeu", text: mystery ? `Le mystère utilise ${sentenceList(mystery.clues || [])} pour faire deviner « ${mystery.answer} ». Les indices sont donc aussi des points d’entrée vers le cours.` : `Le jeu doit rester rapide : il déclenche la curiosité. Le cours complet transforme ensuite une bonne intuition en vraie compréhension historique.` }
+    { title: mystery ? "Lien direct avec le mystère" : "Lien avec le jeu", text: mystery ? `Le mystère utilise ${sentenceList(mystery.clues || [])} pour faire deviner « ${mystery.answer} ». Les indices sont donc aussi des points d’entrée vers le cours.` : `Le format court déclenche la curiosité. Le cours complet transforme ensuite une bonne intuition en compréhension historique solide.` }
   ];
   const quiz = buildGenericQuiz(title, period, place, profile, mystery);
   return { title, period, place, world, mystery, profile, hook: normalizeDetailText(hook), express, complete, deeper, quiz };
@@ -16398,14 +16429,25 @@ function renderLesson() {
   }
   if (!["express", "complete", "quiz"].includes(state.lessonView)) state.lessonView = "express";
   const content = buildLessonContent(lesson);
+  const quizPassed = lessonQuizPassed(lesson.id);
+  const canComplete = lessonDone(lesson.id) || quizPassed;
+  const footer = canComplete
+    ? `<button type="button" class="wide success" data-complete>${lessonDone(lesson.id) ? "Cours validé" : `Valider le cours +${lesson.xp || 55} XP`}</button>`
+    : `<div class="lesson-validation-locked"><b>Validation verrouillée</b><span>Lis puis réussis les 5 questions. Le cours ne se valide plus par simple lecture.</span><button type="button" data-lesson-view="quiz">Passer au quiz</button></div>`;
   renderShell(`
     <header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(content.period)}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(content.title)}</h1></div></header>
     <article class="card reading-card two-speed-course lesson-tabbed-card">
       ${renderLessonText(lesson, content)}
-      <button type="button" class="wide success" data-complete>${lessonDone(lesson.id) ? "Leçon validée" : `Valider +${lesson.xp || 55} XP`}</button>
+      ${footer}
     </article>`);
   $("[data-back-learn]")?.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "express" }));
   $("[data-complete]")?.addEventListener("click", () => completeLesson(lesson.id));
+  document.querySelectorAll("[data-quiz-choice]").forEach(btn => btn.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleQuizChoice(lesson.id, Number(btn.dataset.quizChoice), Number(btn.dataset.choiceIndex));
+  }));
+  $("[data-reset-quiz]")?.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); resetLessonQuiz(lesson.id); });
   document.querySelectorAll("[data-lesson-view]").forEach(btn => btn.addEventListener("click", event => {
     event.preventDefault();
     event.stopPropagation();
@@ -16445,7 +16487,7 @@ function lessonMemoMarkup(lesson, content, takeaways, quizItems) {
       <div><b>Idée à maîtriser</b><span>${escapeHtml(proof?.text || proof || "Appuie ta réponse sur un élément du cours.")}</span></div>
       <div><b>Nuance importante</b><span>${escapeHtml(trap?.text || trap || "Garde une réponse située et précise.")}</span></div>
     </div>
-    <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p><strong>Réponse attendue :</strong> ${escapeHtml(control.a || "Une réponse située, avec raisonnement clair.")}</p></details>
+    <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p>Retrouve la réponse dans le cours puis vérifie-toi avec le quiz final.</p></details>
     ${mystery && isAccessibleMystery(mystery.id) ? `<button class="ghost wide" data-open-linked-mystery="${escapeHtml(mystery.id)}">🕵️ Revoir le mystère lié</button>` : ""}
   </section>`;
 }
@@ -16457,6 +16499,136 @@ function lessonTabButton(view, label, sub) {
   const active = lessonView() === view ? "active" : "";
   return `<button data-lesson-view="${view}" class="${active}"><b>${label}</b><span>${sub}</span></button>`;
 }
+function quizSeed(value = "") {
+  let h = 2166136261;
+  String(value).split("").forEach(ch => { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); });
+  return h >>> 0;
+}
+function seededShuffle(items = [], seed = 1) {
+  const arr = items.slice();
+  let x = seed || 1;
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    x = (Math.imul(x, 1664525) + 1013904223) >>> 0;
+    const j = x % (i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function compactAnswer(value = "") {
+  return String(value).replace(/\s+/g, " ").trim();
+}
+function genericWrongChoices(item = {}, lesson = {}, content = {}) {
+  const title = lesson.title || content.title || "le sujet";
+  return [
+    "Une simple anecdote isolée, sans conséquence historique durable.",
+    "Une explication trop vague qui oublie les dates, les lieux et les acteurs.",
+    "Un phénomène apparu partout d’un coup, sans traces ni contexte.",
+    `Une réponse qui confond ${safeLower(title)} avec un thème beaucoup plus large.`,
+    "Un détail décoratif intéressant, mais sans lien avec l’organisation des sociétés.",
+    "Une cause unique qui expliquerait tout sans nuance."
+  ];
+}
+function quizChoicesFor(item = {}, quizItems = [], lesson = {}, content = {}, index = 0) {
+  const correct = compactAnswer(item.a || item.answer || "Réponse à retrouver dans le cours.");
+  const fromItem = Array.isArray(item.choices) ? item.choices : [];
+  const pool = [correct, ...fromItem, ...quizItems.filter((_, i) => i !== index).map(other => other.a || other.answer), ...genericWrongChoices(item, lesson, content)]
+    .map(compactAnswer)
+    .filter(Boolean);
+  const unique = [];
+  const seen = new Set();
+  pool.forEach(text => {
+    const key = normalize(text);
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    unique.push({ text, correct: normalize(text) === normalize(correct) });
+  });
+  if (!unique.some(choice => choice.correct)) unique.unshift({ text: correct, correct: true });
+  const correctChoice = unique.find(choice => choice.correct);
+  const wrongChoices = unique.filter(choice => !choice.correct).slice(0, 8);
+  const four = [correctChoice, ...wrongChoices].filter(Boolean).slice(0, 4);
+  while (four.length < 4) four.push({ text: genericWrongChoices(item, lesson, content)[four.length] || "Une réponse trop générale.", correct: false });
+  return seededShuffle(four, quizSeed(`${lesson.id || content.title}-${index}-${item.q || correct}`));
+}
+function quizProgressForLesson(lessonId, total = 5) {
+  const progress = lessonQuizState(lessonId);
+  const correctCount = Object.values(progress.correct || {}).filter(Boolean).length;
+  return { ...progress, correctCount, total, passed: Boolean(progress.passed || correctCount >= total) };
+}
+function quizItemMarkup(item, index, quizItems, lesson, content) {
+  const progress = lessonQuizState(lesson.id);
+  const selected = progress.answers?.[index];
+  const correctMap = progress.correct || {};
+  const isDone = Boolean(correctMap[index]);
+  const choices = quizChoicesFor(item, quizItems, lesson, content, index);
+  const selectedChoice = Number.isInteger(selected) ? choices[selected] : null;
+  const wrongSelected = Number.isInteger(selected) && selectedChoice && !selectedChoice.correct && !isDone;
+  const status = isDone ? "correct" : wrongSelected ? "wrong" : "open";
+  return `<article class="quiz-card ${status}">
+    <div class="quiz-question-head"><b>${index + 1}</b><div>${item.kind ? `<em>${escapeHtml(item.kind)}</em>` : ""}<h3>${escapeHtml(item.q)}</h3></div></div>
+    <div class="quiz-choices" role="group" aria-label="Question ${index + 1}">
+      ${choices.map((choice, choiceIndex) => {
+        const chosen = selected === choiceIndex;
+        const cls = chosen ? (choice.correct ? "selected correct" : "selected wrong") : "";
+        return `<button type="button" class="quiz-choice ${cls}" data-quiz-choice="${index}" data-choice-index="${choiceIndex}" ${isDone ? "disabled" : ""}><span>${String.fromCharCode(65 + choiceIndex)}</span>${escapeHtml(choice.text)}</button>`;
+      }).join("")}
+    </div>
+    ${isDone ? `<p class="quiz-result good"><b>Correct.</b> ${escapeHtml(item.why || "Tu as retrouvé l’idée importante du cours.")}</p>${item.evidence ? `<p class="quiz-evidence"><strong>À retrouver :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : wrongSelected ? `<p class="quiz-result bad"><b>Pas encore.</b> Relis le passage concerné puis retente : je ne donne pas la bonne réponse directement.</p>${item.trap ? `<p class="quiz-trap"><strong>Piège :</strong> ${escapeHtml(item.trap)}</p>` : ""}` : `<p class="quiz-result neutral">Choisis une réponse. La bonne réponse n’apparaît qu’après réussite.</p>`}
+  </article>`;
+}
+function handleQuizChoice(lessonId, questionIndex, choiceIndex) {
+  const lesson = allLessons().find(l => l.id === lessonId);
+  if (!lesson) return;
+  const content = buildLessonContent(lesson);
+  const quizItems = normalizeQuizPack(content.quiz, lesson, content);
+  const item = quizItems[questionIndex];
+  if (!item) return;
+  const choices = quizChoicesFor(item, quizItems, lesson, content, questionIndex);
+  const choice = choices[choiceIndex];
+  if (!choice) return;
+  const key = String(lessonId);
+  const progress = lessonQuizState(key);
+  const answers = { ...(progress.answers || {}), [questionIndex]: choiceIndex };
+  const correct = { ...(progress.correct || {}) };
+  if (choice.correct) correct[questionIndex] = true;
+  const correctCount = Object.values(correct).filter(Boolean).length;
+  const passed = correctCount >= quizItems.length;
+  const quizProgress = { ...(state.quizProgress || {}), [key]: { ...progress, answers, correct, attempts: (progress.attempts || 0) + 1, passed } };
+  const quizFeedback = { ...(state.quizFeedback || {}), [key]: passed ? "Quiz réussi : tu peux valider le cours." : choice.correct ? `${correctCount}/${quizItems.length} bonnes réponses.` : "Mauvaise réponse : relis puis retente, sans correction automatique." };
+  setState({ quizProgress, quizFeedback, lessonView: "quiz", lessonFocus: null });
+}
+function resetLessonQuiz(lessonId) {
+  const quizProgress = { ...(state.quizProgress || {}) };
+  const quizFeedback = { ...(state.quizFeedback || {}) };
+  delete quizProgress[String(lessonId)];
+  delete quizFeedback[String(lessonId)];
+  setState({ quizProgress, quizFeedback, lessonView: "quiz", lessonFocus: null });
+}
+function expandedCompleteBlocks(lesson = {}, content = {}) {
+  const base = Array.isArray(content.complete) ? content.complete.filter(Boolean) : [];
+  const profile = content.profile || {};
+  const keyFacts = lessonKeyFacts(lesson, content);
+  const title = content.title || lesson.title || "ce sujet";
+  const period = content.period || lesson.period || "une période à situer";
+  const place = content.place || lesson.location || "un espace à situer";
+  const introText = `${title} mérite plus qu’une fiche de révision. Pour le comprendre correctement, il faut tenir ensemble le cadre, les acteurs, les traces et les conséquences. Le sujet se situe dans ${period}, autour de ${place}. Ce repère évite de transformer l’histoire en résumé flottant : une même idée ne veut pas dire la même chose selon le siècle, le lieu, les groupes concernés et les sources disponibles.`;
+  const expanded = [
+    { title: "1. Poser le cadre", text: introText },
+    ...base.map((block, index) => {
+      const titleBlock = block.title || `Partie ${index + 2}`;
+      const text = block.text || String(block || "");
+      const needsMore = text.length < 520;
+      const add = needsMore ? ` Ce point doit être lu comme un mécanisme : qui agit, avec quels moyens, et qu’est-ce que cela change ? Les acteurs ne sont pas abstraits : ${profile.actors || "des groupes, institutions et individus prennent des décisions, transmettent des pratiques ou subissent des contraintes"}. Pour ne pas rester dans la formule, rattache cette partie à des traces concrètes : ${profile.traces || keyFacts.join(", ") || "sources, objets, lieux, textes ou indices matériels"}.` : "";
+      return { title: titleBlock, text: `${text}${add}` };
+    }),
+    { title: "Repères à garder pendant la lecture", text: keyFacts.length ? `Garde ces repères en tête : ${sentenceList(keyFacts)}. Ils servent de garde-fou. Sans eux, on retient des mots mais on perd le raisonnement : dates, lieux, acteurs et traces doivent rester liés.` : `Garde toujours quatre questions en tête : où ? quand ? qui agit ? qu’est-ce que cela change ? C’est ce qui transforme un résumé en vraie compréhension.` },
+    { title: "Acteurs, décisions et rapports de force", text: `Un cours utile ne parle pas seulement d’une “civilisation” ou d’une “époque” comme si elle pensait toute seule. Il faut imaginer des acteurs concrets : ${profile.actors || "dirigeants, artisans, croyants, soldats, marchands, familles, scribes ou groupes dominés selon le sujet"}. Certains décident, d’autres exécutent, transmettent, résistent ou adaptent. C’est souvent dans ces écarts que le sujet devient intéressant.` },
+    { title: "Sources et preuves", text: `Ce que l’on sait dépend des traces disponibles : ${profile.traces || "textes, objets, monuments, images, archives, vestiges ou données matérielles"}. Une trace ne parle jamais toute seule. Elle doit être datée, localisée, comparée et interprétée. C’est pour cela qu’une bonne réponse historique n’est pas seulement “la bonne idée”, mais une idée appuyée sur des éléments vérifiables.` },
+    { title: "Piège fréquent", text: `Le raccourci à éviter : ${profile.mistake || "réduire le sujet à une définition propre mais trop simple"}. C’est séduisant parce que c’est rapide, mais cela écrase les nuances. À la place, cherche toujours le basculement : ce qui existait avant, ce qui change, ce qui résiste, et ce qui reste après.` },
+    { title: "Synthèse", text: `À la fin, tu dois pouvoir expliquer ${safeLower(title)} en cinq phrases : le cadre, le problème historique, les acteurs, les traces, puis la conséquence. La bonne maîtrise n’est pas de réciter tout le cours ; c’est de reconstruire le raisonnement sans te tromper de période, sans confondre les acteurs et sans oublier pourquoi le sujet compte.` }
+  ];
+  return expanded.slice(0, 12);
+}
+
 function renderLessonText(lesson, content) {
   const fastLabel = content.mystery ? "Après le mystère" : "Lecture rapide";
   const keyFacts = lessonKeyFacts(lesson, content);
@@ -16465,33 +16637,43 @@ function renderLessonText(lesson, content) {
   const view = lessonView();
   const keyFactsMarkup = keyFacts.length ? `<div class="key-facts"><b>Repères clés</b>${keyFacts.map(fact => `<span>${escapeHtml(fact)}</span>`).join("")}</div>` : "";
   const tabs = `<section class="lesson-choice-panel" aria-label="Choisir le format du cours">
-      <div><span class="card-label">Choisis ton format</span><h2>${view === "complete" ? "Cours complet" : view === "quiz" ? "Quiz uniquement" : "Mode rapide"}</h2><p>${view === "complete" ? "Lecture riche, mais volontaire : tu ne la subis plus par défaut." : view === "quiz" ? "Tu peux réviser directement sans remanger tout le cours." : "L’essentiel d’abord. Tu peux valider ou passer au complet seulement si tu veux."}</p></div>
+      <div><span class="card-label">Choisis ton format</span><h2>${view === "complete" ? "Cours complet" : view === "quiz" ? "Quiz final" : "Cours express"}</h2><p>${view === "complete" ? "Une vraie lecture d’environ 5 minutes, avec contexte, acteurs, traces, pièges et synthèse." : view === "quiz" ? "5 questions à choix multiples. Il faut tout réussir pour valider le cours." : "Le format court : l’essentiel, comme une bonne introduction avant le vrai cours."}</p></div>
       <div class="lesson-view-tabs">
-        ${lessonTabButton("express", "⚡ Rapide", "1 min")}
-        ${lessonTabButton("complete", "📚 Complet", "4-6 min")}
-        ${lessonTabButton("quiz", "✅ Quiz", "5 questions")}
+        ${lessonTabButton("express", "⚡ Express", "court")}
+        ${lessonTabButton("complete", "📚 Complet", "5 min")}
+        ${lessonTabButton("quiz", "✅ Quiz", "obligatoire")}
       </div>
     </section>`;
   const intro = `<section class="lesson-hook">
       <span class="card-label">${content.premium ? "⭐ Cours rédigé" : fastLabel}</span>
       <p>${escapeHtml(content.hook)}</p>
-      <div class="lesson-meta"><span>${content.premium ? "⭐ rédigé" : "🧭 structuré"}</span><span>⚡ express</span><span>📚 complet à la demande</span><span>✅ quiz séparé</span></div>
+      <div class="lesson-meta"><span>${content.premium ? "⭐ rédigé" : "🧭 structuré"}</span><span>⚡ express court</span><span>📚 lecture complète</span><span>✅ quiz obligatoire</span></div>
     </section>`;
   if (view === "complete") {
+    const completeBlocks = expandedCompleteBlocks(lesson, content);
+    const estimatedMinutes = Math.max(4, Math.min(7, Math.round(completeBlocks.map(block => block.text || "").join(" ").split(/\s+/).filter(Boolean).length / 180)));
     return `${intro}${tabs}
-      <section class="text-block express-block compact-reminder"><div class="section-title-row"><h2>Avant de creuser</h2><small>2 repères</small></div>${keyFactsMarkup || ""}<p>${escapeHtml(content.express[0] || content.hook)}</p></section>
+      <section class="text-block express-block compact-reminder"><div class="section-title-row"><h2>Avant de creuser</h2><small>repères</small></div>${keyFactsMarkup || ""}<p>${escapeHtml(content.express[0] || content.hook)}</p></section>
       <section class="complete-course-panel" data-focus-target="complete">
-        <div class="section-title-row"><h2>📚 Version complète</h2><small>lecture riche</small></div>
-        ${content.complete.map(block => `<section class="text-block"><h2>${escapeHtml(block.title)}</h2><p>${escapeHtml(block.text)}</p></section>`).join("")}
+        <div class="section-title-row"><h2>📚 Cours complet</h2><small>${estimatedMinutes} min de lecture</small></div>
+        ${completeBlocks.map(block => `<section class="text-block deep-reading-block"><h2>${escapeHtml(block.title)}</h2><p>${escapeHtml(block.text)}</p></section>`).join("")}
       </section>
-      <section class="further-list"><h2>Pour aller plus loin</h2>${content.deeper.map(block => `<details class="further"><summary>${escapeHtml(block.title)}</summary><p>${escapeHtml(block.text)}</p></details>`).join("")}</section>`;
+      <section class="further-list"><h2>Pour aller plus loin</h2>${content.deeper.map(block => `<details class="further"><summary>${escapeHtml(block.title)}</summary><p>${escapeHtml(block.text)}</p></details>`).join("")}</section>
+      <section class="lesson-next-choice"><button type="button" data-lesson-view="quiz">✅ Faire le quiz final</button></section>`;
   }
   if (view === "quiz") {
+    const progress = quizProgressForLesson(lesson.id, quizItems.length);
+    const feedback = state.quizFeedback?.[lesson.id] || state.quizFeedback?.[String(lesson.id)] || "";
     return `${intro}${tabs}${keyFactsMarkup}
-      <section class="quiz-section isolated-quiz" data-focus-target="quiz">
-        <div class="section-title-row"><h2>Quiz · 5 questions</h2><small>raisonnement et compréhension</small></div>
-        <div class="quiz-coach"><b>Mini-défi</b><span>Réponds mentalement avant d’ouvrir : cadre, acteurs, mécanisme, conséquence. C’est ça qu’on vérifie.</span></div>
-        ${quizItems.map((item, index) => `<details class="quiz-item"><summary><b>${index + 1}</b>${item.kind ? ` <em>${escapeHtml(item.kind)}</em>` : ""} ${escapeHtml(item.q)}</summary><p><strong>Réponse :</strong> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>À ne pas confondre :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Où regarder dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}</details>`).join("")}
+      <section class="quiz-section isolated-quiz final-quiz" data-focus-target="quiz">
+        <div class="section-title-row"><h2>Quiz final · 5 questions</h2><small>${progress.correctCount}/${quizItems.length} réussies</small></div>
+        <div class="quiz-coach"><b>Passage obligé</b><span>Choix multiples, pas de réponse donnée d’avance. Le cours se valide uniquement quand les 5 questions sont justes.</span></div>
+        ${feedback ? `<p class="quiz-global-feedback ${progress.passed ? "good" : ""}">${escapeHtml(feedback)}</p>` : ""}
+        ${quizItems.map((item, index) => quizItemMarkup(item, index, quizItems, lesson, content)).join("")}
+        <div class="quiz-footer">
+          <button type="button" class="ghost" data-reset-quiz>Recommencer le quiz</button>
+          ${progress.passed ? `<button type="button" class="success" data-complete>Valider le cours</button>` : `<span>Encore ${quizItems.length - progress.correctCount} question(s) à réussir.</span>`}
+        </div>
       </section>`;
   }
   const expressBits = Array.isArray(content.express) && content.express.length ? content.express.slice(0, 3) : [content.hook || "Sujet à replacer dans son contexte."];
@@ -16501,7 +16683,7 @@ function renderLessonText(lesson, content) {
     || consequence;
   return `${intro}${tabs}
     <section class="express-debug-card" data-focus-target="express">
-      <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>La version utile, pas la fiche automatique</h2></div><small>1 min</small></div>
+      <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>Le court express</h2></div><small>intro courte</small></div>
       ${keyFactsMarkup}
       <div class="express-steps clean-express">
         <div><b>1 · Situation</b><p>${escapeHtml(expressBits[0] || content.hook)}</p></div>
@@ -16510,7 +16692,7 @@ function renderLessonText(lesson, content) {
         <div><b>4 · Phrase à savoir redire</b><p>${escapeHtml(short(remember, 260))}</p></div>
       </div>
     </section>
-    <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">📚 Lire le complet</button><button type="button" data-lesson-view="quiz">✅ Passer au quiz</button></section>`;
+    <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">📚 Lire le vrai cours complet</button><button type="button" data-lesson-view="quiz">✅ Faire le quiz</button></section>`;
 }
 
 function renderMystery() {
@@ -16637,28 +16819,41 @@ function leaderboardSeed(scope = "daily") { return []; }
 function remoteLeaderboardRows(scope = state.rankScope || "daily") {
   const bucket = state.serverLeaderboards?.[scope];
   if (!Array.isArray(bucket) || !bucket.length) return [];
-  return bucket.map(row => ({
-    id: row.id || row.player_id || row.playerId || row.friend_code || row.pseudo,
-    name: row.name || row.pseudo || "Joueur",
-    score: Number(row.score || 0),
-    level: Number(row.level || 1),
-    solved: Number(row.solved || row.solved_count || 0),
-    streak: Number(row.streak || 0),
-    hints: row.hints,
-    tries: row.tries,
-    server: true
-  })).filter(row => row.id && row.score > 0);
+  return bucket.map(row => {
+    const friendCodeValue = normalizeFriendCode(row.friendCode || row.friend_code || row.friend_code_canonical || "");
+    const id = row.id || row.player_id || row.playerId || friendCodeValue || row.pseudo;
+    return {
+      id,
+      playerId: row.player_id || row.playerId || id,
+      friendCode: friendCodeValue,
+      name: row.name || row.pseudo || "Joueur",
+      avatar: String(row.name || row.pseudo || "J").trim().charAt(0).toUpperCase() || "J",
+      score: Number(row.score || 0),
+      level: Number(row.level || 1),
+      xp: Number(row.xp || 0),
+      solved: Number(row.solved || row.solved_count || 0),
+      streak: Number(row.streak || 0),
+      hints: row.hints,
+      tries: row.tries,
+      daily: scope === "daily" || scope === "friends" ? Number(row.score || 0) : 0,
+      week: scope === "week" ? Number(row.score || 0) : 0,
+      year: scope === "year" ? Number(row.score || 0) : 0,
+      badges: ["Serveur"],
+      server: true
+    };
+  }).filter(row => row.id && row.score > 0);
 }
 function leaderboardRows(scope = state.rankScope || "daily") {
   const remote = remoteLeaderboardRows(scope);
   if (remote.length) {
     const me = myPlayerProfile();
     const myScore = scoreForScope(scope);
-    const alreadyMe = remote.some(row => String(row.id) === String(me.id) || String(row.id) === String(friendCode()) || String(row.friendCode || "") === String(friendCode()));
+    const myCode = normalizeFriendCode(friendCode());
+    const alreadyMe = remote.some(row => row.playerId === me.id || row.id === me.id || normalizeFriendCode(row.friendCode) === myCode);
     const rows = alreadyMe || myScore <= 0 ? remote : [...remote, { ...me, score: myScore, localOnly: true }];
     return rows
       .sort((a, b) => b.score - a.score || String(a.name).localeCompare(String(b.name), "fr"))
-      .map((row, index) => ({ ...row, rank: index + 1, me: String(row.id) === String(me.id) || String(row.id) === String(friendCode()) }));
+      .map((row, index) => ({ ...row, rank: index + 1, me: row.playerId === me.id || row.id === me.id || normalizeFriendCode(row.friendCode) === myCode }));
   }
   return leaderboardPlayers(scope)
     .map(player => ({ ...player, name: player.name, score: scoreOfPlayer(player, scope) }))
@@ -16676,8 +16871,10 @@ async function fetchServerLeaderboard(scope = "daily", { force = false } = {}) {
   state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { ...status, loading: true } };
   saveState();
   try {
-    const friendCodes = Object.values(state.friends || {}).map(friend => friend.code || friend.id).filter(Boolean).join(",");
-    const response = await fetch(`/api/v1/leaderboard/daily?scope=${encodeURIComponent(scope)}&periodKey=${encodeURIComponent(localDayKey())}&playerId=${encodeURIComponent(playerIdMe())}&friendCodes=${encodeURIComponent(friendCodes)}`);
+    const friends = Object.values(state.friends || {});
+    const friendCodes = friends.map(friend => friend.code || friend.id).filter(Boolean).join(",");
+    const friendIds = friends.map(friend => friend.playerId || friend.friend_player_id).filter(Boolean).join(",");
+    const response = await fetch(`/api/v1/leaderboard/daily?scope=${encodeURIComponent(scope)}&periodKey=${encodeURIComponent(localDayKey())}&playerId=${encodeURIComponent(playerIdMe())}&friendCodes=${encodeURIComponent(friendCodes)}&friendIds=${encodeURIComponent(friendIds)}`);
     const json = await response.json();
     state.serverLeaderboards = { ...(state.serverLeaderboards || {}), [scope]: Array.isArray(json?.rows) ? json.rows : [] };
     state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: json?.mode || "unknown", note: json?.note || "" } };
@@ -16691,12 +16888,92 @@ async function fetchServerLeaderboard(scope = "daily", { force = false } = {}) {
   }
 }
 function ensureServerLeaderboard(scope = "daily") { fetchServerLeaderboard(scope).catch(() => {}); }
+function normalizeFriendCode(value = "") {
+  return String(value || "").trim().toUpperCase().replace(/\s+/g, "").replace(/[^A-Z0-9-]/g, "");
+}
+function friendCodeSuffix(value = "") {
+  const parts = normalizeFriendCode(value).split("-").filter(Boolean);
+  return parts[parts.length - 1] || "";
+}
+function mergeServerFriends(rows = []) {
+  if (!Array.isArray(rows) || !rows.length) return false;
+  const friends = { ...(state.friends || {}) };
+  let changed = false;
+  rows.forEach(row => {
+    const serverFriend = normalizeServerFriend(row);
+    if (!serverFriend?.code) return;
+    const suffix = friendCodeSuffix(serverFriend.code);
+    Object.keys(friends).forEach(key => {
+      const existingSuffix = friendCodeSuffix(friends[key]?.code || key);
+      if (suffix && existingSuffix === suffix && key !== serverFriend.id) {
+        delete friends[key];
+        changed = true;
+      }
+    });
+    const previous = friends[serverFriend.id] || {};
+    const next = { ...previous, ...serverFriend, syncedAt: Date.now() };
+    if (JSON.stringify(previous) !== JSON.stringify(next)) changed = true;
+    friends[serverFriend.id] = next;
+  });
+  if (changed) state.friends = friends;
+  return changed;
+}
+function normalizeServerFriend(row = {}) {
+  const code = normalizeFriendCode(row.friend_code || row.friendCode || row.code || row.id || "");
+  if (!code || code === normalizeFriendCode(friendCode())) return null;
+  const parsed = parseFriendCode(code);
+  const pseudo = sanitizePseudo(row.profile_pseudo || row.pseudo || row.friend_pseudo || row.friendPseudo || row.name || parsed?.pseudo || "Ami");
+  const id = code;
+  return {
+    id,
+    code,
+    playerId: row.friend_player_id || row.player_id || row.playerId || "",
+    name: pseudo || "Ami",
+    level: Number(row.level || 1),
+    xp: Number(row.xp || 0),
+    solved: Number(row.solved_count || row.solved || 0),
+    streak: Number(row.streak || 0),
+    daily: Number(row.daily || row.score || 0),
+    week: Number(row.week || 0),
+    year: Number(row.year || 0),
+    server: true
+  };
+}
+async function fetchServerFriends({ force = false } = {}) {
+  if (!isOnline || friendsFetchInFlight) return;
+  const now = Date.now();
+  const status = state.serverFriendsStatus || {};
+  if (!force && status.loadedAt && now - status.loadedAt < 45000) return;
+  friendsFetchInFlight = true;
+  state.serverFriendsStatus = { ...status, loading: true };
+  saveState();
+  try {
+    const response = await fetch(`/api/v1/friends/sync?playerId=${encodeURIComponent(playerIdMe())}`);
+    const json = await response.json();
+    const changed = mergeServerFriends(json?.friends || []);
+    state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: json?.mode || "unknown", message: json?.message || "" };
+    if (changed) {
+      state.serverLeaderboards = { ...(state.serverLeaderboards || {}), friends: [] };
+      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), friends: { loadedAt: 0, mode: "refresh", note: "Liste d’amis actualisée." } };
+      fetchServerLeaderboard("friends", { force: true }).catch(() => {});
+    }
+    saveState();
+    if (state.tab === "profile" || state.tab === "rank") render();
+  } catch {
+    state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: "error", message: "Amis serveur indisponibles." };
+    saveState();
+  } finally {
+    friendsFetchInFlight = false;
+  }
+}
+function ensureServerFriends() { fetchServerFriends().catch(() => {}); }
 function userRank(scope = "daily") {
   return leaderboardRows(scope).find(row => row.me)?.rank || 999;
 }
 function renderRank() {
   const scope = state.rankScope || "daily";
   ensureServerLeaderboard(scope);
+  if (scope === "friends") ensureServerFriends();
   const rows = leaderboardRows(scope);
   const myScore = scoreForScope(scope);
   const mySolved = solvedCountForScope(scope);
@@ -16709,7 +16986,7 @@ function renderRank() {
       <button data-rank-scope="year" class="${scope === "year" ? "active" : ""}">Année</button>
       <button data-rank-scope="friends" class="${scope === "friends" ? "active" : ""}">Amis</button>
     </section>
-    <section class="card social-rank-hero"><div><span class="card-label">Multi léger</span><h2>${isFriends ? "Tes amis seulement" : "Classement général bêta"}</h2><p>${isFriends ? socialStatusLine() : leaderboardIntroText(scope)}</p></div><button data-open-profile>${state.pseudo || "Profil"}</button></section>
+    <section class="card social-rank-hero"><div><span class="card-label">Classement</span><h2>${isFriends ? "Tes amis seulement" : "Classement général"}</h2><p>${isFriends ? socialStatusLine() : leaderboardIntroText(scope)}</p></div><button data-open-profile>${state.pseudo || "Profil"}</button></section>
     ${socialBackendMarkup()}
     <section class="card rank-summary">
       <div><span>Ton score</span><strong>${myScore} XP</strong></div>
@@ -16721,8 +16998,8 @@ function renderRank() {
     <section class="card leaderboard leaderboard-modern">${rows.length ? rows.map(row => `<button class="rank-row ${row.me ? "me" : ""}" data-view-profile="${escapeHtml(row.id)}"><span>${row.rank}</span><strong>${escapeHtml(row.name)}</strong><em>${row.score} XP</em></button>`).join("") : emptyRankMarkup(scope)}</section>
     ${scope === "daily" ? `<p class="rank-note">Le score du jour récompense surtout : résoudre sans indice, avec peu d’essais.</p>` : ""}
     ${scope === "week" ? `<p class="rank-note">La semaine additionne les mystères résolus depuis lundi.</p>` : ""}
-    ${scope === "year" ? `<p class="rank-note">L’année cumulera les scores réels enregistrés. Aucun faux joueur n’est ajouté.</p>` : ""}
-    ${isFriends ? `${addFriendMarkup()}${friendListMarkup()}` : `<p class="rank-note muted-note">Aucun faux joueur : ce classement n’affiche que les scores réels reçus ou ton score local si tu viens de jouer.</p>`}`);
+    ${scope === "year" ? `<p class="rank-note">L’année cumulera les scores réels enregistrés. Aucun profil fictif n’est ajouté.</p>` : ""}
+    ${isFriends ? `${addFriendMarkup()}${friendListMarkup()}` : `<p class="rank-note muted-note">Le classement affiche les scores reçus en ligne, plus ton score local si tu viens de jouer.</p>`}`);
   $(`[data-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
   $(`[data-open-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
   document.querySelectorAll("[data-rank-scope]").forEach(btn => btn.addEventListener("click", () => setState({ rankScope: btn.dataset.rankScope })));
@@ -16789,57 +17066,130 @@ function parseFriendCode(raw = "") {
   const id = `${match[1]}-${match[2]}`.toUpperCase();
   return { id, pseudo: pseudo.charAt(0) + pseudo.slice(1).toLowerCase(), code: id };
 }
-function friendProfileFromCode(code, pseudoOverride) {
-  const parsed = parseFriendCode(code) || { id: String(code), pseudo: pseudoOverride || "Ami" };
-  const name = pseudoOverride || parsed.pseudo || "Ami";
+function friendProfileFromCode(code, pseudoOverride, meta = {}) {
+  const normalizedCode = normalizeFriendCode(code || meta.code || meta.id || "");
+  const parsed = parseFriendCode(normalizedCode) || { id: normalizedCode || String(code || ""), pseudo: pseudoOverride || "Ami", code: normalizedCode };
+  const name = sanitizePseudo(meta.name || meta.pseudo || pseudoOverride || parsed.pseudo || "Ami");
   return {
-    id: parsed.id,
-    code: parsed.code || parsed.id,
+    id: normalizedCode || parsed.id,
+    playerId: meta.playerId || meta.friend_player_id || "",
+    code: normalizedCode || parsed.code || parsed.id,
     name,
     avatar: String(name || "A").charAt(0).toUpperCase(),
-    bio: "Ami ajouté par code. Ses vraies stats apparaîtront quand son score sera reçu par le serveur.",
-    level: 1,
-    xp: 0,
-    solved: 0,
-    streak: 0,
-    badges: ["Ami"],
-    daily: 0,
-    week: 0,
-    year: 0,
+    bio: meta.server ? "Ami synchronisé. Ses stats se mettent à jour quand ses scores arrivent." : "Ami ajouté par code. Ses stats apparaîtront quand son score sera synchronisé.",
+    level: Number(meta.level || 1),
+    xp: Number(meta.xp || 0),
+    solved: Number(meta.solved || meta.solved_count || 0),
+    streak: Number(meta.streak || 0),
+    badges: meta.server ? ["Ami", "Serveur"] : ["Ami"],
+    daily: Number(meta.daily || 0),
+    week: Number(meta.week || 0),
+    year: Number(meta.year || 0),
     friend: true,
-    pendingServerStats: true
+    pendingServerStats: !meta.server
   };
 }
 function friendProfiles() {
-  return Object.values(state.friends || {}).map(friend => friendProfileFromCode(friend.code || friend.id, friend.name));
+  return Object.values(state.friends || {}).map(friend => friendProfileFromCode(friend.code || friend.id, friend.name, friend));
 }
 function allKnownPlayers() { return [myPlayerProfile(), ...friendProfiles()]; }
-function profileById(id) { return allKnownPlayers().find(p => p.id === id) || myPlayerProfile(); }
+function profileById(id) {
+  const direct = allKnownPlayers().find(p => p.id === id || p.playerId === id || normalizeFriendCode(p.code) === normalizeFriendCode(id));
+  if (direct) return direct;
+  const remote = Object.values(state.serverLeaderboards || {}).flatMap(rows => Array.isArray(rows) ? rows : [])
+    .map(row => remoteLeaderboardRowsForSingle(row))
+    .find(p => p.id === id || p.playerId === id || normalizeFriendCode(p.friendCode) === normalizeFriendCode(id));
+  return remote || myPlayerProfile();
+}
+function remoteLeaderboardRowsForSingle(row = {}) {
+  const friendCodeValue = normalizeFriendCode(row.friendCode || row.friend_code || "");
+  const name = row.name || row.pseudo || "Joueur";
+  return {
+    id: row.id || row.player_id || friendCodeValue || name,
+    playerId: row.player_id || row.playerId || "",
+    code: friendCodeValue,
+    friendCode: friendCodeValue,
+    name,
+    avatar: String(name).charAt(0).toUpperCase(),
+    bio: "Profil issu du classement serveur.",
+    level: Number(row.level || 1),
+    xp: Number(row.xp || 0),
+    solved: Number(row.solved || row.solved_count || 0),
+    streak: Number(row.streak || 0),
+    badges: ["Serveur"],
+    daily: Number(row.score || 0),
+    week: Number(row.score || 0),
+    year: Number(row.score || 0),
+    friend: Boolean(friendCodeValue && state.friends?.[friendCodeValue]),
+    server: true
+  };
+}
+function knownFriendByCode(code = "") {
+  const normalized = normalizeFriendCode(code);
+  const suffix = friendCodeSuffix(normalized);
+  return Object.values(state.friends || {}).find(friend => {
+    const friendCodeValue = normalizeFriendCode(friend.code || friend.id || "");
+    return friendCodeValue === normalized || (suffix && friendCodeSuffix(friendCodeValue) === suffix);
+  }) || null;
+}
 function addFriend(event) {
   event.preventDefault();
   const input = event.target.querySelector("input");
   const parsed = parseFriendCode(input?.value || "");
   if (!parsed) return setState({ friendFeedback: "Code ami invalide. Format attendu : PSEUDO-ABC123." });
-  if (parsed.id === friendCode().toUpperCase()) return setState({ friendFeedback: "C’est ton propre code. Partage-le, mais ne l’ajoute pas à tes amis." });
-  if (state.friends?.[parsed.id]) return setState({ friendFeedback: `${parsed.pseudo} est déjà dans tes amis.` });
+  if (normalizeFriendCode(parsed.id) === normalizeFriendCode(friendCode())) return setState({ friendFeedback: "C’est ton propre code. Partage-le, mais ne l’ajoute pas à tes amis." });
+  const already = knownFriendByCode(parsed.code);
+  if (already) return setState({ friendFeedback: `${already.name || parsed.pseudo} est déjà dans tes amis.` });
   const friend = { id: parsed.id, code: parsed.code, name: parsed.pseudo, addedAt: Date.now() };
   const friends = { ...(state.friends || {}), [parsed.id]: friend };
-  setState({ friends, friendFeedback: `${parsed.pseudo} ajouté aux amis. Tu peux voir son profil et le classement amis.` });
-  syncFriendToServer(friend).catch(() => {});
+  if (input) input.value = "";
+  setState({ friends, friendFeedback: `${parsed.pseudo} ajouté. Synchronisation en cours…` });
+  syncFriendToServer(friend).catch(() => setState({ friendFeedback: `${parsed.pseudo} ajouté sur cet appareil. La synchronisation en ligne est indisponible pour l’instant.` }));
 }
 async function syncFriendToServer(friend) {
   if (!isOnline || !friend?.code) return;
-  await fetch("/api/v1/friends/sync", {
+  const response = await fetch("/api/v1/friends/sync", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ playerId: playerIdMe(), pseudo: state.pseudo || "Invité", friendCode: friend.code, friendPseudo: friend.name })
+    body: JSON.stringify({ playerId: playerIdMe(), pseudo: currentPseudo(), friendCode: friend.code, friendPseudo: friend.name })
   });
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok || json?.ok === false) throw new Error(json?.message || `HTTP ${response.status}`);
+  const changed = mergeServerFriends(json?.friends || []);
+  state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: json?.mode || "unknown", message: json?.message || "" };
+  state.friendFeedback = json?.mode === "supabase" ? `${friend.name || "Ami"} ajouté et synchronisé.` : `${friend.name || "Ami"} ajouté sur cet appareil. ${json?.message || "Synchronisation en ligne inactive."}`;
+  if (changed) state.serverLeaderboards = { ...(state.serverLeaderboards || {}), friends: [] };
+  saveState();
+  fetchServerLeaderboard("friends", { force: true }).catch(() => {});
+  if (state.tab === "profile" || state.tab === "rank") render();
+}
+async function deleteFriendFromServer(friend) {
+  if (!isOnline || !friend?.code) return;
+  const response = await fetch("/api/v1/friends/sync", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ playerId: playerIdMe(), friendCode: friend.code, friendPlayerId: friend.playerId || friend.friend_player_id || "" })
+  });
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok || json?.ok === false) throw new Error(json?.message || `HTTP ${response.status}`);
+  state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: json?.mode || "unknown", message: json?.message || "" };
+  mergeServerFriends(json?.friends || []);
 }
 function removeFriend(id) {
   const friends = { ...(state.friends || {}) };
-  const name = friends[id]?.name || "Ami";
+  const friend = friends[id];
+  const name = friend?.name || "Ami";
   delete friends[id];
+  state.serverLeaderboards = { ...(state.serverLeaderboards || {}), friends: [] };
+  state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), friends: { loadedAt: 0, mode: "local", note: "Ami retiré." } };
   setState({ friends, friendFeedback: `${name} retiré des amis.` });
+  deleteFriendFromServer(friend).then(() => {
+    fetchServerLeaderboard("friends", { force: true }).catch(() => {});
+  }).catch(() => {
+    state.friendFeedback = `${name} retiré sur cet appareil. La suppression serveur sera à vérifier au prochain test.`;
+    saveState();
+    if (state.tab === "profile" || state.tab === "rank") render();
+  });
 }
 function viewProfile(id) { setState({ tab: "publicProfile", selectedProfileId: id || playerIdMe() }); }
 function scoreOfPlayer(player, scope = "daily") {
@@ -16860,15 +17210,15 @@ function socialStatusLine() {
 }
 function emptyRankMarkup(scope = "daily") {
   if (scope === "friends") return `<div class="empty-rank"><h2>Aucun score ami</h2><p>Ajoute un ami réel puis comparez vos scores après résolution du mystère.</p></div>`;
-  return `<div class="empty-rank"><h2>Aucun score pour l’instant</h2><p>Résous le mystère du jour pour remplir ce classement. Aucun faux joueur n’est affiché.</p></div>`;
+  return `<div class="empty-rank"><h2>Aucun score pour l’instant</h2><p>Résous le mystère du jour pour remplir ce classement. Aucun profil fictif n’est affiché.</p></div>`;
 }
 function friendListMarkup({ compact = false } = {}) {
   const friends = friendProfiles();
-  if (!friends.length) return `<section class="card empty-friends-card"><span class="card-label">Amis</span><h2>Aucun ami ajouté</h2><p>Partage ton vrai code avec quelqu’un, ou colle le code qu’il t’envoie. Pas de chat : juste profils et classements.</p></section>`;
+  if (!friends.length) return `<section class="card empty-friends-card"><span class="card-label">Amis</span><h2>Aucun ami ajouté</h2><p>Partage ton code avec quelqu’un, ou colle le code qu’il t’envoie pour l’ajouter.</p></section>`;
   return `<section class="card friends-list-card"><div class="section-title-row"><div><span class="card-label">Amis</span><h2>${friends.length} profil${friends.length > 1 ? "s" : ""}</h2></div><small>sans chat</small></div>${friends.slice(0, compact ? 3 : 20).map(friend => `<div class="friend-row"><button type="button" class="friend-main" data-view-profile="${escapeHtml(friend.id)}"><span class="avatar tiny">${escapeHtml(friend.avatar)}</span><span><strong>${escapeHtml(friend.name)}</strong><em>Niv. ${friend.level} · ${friend.solved} mystères · ${escapeHtml(friendComparison(friend))}</em></span></button><button class="ghost mini-button" data-remove-friend="${escapeHtml(friend.id)}">Retirer</button></div>`).join("")}</section>`;
 }
 function addFriendMarkup() {
-  return `<section class="card add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Le multi reste volontairement simple : pas de chat, juste amis, profils et classements.</p></div><form data-add-friend class="friend-add-form"><input placeholder="CODE AMI" autocapitalize="characters" autocomplete="off"/><button>Ajouter</button></form><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${escapeHtml(state.friendFeedback)}</p>` : ""}</section>`;
+  return `<section class="card add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Ajoute un code ami pour comparer vos scores et retrouver son profil.</p></div><form data-add-friend class="friend-add-form"><input placeholder="CODE AMI" autocapitalize="characters" autocomplete="off"/><button>Ajouter</button></form><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${escapeHtml(state.friendFeedback)}</p>` : ""}</section>`;
 }
 function publicProfileMarkup(player) {
   const badges = (player.badges || []).slice(0, 4);
@@ -16877,6 +17227,12 @@ function publicProfileMarkup(player) {
 
 function sanitizePseudo(value = "") {
   return String(value).trim().replace(/\s+/g, " ").slice(0, 18);
+}
+
+function currentPseudo() {
+  const fromInput = document.querySelector("[data-pseudo-input]")?.value;
+  const pseudo = sanitizePseudo(fromInput || state.pseudo || "");
+  return pseudo && !/^invité$/i.test(pseudo) ? pseudo : "Invité";
 }
 function pseudoInputValue(event) {
   const target = event?.target || event?.currentTarget || null;
@@ -16894,8 +17250,13 @@ function savePseudoValue(rawValue, { source = "normal" } = {}) {
   }
   const nextState = mergeState(defaultState, { ...state, pseudo, profileFeedback: `Pseudo enregistré : ${pseudo}` });
   state = nextState;
+  state.serverLeaderboards = {};
+  state.serverLeaderboardStatus = {};
   saveState();
-  syncMyProfileToServer({ source }).catch(() => {});
+  syncMyProfileToServer({ source }).then(() => {
+    fetchServerFriends({ force: true }).catch(() => {});
+    ["daily", "week", "year", "friends"].forEach(scope => fetchServerLeaderboard(scope, { force: true }).catch(() => {}));
+  }).catch(() => {});
   render();
   return true;
 }
@@ -16917,7 +17278,7 @@ async function syncMyProfileToServer({ source = "profile" } = {}) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         playerId: playerIdMe(),
-        pseudo: state.pseudo || "Invité",
+        pseudo: currentPseudo(),
         friendCode: friendCode(),
         level: level(),
         xp: state.xp || 0,
@@ -16945,10 +17306,12 @@ function applyStartupSocialLinks() {
     if (!parsed) return;
     if (parsed.id === friendCode().toUpperCase()) {
       state.friendFeedback = "C’est ton propre lien ami. Partage-le à quelqu’un d’autre.";
-    } else if (!state.friends?.[parsed.id]) {
-      state.friends = { ...(state.friends || {}), [parsed.id]: { id: parsed.id, code: parsed.code, name: parsed.pseudo, addedAt: Date.now(), source: "invite-link" } };
-      state.friendFeedback = `${parsed.pseudo} ajouté via lien d’invitation.`;
+    } else if (!knownFriendByCode(parsed.code)) {
+      const friend = { id: parsed.id, code: parsed.code, name: parsed.pseudo, addedAt: Date.now(), source: "invite-link" };
+      state.friends = { ...(state.friends || {}), [parsed.id]: friend };
+      state.friendFeedback = `${parsed.pseudo} ajouté via lien d’invitation. Synchronisation en cours…`;
       state.tab = "profile";
+      setTimeout(() => syncFriendToServer(friend).catch(() => {}), 0);
     }
     params.delete("friend"); params.delete("addFriend"); params.delete("invite");
     const clean = `${location.pathname}${params.toString() ? `?${params}` : ""}${location.hash || ""}`;
@@ -16958,10 +17321,10 @@ function applyStartupSocialLinks() {
 }
 function leaderboardIntroText(scope = "daily") {
   const status = state.serverLeaderboardStatus?.[scope] || {};
-  if (status.mode === "supabase") return "Classement serveur actif : les scores viennent de Supabase.";
+  if (status.mode === "supabase") return "Classement à jour : les scores sont synchronisés.";
   if (status.loading) return "Chargement du classement serveur…";
-  if (status.mode === "error" || status.mode === "supabase-error") return "Le classement serveur répond mal : l’app garde un fallback local.";
-  return "Aucun faux score : le classement reste vide tant qu’aucun joueur réel n’a résolu le mystère.";
+  if (status.mode === "error" || status.mode === "supabase-error") return "Le classement en ligne répond mal : tes données locales restent disponibles.";
+  return "Le classement se remplit quand des joueurs résolvent le mystère.";
 }
 function socialBackendMode() {
   if (!isOnline) return { label: "Hors ligne", detail: "Les scores restent sur ton appareil jusqu’au retour réseau.", status: "offline" };
@@ -16969,7 +17332,7 @@ function socialBackendMode() {
   if (statuses.some(s => s.mode === "supabase")) return { label: "Serveur actif", detail: "Supabase est branché : les scores sont partagés entre joueurs.", status: "server" };
   if (statuses.some(s => s.loading)) return { label: "Connexion au serveur", detail: "Chargement du classement partagé…", status: "pending" };
   if (statuses.some(s => s.mode === "supabase-error" || s.mode === "error")) return { label: "Serveur à vérifier", detail: "La base est configurée mais une route répond mal. Le fallback local protège l’app.", status: "warning" };
-  return { label: "En attente de scores", detail: "Aucun faux joueur n’est affiché. Le classement se remplira avec les vrais scores envoyés au serveur.", status: "local" };
+  return { label: "En attente de scores", detail: "Aucun profil fictif n’est affiché. Le classement se remplira avec les scores synchronisés.", status: "local" };
 }
 function socialBackendMarkup() {
   const mode = socialBackendMode();
@@ -17011,7 +17374,7 @@ function scorePayloadForMystery(mysteryId) {
   const solved = state.solvedMysteries?.[mysteryId] || {};
   return {
     playerId: playerIdMe(),
-    pseudo: state.pseudo || "Invité",
+    pseudo: currentPseudo(),
     friendCode: friendCode(),
     mysteryId,
     dayKey: localDayKey(solved.at || Date.now()),
@@ -17037,7 +17400,8 @@ function queueScoreSubmit(mysteryId) {
   submitScoreToServer(scorePayloadForMystery(mysteryId)).then(result => {
     state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [mysteryId]: { pending: false, stored: Boolean(result?.stored), mode: result?.mode || "local-preview", message: result?.message || (result?.stored ? "Score enregistré." : "Base serveur non configurée : score conservé en local.") } };
     saveState();
-    fetchServerLeaderboard("daily", { force: true }).catch(() => {});
+    fetchServerFriends({ force: true }).catch(() => {});
+    ["daily", "week", "year", "friends"].forEach(scope => fetchServerLeaderboard(scope, { force: true }).catch(() => {}));
     if (state.tab === "mystery") render();
   }).catch(() => {
     state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [mysteryId]: { pending: false, stored: false, mode: "error", message: "Serveur indisponible : score conservé localement." } };
@@ -17058,8 +17422,15 @@ function localUserId() {
   } catch { return "LOCAL"; }
 }
 function friendCode() {
+  const key = `${STORAGE_KEY}_friend_code`;
+  try {
+    const stored = normalizeFriendCode(localStorage.getItem(key) || "");
+    if (parseFriendCode(stored)) return stored;
+  } catch {}
   const base = normalize(state.pseudo || "invite").replace(/\s+/g, "").slice(0, 6).toUpperCase() || "JOUEUR";
-  return `${base}-${localUserId()}`;
+  const code = `${base}-${localUserId()}`.toUpperCase();
+  try { localStorage.setItem(key, code); } catch {}
+  return code;
 }
 async function copyText(text, okMessage, feedbackKey = "profileFeedback") {
   let ok = false;
@@ -17152,6 +17523,7 @@ function resetProgressOnly({ silent = false } = {}) {
     lastScoreSubmit: {},
     serverLeaderboards: {},
     serverLeaderboardStatus: {},
+    serverFriendsStatus: state.serverFriendsStatus || {},
     achievements: { firstLesson: false, firstMystery: false, streak3: false, streak7: false, noHint: false, expertMystery: false, firstArchive: false },
     profileFeedback: "Progression locale réinitialisée. Tu peux refaire le mystère et retester le classement."
   });
@@ -17188,6 +17560,7 @@ function inviteToolsMarkup() {
   return `<section class="card invite-card"><div><span class="card-label">Code ami</span><h2>Ton profil partageable</h2><p>Pas de chat. Ce code sert seulement à t’ajouter en ami et voir ton profil dans les classements.</p></div><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button data-share-invite>Partager</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
 }
 function renderProfile() {
+  ensureServerFriends();
   const health = stateHealthReport();
   const friends = friendProfiles();
   renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Profil social</p><h1>${escapeHtml(state.pseudo)}</h1></div></header>
@@ -17196,7 +17569,7 @@ function renderProfile() {
     ${addFriendMarkup()}
     ${socialInviteLinkMarkup()}
     ${friendListMarkup()}
-    <section class="card social-shortcuts"><div><span class="card-label">Classements</span><h2>Compare sans bruit</h2><p>Le multi se limite volontairement aux scores, profils et amis. Aucun chat, aucune messagerie.</p></div><div class="home-actions-row"><button data-profile-rank="daily">Classement jour</button><button class="ghost" data-profile-rank="friends">Mes amis</button></div></section>
+    <section class="card social-shortcuts"><div><span class="card-label">Classements</span><h2>Comparer les scores</h2><p>Compare tes scores avec tes amis et ouvre les profils depuis le classement.</p></div><div class="home-actions-row"><button data-profile-rank="daily">Classement jour</button><button class="ghost" data-profile-rank="friends">Mes amis</button></div></section>
     ${socialBackendMarkup()}
     ${testResetToolsMarkup()}
     ${backupToolsMarkup()}

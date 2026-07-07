@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.60",
-  assetsVersion: "1.0.0-beta.60",
+  version: "1.0.0-beta.64",
+  assetsVersion: "1.0.0-beta.64",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -14,14 +14,14 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 58",
+    versionLabel: "beta 64",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Suppression complète des faux joueurs et faux amis dans les classements",
-      "Classements vides assumés tant que personne n’a envoyé de score réel",
-      "Reset progression visible dans le profil pour retester mystère et classement sans supprimer le pseudo",
-      "Option de test pour effacer ton score serveur du jour",
-      "API de reset bêta ajoutée pour nettoyer les scores de test Supabase"
+      "Cours express redevenu court",
+      "Cours complet enrichi pour une vraie lecture de 5 minutes",
+      "Quiz à choix multiples restauré",
+      "Validation du cours verrouillée tant que les 5 réponses ne sont pas réussies",
+      "Le quiz ne donne plus la réponse directement"
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
