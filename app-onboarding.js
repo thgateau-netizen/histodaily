@@ -1,0 +1,36 @@
+const { mysteries } = require('./_data');
+module.exports = (req, res) => res.status(200).json({
+  ok: true,
+  app: "HistoDaily",
+  version: "1.0.0-beta.47",
+  target: "vercel",
+  content: {
+    mysteries: mysteries.length,
+    archiveDaysVisible: 7,
+    archiveUnlockCost: 2,
+    dailyRewardGems: 1,
+    premiumCourses: 192,
+    pseudoLocal: true,
+    scoreBreakdown: true,
+    spoilerFreeShare: true,
+    installPrompt: true,
+    localBackupExport: true,
+    friendCodeLocal: true,
+    performanceMode: true,
+    qualityDiagnostic: true,
+    downloadableBackup: true,
+    learnFilters: true,
+    learnSearch: true,
+    sessionCoach: true,
+    normalizedQuizExplanations: true,
+    keyFactsEveryCourse: true,
+    contentWeakPointPass: true,
+    premiumKeyFactsRendered: true,
+    thirtySecondTakeaways: true,
+    lessonMemoCards: true,
+    beta44FoundationsContentPass: true,
+    beta46NavigationMemoPass: true,
+    beta47InputFocusFix: true,
+    beta47LessonTabs: true
+  }
+});
