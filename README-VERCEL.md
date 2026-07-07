@@ -1,6 +1,6 @@
-# HistoDaily — Vercel / GitHub beta57
+# HistoDaily — Vercel / GitHub beta58
 
-Version : `1.0.0-beta.57`
+Version : `1.0.0-beta.58`
 
 ## Objectif
 
@@ -25,22 +25,22 @@ Avec GitHub Desktop :
 1. Dézipper le paquet.
 2. Remplacer le contenu du dossier local du repo par ce contenu.
 3. Ne pas supprimer `.git` si tu le vois.
-4. Commit : `Beta54 social ready`.
+4. Commit : `Beta58 real friends reset`.
 5. Push origin.
 6. Vercel redéploie automatiquement.
 
 ## Tests rapides
 
-- `/api/v1/health` doit afficher `1.0.0-beta.57`.
+- `/api/v1/health` doit afficher `1.0.0-beta.58`.
 - Résoudre un mystère doit afficher un statut de score : envoyé / local / hors-ligne.
 - Profil : le code ami et le lien d’invitation doivent être copiables.
-- Ouvrir `/?friend=MANON-A7K9` doit ajouter Manon en ami localement.
+- Ouvrir `/?friend=CODE_REEL` doit ajouter le vrai code partagé par un autre joueur.
 - Classement amis : ton profil et les amis ajoutés doivent apparaître.
 - Aucun chat, aucune messagerie.
 
 ## Multi réel
 
-Sans Supabase, le multi reste une prévisualisation locale : parfait pour tester l’interface, insuffisant pour un classement vraiment partagé entre joueurs.
+Avec Supabase configuré, le classement est réel. Sans score envoyé, il reste vide : aucun faux joueur n’est injecté.
 
 Pour brancher le vrai serveur plus tard, ajouter dans Vercel :
 
@@ -77,3 +77,12 @@ Le multi reste volontairement limité à : amis, profils, classements. Aucun cha
 - Supprime le re-render automatique déclenché après l’ouverture d’un cours via focus Express/Complet/Quiz.
 - Isole les clics sur `details/summary` pour éviter qu’un clic de sous-partie soit interprété comme une navigation.
 - Garde les corrections beta56 : pseudo, Entrée, reset `?reset=1`, Supabase.
+
+
+## Beta58 — vrais amis / reset testeur
+
+- Suppression des faux amis et faux joueurs inventés dans l’interface.
+- Les classements restent vides tant qu’aucun score réel n’est enregistré.
+- Ajout d’un reset progression visible dans Profil → Tests bêta.
+- Ajout d’un endpoint `/api/v1/progress/reset` pour effacer le score serveur du jour d’un joueur pendant les tests.
+- Le submit score remplace le score du même joueur/mystère/jour au lieu d’empiler des doublons.

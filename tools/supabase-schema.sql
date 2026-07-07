@@ -1,4 +1,4 @@
--- HistoDaily beta54 — schéma Supabase minimal
+-- HistoDaily beta58 — schéma Supabase minimal
 -- À exécuter dans Supabase SQL Editor quand tu voudras activer le vrai multi.
 
 create table if not exists public.hd_profiles (
@@ -45,3 +45,8 @@ create table if not exists public.hd_friends (
   created_at timestamptz default now(),
   unique(player_id, friend_code)
 );
+
+
+-- Beta58: évite les doublons quand un testeur reset puis rejoue le même mystère.
+create unique index if not exists hd_scores_unique_player_mystery_day_idx
+on public.hd_scores(player_id, mystery_id, period_key, scope);

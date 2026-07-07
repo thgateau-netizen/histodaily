@@ -56,6 +56,10 @@ module.exports = async (req, res) => {
       streak: payload.streak,
       updated_at: new Date().toISOString()
     }] });
+    if (payload.player_id && payload.mystery_id && payload.period_key) {
+      const deletePath = `hd_scores?player_id=eq.${encodeURIComponent(payload.player_id)}&mystery_id=eq.${encodeURIComponent(payload.mystery_id)}&period_key=eq.${encodeURIComponent(payload.period_key)}&scope=eq.daily`;
+      await request(deletePath, { method: 'DELETE', prefer: 'return=minimal' }).catch(() => null);
+    }
     const rows = await request('hd_scores', { method: 'POST', body: [payload] });
     return res.status(200).json({ ok: true, stored: true, mode: 'supabase', rows, message: 'Score enregistré dans le classement.' });
   } catch (error) {

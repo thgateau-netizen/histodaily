@@ -1,28 +1,7 @@
 const { configured, request, safeText, todayKey } = require('../_supabase');
 
-const seed = {
-  daily: [
-    { id: 'demo-cliomax', pseudo: 'ClioMax', score: 176, level: 11, solved: 42 },
-    { id: 'demo-papyhistoire', pseudo: 'PapyHistoire', score: 164, level: 10, solved: 38 },
-    { id: 'demo-louise', pseudo: 'Louise', score: 152, level: 9, solved: 31 },
-    { id: 'demo-anatole', pseudo: 'Anatole', score: 139, level: 8, solved: 27 },
-    { id: 'demo-mina', pseudo: 'Mina', score: 126, level: 7, solved: 22 }
-  ],
-  week: [
-    { id: 'demo-cliomax', pseudo: 'ClioMax', score: 910, level: 11, solved: 42 },
-    { id: 'demo-papyhistoire', pseudo: 'PapyHistoire', score: 820, level: 10, solved: 38 },
-    { id: 'demo-louise', pseudo: 'Louise', score: 730, level: 9, solved: 31 }
-  ],
-  year: [
-    { id: 'demo-cliomax', pseudo: 'ClioMax', score: 12480, level: 11, solved: 42 },
-    { id: 'demo-papyhistoire', pseudo: 'PapyHistoire', score: 11840, level: 10, solved: 38 },
-    { id: 'demo-louise', pseudo: 'Louise', score: 10990, level: 9, solved: 31 }
-  ],
-  friends: []
-};
-
 function fallback(scope) {
-  return (seed[scope] || seed.daily).map((row, index) => ({ rank: index + 1, ...row }));
+  return [];
 }
 function startOfWeekISO(date = new Date()) {
   const d = new Date(date);
@@ -65,6 +44,9 @@ function aggregate(rows, scope) {
 }
 function queryFor(scope, periodKey) {
   const select = 'select=player_id,pseudo,friend_code,score,level,solved_count,streak,hints,tries,solved_at';
+  if (scope === 'friends') {
+    return `hd_scores?${select}&period_key=eq.${encodeURIComponent(periodKey)}&scope=eq.daily&order=score.desc&limit=1000`;
+  }
   if (scope === 'daily') {
     return `hd_scores?${select}&period_key=eq.${encodeURIComponent(periodKey)}&scope=eq.daily&order=score.desc&limit=200`;
   }
@@ -80,14 +62,21 @@ function queryFor(scope, periodKey) {
 module.exports = async (req, res) => {
   const scope = ['daily', 'week', 'year', 'friends'].includes(req.query?.scope) ? req.query.scope : 'daily';
   const periodKey = safeText(req.query?.periodKey || todayKey(), 20);
-  if (!configured() || scope === 'friends') {
-    return res.status(200).json({ ok: true, scope, mode: 'local-preview', rows: fallback(scope), note: 'Prévisualisation locale tant que Supabase n’est pas branché.' });
+  if (!configured()) {
+    return res.status(200).json({ ok: true, scope, mode: 'local-preview', rows: [], note: 'Aucun faux joueur : les classements restent vides tant qu’aucun score réel n’est enregistré.' });
   }
   try {
     const path = queryFor(scope, periodKey);
     const rows = path ? await request(path) : [];
-    return res.status(200).json({ ok: true, scope, periodKey, mode: 'supabase', rows: aggregate(rows || [], scope) });
+    let filtered = rows || [];
+    if (scope === 'friends') {
+      const playerId = safeText(req.query?.playerId || '', 90);
+      const friendCodes = String(req.query?.friendCodes || '').split(',').map(v => safeText(v, 40)).filter(Boolean);
+      const codeSet = new Set(friendCodes);
+      filtered = filtered.filter(row => row.player_id === playerId || codeSet.has(row.friend_code));
+    }
+    return res.status(200).json({ ok: true, scope, periodKey, mode: 'supabase', rows: aggregate(filtered, scope) });
   } catch (error) {
-    return res.status(200).json({ ok: true, scope, periodKey, mode: 'supabase-error', rows: fallback(scope), note: error.message, detail: error.body || null });
+    return res.status(200).json({ ok: true, scope, periodKey, mode: 'supabase-error', rows: [], note: error.message, detail: error.body || null });
   }
 };

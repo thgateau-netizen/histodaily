@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.57",
-  assetsVersion: "1.0.0-beta.57",
+  version: "1.0.0-beta.58",
+  assetsVersion: "1.0.0-beta.58",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -10,18 +10,18 @@ window.HISTODAILY_CORE = {
   archive: { daysVisible: 7, unlockCost: 2 },
   daily: { baseGems: 1, streakBonusEvery: 7, streakBonusGems: 3 },
   ranking: {
-    demoNames: ["ClioMax", "PapyHistoire", "Louise", "Anatole", "Mina", "ByzanceFan", "Scribe42"],
-    friendNames: ["Manon", "PapyHistoire", "Louise", "Anatole"]
+    demoNames: [],
+    friendNames: []
   },
   ui: {
-    versionLabel: "beta 57",
+    versionLabel: "beta 58",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Correction des sous-parties de cours : quiz, vocabulaire et détails restent ouverts au lieu de disparaître",
-      "Sauvegarde pseudo conservée, reset de test via ?reset=1 conservé",
-      "Clics sur les détails de cours isolés pour éviter les re-rendus parasites",
-      "Cache PWA renouvelé beta57 pour éviter les mélanges beta56/beta57",
-      "Multi Supabase conservé : amis et classements sans chat"
+      "Suppression complète des faux joueurs et faux amis dans les classements",
+      "Classements vides assumés tant que personne n’a envoyé de score réel",
+      "Reset progression visible dans le profil pour retester mystère et classement sans supprimer le pseudo",
+      "Option de test pour effacer ton score serveur du jour",
+      "API de reset bêta ajoutée pour nettoyer les scores de test Supabase"
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

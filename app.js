@@ -1,7 +1,7 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_QUALITY = window.HISTODAILY_QUALITY || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.57";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.58";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_v100_beta14_state";
 
 const $ = (selector) => document.querySelector(selector);
@@ -797,8 +797,8 @@ function renderHome() {
   renderShell(`
     <header class="hero compact home-clean-hero">
       <div>
-        <p class="eyebrow">HistoDaily · beta 57 stable</p>
-        <h1>Mystère, cours séparé, classement, amis.</h1>
+        <p class="eyebrow">HistoDaily · beta 58 sociale</p>
+        <h1>Mystère, cours, vrais amis et vrais classements.</h1>
         <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
       </div>
     </header>
@@ -1018,7 +1018,7 @@ function debugModeEnabled() {
   catch { return false; }
 }
 function resetLocalProgress() {
-  if (!window.confirm("Réinitialiser la progression locale HistoDaily sur ce navigateur ?")) return;
+  if (!window.confirm("Tout réinitialiser sur ce navigateur ? Le bouton Profil > Tests bêta permet un reset progression plus propre.")) return;
   try {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(`${STORAGE_KEY}_backup`);
@@ -16633,11 +16633,7 @@ function solvedCountForScope(scope = "daily") {
     return at >= start && at < end;
   }).length;
 }
-function leaderboardSeed(scope = "daily") {
-  if (scope === "year") return [12480, 11840, 10990, 9820, 9210, 8540, 7920];
-  if (scope === "week" || scope === "friends") return [910, 820, 730, 640, 560, 470, 390];
-  return [176, 164, 152, 139, 126, 111, 88];
-}
+function leaderboardSeed(scope = "daily") { return []; }
 function remoteLeaderboardRows(scope = state.rankScope || "daily") {
   const bucket = state.serverLeaderboards?.[scope];
   if (!Array.isArray(bucket) || !bucket.length) return [];
@@ -16655,22 +16651,23 @@ function remoteLeaderboardRows(scope = state.rankScope || "daily") {
 }
 function leaderboardRows(scope = state.rankScope || "daily") {
   const remote = remoteLeaderboardRows(scope);
-  if (remote.length && scope !== "friends") {
+  if (remote.length) {
     const me = myPlayerProfile();
     const myScore = scoreForScope(scope);
-    const alreadyMe = remote.some(row => String(row.id) === String(me.id) || String(row.id) === String(friendCode()));
-    const rows = alreadyMe ? remote : [...remote, { ...me, score: myScore, localOnly: true }];
+    const alreadyMe = remote.some(row => String(row.id) === String(me.id) || String(row.id) === String(friendCode()) || String(row.friendCode || "") === String(friendCode()));
+    const rows = alreadyMe || myScore <= 0 ? remote : [...remote, { ...me, score: myScore, localOnly: true }];
     return rows
       .sort((a, b) => b.score - a.score || String(a.name).localeCompare(String(b.name), "fr"))
       .map((row, index) => ({ ...row, rank: index + 1, me: String(row.id) === String(me.id) || String(row.id) === String(friendCode()) }));
   }
   return leaderboardPlayers(scope)
     .map(player => ({ ...player, name: player.name, score: scoreOfPlayer(player, scope) }))
+    .filter(row => Number(row.score || 0) > 0)
     .sort((a, b) => b.score - a.score || String(a.name).localeCompare(String(b.name), "fr"))
-    .map((row, index) => ({ ...row, rank: index + 1 }));
+    .map((row, index) => ({ ...row, rank: index + 1, me: String(row.id) === String(playerIdMe()) }));
 }
 async function fetchServerLeaderboard(scope = "daily", { force = false } = {}) {
-  if (!isOnline || scope === "friends") return;
+  if (!isOnline) return;
   const now = Date.now();
   const status = state.serverLeaderboardStatus?.[scope] || {};
   if (!force && status.loadedAt && now - status.loadedAt < 45000) return;
@@ -16679,7 +16676,8 @@ async function fetchServerLeaderboard(scope = "daily", { force = false } = {}) {
   state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { ...status, loading: true } };
   saveState();
   try {
-    const response = await fetch(`/api/v1/leaderboard/daily?scope=${encodeURIComponent(scope)}&periodKey=${encodeURIComponent(localDayKey())}&playerId=${encodeURIComponent(playerIdMe())}`);
+    const friendCodes = Object.values(state.friends || {}).map(friend => friend.code || friend.id).filter(Boolean).join(",");
+    const response = await fetch(`/api/v1/leaderboard/daily?scope=${encodeURIComponent(scope)}&periodKey=${encodeURIComponent(localDayKey())}&playerId=${encodeURIComponent(playerIdMe())}&friendCodes=${encodeURIComponent(friendCodes)}`);
     const json = await response.json();
     state.serverLeaderboards = { ...(state.serverLeaderboards || {}), [scope]: Array.isArray(json?.rows) ? json.rows : [] };
     state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: json?.mode || "unknown", note: json?.note || "" } };
@@ -16720,11 +16718,11 @@ function renderRank() {
     </section>
     ${scope === "week" ? weeklyScoreMarkup() : ""}
     ${scope === "daily" ? recentDailyCalendarMarkup({ compact: true }) : ""}
-    <section class="card leaderboard leaderboard-modern">${rows.length ? rows.map(row => `<button class="rank-row ${row.me ? "me" : ""}" data-view-profile="${escapeHtml(row.id)}"><span>${row.rank}</span><strong>${escapeHtml(row.name)}</strong><em>${row.score} XP</em></button>`).join("") : `<div class="empty-rank"><h2>Aucun ami</h2><p>Ajoute un code ami dans ton profil pour créer ton classement privé.</p></div>`}</section>
+    <section class="card leaderboard leaderboard-modern">${rows.length ? rows.map(row => `<button class="rank-row ${row.me ? "me" : ""}" data-view-profile="${escapeHtml(row.id)}"><span>${row.rank}</span><strong>${escapeHtml(row.name)}</strong><em>${row.score} XP</em></button>`).join("") : emptyRankMarkup(scope)}</section>
     ${scope === "daily" ? `<p class="rank-note">Le score du jour récompense surtout : résoudre sans indice, avec peu d’essais.</p>` : ""}
     ${scope === "week" ? `<p class="rank-note">La semaine additionne les mystères résolus depuis lundi.</p>` : ""}
-    ${scope === "year" ? `<p class="rank-note">L’année cumule les scores locaux. Les joueurs démo disparaîtront quand le serveur sera branché.</p>` : ""}
-    ${isFriends ? `${addFriendMarkup()}${friendListMarkup()}` : `<p class="rank-note muted-note">Classement local : ton score est réel sur ton appareil. Les joueurs démo servent uniquement de repères jusqu’au branchement serveur.</p>`}`);
+    ${scope === "year" ? `<p class="rank-note">L’année cumulera les scores réels enregistrés. Aucun faux joueur n’est ajouté.</p>` : ""}
+    ${isFriends ? `${addFriendMarkup()}${friendListMarkup()}` : `<p class="rank-note muted-note">Aucun faux joueur : ce classement n’affiche que les scores réels reçus ou ton score local si tu viens de jouer.</p>`}`);
   $(`[data-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
   $(`[data-open-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
   document.querySelectorAll("[data-rank-scope]").forEach(btn => btn.addEventListener("click", () => setState({ rankScope: btn.dataset.rankScope })));
@@ -16749,15 +16747,7 @@ function difficultyLabel(difficulty = "moyen") {
 function unlockedAchievements() { return Object.values(state.achievements).filter(Boolean).length; }
 
 
-const DEMO_PLAYERS = [
-  { id: "demo-cliomax", name: "ClioMax", avatar: "C", bio: "Résout vite, prend rarement des indices.", level: 11, xp: 2620, solved: 42, streak: 9, badges: ["Top jour", "Sans indice"], daily: 176, week: 910, year: 12480 },
-  { id: "demo-papyhistoire", name: "PapyHistoire", avatar: "P", bio: "Solide sur Antiquité et Moyen Âge.", level: 10, xp: 2380, solved: 38, streak: 6, badges: ["Régulier", "Archives"], daily: 164, week: 820, year: 11840 },
-  { id: "demo-louise", name: "Louise", avatar: "L", bio: "Très forte sur les révolutions et le XIXe siècle.", level: 9, xp: 2140, solved: 31, streak: 4, badges: ["Rapide"], daily: 152, week: 730, year: 10990 },
-  { id: "demo-anatole", name: "Anatole", avatar: "A", bio: "Joueur prudent : peu d’erreurs, quelques indices.", level: 8, xp: 1880, solved: 27, streak: 3, badges: ["Précis"], daily: 139, week: 640, year: 9820 },
-  { id: "demo-mina", name: "Mina", avatar: "M", bio: "Monte doucement mais joue presque tous les jours.", level: 7, xp: 1620, solved: 22, streak: 5, badges: ["Série"], daily: 126, week: 560, year: 9210 },
-  { id: "demo-byzance", name: "ByzanceFan", avatar: "B", bio: "Fan des empires, moins à l’aise sur la préhistoire.", level: 6, xp: 1420, solved: 19, streak: 2, badges: ["Empire"], daily: 111, week: 470, year: 8540 },
-  { id: "demo-scribe42", name: "Scribe42", avatar: "S", bio: "Aime les indices, score un peu plus bas mais progresse.", level: 5, xp: 1180, solved: 15, streak: 1, badges: ["Curieux"], daily: 88, week: 390, year: 7920 }
-];
+const DEMO_PLAYERS = [];
 
 function playerIdMe() { return `me-${localUserId()}`; }
 function myPlayerProfile() {
@@ -16801,34 +16791,29 @@ function parseFriendCode(raw = "") {
 }
 function friendProfileFromCode(code, pseudoOverride) {
   const parsed = parseFriendCode(code) || { id: String(code), pseudo: pseudoOverride || "Ami" };
-  const h = stableHash(parsed.id);
-  const solved = 4 + (h % 34);
-  const lvl = 2 + (h % 11);
-  const daily = 70 + (h % 105);
-  const week = daily * (2 + (h % 5));
-  const year = week * (8 + (h % 18));
+  const name = pseudoOverride || parsed.pseudo || "Ami";
   return {
     id: parsed.id,
     code: parsed.code || parsed.id,
-    name: pseudoOverride || parsed.pseudo || "Ami",
-    avatar: String(pseudoOverride || parsed.pseudo || "A").charAt(0).toUpperCase(),
-    bio: "Ami ajouté par code. Les scores sont prévisualisés localement jusqu’au branchement serveur.",
-    level: lvl,
-    xp: lvl * 250 + (h % 220),
-    solved,
-    streak: h % 12,
-    badges: ["Ami", (h % 2 ? "Rapide" : "Régulier"), (h % 3 ? "Mystères" : "Archives")],
-    daily,
-    week,
-    year,
+    name,
+    avatar: String(name || "A").charAt(0).toUpperCase(),
+    bio: "Ami ajouté par code. Ses vraies stats apparaîtront quand son score sera reçu par le serveur.",
+    level: 1,
+    xp: 0,
+    solved: 0,
+    streak: 0,
+    badges: ["Ami"],
+    daily: 0,
+    week: 0,
+    year: 0,
     friend: true,
-    localPreview: true
+    pendingServerStats: true
   };
 }
 function friendProfiles() {
   return Object.values(state.friends || {}).map(friend => friendProfileFromCode(friend.code || friend.id, friend.name));
 }
-function allKnownPlayers() { return [myPlayerProfile(), ...friendProfiles(), ...DEMO_PLAYERS]; }
+function allKnownPlayers() { return [myPlayerProfile(), ...friendProfiles()]; }
 function profileById(id) { return allKnownPlayers().find(p => p.id === id) || myPlayerProfile(); }
 function addFriend(event) {
   event.preventDefault();
@@ -16867,19 +16852,23 @@ function leaderboardPlayers(scope = "daily") {
   const me = myPlayerProfile();
   const friends = friendProfiles();
   if (scope === "friends") return [me, ...friends];
-  return [me, ...friends, ...DEMO_PLAYERS];
+  return [me, ...friends];
 }
 function socialStatusLine() {
   const count = friendProfiles().length;
   return count ? `${count} ami${count > 1 ? "s" : ""} ajouté${count > 1 ? "s" : ""} · profils visibles` : "Ajoute des amis par code pour comparer vos scores";
 }
+function emptyRankMarkup(scope = "daily") {
+  if (scope === "friends") return `<div class="empty-rank"><h2>Aucun score ami</h2><p>Ajoute un ami réel puis comparez vos scores après résolution du mystère.</p></div>`;
+  return `<div class="empty-rank"><h2>Aucun score pour l’instant</h2><p>Résous le mystère du jour pour remplir ce classement. Aucun faux joueur n’est affiché.</p></div>`;
+}
 function friendListMarkup({ compact = false } = {}) {
   const friends = friendProfiles();
-  if (!friends.length) return `<section class="card empty-friends-card"><span class="card-label">Amis</span><h2>Aucun ami ajouté</h2><p>Partage ton code, ou ajoute celui d’un autre joueur. Pas de chat : juste profils et classements.</p><p class="sample-code">Exemple pour tester : <b>MANON-A7K9</b></p></section>`;
+  if (!friends.length) return `<section class="card empty-friends-card"><span class="card-label">Amis</span><h2>Aucun ami ajouté</h2><p>Partage ton vrai code avec quelqu’un, ou colle le code qu’il t’envoie. Pas de chat : juste profils et classements.</p></section>`;
   return `<section class="card friends-list-card"><div class="section-title-row"><div><span class="card-label">Amis</span><h2>${friends.length} profil${friends.length > 1 ? "s" : ""}</h2></div><small>sans chat</small></div>${friends.slice(0, compact ? 3 : 20).map(friend => `<div class="friend-row"><button type="button" class="friend-main" data-view-profile="${escapeHtml(friend.id)}"><span class="avatar tiny">${escapeHtml(friend.avatar)}</span><span><strong>${escapeHtml(friend.name)}</strong><em>Niv. ${friend.level} · ${friend.solved} mystères · ${escapeHtml(friendComparison(friend))}</em></span></button><button class="ghost mini-button" data-remove-friend="${escapeHtml(friend.id)}">Retirer</button></div>`).join("")}</section>`;
 }
 function addFriendMarkup() {
-  return `<section class="card add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Le multi reste volontairement simple : pas de chat, juste amis, profils et classements.</p></div><form data-add-friend class="friend-add-form"><input placeholder="Ex : MANON-A7K9" autocapitalize="characters" autocomplete="off"/><button>Ajouter</button></form><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${escapeHtml(state.friendFeedback)}</p>` : ""}</section>`;
+  return `<section class="card add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Le multi reste volontairement simple : pas de chat, juste amis, profils et classements.</p></div><form data-add-friend class="friend-add-form"><input placeholder="CODE AMI" autocapitalize="characters" autocomplete="off"/><button>Ajouter</button></form><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${escapeHtml(state.friendFeedback)}</p>` : ""}</section>`;
 }
 function publicProfileMarkup(player) {
   const badges = (player.badges || []).slice(0, 4);
@@ -16972,7 +16961,7 @@ function leaderboardIntroText(scope = "daily") {
   if (status.mode === "supabase") return "Classement serveur actif : les scores viennent de Supabase.";
   if (status.loading) return "Chargement du classement serveur…";
   if (status.mode === "error" || status.mode === "supabase-error") return "Le classement serveur répond mal : l’app garde un fallback local.";
-  return "Tu vois les profils, les scores et ta place. Le serveur Supabase prendra le relais dès qu’il est configuré.";
+  return "Aucun faux score : le classement reste vide tant qu’aucun joueur réel n’a résolu le mystère.";
 }
 function socialBackendMode() {
   if (!isOnline) return { label: "Hors ligne", detail: "Les scores restent sur ton appareil jusqu’au retour réseau.", status: "offline" };
@@ -16980,7 +16969,7 @@ function socialBackendMode() {
   if (statuses.some(s => s.mode === "supabase")) return { label: "Serveur actif", detail: "Supabase est branché : les scores sont partagés entre joueurs.", status: "server" };
   if (statuses.some(s => s.loading)) return { label: "Connexion au serveur", detail: "Chargement du classement partagé…", status: "pending" };
   if (statuses.some(s => s.mode === "supabase-error" || s.mode === "error")) return { label: "Serveur à vérifier", detail: "La base est configurée mais une route répond mal. Le fallback local protège l’app.", status: "warning" };
-  return { label: "Prévisualisation locale", detail: "Amis, profils et classements fonctionnent déjà localement. Le vrai partage global s’activera quand Supabase sera branché.", status: "local" };
+  return { label: "En attente de scores", detail: "Aucun faux joueur n’est affiché. Le classement se remplira avec les vrais scores envoyés au serveur.", status: "local" };
 }
 function socialBackendMarkup() {
   const mode = socialBackendMode();
@@ -16997,6 +16986,7 @@ function friendComparison(player) {
   const theirs = scoreOfPlayer(player, "daily");
   const delta = mine - theirs;
   if (player.me) return "toi";
+  if (!theirs) return "pas encore de score reçu";
   if (delta === 0) return "égalité aujourd’hui";
   return delta > 0 ? `+${delta} XP vs toi` : `${Math.abs(delta)} XP devant toi`;
 }
@@ -17134,6 +17124,63 @@ async function shareInviteCode() {
   } catch {}
   setState({ inviteFeedback: ok ? "Invitation partagée / copiée." : text });
 }
+function resetProgressOnly({ silent = false } = {}) {
+  if (!silent && !window.confirm("Réinitialiser ta progression locale tout en gardant pseudo, code ami et amis ?")) return;
+  const preserved = {
+    pseudo: state.pseudo,
+    friends: { ...(state.friends || {}) },
+    rankScope: state.rankScope || "daily",
+    performanceMode: state.performanceMode,
+    installDismissed: state.installDismissed
+  };
+  state = mergeState(defaultState, {
+    ...preserved,
+    tab: "home",
+    xp: 0,
+    streak: 0,
+    gems: 0,
+    completedLessons: {},
+    solvedMysteries: {},
+    seenHints: {},
+    mysteryTries: {},
+    mysteryFeedback: {},
+    unlockedMysteries: {},
+    dailyClaims: {},
+    dailyHistory: {},
+    lastDailySolvedKey: null,
+    rewardFeedback: {},
+    lastScoreSubmit: {},
+    serverLeaderboards: {},
+    serverLeaderboardStatus: {},
+    achievements: { firstLesson: false, firstMystery: false, streak3: false, streak7: false, noHint: false, expertMystery: false, firstArchive: false },
+    profileFeedback: "Progression locale réinitialisée. Tu peux refaire le mystère et retester le classement."
+  });
+  saveState();
+  render();
+}
+async function resetTodayServerScore() {
+  if (!window.confirm("Effacer ton score serveur du jour pour retester le classement ?")) return;
+  try {
+    const mystery = todayMystery();
+    const response = await fetch("/api/v1/progress/reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ playerId: playerIdMe(), periodKey: localDayKey(), mysteryId: mystery?.id || "", clear: "today" })
+    });
+    const json = await response.json().catch(() => ({}));
+    state.serverLeaderboards = {};
+    state.serverLeaderboardStatus = {};
+    state.profileFeedback = json?.message || "Demande de reset serveur envoyée.";
+    saveState();
+    fetchServerLeaderboard("daily", { force: true }).catch(() => {});
+    render();
+  } catch {
+    setState({ profileFeedback: "Impossible de contacter le reset serveur. Tu peux quand même reset la progression locale." });
+  }
+}
+function testResetToolsMarkup() {
+  return `<section class="card test-reset-card"><div><span class="card-label">Tests bêta</span><h2>Réinitialiser pour retester le classement</h2><p>Garde ton pseudo et tes amis, mais remet la progression locale à zéro pour refaire le mystère du jour. Tu peux aussi effacer ton score serveur du jour si tu veux vérifier l’envoi Supabase.</p></div><div class="backup-actions"><button type="button" data-reset-progress>Reset progression</button><button type="button" class="ghost danger" data-reset-server-score>Effacer score serveur du jour</button></div></section>`;
+}
 function backupToolsMarkup() {
   return `<section class="card backup-card"><div><span class="card-label">Sauvegarde locale</span><h2>Ne perds pas ta progression bêta.</h2><p>Copie une sauvegarde texte avant de tester beaucoup de versions. Tu peux la restaurer plus tard sur le même navigateur.</p></div><div class="backup-actions"><button data-export-save>Copier sauvegarde</button><button class="ghost" data-download-save>Télécharger</button><button class="ghost" data-import-save>Restaurer</button></div>${state.backupFeedback ? `<p>${escapeHtml(state.backupFeedback)}</p>` : ""}</section>`;
 }
@@ -17151,6 +17198,7 @@ function renderProfile() {
     ${friendListMarkup()}
     <section class="card social-shortcuts"><div><span class="card-label">Classements</span><h2>Compare sans bruit</h2><p>Le multi se limite volontairement aux scores, profils et amis. Aucun chat, aucune messagerie.</p></div><div class="home-actions-row"><button data-profile-rank="daily">Classement jour</button><button class="ghost" data-profile-rank="friends">Mes amis</button></div></section>
     ${socialBackendMarkup()}
+    ${testResetToolsMarkup()}
     ${backupToolsMarkup()}
     ${installPromptMarkup()}
     <details class="card profile-advanced"><summary>Réglages et diagnostic</summary>${performanceSettingsMarkup()}${qualityAuditMarkup()}${recentDailyCalendarMarkup()}<section class="health-card"><div><span class="card-label">Solidité bêta</span><h2>Sauvegarde locale ${health.status}</h2><p>${health.premium} cours premium, ${data.mysteries.length} mystères chargés. Dernière sauvegarde OK : ${escapeHtml(health.lastOk)}.</p></div><strong>${APP_VERSION}</strong></section></details>
@@ -17181,6 +17229,8 @@ function renderProfile() {
   $(`[data-export-save]`)?.addEventListener("click", exportLocalSave);
   $(`[data-download-save]`)?.addEventListener("click", downloadLocalSave);
   $(`[data-import-save]`)?.addEventListener("click", importLocalSave);
+  $(`[data-reset-progress]`)?.addEventListener("click", () => resetProgressOnly());
+  $(`[data-reset-server-score]`)?.addEventListener("click", resetTodayServerScore);
   $(`[data-install-app]`)?.addEventListener("click", installApp);
   $(`[data-dismiss-install]`)?.addEventListener("click", () => setState({ installDismissed: true }));
   $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
@@ -17189,7 +17239,7 @@ function renderPublicProfile() {
   const player = profileById(state.selectedProfileId);
   renderShell(`<header class="topbar"><button data-back-social>←</button><div><p class="eyebrow">Profil joueur</p><h1>${escapeHtml(player.name)}</h1></div></header>
     ${publicProfileMarkup(player)}
-    <section class="card profile-score-card"><div class="section-title-row"><div><span class="card-label">Scores</span><h2>Classements</h2></div><small>${player.me ? "toi" : player.friend ? "ami" : "démo"}</small></div><div class="public-stats-grid"><div><strong>${scoreOfPlayer(player, "daily")}</strong><span>Aujourd’hui</span></div><div><strong>${scoreOfPlayer(player, "week")}</strong><span>Semaine</span></div><div><strong>${scoreOfPlayer(player, "year")}</strong><span>Année</span></div><div><strong>#${leaderboardRows(state.rankScope || "daily").find(r => r.id === player.id)?.rank || "—"}</strong><span>Rang actuel</span></div></div></section>
+    <section class="card profile-score-card"><div class="section-title-row"><div><span class="card-label">Scores</span><h2>Classements</h2></div><small>${player.me ? "toi" : player.friend ? "ami" : "joueur"}</small></div><div class="public-stats-grid"><div><strong>${scoreOfPlayer(player, "daily")}</strong><span>Aujourd’hui</span></div><div><strong>${scoreOfPlayer(player, "week")}</strong><span>Semaine</span></div><div><strong>${scoreOfPlayer(player, "year")}</strong><span>Année</span></div><div><strong>#${leaderboardRows(state.rankScope || "daily").find(r => r.id === player.id)?.rank || "—"}</strong><span>Rang actuel</span></div></div></section>
     ${!player.me && player.friend ? `<section class="card"><button class="ghost wide" data-remove-friend="${escapeHtml(player.id)}">Retirer des amis</button></section>` : ""}
     <section class="card social-shortcuts"><div class="home-actions-row"><button data-open-rank="daily">Classement jour</button><button class="ghost" data-open-rank="friends">Classement amis</button></div></section>`);
   $(`[data-back-social]`)?.addEventListener("click", () => setState({ tab: "rank" }));

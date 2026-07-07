@@ -165,3 +165,6 @@ input:focus, textarea:focus, select:focus {
 
 /* beta57: détails de cours stables sur desktop/mobile */
 .lesson-tabbed-card details,.lesson-tabbed-card summary{position:relative;z-index:3;pointer-events:auto!important}.lesson-tabbed-card summary{user-select:none;-webkit-user-select:none}.lesson-tabbed-card details[open]{scroll-margin-top:18px}.lesson-tabbed-card details p,.lesson-tabbed-card details .text-block{pointer-events:auto}.lesson-tabbed-card .quiz-item,.lesson-tabbed-card .further,.lesson-tabbed-card .memo-question{contain:layout style}.lesson-tabbed-card .quiz-item[open],.lesson-tabbed-card .further[open],.lesson-tabbed-card .memo-question[open]{animation:none!important}
+
+/* beta58 real-social/reset polish */
+.test-reset-card{border-color:rgba(251,113,133,.25);background:radial-gradient(circle at 96% 0,rgba(251,113,133,.10),transparent 36%),linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.03))}.test-reset-card h2{margin:.18rem 0 .32rem}.test-reset-card p{margin:0;color:var(--muted);line-height:1.42}.test-reset-card .backup-actions{margin-top:12px}.empty-rank h2{margin:.2rem 0 .35rem}.empty-rank p{margin:0;color:var(--muted)}.empty-friends-card p{margin-bottom:0}.rank-row[disabled]{opacity:.5;pointer-events:none}

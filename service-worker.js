@@ -1,6 +1,6 @@
-const CACHE_NAME = "histodaily-beta57-course-disclosure-fix";
-const APP_VERSION = "1.0.0-beta.57";
-const ASSETS = ["/", "/index.html", "/styles.css?v=1.0.0-beta.57", "/app-core.js?v=1.0.0-beta.57", "/app-quality.js?v=1.0.0-beta.57", "/app-onboarding.js?v=1.0.0-beta.57", "/app.js?v=1.0.0-beta.57", "/lessons-lite.js?v=1.0.0-beta.57", "/manifest.webmanifest"];
+const CACHE_NAME = "histodaily-beta58-real-social-reset";
+const APP_VERSION = "1.0.0-beta.58";
+const ASSETS = ["/", "/index.html", "/styles.css?v=1.0.0-beta.58", "/app-core.js?v=1.0.0-beta.58", "/app-quality.js?v=1.0.0-beta.58", "/app-onboarding.js?v=1.0.0-beta.58", "/app.js?v=1.0.0-beta.58", "/lessons-lite.js?v=1.0.0-beta.58", "/manifest.webmanifest"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
@@ -16,4 +16,3 @@ self.addEventListener("fetch", event => {
     return response;
   }).catch(() => caches.match(event.request).then(cached => cached || caches.match("/index.html"))));
 });
-
