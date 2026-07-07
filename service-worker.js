@@ -1,6 +1,6 @@
-const CACHE_NAME = "histodaily-beta59-single-api";
-const APP_VERSION = "1.0.0-beta.59";
-const ASSETS = ["/", "/index.html", "/styles.css?v=1.0.0-beta.59", "/app-core.js?v=1.0.0-beta.59", "/app-quality.js?v=1.0.0-beta.59", "/app-onboarding.js?v=1.0.0-beta.59", "/app.js?v=1.0.0-beta.59", "/lessons-lite.js?v=1.0.0-beta.59", "/manifest.webmanifest"];
+const CACHE_NAME = "histodaily-beta60-api-route-fix";
+const APP_VERSION = "1.0.0-beta.60";
+const ASSETS = ["/", "/index.html", "/styles.css?v=1.0.0-beta.60", "/app-core.js?v=1.0.0-beta.60", "/app-quality.js?v=1.0.0-beta.60", "/app-onboarding.js?v=1.0.0-beta.60", "/app.js?v=1.0.0-beta.60", "/lessons-lite.js?v=1.0.0-beta.60", "/manifest.webmanifest"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
