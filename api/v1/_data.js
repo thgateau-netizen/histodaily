@@ -11,16 +11,17 @@ const mysteries = [
     ],
     "lessonId": "prehistory-fire",
     "clues": [
-      "Ne cherche pas seulement un objet : cherche une maîtrise qui transforme l’espace social.",
-      "La cuisson, la chaleur et la protection comptent autant que la technique elle-même.",
-      "Les archéologues l’identifient par foyers, cendres, charbons et sols rubéfiés."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Progressivement avant -400 000 ans ; espace : Afrique, Europe, Asie.",
+      "Dernier verrou : On retrouve, dans plusieurs niveaux d’occupation, des zones rubéfiées, des charbons et des os noircis."
     ],
     "explanation": "La maîtrise du feu n’est pas un gadget technique : elle transforme l’alimentation, les veillées, la protection, la mobilité et les formes de sociabilité.",
     "caseTitle": "Dossier : des sols brûlés qui reviennent",
     "upgradedAdult": true,
     "blockedGuesses": [
       "feu"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-writing",
@@ -36,9 +37,9 @@ const mysteries = [
     ],
     "lessonId": "civilizations-cuneiform",
     "clues": [
-      "Le piège est de répondre trop large : il faut le système précis, pas seulement ‘écriture’.",
-      "Le support est l’argile, et le geste imprime des signes en forme de coins.",
-      "Le contexte est celui des cités mésopotamiennes comme Uruk."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Vers -3300 ; espace : Mésopotamie.",
+      "Dernier verrou : Des jetons, des bulles d’argile, des listes de rations et des tablettes suggèrent moins une naissance de la littérature qu’un problème de stocks, de dettes et de travail à enregistrer."
     ],
     "explanation": "L’écriture cunéiforme naît dans des besoins de gestion autant que dans l’envie de transmettre des récits.",
     "caseTitle": "Dossier : des comptes avant les récits",
@@ -46,7 +47,8 @@ const mysteries = [
       "écriture",
       "ecriture"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-harappa",
@@ -64,9 +66,9 @@ const mysteries = [
     ],
     "lessonId": "indus-seals-writing",
     "clues": [
-      "Le dossier oppose organisation urbaine et absence de souverain clairement identifiable.",
-      "L’écriture associée à cette civilisation reste non déchiffrée.",
-      "Les grands sites incluent Harappa et Mohenjo-Daro."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Rues régulières, briques calibrées, gestion de l’eau, sceaux gravés : tout indique une organisation forte."
     ],
     "explanation": "La civilisation de l’Indus intrigue parce qu’elle montre une urbanisation très organisée sans livrer le type de pouvoir royal monumental attendu ailleurs.",
     "caseTitle": "Dossier : une ville très ordonnée, un pouvoir muet",
@@ -92,7 +94,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-pyramids",
@@ -110,9 +113,9 @@ const mysteries = [
     ],
     "lessonId": "egypt-pyramids",
     "clues": [
-      "Il faut nommer le monument précis, pas seulement le pays ou le souverain.",
-      "Le dispositif est lié à l’au-delà royal et à l’Ancien Empire.",
-      "Gizeh en donne les exemples les plus célèbres."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Ancien Empire ; espace : Gizeh et autres sites.",
+      "Dernier verrou : Un monument colossal suppose carrières, transport, équipes spécialisées, scribes, calendrier des crues et théologie royale."
     ],
     "explanation": "Les pyramides d’Égypte sont des tombes royales, mais elles prouvent aussi la puissance administrative, religieuse et économique du royaume.",
     "caseTitle": "Dossier : une tombe qui mobilise tout un État",
@@ -122,7 +125,8 @@ const mysteries = [
       "pharaon",
       "pharaons"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-phoenicians",
@@ -138,9 +142,9 @@ const mysteries = [
     ],
     "lessonId": "near-east-empires-pheniciens-alphabet",
     "clues": [
-      "Le pouvoir est maritime et urbain, plus qu’impérial au sens territorial.",
-      "Leur alphabet influence ensuite les écritures grecques puis latines.",
-      "Carthage appartient à leur héritage punique."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Un peuple de cités littorales ne domine pas la Méditerranée par un vaste territoire continu."
     ],
     "explanation": "Les Phéniciens comptent parce qu’ils montrent une autre forme de puissance : réseaux, ports, échanges et transmission de l’alphabet.",
     "caseTitle": "Dossier : pas d’empire, mais des ports et des lettres",
@@ -166,7 +170,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-athens",
@@ -182,9 +187,9 @@ const mysteries = [
     ],
     "lessonId": "greece-athens-democracy",
     "clues": [
-      "La réponse doit associer le régime et la cité, pas seulement dire ‘démocratie’.",
-      "Le Ve siècle av. J.-C. et Périclès sont des repères utiles.",
-      "Cette expérience politique se développe dans une cité grecque précise."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : Ve siècle av. J.-C. ; espace : Attique.",
+      "Dernier verrou : Assemblée, tirage au sort, tribunaux populaires : les citoyens prennent réellement part au pouvoir."
     ],
     "explanation": "La démocratie athénienne est fondatrice, mais elle reste directe, masculine, civique et fortement excluante.",
     "caseTitle": "Dossier : le peuple gouverne, mais pas tous les habitants",
@@ -194,7 +199,8 @@ const mysteries = [
       "athenes",
       "athènes"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-carthage",
@@ -210,9 +216,9 @@ const mysteries = [
     ],
     "lessonId": "roman-republic-crisis-guerres-puniques",
     "clues": [
-      "Le piège est de répondre ‘Rome’ : ici, on cherche son adversaire maritime.",
-      "Hannibal rend ce dossier célèbre, mais il n’est pas la réponse attendue.",
-      "Les guerres puniques sont le contexte décisif."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Une cité d’Afrique du Nord contrôle des routes commerciales, hérite d’un monde levantin, affronte Rome et devient, dans la mémoire romaine, l’ennemi nécessaire à détruire."
     ],
     "explanation": "Carthage est la grande rivale méditerranéenne de Rome avant que les guerres puniques ne changent l’équilibre régional.",
     "caseTitle": "Dossier : la mer avant l’empire territorial",
@@ -238,7 +244,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-roman-republic",
@@ -254,16 +261,17 @@ const mysteries = [
     ],
     "lessonId": "rome-republic-institutions",
     "clues": [
-      "La réponse attendue est un régime politique précis de Rome, pas la ville seule.",
-      "Il précède le principat d’Auguste.",
-      "César, Pompée et les guerres civiles appartiennent à sa crise finale."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : À partir de -509 ; espace : Rome.",
+      "Dernier verrou : Magistratures limitées, Sénat, assemblées et idéal anti-monarchique structurent un régime capable de conquérir loin."
     ],
     "explanation": "La République romaine tient par des équilibres institutionnels fragiles, bousculés par l’expansion.",
     "caseTitle": "Dossier : refuser le roi ne suffit pas à éviter la crise",
     "blockedGuesses": [
       "rome"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-byzantium",
@@ -281,9 +289,9 @@ const mysteries = [
     ],
     "lessonId": "middle-ages-byzantium",
     "clues": [
-      "Ne réponds pas seulement la capitale : cherche le nom historique de cet empire prolongé.",
-      "Il se pense romain, même si les historiens lui donnent souvent un autre nom.",
-      "Sa chute est liée à 1453."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : VIe - XVe siècle ; espace : Méditerranée orientale.",
+      "Dernier verrou : L’Occident impérial s’effondre, mais un pouvoir chrétien, romain dans son identité et de plus en plus grec dans sa langue, continue depuis une capitale stratégique entre Europe et Asie."
     ],
     "explanation": "Byzance est essentielle pour comprendre la continuité de Rome, l’orthodoxie, le droit et les circulations médiévales.",
     "caseTitle": "Dossier : une Rome qui survit ailleurs",
@@ -291,7 +299,8 @@ const mysteries = [
       "rome",
       "constantinople"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-islam",
@@ -308,9 +317,9 @@ const mysteries = [
     ],
     "lessonId": "birth-of-islam",
     "clues": [
-      "On ne cherche pas seulement une personne : on cherche le basculement religieux et politique.",
-      "La Mecque et Médine sont les deux repères de départ.",
-      "Le phénomène devient l’une des grandes religions monothéistes."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : VIIe siècle ; espace : Arabie.",
+      "Dernier verrou : Au VIIe siècle, une prédication née dans la péninsule Arabique donne forme à une communauté, puis à un cadre politique, juridique et culturel qui déborde très vite son milieu d’origine."
     ],
     "explanation": "La naissance de l’islam est à la fois un fait religieux et le point de départ d’un immense monde politique et culturel.",
     "caseTitle": "Dossier : une communauté religieuse devient cadre politique",
@@ -321,7 +330,8 @@ const mysteries = [
       "médine",
       "medine"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-vikings",
@@ -337,9 +347,9 @@ const mysteries = [
     ],
     "lessonId": "northern-viking-worlds-raids-vikings",
     "clues": [
-      "Le premier dossier est piégé par le point de vue des victimes qui écrivent.",
-      "Les réseaux passent par l’Atlantique, la mer du Nord et les fleuves d’Europe orientale.",
-      "Le monde de départ est scandinave, mais l’impact va de l’Angleterre à Byzance."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 793 → 900 ; espace : Îles Britanniques et Europe occidentale.",
+      "Dernier verrou : Les chroniqueurs chrétiens décrivent surtout la violence."
     ],
     "explanation": "Les Vikings ne sont pas seulement des pillards : ce sont des acteurs scandinaves de mobilité, de commerce, de guerre, de colonisation et de recomposition politique.",
     "caseTitle": "Dossier : les textes accusent, les objets nuancent",
@@ -365,7 +375,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-mansa-musa",
@@ -381,9 +392,9 @@ const mysteries = [
     ],
     "lessonId": "mansa-musa-pilgrimage",
     "clues": [
-      "Il faut identifier le souverain, pas seulement le royaume ou la richesse.",
-      "Le trajet mène vers La Mecque au XIVe siècle.",
-      "Son nom est lié à l’empire du Mali et à la réputation de l’or sahélien."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 1324 → 1325 ; espace : Mali, Sahara, Le Caire, La Mecque.",
+      "Dernier verrou : Dossier : un pèlerinage comme démonstration de puissance"
     ],
     "explanation": "Mansa Musa rend visible un Sahel connecté aux routes sahariennes, au commerce de l’or et au monde islamique.",
     "caseTitle": "Dossier : un pèlerinage comme démonstration de puissance",
@@ -392,7 +403,8 @@ const mysteries = [
       "empire du mali",
       "or"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-gutenberg",
@@ -410,9 +422,9 @@ const mysteries = [
     ],
     "lessonId": "renaissance-humanisms-imprimerie-diffusion",
     "clues": [
-      "La réponse attendue est la rupture technique générale, pas seulement le nom d’un artisan.",
-      "Caractères mobiles, encre adaptée et presse sont combinés.",
-      "Le XVe siècle européen est le repère de diffusion."
+      "Ne réponds pas par un grand thème : le dossier cherche un réseau ou une dynamique de circulation, pas une impression vague.",
+      "Cadre à resserrer — période : vers 1450 → XVIe siècle ; espace : Europe.",
+      "Dernier verrou : Dossier : quand la reproduction change la vitesse des conflits"
     ],
     "explanation": "L’imprimerie multiplie les textes et modifie la circulation des idées, notamment pendant les Réformes.",
     "caseTitle": "Dossier : quand la reproduction change la vitesse des conflits",
@@ -421,7 +433,8 @@ const mysteries = [
       "livres",
       "presse"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-luther",
@@ -438,16 +451,17 @@ const mysteries = [
     ],
     "lessonId": "reformation-conflicts-luther-1517",
     "clues": [
-      "On ne cherche pas seulement l’homme : on cherche le mouvement de rupture.",
-      "1517 est le repère classique, même s’il simplifie l’histoire.",
-      "Le protestantisme naît de cette fracture de la chrétienté occidentale."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Une critique de pratiques ecclésiastiques circule vite grâce aux imprimés."
     ],
     "explanation": "La Réforme montre comment imprimerie, foi, pouvoir princier et contestation s’entremêlent.",
     "caseTitle": "Dossier : une dispute religieuse devient crise européenne",
     "blockedGuesses": [
       "luther"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-haiti",
@@ -463,9 +477,9 @@ const mysteries = [
     ],
     "lessonId": "atlantic-revolutions-haiti-revolution",
     "clues": [
-      "Il faut nommer la révolution, pas seulement l’île ou la colonie.",
-      "Saint-Domingue est le point de départ colonial.",
-      "Elle aboutit à la première indépendance noire issue d’une révolte d’esclaves victorieuse."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Les mots de liberté circulent dans un monde qui maintient l’esclavage."
     ],
     "explanation": "Haïti oblige à prendre au sérieux l’universalité des droits proclamés pendant les révolutions atlantiques.",
     "caseTitle": "Dossier : les droits humains testés par une colonie esclavagiste",
@@ -475,7 +489,8 @@ const mysteries = [
       "saint domingue",
       "saint-domingue"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-napoleon",
@@ -492,9 +507,9 @@ const mysteries = [
     ],
     "lessonId": "napoleon-empire",
     "clues": [
-      "La réponse est un personnage, mais le piège est d’oublier le mélange ordre/révolution.",
-      "Le Code civil et le sacre impérial sont deux repères.",
-      "Waterloo marque la fin politique définitive de son système."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : 1799-1815 ; espace : France et Europe.",
+      "Dernier verrou : Dossier : stabiliser la Révolution en exportant la guerre"
     ],
     "explanation": "Napoléon stabilise une partie de la Révolution tout en construisant un pouvoir autoritaire et conquérant.",
     "caseTitle": "Dossier : stabiliser la Révolution en exportant la guerre",
@@ -520,7 +535,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-industrialization",
@@ -535,9 +551,9 @@ const mysteries = [
     ],
     "lessonId": "industrial-empires-revolution-industrielle",
     "clues": [
-      "Il faut nommer un processus de longue durée, pas un lieu comme ‘l’usine’. ",
-      "Textile, vapeur, mines et chemins de fer sont des indices classiques.",
-      "L’Angleterre sert souvent de point de départ dans le récit européen."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Machines, charbon, concentration ouvrière, horaires, capitaux et villes industrielles changent ensemble la production."
     ],
     "explanation": "L’industrialisation transforme l’économie, les villes, les classes sociales et la perception du temps.",
     "caseTitle": "Dossier : produire plus, discipliner autrement",
@@ -546,7 +562,8 @@ const mysteries = [
       "usine",
       "usines"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-ww1",
@@ -562,9 +579,9 @@ const mysteries = [
     ],
     "lessonId": "wwi-entry-1914",
     "clues": [
-      "La réponse attendue est le conflit entier, pas seulement l’année ou un symbole du front.",
-      "L’armistice du 11 novembre 1918 ferme le cycle militaire principal.",
-      "Le front occidental associe fortement ce conflit aux tranchées."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : 1914 ; espace : Europe.",
+      "Dernier verrou : le cours lié parle de 1914 : entrer dans la guerre, mais la réponse attend le nom exact du dossier."
     ],
     "explanation": "La Première Guerre mondiale est le passage d’une crise européenne à une guerre industrielle et mondiale.",
     "caseTitle": "Dossier : une crise d’été devient guerre de masse",
@@ -573,7 +590,8 @@ const mysteries = [
       "tranchées",
       "tranchees"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-shoah",
@@ -590,9 +608,9 @@ const mysteries = [
     ],
     "lessonId": "second-world-war-detail-shoah-genocides",
     "clues": [
-      "On ne cherche pas seulement le régime responsable, mais le crime historique précis.",
-      "Le terme hébreu est devenu central en français.",
-      "Auschwitz en est un symbole majeur, sans résumer tout le processus."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Discriminations légales, spoliations, ghettos, déportations, fusillades et centres de mise à mort forment un processus d’extermination planifiée visant les Juifs d’Europe."
     ],
     "explanation": "La Shoah n’est pas un simple massacre de guerre : c’est un génocide bureaucratique, idéologique et planifié.",
     "caseTitle": "Dossier : bureaucratie, idéologie et meurtre de masse",
@@ -601,7 +619,8 @@ const mysteries = [
       "hitler",
       "allemagne nazie"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-cold-war",
@@ -617,9 +636,9 @@ const mysteries = [
     ],
     "lessonId": "cold-war-blocs",
     "clues": [
-      "La réponse est un ordre mondial, pas un seul pays.",
-      "La dissuasion nucléaire explique pourquoi le conflit reste indirect.",
-      "Les deux pôles principaux sont Washington et Moscou après 1945."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 1947-1991 ; espace : Monde.",
+      "Dernier verrou : Deux pôles accumulent armes, alliances, propagande et espionnage."
     ],
     "explanation": "La guerre froide n’est pas une absence de guerre : c’est un conflit global déplacé, idéologique, militaire et diplomatique.",
     "caseTitle": "Dossier : éviter la guerre directe, déplacer l’affrontement",
@@ -629,7 +648,8 @@ const mysteries = [
       "etats unis",
       "états-unis"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-internet",
@@ -644,9 +664,9 @@ const mysteries = [
     ],
     "lessonId": "post-1991-world-internet-revolution-numerique",
     "clues": [
-      "Ne confonds pas le tout avec un service particulier : le Web n’est qu’une partie du phénomène.",
-      "L’usage grand public explose surtout dans les années 1990-2000.",
-      "La réponse désigne le réseau global lui-même."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : années 1990 → aujourd’hui ; espace : Monde connecté.",
+      "Dernier verrou : Dossier : une infrastructure technique devient milieu social"
     ],
     "explanation": "Internet devient une infrastructure sociale : il transforme les échanges, l’économie, les médias et les pouvoirs.",
     "caseTitle": "Dossier : une infrastructure technique devient milieu social",
@@ -657,7 +677,8 @@ const mysteries = [
       "réseau",
       "reseau"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-climate",
@@ -674,9 +695,9 @@ const mysteries = [
     ],
     "lessonId": "post-1991-world-climat-anthropocene",
     "clues": [
-      "La réponse attendue est un phénomène historique et climatique, pas seulement ‘la pollution’. ",
-      "Il impose de penser ensemble énergie, sciences, économie et politique.",
-      "Le mot Anthropocène sert parfois à discuter cette entrée de l’humanité dans une force géologique."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : XXe → XXIe siècle ; espace : Planète.",
+      "Dernier verrou : Charbon, pétrole, industrie, consommation et mesures scientifiques obligent les sociétés à comprendre qu’elles modifient une condition planétaire de leur propre histoire : l’atmosphère."
     ],
     "explanation": "Le climat n’est pas seulement un décor : il devient un acteur historique façonné par les sociétés industrielles.",
     "caseTitle": "Dossier : l’atmosphère devient une archive politique",
@@ -686,7 +707,8 @@ const mysteries = [
       "réchauffement",
       "rechauffement"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-prehistory-intro",
@@ -702,9 +724,9 @@ const mysteries = [
     ],
     "lessonId": "prehistory-intro",
     "clues": [
-      "La difficulté vient de la méthode : l’enquête remplace le témoignage écrit.",
-      "Les sources principales sont archéologiques, paléoanthropologiques et environnementales.",
-      "La période visée précède l’invention de l’écriture."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Avant l’écriture ; espace : Partout dans le monde.",
+      "Dernier verrou : On veut raconter des sociétés qui n’ont laissé ni chroniques, ni lois, ni rois nommés."
     ],
     "explanation": "La Préhistoire est une histoire sans archives écrites, mais pas sans traces ni complexité.",
     "caseTitle": "Dossier : une histoire sans archives écrites",
@@ -715,7 +737,8 @@ const mysteries = [
       "hommes préhistoriques",
       "hommes prehistoriques"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-hominids",
@@ -731,9 +754,9 @@ const mysteries = [
     ],
     "lessonId": "prehistory-hominids",
     "clues": [
-      "Le piège est de répondre seulement Homo sapiens.",
-      "Il faut nommer l’ensemble des lignées humaines anciennes.",
-      "On parle d’hominines ou d’hominidés selon le vocabulaire utilisé."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Il y a plusieurs millions d’années ; espace : Afrique.",
+      "Dernier verrou : Des fossiles anciens, des outils et l’ADN ancien obligent à abandonner l’image d’une file indienne menant proprement jusqu’à nous."
     ],
     "explanation": "Les premiers hominidés rappellent que l’évolution humaine est un buisson, pas une ligne droite.",
     "caseTitle": "Dossier : plusieurs humanités, pas une marche triomphale",
@@ -743,7 +766,8 @@ const mysteries = [
       "évolution",
       "evolution"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-first-tools",
@@ -758,9 +782,9 @@ const mysteries = [
     ],
     "lessonId": "prehistory-habilis",
     "clues": [
-      "La réponse attendue n’est pas ‘pierre’ mais le type de production technique.",
-      "Les archéologues parlent d’industrie lithique.",
-      "Les premiers ensembles connus sont liés aux outils taillés."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Environ -2,4 à -1,4 million d’années ; espace : Afrique de l’Est.",
+      "Dernier verrou : Dossier : une pierre qui garde la trace d’un raisonnement"
     ],
     "explanation": "Les premiers outils montrent une capacité de transformation du milieu et de transmission des savoir-faire.",
     "caseTitle": "Dossier : une pierre qui garde la trace d’un raisonnement",
@@ -770,7 +794,8 @@ const mysteries = [
       "outil",
       "outils"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-erectus-migrations",
@@ -784,9 +809,9 @@ const mysteries = [
     ],
     "lessonId": "prehistory-erectus",
     "clues": [
-      "Ce n’est pas Homo sapiens.",
-      "Son nom évoque la station debout.",
-      "Il est souvent associé aux premières grandes sorties d’Afrique."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Environ -1,9 million à -110 000 ans ; espace : Afrique puis Eurasie.",
+      "Dernier verrou : Des restes humains et des outils attestent des présences très anciennes hors d’Afrique, bien avant que notre espèce ne devienne dominante."
     ],
     "explanation": "Homo erectus montre que la mobilité humaine hors d’Afrique commence bien avant Homo sapiens.",
     "caseTitle": "Dossier : quitter l’Afrique avant notre espèce",
@@ -797,7 +822,8 @@ const mysteries = [
       "néandertal",
       "neandertal"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-cave-art",
@@ -814,9 +840,9 @@ const mysteries = [
     ],
     "lessonId": "prehistory-art",
     "clues": [
-      "Le piège est de répondre seulement ‘dessins’. Il faut le phénomène culturel.",
-      "Lascaux et Chauvet sont des références célèbres.",
-      "On parle d’art pariétal."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Paléolithique supérieur ; espace : Europe et ailleurs.",
+      "Dernier verrou : Des silhouettes animales, des mains négatives et des signes abstraits apparaissent au fond de grottes difficiles d’accès."
     ],
     "explanation": "L’art pariétal montre que les sociétés préhistoriques produisent des représentations symboliques élaborées.",
     "caseTitle": "Dossier : peindre là où l’on ne vit presque pas",
@@ -828,7 +854,8 @@ const mysteries = [
       "peinture",
       "peintures"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-neanderthal",
@@ -844,9 +871,9 @@ const mysteries = [
     ],
     "lessonId": "prehistory-neanderthal",
     "clues": [
-      "Il ne s’agit pas d’un ancêtre direct unique, mais d’une humanité cousine.",
-      "Son nom vient d’une vallée allemande.",
-      "On parle de l’homme de Néandertal."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Environ -400 000 à -40 000 ans ; espace : Europe et Asie occidentale.",
+      "Dernier verrou : relie les indices entre eux et formule la réponse exacte, sans recopier un thème trop large."
     ],
     "explanation": "Néandertal force à abandonner le cliché d’une humanité unique et supérieure avançant seule.",
     "caseTitle": "Dossier : l’autre Européen que le cliché a aplati",
@@ -856,7 +883,8 @@ const mysteries = [
       "homme prehistorique",
       "cromagnon"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-neolithic-agriculture",
@@ -873,9 +901,9 @@ const mysteries = [
     ],
     "lessonId": "prehistory-agriculture",
     "clues": [
-      "La réponse doit nommer le changement économique, pas seulement les villages.",
-      "Elle va avec la domestication de plantes et d’animaux.",
-      "C’est la révolution néolithique / l’agriculture."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Des graines sélectionnées, des meules, des silos, des villages plus stables et des os d’animaux domestiques montrent que la subsistance n’est plus seulement une affaire de prélèvement."
     ],
     "explanation": "L’agriculture transforme les rapports au territoire, au temps, à l’alimentation et au pouvoir.",
     "caseTitle": "Dossier : la nourriture devient un projet annuel",
@@ -886,7 +914,8 @@ const mysteries = [
       "neolithique",
       "domestication"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-nile",
@@ -901,9 +930,9 @@ const mysteries = [
     ],
     "lessonId": "egypt-nile",
     "clues": [
-      "La réponse n’est pas ‘Égypte’ mais le fleuve et son rôle.",
-      "Ses crues déposent le limon.",
-      "C’est le Nil."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : Égypte ancienne ; espace : Vallée du Nil.",
+      "Dernier verrou : Elle impose de mesurer, prévoir, répartir, taxer et organiser les travaux."
     ],
     "explanation": "Le Nil n’est pas seulement un décor : il organise l’économie, les transports, le calendrier et l’État égyptien.",
     "caseTitle": "Dossier : le fleuve qui transforme le temps en administration",
@@ -913,7 +942,8 @@ const mysteries = [
       "pharaon",
       "crue"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-hieroglyphs",
@@ -929,9 +959,9 @@ const mysteries = [
     ],
     "lessonId": "egypt-writing-scribes",
     "clues": [
-      "Le piège est de répondre ‘dessins égyptiens’. Ce sont des signes d’écriture.",
-      "Champollion est associé à leur déchiffrement moderne.",
-      "Ce sont les hiéroglyphes."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : À partir de la fin du IVe millénaire av. J.-C. ; espace : Égypte.",
+      "Dernier verrou : Un oiseau, un œil ou un roseau peuvent être image, son, idée ou déterminatif."
     ],
     "explanation": "Les hiéroglyphes sont un système d’écriture complexe, pas un simple décor sacré.",
     "caseTitle": "Dossier : des images qui piègent le regard moderne",
@@ -945,7 +975,8 @@ const mysteries = [
       "scribes",
       "scribe"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-greek-polis",
@@ -963,9 +994,9 @@ const mysteries = [
     ],
     "lessonId": "greece-intro-polis",
     "clues": [
-      "Le mot grec est souvent traduit imparfaitement par cité.",
-      "Athènes et Sparte en sont deux exemples très différents.",
-      "La réponse attendue est la polis / cité grecque."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : VIIIe → Ve siècle av. J.-C. ; espace : Mer Égée et Méditerranée.",
+      "Dernier verrou : Le territoire, les sanctuaires, les lois, les magistrats, l’armée civique et l’identité des citoyens comptent autant que les maisons."
     ],
     "explanation": "La cité grecque est une communauté politique complète, avec citoyens, territoire, institutions et rivalités.",
     "caseTitle": "Dossier : une communauté politique avant d’être une ville",
@@ -977,7 +1008,8 @@ const mysteries = [
       "athenes",
       "sparte"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-uruk",
@@ -992,9 +1024,9 @@ const mysteries = [
     ],
     "lessonId": "civilizations-uruk-city",
     "clues": [
-      "La réponse attendue est un site précis de Mésopotamie.",
-      "Il est associé aux débuts de l’urbanisation et de l’écriture.",
-      "C’est Uruk."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Vers -3500 ; espace : Basse Mésopotamie.",
+      "Dernier verrou : Dossier : quand la ville force l’invention administrative"
     ],
     "explanation": "Uruk montre que la ville n’est pas seulement un grand village : elle concentre pouvoirs, travail spécialisé, échanges et écritures.",
     "caseTitle": "Dossier : quand la ville force l’invention administrative",
@@ -1006,7 +1038,8 @@ const mysteries = [
       "écriture",
       "ecriture"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-hammurabi",
@@ -1021,9 +1054,9 @@ const mysteries = [
     ],
     "lessonId": "hammurabi-law-power",
     "clues": [
-      "Ce n’est pas simplement ‘la loi’ : il faut le texte ou le roi précis.",
-      "Il appartient au monde babylonien.",
-      "On parle du Code de Hammurabi."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : vers -1792 → -1750 ; espace : Babylone et royaume paléo-babylonien.",
+      "Dernier verrou : Un roi fait graver des décisions juridiques dans la pierre, non pour inventer toute la justice, mais pour montrer qu’il ordonne la société et protège un ordre voulu par les dieux."
     ],
     "explanation": "Le code d’Hammurabi est précieux parce qu’il montre comment le pouvoir royal utilise la justice pour gouverner et se légitimer.",
     "caseTitle": "Dossier : faire de la justice un monument politique",
@@ -1033,7 +1066,8 @@ const mysteries = [
       "justice",
       "babylone"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-kerma",
@@ -1048,9 +1082,9 @@ const mysteries = [
     ],
     "lessonId": "kerma-first-kingdom",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Il se développe en Nubie.",
-      "Il est au sud de l’Égypte."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Au sud de l’Égypte, une puissance africaine construit ses propres centres, échange, combat et impose de relire l’histoire du Nil autrement."
     ],
     "explanation": "Kerma oblige à regarder le Nil comme un espace africain pluriel, fait de rivalités, d’échanges et de pouvoirs autonomes.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -1075,7 +1109,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-shang",
@@ -1090,9 +1125,9 @@ const mysteries = [
     ],
     "lessonId": "shang-oracles-bronzes",
     "clues": [
-      "La réponse vise une dynastie chinoise ancienne et ses supports divinatoires.",
-      "On parle d’os oraculaires.",
-      "Cela renvoie aux Shang."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : -1600 → -1046 ; espace : vallée du Fleuve Jaune.",
+      "Dernier verrou : Des questions sur les récoltes, la guerre, la chasse ou les naissances sont incisées sur des omoplates et des carapaces, puis chauffées pour lire les fissures."
     ],
     "explanation": "Les Shang relient écriture, divination, ancêtres et pouvoir : leurs traces permettent d’entrer dans la Chine ancienne par ses rituels.",
     "caseTitle": "Dossier : interroger les ancêtres en gravant l’os",
@@ -1102,7 +1137,8 @@ const mysteries = [
       "os",
       "carapaces"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-qin",
@@ -1118,9 +1154,9 @@ const mysteries = [
     ],
     "lessonId": "qin-unification-standardization",
     "clues": [
-      "La réponse attendue est une dynastie chinoise, pas seulement ‘la Chine’. ",
-      "Elle précède les Han et donne son nom à la Chine en Occident.",
-      "Ce sont les Qin."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Poids, monnaies, essieux, écritures administratives, lois et commanderies : l’unification ne tient pas seulement à la conquête militaire."
     ],
     "explanation": "Qin montre qu’un empire ne tient pas seulement par la conquête : il tient aussi par des normes communes et un appareil d’État.",
     "caseTitle": "Dossier : unifier en imposant les mesures",
@@ -1129,7 +1165,8 @@ const mysteries = [
       "empire chinois",
       "unification"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-hattusa",
@@ -1145,9 +1182,9 @@ const mysteries = [
     ],
     "lessonId": "hittite-hattusa-capital",
     "clues": [
-      "Lis le dossier comme un problème d’organisation urbaine, pas comme une simple localisation.",
-      "Elle se situe en Anatolie.",
-      "Elle appartient au monde hittite."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : -1650 → -1200 ; espace : Anatolie centrale.",
+      "Dernier verrou : Une cité fortifiée d’Anatolie révèle des archives, des portes monumentales et un royaume capable de rivaliser avec l’Égypte."
     ],
     "explanation": "Hattusa rappelle que l’Anatolie hittite est un des grands pôles politiques du Bronze récent, pas un simple décor entre Égypte et Mésopotamie.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -1172,7 +1209,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-qadesh",
@@ -1188,9 +1226,9 @@ const mysteries = [
     ],
     "lessonId": "hittite-egypt-kadesh",
     "clues": [
-      "Ne t’arrête pas à la violence : regarde ce qu’elle transforme dans l’État et la société.",
-      "Elle oppose Égyptiens et Hittites.",
-      "Ramsès II en fait un récit glorieux."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : vers -1274 → -1259 ; espace : Syrie, entre Égypte et Hatti.",
+      "Dernier verrou : Deux grandes puissances s’affrontent, puis transforment la guerre en diplomatie écrite."
     ],
     "explanation": "Qadesh est intéressante parce qu’elle montre à la fois la guerre, la propagande royale et la diplomatie internationale du Bronze récent.",
     "caseTitle": "Dossier : la violence change d’échelle",
@@ -1215,7 +1253,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-minoens",
@@ -1229,9 +1268,9 @@ const mysteries = [
     ],
     "lessonId": "aegean-mediterranean-minoens-crete",
     "clues": [
-      "Commence par la fonction des signes : compter, classer, légitimer ou transmettre.",
-      "Ils vivent surtout en Crète.",
-      "Cnossos est un site majeur."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : vers -2000 → -1450 ; espace : Crète.",
+      "Dernier verrou : En Crète, des complexes palatiaux, des fresques, des échanges maritimes et une écriture mal comprise dessinent un monde égéen original."
     ],
     "explanation": "Les Minoens montrent une Méditerranée du Bronze connectée, brillante et difficile à lire faute de textes pleinement compris.",
     "caseTitle": "Dossier : faire parler les signes",
@@ -1239,7 +1278,8 @@ const mysteries = [
       "Crète",
       "Cnossos",
       "Knossos"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-myceniens",
@@ -1257,9 +1297,9 @@ const mysteries = [
     ],
     "lessonId": "aegean-mediterranean-myceniens-palais",
     "clues": [
-      "Commence par la fonction des signes : compter, classer, légitimer ou transmettre.",
-      "Ils appartiennent au monde grec du Bronze récent.",
-      "Le linéaire B sert à administrer."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : vers -1600 → -1200 ; espace : Grèce continentale.",
+      "Dernier verrou : Derrière les murailles et les récits héroïques, des tablettes révèlent surtout une administration palatiale attentive aux stocks et aux dépendants."
     ],
     "explanation": "Les Mycéniens sont passionnants parce qu’ils relient monde palatial, guerre, écriture administrative et mémoire épique.",
     "caseTitle": "Dossier : faire parler les signes",
@@ -1284,7 +1324,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-assyria",
@@ -1299,9 +1340,9 @@ const mysteries = [
     ],
     "lessonId": "near-east-empires-assyrie-terreur-admin",
     "clues": [
-      "La réponse est un empire du Proche-Orient ancien.",
-      "Ninive en est une capitale majeure.",
-      "Il s’agit de l’empire assyrien."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Reliefs de sièges, déportations, provinces, routes, courriers et armées spécialisées dessinent un pouvoir qui ne se contente pas de conquérir."
     ],
     "explanation": "L’Assyrie montre que l’empire est une machine militaire, administrative et symbolique : gouverner, c’est aussi impressionner.",
     "caseTitle": "Dossier : gouverner par la terreur organisée",
@@ -1312,7 +1353,8 @@ const mysteries = [
       "babylone",
       "perse"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-persepolis",
@@ -1327,9 +1369,9 @@ const mysteries = [
     ],
     "lessonId": "near-east-empires-empire-perse",
     "clues": [
-      "La réponse peut être le site ou l’empire associé.",
-      "Darius et Xerxès sont des noms clés.",
-      "C’est Persépolis / l’empire perse achéménide."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Dossier : un empire qui se montre comme collection de peuples"
     ],
     "explanation": "L’empire achéménide est central pour comprendre une forme de gouvernement impérial souple, immense et très organisée.",
     "caseTitle": "Dossier : un empire qui se montre comme collection de peuples",
@@ -1343,7 +1385,8 @@ const mysteries = [
       "Persépolis",
       "Persepolis"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-etruscans",
@@ -1359,9 +1402,9 @@ const mysteries = [
     ],
     "lessonId": "etruscan-cities",
     "clues": [
-      "Le piège est de répondre Rome.",
-      "Ils vivent notamment en Étrurie.",
-      "Ce sont les Étrusques."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Tombes peintes, pratiques religieuses, symboles du pouvoir, urbanisation et rois anciens rappellent que Rome n’apparaît pas dans le vide."
     ],
     "explanation": "Les Étrusques empêchent de raconter Rome comme une naissance isolée : la ville grandit dans une Italie déjà connectée.",
     "caseTitle": "Dossier : Rome a des dettes avant d’avoir un empire",
@@ -1370,7 +1413,8 @@ const mysteries = [
       "romains",
       "italie"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-ashoka",
@@ -1387,9 +1431,9 @@ const mysteries = [
     ],
     "lessonId": "indian-worlds-maurya-ashoka",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Il appartient à l’empire Maurya.",
-      "Il est lié à la diffusion du bouddhisme."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : -321 → -185 ; espace : Sous-continent indien.",
+      "Dernier verrou : Après une guerre violente, un souverain fait inscrire des messages de conduite, de pouvoir et de religion sur des rochers et des piliers."
     ],
     "explanation": "Ashoka est important parce qu’il transforme l’image du souverain : conquérir ne suffit pas, il faut aussi afficher une règle morale.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -1414,7 +1458,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-angkor",
@@ -1430,9 +1475,9 @@ const mysteries = [
     ],
     "lessonId": "angkor-water-empire-southeast",
     "clues": [
-      "La réponse attendue est un site/civilisation d’Asie du Sud-Est.",
-      "Angkor Vat en est le monument le plus célèbre.",
-      "Il s’agit d’Angkor / empire khmer."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 802 → 1431 ; espace : Cambodge.",
+      "Dernier verrou : Réservoirs, canaux, temples et contrôle saisonnier de l’eau permettent de comprendre une capitale tropicale immense."
     ],
     "explanation": "Angkor montre qu’une civilisation peut se lire par ses temples, mais aussi par ses infrastructures hydrauliques et agricoles.",
     "caseTitle": "Dossier : l’eau comme architecture du pouvoir",
@@ -1442,7 +1487,8 @@ const mysteries = [
       "khmer",
       "cambodge"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-teotihuacan",
@@ -1456,9 +1502,9 @@ const mysteries = [
     ],
     "lessonId": "mesoamerica-civilizations-teotihuacan-metropolis",
     "clues": [
-      "Lis le dossier comme un problème d’organisation urbaine, pas comme une simple localisation.",
-      "Elle se trouve en Mésoamérique.",
-      "Elle précède l’apogée aztèque."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 100 → 650 ; espace : vallée de Mexico.",
+      "Dernier verrou : Avenues, pyramides, quartiers et influences régionales composent une métropole immense, mais son pouvoir reste difficile à identifier clairement."
     ],
     "explanation": "Teotihuacan est fascinante parce qu’elle oblige à penser une grande ville puissante sans récit royal simple.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -1483,7 +1529,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-maya",
@@ -1498,9 +1545,9 @@ const mysteries = [
     ],
     "lessonId": "maya-cities-calendar",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Ils vivent en Mésoamérique.",
-      "Leurs cités ne forment pas un empire unique."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 250 → 900 ; espace : Yucatán, Guatemala, Honduras, Belize.",
+      "Dernier verrou : Des cités rivales gravent des calendriers, des généalogies et des victoires."
     ],
     "explanation": "Les Mayas montrent une Mésoamérique savante, urbaine et politique, très loin du cliché d’un peuple mystérieusement disparu.",
     "caseTitle": "Dossier : faire parler les signes",
@@ -1525,7 +1572,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-chinampas",
@@ -1542,9 +1590,9 @@ const mysteries = [
     ],
     "lessonId": "aztec-empire-tenochtitlan",
     "clues": [
-      "Lis le dossier comme un problème d’organisation urbaine, pas comme une simple localisation.",
-      "C’est la capitale des Mexicas.",
-      "Les Espagnols la découvrent au XVIe siècle."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : XIVe-XVIe siècle ; espace : Mexique central.",
+      "Dernier verrou : Dans un bassin lacustre, une capitale puissante combine guerre, tribut, marché et agriculture intensive sur parcelles artificielles."
     ],
     "explanation": "Tenochtitlan montre une urbanisation américaine massive avant la conquête européenne, avec des techniques agricoles très efficaces.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -1569,7 +1617,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-qupu",
@@ -1584,9 +1633,9 @@ const mysteries = [
     ],
     "lessonId": "inca-quipu-road-empire",
     "clues": [
-      "La réponse n’est pas ‘Incas’ tout court : il faut l’outil administratif.",
-      "Les nœuds et les couleurs portent l’information.",
-      "On parle du quipu / khipu."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : XVe → XVIe siècle ; espace : Andes, de Quito au Chili.",
+      "Dernier verrou : Des cordelettes nouées enregistrent nombres, catégories et peut-être informations plus complexes."
     ],
     "explanation": "Les quipus rappellent que l’administration ne passe pas toujours par l’écriture alphabétique : d’autres technologies de mémoire existent.",
     "caseTitle": "Dossier : administrer sans alphabet",
@@ -1600,7 +1649,8 @@ const mysteries = [
       "Incas",
       "Inca"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-aksum",
@@ -1616,9 +1666,9 @@ const mysteries = [
     ],
     "lessonId": "axum-red-sea-trade",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Il est lié à l’Éthiopie ancienne.",
-      "La mer Rouge le connecte au commerce."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : Ier → VIIe siècle ; espace : Éthiopie, Érythrée, mer Rouge.",
+      "Dernier verrou : Un pouvoir africain contrôle des hauts plateaux, frappe monnaie, échange avec la mer Rouge et adopte le christianisme."
     ],
     "explanation": "Axoum montre que l’Afrique de l’Est est pleinement intégrée aux réseaux antiques et médiévaux, loin d’une histoire isolée.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -1643,7 +1693,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-sundiata",
@@ -1660,9 +1711,9 @@ const mysteries = [
     ],
     "lessonId": "mali-sundiata-state",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Il est lié à l’empire du Mali.",
-      "Les griots transmettent son épopée."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : XIIIe siècle ; espace : Manden et vallée du Niger.",
+      "Dernier verrou : Entre mémoire orale, bataille fondatrice et contrôle des routes de l’or, un récit explique la naissance d’un grand pouvoir sahélien."
     ],
     "explanation": "Soundiata rappelle que l’histoire se conserve aussi par l’oralité et que les empires sahéliens structurent des espaces commerciaux immenses.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -1687,7 +1738,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-great-zimbabwe",
@@ -1701,9 +1753,9 @@ const mysteries = [
     ],
     "lessonId": "southern-africa-indian-ocean-grand-zimbabwe",
     "clues": [
-      "La réponse attendue est un site majeur d’Afrique australe.",
-      "Son nom a été repris par un État moderne.",
-      "C’est le Grand Zimbabwe."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : XIe → XVe siècle ; espace : Zimbabwe actuel.",
+      "Dernier verrou : De grands enclos de pierre, des échanges d’or et d’ivoire, des objets venus de loin et une architecture monumentale montrent un pouvoir africain complexe."
     ],
     "explanation": "Grand Zimbabwe combat l’idée fausse d’une Afrique sans villes ni monuments : il montre un pouvoir régional complexe et connecté.",
     "caseTitle": "Dossier : des murs sans mortier contre les préjugés coloniaux",
@@ -1713,7 +1765,8 @@ const mysteries = [
       "murs",
       "pierre"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-al-andalus",
@@ -1730,9 +1783,9 @@ const mysteries = [
     ],
     "lessonId": "al-andalus-mediterranean",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Cela concerne la péninsule Ibérique médiévale.",
-      "Cordoue y joue un rôle majeur."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : 711-1492 ; espace : Péninsule Ibérique.",
+      "Dernier verrou : En Ibérie, pouvoirs musulmans, royaumes chrétiens, savants, traductions, conflits et coexistences composent une histoire longue et disputée."
     ],
     "explanation": "al-Andalus est un bon exemple d’histoire complexe : ni âge d’or simple, ni guerre permanente, mais des pouvoirs et des sociétés mêlés.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -1757,7 +1810,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-haiti-rc36",
@@ -1773,9 +1827,9 @@ const mysteries = [
     ],
     "lessonId": "atlantic-revolutions-haiti-revolution",
     "clues": [
-      "La réponse attendue est le nom de la colonie, pas seulement l’État né ensuite.",
-      "Elle correspond à la partie française de l’île d’Hispaniola.",
-      "C’est là que la révolution haïtienne commence."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : le cours lié parle de Haïti : la révolution des esclaves, mais la réponse attend le nom exact du dossier."
     ],
     "explanation": "Saint-Domingue permet de comprendre que la révolution haïtienne part d’une société coloniale esclavagiste concrète, pas d’une abstraction sur les droits.",
     "caseTitle": "Dossier : la colonie avant l’indépendance",
@@ -1784,7 +1838,8 @@ const mysteries = [
       "haïti",
       "révolution haïtienne",
       "revolution haitienne"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-berlin-wall",
@@ -1799,9 +1854,9 @@ const mysteries = [
     ],
     "lessonId": "berlin-wall-afterlife",
     "clues": [
-      "La réponse attendue est le symbole matériel précis, pas la ville ni le conflit entier.",
-      "Il est construit en 1961.",
-      "Sa chute en 1989 devient une scène mondiale."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 1989 → 1991 ; espace : Europe et monde bipolaire.",
+      "Dernier verrou : Dossier : une ville transformée en frontière idéologique"
     ],
     "explanation": "Le mur de Berlin condense la division de l’Europe et devient le symbole le plus visible de la guerre froide.",
     "caseTitle": "Dossier : une ville transformée en frontière idéologique",
@@ -1810,7 +1865,8 @@ const mysteries = [
       "allemagne",
       "guerre froide"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-internet-rc36",
@@ -1826,9 +1882,9 @@ const mysteries = [
     ],
     "lessonId": "internet-beginnings",
     "clues": [
-      "La réponse attendue est un nom de réseau précis, pas Internet en général.",
-      "Il naît à la fin des années 1960 dans un contexte de recherche américaine.",
-      "Il est l’un des ancêtres techniques majeurs d’Internet."
+      "Ne réponds pas par un grand thème : le dossier cherche un réseau ou une dynamique de circulation, pas une impression vague.",
+      "Cadre à resserrer — période : 1990 → 2001 ; espace : Universités, entreprises et foyers connectés.",
+      "Dernier verrou : le cours lié parle de Internet entre dans la vie quotidienne, mais la réponse attend le nom exact du dossier."
     ],
     "explanation": "ARPANET permet de distinguer l’infrastructure expérimentale des origines, l’Internet comme réseau de réseaux, et le Web comme usage grand public plus tardif.",
     "caseTitle": "Dossier : le réseau avant le grand public",
@@ -1838,7 +1894,8 @@ const mysteries = [
       "world wide web",
       "réseau",
       "reseau"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-kush-black-pharaohs",
@@ -1855,9 +1912,9 @@ const mysteries = [
     ],
     "lessonId": "kushite-pharaohs",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Le pouvoir vient de Nubie, au sud de l’Égypte.",
-      "Il reprend des formes égyptiennes sans être simplement une copie."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Un royaume africain contrôle une partie du Nil, reprend les codes de l’Égypte et place ses souverains sur le trône pharaonique."
     ],
     "explanation": "Les souverains koushites obligent à sortir d’une vision où l’Égypte serait isolée du reste de l’Afrique.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -1882,7 +1939,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-meroe-iron",
@@ -1898,9 +1956,9 @@ const mysteries = [
     ],
     "lessonId": "meroe-iron-writing",
     "clues": [
-      "Commence par la fonction des signes : compter, classer, légitimer ou transmettre.",
-      "Elle appartient au monde nubien.",
-      "On y trouve des pyramides différentes de celles de Gizeh."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Une capitale au sud du Nil développe ses propres monuments, ses ateliers et une écriture que l’on ne comprend pas totalement."
     ],
     "explanation": "Méroé montre une civilisation africaine originale, connectée au Nil, à la mer Rouge et à l’intérieur du continent.",
     "caseTitle": "Dossier : faire parler les signes",
@@ -1925,7 +1983,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-hattusa-rc37",
@@ -1941,16 +2000,17 @@ const mysteries = [
     ],
     "lessonId": "hittite-hattusa-capital",
     "clues": [
-      "La réponse attendue est le peuple ou l’empire, pas seulement la capitale.",
-      "Hattusa en est la capitale.",
-      "Ils affrontent l’Égypte de Ramsès II à Qadesh."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : -1650 → -1200 ; espace : Anatolie centrale.",
+      "Dernier verrou : Des archives d’argile, des traités, des murailles et une capitale anatolienne révèlent une puissance du Bronze récent capable de rivaliser avec l’Égypte."
     ],
     "explanation": "Les Hittites montrent que le Proche-Orient du Bronze récent est multipolaire : Égypte, Anatolie, Syrie et Mésopotamie sont connectées par guerres, traités et échanges.",
     "caseTitle": "Dossier : faire parler les signes",
     "blockedGuesses": [
       "hattusa",
       "hattousa"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-qadesh-treaty",
@@ -1967,9 +2027,9 @@ const mysteries = [
     ],
     "lessonId": "hittite-egypt-kadesh",
     "clues": [
-      "La réponse attendue est l’accord diplomatique, pas seulement la bataille.",
-      "Il suit l’affrontement entre Ramsès II et les Hittites.",
-      "On le cite souvent parmi les plus anciens traités connus."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : vers -1274 → -1259 ; espace : Syrie, entre Égypte et Hatti.",
+      "Dernier verrou : La propagande royale raconte la victoire, mais l’histoire retient aussi une paix écrite."
     ],
     "explanation": "Le traité de Qadesh permet de distinguer la bataille, le récit de propagande et l’invention d’un compromis diplomatique durable.",
     "caseTitle": "Dossier : la violence change d’échelle",
@@ -1977,7 +2037,8 @@ const mysteries = [
       "qadesh",
       "kadesh",
       "bataille de qadesh"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-minoan-palace",
@@ -1993,9 +2054,9 @@ const mysteries = [
     ],
     "lessonId": "aegean-mediterranean-minoens-crete",
     "clues": [
-      "La réponse attendue est un site, pas toute la civilisation.",
-      "Il se situe en Crète.",
-      "Il est associé à la civilisation minoenne."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : vers -2000 → -1450 ; espace : Crète.",
+      "Dernier verrou : Sur une île de Méditerranée, un palais organise réserves, rituels, échanges et images colorées bien avant la Grèce classique."
     ],
     "explanation": "Cnossos permet de rendre concret le monde minoen : un palais, des réserves, des fresques, des circulations et un pouvoir difficile à lire.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -2005,7 +2066,8 @@ const mysteries = [
       "civilisation minoenne",
       "crete",
       "crète"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-mycenaean-tablets",
@@ -2020,9 +2082,9 @@ const mysteries = [
     ],
     "lessonId": "aegean-mediterranean-myceniens-palais",
     "clues": [
-      "La réponse attendue est une écriture, pas le peuple qui l’utilise.",
-      "Elle sert surtout à l’administration palatiale.",
-      "Elle note une forme ancienne de grec dans le monde mycénien."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : vers -1600 → -1200 ; espace : Grèce continentale.",
+      "Dernier verrou : Leur écriture sert moins à faire de la littérature qu’à gérer des biens."
     ],
     "explanation": "Le linéaire B montre que les palais mycéniens sont aussi des centres de gestion : stocks, terres, travailleurs et biens y sont enregistrés.",
     "caseTitle": "Dossier : faire parler les signes",
@@ -2031,7 +2093,8 @@ const mysteries = [
       "mycéniens",
       "mycenes",
       "mycènes"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-assyria-deportations",
@@ -2047,9 +2110,9 @@ const mysteries = [
     ],
     "lessonId": "near-east-empires-assyrie-terreur-admin",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Ninive est l’un de ses grands centres.",
-      "La violence fait partie de sa communication politique."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Une puissance du Proche-Orient utilise armées, sièges, routes, gouverneurs et déportations pour tenir des territoires très vastes."
     ],
     "explanation": "L’Assyrie permet de comprendre comment un empire combine terreur, logistique, archives et gouverneurs.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -2074,7 +2137,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-persepolis-rc37",
@@ -2088,9 +2152,9 @@ const mysteries = [
     ],
     "lessonId": "ancient-persia",
     "clues": [
-      "La réponse attendue est un site monumental précis.",
-      "Il est lié à l’empire achéménide.",
-      "Les reliefs de tributaires y sont célèbres."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : -550 à -330 ; espace : Iran et Proche-Orient.",
+      "Dernier verrou : Une capitale cérémonielle montre en relief des délégations de peuples apportant des présents à un pouvoir impérial qui gouverne par routes, satrapies et mise en scène de l’ordre."
     ],
     "explanation": "Persépolis rend visible l’idéologie impériale achéménide : diversité des peuples, centralité du roi, richesse des tributs et mise en scène de l’ordre.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -2101,7 +2165,8 @@ const mysteries = [
       "achemenide",
       "empire perse",
       "empire achéménide"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-etruscans-rome-before",
@@ -2117,9 +2182,9 @@ const mysteries = [
     ],
     "lessonId": "etruscan-cities",
     "clues": [
-      "La réponse attendue est une région historique, pas seulement le peuple.",
-      "Elle se situe en Italie centrale.",
-      "Les Étrusques y jouent un rôle majeur."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Avant la domination romaine, cette région d’Italie centrale rassemble des cités riches, des tombes peintes, des pratiques religieuses et des influences décisives sur Rome."
     ],
     "explanation": "L’Étrurie rappelle que Rome naît dans un environnement italien déjà urbanisé et culturellement complexe.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -2128,7 +2193,8 @@ const mysteries = [
       "étrusques",
       "les etrusques",
       "les étrusques"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-ashoka-edicts",
@@ -2145,9 +2211,9 @@ const mysteries = [
     ],
     "lessonId": "indian-worlds-maurya-ashoka",
     "clues": [
-      "La réponse attendue est le support/message gravé, pas seulement le roi.",
-      "Ils sont associés à l’empire Maurya.",
-      "Le nom d’Ashoka est central."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : -321 → -185 ; espace : Sous-continent indien.",
+      "Dernier verrou : Après une conquête violente, un souverain indien fait inscrire sur rochers et piliers des messages politiques et moraux destinés à gouverner un immense empire."
     ],
     "explanation": "Les édits d’Ashoka montrent un pouvoir qui utilise l’inscription publique pour diffuser une morale politique et affirmer son autorité.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -2156,7 +2222,8 @@ const mysteries = [
       "aśoka",
       "empire maurya",
       "maurya"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-silk-roads-caravan",
@@ -2172,9 +2239,9 @@ const mysteries = [
     ],
     "lessonId": "ancient-trade-networks-routes-soie-antiques",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Elles relient l’Asie orientale, l’Asie centrale et le monde méditerranéen.",
-      "Ce n’est pas une autoroute continue, mais un réseau."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : IIe siècle av. J.-C. → IIIe siècle ; espace : Asie centrale, Chine, Iran, Méditerranée.",
+      "Dernier verrou : relie les indices entre eux et formule la réponse exacte, sans recopier un thème trop large."
     ],
     "explanation": "Les routes de la soie évitent de penser les civilisations comme des blocs isolés.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -2199,7 +2266,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-baghdad-house-wisdom",
@@ -2216,9 +2284,9 @@ const mysteries = [
     ],
     "lessonId": "baghdad-knowledge-networks",
     "clues": [
-      "Lis le dossier comme un problème d’organisation urbaine, pas comme une simple localisation.",
-      "Elle devient une capitale du califat abbasside.",
-      "Les traductions y jouent un rôle important."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : VIIIe-XIIIe siècle ; espace : Irak.",
+      "Dernier verrou : relie les indices entre eux et formule la réponse exacte, sans recopier un thème trop large."
     ],
     "explanation": "Bagdad est un bon antidote à l’idée simpliste d’un Moyen Âge immobile : les savoirs y circulent et se transforment.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -2243,7 +2311,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-cordoba-library",
@@ -2259,9 +2328,9 @@ const mysteries = [
     ],
     "lessonId": "cordoba-caliphate",
     "clues": [
-      "Lis le dossier comme un problème d’organisation urbaine, pas comme une simple localisation.",
-      "Elle se trouve dans la péninsule Ibérique.",
-      "Elle devient une capitale califale."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Une ville d’al-Andalus concentre pouvoir, mosquée, bibliothèques, artisanat et prestige politique au cœur de la Méditerranée médiévale."
     ],
     "explanation": "Cordoue évite de réduire al-Andalus à une simple cohabitation romantique ou à une reconquête militaire.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -2286,7 +2355,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-viking-longship",
@@ -2306,9 +2376,9 @@ const mysteries = [
     ],
     "lessonId": "northern-viking-worlds-navires-vikings",
     "clues": [
-      "Ne réponds pas le groupe humain : le dossier vise leur outil nautique.",
-      "Son faible tirant d’eau permet des raids très loin des côtes.",
-      "Le mot populaire ‘drakkar’ est accepté, même s’il est simplificateur."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : VIIIe → XIe siècle ; espace : Mers du Nord et Atlantique.",
+      "Dernier verrou : L’objet n’est pas seulement maritime : il change le temps de réaction des pouvoirs."
     ],
     "explanation": "Le navire viking explique une partie de la mobilité scandinave : il connecte mers, fleuves, raids, échanges et installations.",
     "caseTitle": "Dossier : un outil de surprise politique",
@@ -2316,7 +2386,8 @@ const mysteries = [
       "viking",
       "vikings"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-kiev-rus",
@@ -2333,9 +2404,9 @@ const mysteries = [
     ],
     "lessonId": "slavs-rus-eastern-europe-rus-kiev",
     "clues": [
-      "La clé est souvent un réseau : routes, échanges, intermédiaires et objets qui circulent.",
-      "Elle se développe autour de routes fluviales.",
-      "Byzance joue un rôle important dans sa christianisation."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : Un pouvoir d’Europe orientale se construit autour des routes fluviales, du commerce, des élites guerrières et d’une christianisation tournée vers Byzance."
     ],
     "explanation": "La Rus’ de Kiev aide à comprendre que l’Europe médiévale ne se limite pas à la France, l’Angleterre ou l’Empire germanique.",
     "caseTitle": "Dossier : suivre les routes du pouvoir",
@@ -2360,7 +2431,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-angkor-water",
@@ -2376,16 +2448,17 @@ const mysteries = [
     ],
     "lessonId": "angkor-water-empire-southeast",
     "clues": [
-      "La réponse attendue est le pouvoir politique, pas seulement le site.",
-      "Angkor en est le grand centre monumental.",
-      "La maîtrise hydraulique structure le paysage et l’agriculture."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 802 → 1431 ; espace : Cambodge.",
+      "Dernier verrou : Temples, réservoirs, canaux et rizières organisent une capitale monumentale au cœur de l’Asie du Sud-Est."
     ],
     "explanation": "L’Empire khmer montre qu’un pouvoir peut se lire dans les temples, mais aussi dans l’eau, les réservoirs, les canaux et la riziculture.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
     "blockedGuesses": [
       "angkor",
       "angkor wat"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-teotihuacan-grid",
@@ -2400,16 +2473,17 @@ const mysteries = [
     ],
     "lessonId": "mesoamerica-civilizations-teotihuacan-metropolis",
     "clues": [
-      "La réponse attendue est un élément urbain, pas seulement la ville.",
-      "Il traverse Teotihuacan.",
-      "Son nom moderne évoque la mort, même si son sens ancien est discuté."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 100 → 650 ; espace : vallée de Mexico.",
+      "Dernier verrou : Dans une métropole mésoaméricaine sans dynastie royale clairement lisible, un axe monumental organise pyramides, quartiers et circulation du pouvoir."
     ],
     "explanation": "L’avenue des Morts montre comment Teotihuacan impose une organisation monumentale de l’espace sans nous livrer facilement ses dirigeants.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
     "blockedGuesses": [
       "teotihuacan",
       "téotihuacan"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-maya-stela",
@@ -2426,9 +2500,9 @@ const mysteries = [
     ],
     "lessonId": "maya-cities-calendar",
     "clues": [
-      "La réponse attendue est un système de datation, pas seulement le peuple.",
-      "Il apparaît sur des stèles et inscriptions.",
-      "Il appartient au monde maya."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 250 → 900 ; espace : Yucatán, Guatemala, Honduras, Belize.",
+      "Dernier verrou : Des cités indépendantes rivalisent, construisent des temples, gravent des stèles et enregistrent le temps avec une grande précision."
     ],
     "explanation": "Le calendrier maya rappelle que les cités mayas ne sont pas un mystère muet : elles datent, écrivent, célèbrent et légitiment leurs pouvoirs.",
     "caseTitle": "Dossier : traces sans texte",
@@ -2438,7 +2512,8 @@ const mysteries = [
       "les mayas",
       "civilisation maya",
       "monde maya"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-tenochtitlan-lake",
@@ -2453,9 +2528,9 @@ const mysteries = [
     ],
     "lessonId": "aztec-empire-tenochtitlan",
     "clues": [
-      "La réponse attendue est le peuple dirigeant, pas seulement la capitale.",
-      "Tenochtitlan est leur capitale.",
-      "On les appelle souvent, plus largement, Aztèques."
+      "Le dossier ne demande pas un thème général : il faut identifier un objet, un lieu ou une pratique précis, à partir des traces données.",
+      "Cadre à resserrer — période : XIVe-XVIe siècle ; espace : Mexique central.",
+      "Dernier verrou : Une ville immense au milieu du lac, reliée par des chaussées, domine un ensemble impérial avant la conquête espagnole."
     ],
     "explanation": "Les Mexicas permettent de parler de Tenochtitlan comme capitale politique d’un empire, pas seulement comme ville spectaculaire.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -2465,7 +2540,8 @@ const mysteries = [
       "aztèque",
       "azteques",
       "aztèques"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-quipu",
@@ -2480,9 +2556,9 @@ const mysteries = [
     ],
     "lessonId": "inca-quipu-road-empire",
     "clues": [
-      "La réponse attendue est l’objet précis, au singulier.",
-      "Il appartient notamment au monde inca.",
-      "Ses nœuds servent à compter et administrer."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : XVe → XVIe siècle ; espace : Andes, de Quito au Chili.",
+      "Dernier verrou : Dans les Andes, un objet de cordelettes nouées sert à enregistrer des quantités et peut-être plus encore, au service d’un pouvoir impérial sans écriture alphabétique classique."
     ],
     "explanation": "Le quipu oblige à élargir notre définition des systèmes d’information : gouverner ne passe pas toujours par un alphabet.",
     "caseTitle": "Dossier : faire parler les signes",
@@ -2492,7 +2568,8 @@ const mysteries = [
       "empire inca",
       "quipus incas",
       "les quipus incas"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-great-zimbabwe-stone",
@@ -2508,9 +2585,9 @@ const mysteries = [
     ],
     "lessonId": "southern-africa-indian-ocean-grand-zimbabwe",
     "clues": [
-      "La réponse attendue est un monument précis.",
-      "Il se trouve à Grand Zimbabwe.",
-      "Ses murs sont construits sans mortier."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : XIe → XVe siècle ; espace : Zimbabwe actuel.",
+      "Dernier verrou : Au sud de l’Afrique, une construction monumentale en pierre sèche prouve l’existence d’un pouvoir urbain connecté aux échanges d’or et à l’océan Indien."
     ],
     "explanation": "La Grande Enceinte oblige à abandonner les vieux clichés coloniaux : cette architecture témoigne d’un pouvoir africain organisé et connecté.",
     "caseTitle": "Dossier : traces sans texte",
@@ -2518,7 +2595,8 @@ const mysteries = [
       "grand zimbabwe",
       "great zimbabwe",
       "zimbabwe"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-mansa-musa-gold",
@@ -2535,9 +2613,9 @@ const mysteries = [
     ],
     "lessonId": "mansa-musa-pilgrimage",
     "clues": [
-      "La réponse attendue est l’événement, pas seulement le souverain.",
-      "Il relie le Mali, Le Caire et La Mecque.",
-      "Il se déroule en 1324-1325."
+      "Le dossier ne demande pas un thème général : il faut identifier un nom historique précis, à partir des traces données.",
+      "Cadre à resserrer — période : 1324 → 1325 ; espace : Mali, Sahara, Le Caire, La Mecque.",
+      "Dernier verrou : Un souverain transforme un pèlerinage en démonstration de puissance : le Sahara, Le Caire et La Mecque deviennent les étapes d’une mise en scène de richesse et de légitimité."
     ],
     "explanation": "Le pèlerinage de Mansa Musa transforme une pratique religieuse en démonstration de richesse, de diplomatie et de puissance sahélienne.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -2546,7 +2624,8 @@ const mysteries = [
       "moussa",
       "kankou moussa",
       "mali"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-haiti-freedom",
@@ -2562,9 +2641,9 @@ const mysteries = [
     ],
     "lessonId": "atlantic-revolutions-haiti-revolution",
     "clues": [
-      "La réponse attendue est une personne, pas seulement un pays ou une révolution.",
-      "Il joue un rôle majeur à Saint-Domingue.",
-      "Son nom reste lié à l’abolition de l’esclavage et à la révolution haïtienne."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Ancien esclave devenu chef politique et militaire, il incarne une révolution antiesclavagiste qui oblige la France révolutionnaire puis napoléonienne à affronter ses contradictions."
     ],
     "explanation": "Toussaint Louverture donne un visage politique à la révolution haïtienne : stratégie militaire, négociation, abolition et autonomie coloniale s’y croisent.",
     "caseTitle": "Dossier : la violence change d’échelle",
@@ -2575,7 +2654,8 @@ const mysteries = [
       "saint domingue",
       "révolution haïtienne",
       "revolution haitienne"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-1848-barricades",
@@ -2591,9 +2671,9 @@ const mysteries = [
     ],
     "lessonId": "peoples-spring-1848",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Elles touchent plusieurs régions d’Europe.",
-      "Elles mêlent revendications libérales, nationales et sociales."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : En Europe, des révolutions réclament constitutions, droits politiques et parfois justice sociale, mais les espoirs sont vite réprimés ou récupérés."
     ],
     "explanation": "1848 aide à comprendre que le XIXe siècle est traversé par des conflits politiques et sociaux, pas seulement par l’industrie.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -2618,7 +2698,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-berlin-wall-fall",
@@ -2633,9 +2714,9 @@ const mysteries = [
     ],
     "lessonId": "berlin-wall-afterlife",
     "clues": [
-      "La réponse attendue est l’événement, pas seulement l’objet de béton.",
-      "La date repère est le 9 novembre 1989.",
-      "Cet événement accélère la fin de la division allemande."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 1989 → 1991 ; espace : Europe et monde bipolaire.",
+      "Dernier verrou : Une conférence de presse confuse, des foules qui se présentent aux postes de passage et un régime épuisé transforment une frontière de béton en événement télévisé mondial."
     ],
     "explanation": "La chute du mur de Berlin accélère la fin de la division européenne et devient l’image de la fin de la guerre froide.",
     "caseTitle": "Dossier : la frontière qui s’ouvre par erreur et par pression",
@@ -2644,7 +2725,8 @@ const mysteries = [
       "berlin",
       "guerre froide"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-eu-coal-steel",
@@ -2661,15 +2743,16 @@ const mysteries = [
     ],
     "lessonId": "europe-globalization-europe-reconciliation",
     "clues": [
-      "Ne t’arrête pas à la violence : regarde ce qu’elle transforme dans l’État et la société.",
-      "Elle commence après 1945.",
-      "Le charbon et l’acier sont des secteurs clés au départ."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Après deux guerres mondiales, des États européens mettent en commun des secteurs stratégiques pour rendre une nouvelle guerre moins probable."
     ],
     "explanation": "La construction européenne se comprend mieux quand on la relie à la guerre, à l’économie et à la réconciliation.",
     "caseTitle": "Dossier : la violence change d’échelle",
     "blockedGuesses": [
       "Europe"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-covid-global",
@@ -2686,9 +2769,9 @@ const mysteries = [
     ],
     "lessonId": "covid-pandemic-global",
     "clues": [
-      "La réponse attendue est le phénomène historique global, pas seulement le nom du virus.",
-      "Le basculement mondial commence en 2020.",
-      "Confinements, vaccins et télétravail en sont des repères sociaux."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : 2020 → 2023 ; espace : Monde entier.",
+      "Dernier verrou : Un choc sanitaire ferme des frontières, déplace le travail vers les écrans, surcharge les hôpitaux et révèle la fragilité des chaînes logistiques, des États et des inégalités sociales."
     ],
     "explanation": "La pandémie de Covid-19 est un événement sanitaire, social, économique et politique mondial.",
     "caseTitle": "Dossier : une crise sanitaire révèle les chaînes mondiales",
@@ -2697,7 +2780,8 @@ const mysteries = [
       "virus",
       "coronavirus"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-ai-generative",
@@ -2715,9 +2799,9 @@ const mysteries = [
     ],
     "lessonId": "world-2026-ai-regulation",
     "clues": [
-      "La réponse attendue désigne une famille technique précise.",
-      "Ils sont souvent abrégés en LLM.",
-      "Ils rendent populaires les agents conversationnels des années 2020."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 2022 → 2026 ; espace : Europe, États-Unis, Chine et monde numérique.",
+      "Dernier verrou : Dossier : produire du vraisemblable à grande échelle"
     ],
     "explanation": "Les grands modèles de langage sont une pièce centrale de l’IA générative : ils transforment la relation quotidienne au texte, au code et à l’information.",
     "caseTitle": "Dossier : produire du vraisemblable à grande échelle",
@@ -2729,7 +2813,8 @@ const mysteries = [
       "ia generative",
       "ia générative"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-climate-paris",
@@ -2745,9 +2830,9 @@ const mysteries = [
     ],
     "lessonId": "paris-climate-accord",
     "clues": [
-      "La réponse attendue est la conférence, pas seulement l’accord final.",
-      "Elle se tient à Paris en 2015.",
-      "Elle produit l’accord de Paris."
+      "Le dossier ne demande pas un thème général : il faut identifier un régime, un pouvoir ou une construction politique précise, à partir des traces données.",
+      "Cadre à resserrer — période : 2015 ; espace : Paris et négociations climatiques.",
+      "Dernier verrou : Les États se réunissent à Paris en 2015 pour produire un accord mondial sur le climat."
     ],
     "explanation": "La COP21 est le moment diplomatique qui aboutit à l’accord de Paris et marque l’entrée du climat au cœur des relations internationales.",
     "caseTitle": "Dossier : une limite négociée mais pas garantie",
@@ -2758,7 +2843,8 @@ const mysteries = [
       "climat",
       "paris"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-domestication-rc39",
@@ -2774,9 +2860,9 @@ const mysteries = [
     ],
     "lessonId": "prehistory-domestication",
     "clues": [
-      "Le premier écran donne une situation : il faut retrouver le nom précis qui explique toutes les traces.",
-      "Il accompagne la néolithisation.",
-      "Il concerne blé, orge, chèvres, moutons, bœufs ou chiens selon les régions."
+      "Le dossier ne demande pas un thème général : il faut identifier un nom historique précis, à partir des traces données.",
+      "Cadre à resserrer — période : Néolithique et avant pour le chien ; espace : Plusieurs foyers dans le monde.",
+      "Dernier verrou : Des humains ne se contentent plus de chasser ou cueillir : ils orientent la reproduction de plantes et d’animaux jusqu’à modifier les espèces elles-mêmes."
     ],
     "explanation": "La domestication transforme les espèces et les sociétés : elle n’est pas un simple dressage.",
     "caseTitle": "Dossier : produire autrement, vivre autrement",
@@ -2801,7 +2887,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-neolithic-villages-rc39",
@@ -2817,9 +2904,9 @@ const mysteries = [
     ],
     "lessonId": "neolithic-metals-villages-avant-agriculture",
     "clues": [
-      "Le premier écran donne une situation : il faut retrouver le nom précis qui explique toutes les traces.",
-      "Cela se passe après la fin des grandes glaciations.",
-      "Les humains ne deviennent pas tous agriculteurs du jour au lendemain."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Vers -12 000 à -8 500 ; espace : Proche-Orient.",
+      "Dernier verrou : Des maisons durables, des stocks, des lieux collectifs et des sépultures apparaissent parfois avant une agriculture pleinement installée."
     ],
     "explanation": "Ces villages obligent à nuancer l’idée simple : nomades puis agriculteurs. Les transitions sont progressives, régionales et parfois réversibles.",
     "caseTitle": "Dossier : traces à interpréter",
@@ -2844,7 +2931,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-bronze-rc39",
@@ -2859,9 +2947,9 @@ const mysteries = [
     ],
     "lessonId": "neolithic-metals-cuivre-bronze",
     "clues": [
-      "La clé est souvent un réseau : routes, échanges, intermédiaires et objets qui circulent.",
-      "Il associe principalement cuivre et étain.",
-      "Il donne son nom à une grande période de la protohistoire."
+      "Le dossier ne demande pas un thème général : il faut identifier un objet, un lieu ou une pratique précis, à partir des traces données.",
+      "Cadre à resserrer — période : Vers -5 000 à -2 000 ; espace : Proche-Orient, Europe, Asie.",
+      "Dernier verrou : Sa valeur ne vient pas seulement de sa dureté : il oblige à relier mines, artisans, échanges lointains et pouvoirs capables de contrôler la circulation des matières."
     ],
     "explanation": "Le bronze révèle des réseaux techniques et commerciaux autant qu’un progrès matériel.",
     "caseTitle": "Dossier : suivre les routes du pouvoir",
@@ -2886,7 +2974,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-iron-rc39",
@@ -2901,9 +2990,9 @@ const mysteries = [
     ],
     "lessonId": "neolithic-metals-age-du-fer",
     "clues": [
-      "Le premier écran donne une situation : il faut retrouver le nom précis qui explique toutes les traces.",
-      "Il suit souvent l’âge du Bronze dans les découpages européens.",
-      "Il transforme armes, outils et hiérarchies."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Vers -1 200 à -800 et après ; espace : Ancien Monde.",
+      "Dernier verrou : Il n’est pas simplement “meilleur” : il demande d’autres fours, d’autres gestes et finit par devenir beaucoup plus disponible."
     ],
     "explanation": "L’âge du Fer rappelle qu’une innovation technique change surtout l’histoire quand elle modifie l’accès aux ressources et les équilibres sociaux.",
     "caseTitle": "Dossier : traces à interpréter",
@@ -2928,7 +3017,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-uruk-rc39",
@@ -2943,9 +3033,9 @@ const mysteries = [
     ],
     "lessonId": "civilizations-uruk-city",
     "clues": [
-      "La réponse attendue est un processus, pas seulement une ville.",
-      "Uruk en est un exemple majeur.",
-      "Elle transforme administration, travail, échanges et pouvoirs."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Vers -3500 ; espace : Basse Mésopotamie.",
+      "Dernier verrou : Des temples, ateliers, quartiers, échanges et tablettes montrent qu’au sud de la Mésopotamie, la concentration humaine change d’échelle avant même les grands empires."
     ],
     "explanation": "La révolution urbaine permet de comprendre Uruk comme symptôme d’un changement profond : la ville devient un centre de pouvoir, de production et d’écriture.",
     "caseTitle": "Dossier : faire parler les signes",
@@ -2953,7 +3043,8 @@ const mysteries = [
       "uruk",
       "ville d uruk",
       "cité d uruk"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-scribes-rc39",
@@ -2969,9 +3060,9 @@ const mysteries = [
     ],
     "lessonId": "civilizations-scribes",
     "clues": [
-      "Commence par la fonction des signes : compter, classer, légitimer ou transmettre.",
-      "On les trouve en Égypte, en Mésopotamie et dans d’autres sociétés anciennes.",
-      "Ils maîtrisent une écriture difficile."
+      "Le dossier ne demande pas un thème général : il faut identifier un régime, un pouvoir ou une construction politique précise, à partir des traces données.",
+      "Cadre à resserrer — période : Antiquité ancienne ; espace : Mésopotamie.",
+      "Dernier verrou : Ils ne sont pas seulement des copistes : leur longue formation permet de compter, classer, transmettre des ordres et rendre l’administration durable."
     ],
     "explanation": "Les scribes donnent une mémoire écrite au pouvoir : ils transforment l’administration en institution stable.",
     "caseTitle": "Dossier : faire parler les signes",
@@ -2996,7 +3087,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-maat-rc39",
@@ -3012,9 +3104,9 @@ const mysteries = [
     ],
     "lessonId": "egypt-pharaoh-maat",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Cette notion associe ordre, justice et équilibre.",
-      "Le pharaon est censé la maintenir."
+      "Le dossier ne demande pas un thème général : il faut identifier un régime, un pouvoir ou une construction politique précise, à partir des traces données.",
+      "Cadre à resserrer — période : Égypte pharaonique ; espace : Tout le royaume.",
+      "Dernier verrou : Dans l’Égypte ancienne, le pouvoir royal n’est pas seulement politique : il prétend garantir l’équilibre du monde, la justice, les rites et l’ordre cosmique."
     ],
     "explanation": "Maât est essentielle pour comprendre que le pharaon n’est pas seulement un chef : il est présenté comme le garant de l’ordre cosmique et social.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -3039,7 +3131,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-sparta-rc39",
@@ -3054,9 +3147,9 @@ const mysteries = [
     ],
     "lessonId": "greece-sparta",
     "clues": [
-      "Le premier écran donne une situation : il faut retrouver le nom précis qui explique toutes les traces.",
-      "Elle se situe dans le Péloponnèse.",
-      "Les hilotes sont essentiels à son fonctionnement."
+      "Le dossier ne demande pas un thème général : il faut identifier un nom historique précis, à partir des traces données.",
+      "Cadre à resserrer — période : Époque classique ; espace : Laconie, Péloponnèse.",
+      "Dernier verrou : Le dossier attend le nom de cette cité, pas seulement “Grèce”."
     ],
     "explanation": "Sparte n’est pas seulement une cité de soldats : son ordre militaire repose sur une domination sociale très dure.",
     "caseTitle": "Dossier : une technique devient société",
@@ -3081,7 +3174,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-persian-wars-rc39",
@@ -3097,9 +3191,9 @@ const mysteries = [
     ],
     "lessonId": "greece-persian-wars",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Elles opposent des cités grecques à l’Empire perse.",
-      "Athènes en tire un prestige important."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : Début du Ve siècle av. J.-C. ; espace : Mer Égée, Attique, détroits.",
+      "Dernier verrou : Marathon, Salamine, Platées : quelques batailles deviennent des repères, mais l’enjeu réel est l’équilibre entre cités grecques et puissance perse."
     ],
     "explanation": "Les guerres médiques comptent parce qu’elles renforcent certaines cités grecques et nourrissent une mémoire politique durable.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -3124,7 +3218,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-alexander-rc39",
@@ -3140,9 +3235,9 @@ const mysteries = [
     ],
     "lessonId": "greece-alexander",
     "clues": [
-      "Lis le dossier comme un problème d’organisation urbaine, pas comme une simple localisation.",
-      "Il est fils de Philippe II de Macédoine.",
-      "Il meurt à Babylone en 323 av. J.-C."
+      "Le dossier ne demande pas un thème général : il faut identifier un objet, un lieu ou une pratique précis, à partir des traces données.",
+      "Cadre à resserrer — période : -336 → -323 ; espace : Macédoine, Égypte, Perse, Asie.",
+      "Dernier verrou : Un roi macédonien bat les Perses, fonde ou renomme des villes et diffuse des élites grecques en Orient, mais son œuvre politique se fragmente très vite après sa mort."
     ],
     "explanation": "Alexandre le Grand transforme l’espace méditerranéen et oriental, mais son empire personnel ne survit pas tel quel.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -3167,7 +3262,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-augustus-rc39",
@@ -3183,9 +3279,9 @@ const mysteries = [
     ],
     "lessonId": "rome-augustus-principate",
     "clues": [
-      "Ne t’arrête pas à la violence : regarde ce qu’elle transforme dans l’État et la société.",
-      "Il arrive après César.",
-      "Il fonde le principat."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : -27 → 14 ; espace : Empire romain.",
+      "Dernier verrou : Après les guerres civiles romaines, un chef concentre l’essentiel du pouvoir tout en conservant les mots, les magistratures et les apparences de la République."
     ],
     "explanation": "Auguste montre comment un régime peut changer profondément tout en conservant des formes anciennes pour paraître légitime.",
     "caseTitle": "Dossier : la violence change d’échelle",
@@ -3210,7 +3306,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-constantine-rc39",
@@ -3225,9 +3322,9 @@ const mysteries = [
     ],
     "lessonId": "late-antiquity-constantin-christianisme",
     "clues": [
-      "Ne cherche pas seulement une croyance : regarde l’institution, le pouvoir et les pratiques.",
-      "Il règne au IVe siècle.",
-      "Son nom est lié à Constantinople."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : 312 → 337 ; espace : Empire romain.",
+      "Dernier verrou : Un empereur romain légalise et favorise progressivement une religion longtemps marginalisée ou persécutée."
     ],
     "explanation": "Constantin compte parce qu’il marque une bascule : le christianisme devient peu à peu un élément central du pouvoir impérial.",
     "caseTitle": "Dossier : croyance, autorité et société",
@@ -3252,7 +3349,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-charlemagne-rc39",
@@ -3267,9 +3365,9 @@ const mysteries = [
     ],
     "lessonId": "early-middle-ages-charlemagne-empire",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Il est couronné empereur en 800.",
-      "Il appartient aux Carolingiens."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : 768 → 814 ; espace : Europe occidentale.",
+      "Dernier verrou : Un roi franc conquiert, réforme, s’appuie sur l’Église, les comtes et l’écrit, puis se fait couronner empereur en 800."
     ],
     "explanation": "Charlemagne donne une forme impériale au pouvoir franc, même si son empire se fragmente ensuite.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -3294,7 +3392,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-viking-ships-rc39",
@@ -3312,9 +3411,9 @@ const mysteries = [
     ],
     "lessonId": "northern-viking-worlds-navires-vikings",
     "clues": [
-      "Il faut identifier l’objet technique, pas le peuple qui l’utilise.",
-      "Le faible tirant d’eau est l’indice décisif.",
-      "On pense aux navires longs scandinaves du haut Moyen Âge."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : VIIIe → XIe siècle ; espace : Mers du Nord et Atlantique.",
+      "Dernier verrou : Une innovation nautique ne sert pas seulement à aller vite."
     ],
     "explanation": "Les navires vikings ne sont pas seulement des bateaux de raid : ils rendent possible une géographie mobile entre mers, fleuves et comptoirs.",
     "caseTitle": "Dossier : le bateau qui rend les frontières poreuses",
@@ -3322,7 +3421,8 @@ const mysteries = [
       "viking",
       "vikings"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-feudalism-rc39",
@@ -3339,9 +3439,9 @@ const mysteries = [
     ],
     "lessonId": "middle-ages-seigneurs-paysans",
     "clues": [
-      "Le premier écran donne une situation : il faut retrouver le nom précis qui explique toutes les traces.",
-      "Cela concerne surtout le Moyen Âge occidental.",
-      "Les paysans y sont au centre de la production."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : Xe - XIIIe siècle ; espace : Europe occidentale.",
+      "Dernier verrou : Le pouvoir se fragmente : des seigneurs contrôlent des terres, protègent, commandent, jugent et prélèvent sur les paysans."
     ],
     "explanation": "La société seigneuriale permet de comprendre le Moyen Âge au quotidien : domination, protection, travail agricole et dépendances locales.",
     "caseTitle": "Dossier : une technique devient société",
@@ -3366,7 +3466,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-universities-rc39",
@@ -3382,9 +3483,9 @@ const mysteries = [
     ],
     "lessonId": "central-middle-ages-cathedrales-universites",
     "clues": [
-      "Lis le dossier comme un problème d’organisation urbaine, pas comme une simple localisation.",
-      "Bologne, Paris ou Oxford en sont des exemples précoces.",
-      "On y enseigne droit, théologie, arts ou médecine."
+      "Le dossier ne demande pas un thème général : il faut identifier un objet, un lieu ou une pratique précis, à partir des traces données.",
+      "Cadre à resserrer — période : XIIe-XIIIe siècles ; espace : Grandes villes européennes.",
+      "Dernier verrou : Dans des villes médiévales, maîtres et étudiants s’organisent, discutent des textes, obtiennent des privilèges et délivrent des grades reconnus."
     ],
     "explanation": "Les universités médiévales institutionnalisent les savoirs, les méthodes de débat et les diplômes.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -3409,7 +3510,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-black-death-rc39",
@@ -3424,9 +3526,9 @@ const mysteries = [
     ],
     "lessonId": "late-middle-ages-grande-peste",
     "clues": [
-      "La réponse attendue est une pandémie médiévale précise.",
-      "Elle culmine en Europe au XIVe siècle.",
-      "C’est la peste noire."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : 1347 → 1352 ; espace : Europe, Méditerranée, Asie occidentale.",
+      "Dernier verrou : La mortalité massive ne produit pas seulement de la peur religieuse et des charniers."
     ],
     "explanation": "La peste noire n’est pas seulement une crise sanitaire : elle bouleverse économie, croyances et structures sociales.",
     "caseTitle": "Dossier : une pandémie qui change le prix du travail",
@@ -3438,7 +3540,8 @@ const mysteries = [
       "pandémie",
       "pandemie"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-printing-reformation-rc39",
@@ -3453,16 +3556,17 @@ const mysteries = [
     ],
     "lessonId": "reformation-conflicts-imprimerie-reforme",
     "clues": [
-      "La réponse attendue est plus précise que “imprimerie”.",
-      "Elle associe caractères mobiles, presse et reproduction rapide.",
-      "Gutenberg est le nom clé."
+      "Ne réponds pas par un grand thème : le dossier cherche un nom historique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : le cours lié parle de L’imprimerie accélère la Réforme, mais la réponse attend le nom exact du dossier."
     ],
     "explanation": "La presse de Gutenberg transforme la vitesse de reproduction des textes et rend plus difficiles le contrôle religieux et politique des idées.",
     "caseTitle": "Dossier : produire autrement, vivre autrement",
     "blockedGuesses": [
       "imprimerie",
       "gutenberg"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-enlightenment-rc39",
@@ -3478,9 +3582,9 @@ const mysteries = [
     ],
     "lessonId": "seventeenth-eighteenth-lumieres-opinion",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Cela se développe surtout au XVIIIe siècle.",
-      "L’Encyclopédie en est un symbole."
+      "Le dossier ne demande pas un thème général : il faut identifier un régime, un pouvoir ou une construction politique précise, à partir des traces données.",
+      "Cadre à resserrer — période : XVIIIe siècle ; espace : Europe et Atlantique.",
+      "Dernier verrou : Des auteurs, salons, académies, journaux et livres discutent la raison, l’arbitraire, la religion, les droits et l’organisation politique."
     ],
     "explanation": "Les Lumières comptent parce qu’elles transforment l’espace public : discuter du pouvoir devient une pratique sociale et politique.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -3505,7 +3609,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-1789-rc39",
@@ -3521,9 +3626,9 @@ const mysteries = [
     ],
     "lessonId": "atlantic-revolutions-revolution-francaise-1789",
     "clues": [
-      "La réponse n’est pas seulement ‘crise fiscale’. Il faut l’événement politique majeur.",
-      "Les États généraux, le Serment du Jeu de paume et la prise de la Bastille appartiennent au dossier.",
-      "C’est la Révolution française de 1789."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : relie les indices entre eux et formule la réponse exacte, sans recopier un thème trop large."
     ],
     "explanation": "La Révolution française naît d’une crise financière et politique, puis redéfinit souveraineté, droits et ordre social.",
     "caseTitle": "Dossier : quand la dette ouvre la souveraineté",
@@ -3533,7 +3638,8 @@ const mysteries = [
       "louis xvi",
       "crise fiscale"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-napoleon-rc39",
@@ -3549,9 +3655,9 @@ const mysteries = [
     ],
     "lessonId": "napoleon-empire",
     "clues": [
-      "Cherche la forme de pouvoir : comment gouverner loin, prélever, convaincre ou contraindre.",
-      "Le coup d’État du 18 Brumaire ouvre son ascension politique.",
-      "Il devient empereur des Français."
+      "Le dossier ne demande pas un thème général : il faut identifier un régime, un pouvoir ou une construction politique précise, à partir des traces données.",
+      "Cadre à resserrer — période : 1799-1815 ; espace : France et Europe.",
+      "Dernier verrou : Il prend le pouvoir après les troubles révolutionnaires, bâtit un État centralisé, codifie le droit et transforme l’Europe par la guerre."
     ],
     "explanation": "Napoléon Bonaparte stabilise certains acquis révolutionnaires tout en imposant un pouvoir autoritaire et impérial.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -3576,7 +3682,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-industrial-revolution-rc39",
@@ -3591,9 +3698,9 @@ const mysteries = [
     ],
     "lessonId": "industrial-empires-revolution-industrielle",
     "clues": [
-      "Lis le dossier comme un problème d’organisation urbaine, pas comme une simple localisation.",
-      "Textile, charbon et chemins de fer sont centraux.",
-      "L’Angleterre joue un rôle pionnier."
+      "Le dossier ne demande pas un thème général : il faut identifier un objet, un lieu ou une pratique précis, à partir des traces données.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : Quand énergie fossile, machines, capital et concentration ouvrière changent d’échelle, les paysages, les villes et les conflits sociaux changent aussi."
     ],
     "explanation": "La révolution industrielle transforme la production, le travail, l’urbanisation et les rapports sociaux.",
     "caseTitle": "Dossier : organiser l’espace et le pouvoir",
@@ -3618,7 +3725,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-ww1-trenches-rc39",
@@ -3635,9 +3743,9 @@ const mysteries = [
     ],
     "lessonId": "total-war-trenches",
     "clues": [
-      "Ne t’arrête pas à la violence : regarde ce qu’elle transforme dans l’État et la société.",
-      "Elles sont associées à la guerre de position.",
-      "Verdun et la Somme en sont des références majeures."
+      "Le dossier ne demande pas un thème général : il faut identifier un événement historique précis, à partir des traces données.",
+      "Cadre à resserrer — période : 1914-1918 ; espace : Europe et monde.",
+      "Dernier verrou : Des lignes fortifiées, l’artillerie, la boue, les rats et l’attente organisent l’expérience de millions de combattants sur le front occidental."
     ],
     "explanation": "Les tranchées symbolisent la guerre industrielle d’usure de la Première Guerre mondiale.",
     "caseTitle": "Dossier : la violence change d’échelle",
@@ -3662,7 +3770,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-russian-revolution-rc39",
@@ -3678,9 +3787,9 @@ const mysteries = [
     ],
     "lessonId": "russian-revolution-postwar",
     "clues": [
-      "La réponse attendue est un événement précis du XXe siècle.",
-      "Février et Octobre sont deux moments de 1917.",
-      "C’est la Révolution russe."
+      "Ce n’est pas seulement un pays ni un personnage : cherche le basculement politique provoqué par la guerre et les pénuries.",
+      "Deux temps comptent : d’abord l’abdication du tsar, puis la prise du pouvoir par un parti révolutionnaire quelques mois plus tard.",
+      "Dernier verrou : relie les indices entre eux et formule la réponse exacte, sans recopier un thème trop large."
     ],
     "explanation": "La révolution russe transforme le XXe siècle : elle donne naissance à un modèle politique qui structure ensuite la guerre froide.",
     "caseTitle": "Dossier : guerre, pain et effondrement impérial",
@@ -3691,7 +3800,8 @@ const mysteries = [
       "lenine",
       "bolcheviks"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-total-war-ww2-rc39",
@@ -3708,9 +3818,9 @@ const mysteries = [
     ],
     "lessonId": "second-world-war-detail-guerre-mondiale-1941",
     "clues": [
-      "Ne t’arrête pas à la violence : regarde ce qu’elle transforme dans l’État et la société.",
-      "Elle dure de 1939 à 1945.",
-      "Elle oppose notamment les Alliés aux puissances de l’Axe."
+      "Le dossier ne demande pas un thème général : il faut identifier un régime, un pouvoir ou une construction politique précise, à partir des traces données.",
+      "Resserre avec les repères du texte : date, lieu, acteurs, puis seulement le nom précis.",
+      "Dernier verrou : L’invasion de l’URSS, l’entrée en guerre des États-Unis, les fronts asiatiques et européens, les bombardements et les génocides donnent au conflit une dimension totale."
     ],
     "explanation": "La Seconde Guerre mondiale est une guerre totale par son extension, sa violence de masse et la mobilisation des sociétés.",
     "caseTitle": "Dossier : la violence change d’échelle",
@@ -3735,7 +3845,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-cold-war-rc39",
@@ -3750,9 +3861,9 @@ const mysteries = [
     ],
     "lessonId": "cold-war-blocs",
     "clues": [
-      "La réponse attendue décrit l’organisation du monde, pas seulement le nom de la période.",
-      "Les deux pôles principaux sont les États-Unis et l’URSS.",
-      "Cette logique structure la guerre froide."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 1947-1991 ; espace : Monde.",
+      "Dernier verrou : Après 1945, crises, alliances, propagande, espionnage et conflits périphériques organisent la planète autour de deux pôles rivaux sans guerre directe entre eux."
     ],
     "explanation": "La bipolarisation du monde explique pourquoi des crises locales deviennent des enjeux globaux pendant la guerre froide.",
     "caseTitle": "Dossier : gouverner loin et durer",
@@ -3760,7 +3871,8 @@ const mysteries = [
       "guerre froide",
       "cold war",
       "blocs"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-decolonization-rc39",
@@ -3776,9 +3888,9 @@ const mysteries = [
     ],
     "lessonId": "cold-war-decolonization-decolonisations",
     "clues": [
-      "La réponse attendue est un processus mondial, pas un seul pays.",
-      "Inde, Algérie, Vietnam ou Ghana peuvent servir d’exemples.",
-      "C’est la décolonisation."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Cadre à resserrer — période : 1945 → 1975 ; espace : Afrique, Asie, Caraïbes.",
+      "Dernier verrou : Après 1945, les promesses de liberté, l’épuisement européen, les guerres coloniales, l’ONU et les mouvements nationalistes rendent de plus en plus intenable la domination impériale."
     ],
     "explanation": "Les décolonisations recomposent la carte du monde et posent des questions durables : souveraineté, développement, mémoire et rapports Nord-Sud.",
     "caseTitle": "Dossier : quand l’empire devient trop coûteux à justifier",
@@ -3790,7 +3902,8 @@ const mysteries = [
       "algérie",
       "algerie"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-ussr-end-rc39",
@@ -3807,9 +3920,9 @@ const mysteries = [
     ],
     "lessonId": "post-1991-world-fin-urss-monde-unipolaire",
     "clues": [
-      "Le premier écran donne une situation : il faut retrouver le nom précis qui explique toutes les traces.",
-      "Cela se produit en 1991.",
-      "La Russie devient l’État héritier principal."
+      "Ne réponds pas par un grand thème : le dossier cherche un régime, un pouvoir ou une construction politique précise, pas une impression vague.",
+      "Resserre progressivement : nature du sujet, période, lieu, puis nom exact.",
+      "Dernier verrou : relie les indices entre eux et formule la réponse exacte, sans recopier un thème trop large."
     ],
     "explanation": "La fin de l’URSS ne clôt pas l’histoire : elle ouvre une période de recompositions post-soviétiques, de mondialisation et de nouveaux conflits.",
     "caseTitle": "Dossier : une technique devient société",
@@ -3834,7 +3947,8 @@ const mysteries = [
       "révolution",
       "roi",
       "technologie"
-    ]
+    ],
+    "contentQuality49": true
   },
   {
     "id": "mystery-9-11-rc39",
@@ -3851,9 +3965,9 @@ const mysteries = [
     ],
     "lessonId": "post-1991-world-11-septembre-guerres",
     "clues": [
-      "La réponse attendue est une date/événement précis.",
-      "New York et Washington sont touchés en 2001.",
-      "Il s’agit des attentats du 11 septembre."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 2001 → années 2010 ; espace : États-Unis, Afghanistan, Irak, monde.",
+      "Dernier verrou : L’événement dépasse immédiatement le lieu de l’attaque."
     ],
     "explanation": "Le 11 septembre 2001 devient un tournant géopolitique, sécuritaire et symbolique du début du XXIe siècle.",
     "caseTitle": "Dossier : un attentat qui réorganise la sécurité mondiale",
@@ -3864,7 +3978,8 @@ const mysteries = [
       "new york",
       "al qaida"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-eu-rc39",
@@ -3879,9 +3994,9 @@ const mysteries = [
     ],
     "lessonId": "european-construction",
     "clues": [
-      "La réponse attendue est une institution précise, pas toute la construction européenne.",
-      "Elle précède la CEE.",
-      "Son nom associe charbon et acier."
+      "Ne réponds pas par un grand thème : le dossier cherche un événement historique précis, pas une impression vague.",
+      "Cadre à resserrer — période : Depuis 1950 ; espace : Europe.",
+      "Dernier verrou : Après 1945, un projet place le charbon et l’acier de plusieurs pays sous une autorité commune pour rendre une nouvelle guerre franco-allemande matériellement moins probable."
     ],
     "explanation": "La CECA montre comment la construction européenne commence par des interdépendances concrètes avant de devenir un projet institutionnel plus large.",
     "caseTitle": "Dossier : transformer la guerre en interdépendance",
@@ -3892,7 +4007,8 @@ const mysteries = [
       "union européenne",
       "europe"
     ],
-    "upgradedB19": true
+    "upgradedB19": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-climate-paris-rc39",
@@ -3908,9 +4024,9 @@ const mysteries = [
     ],
     "lessonId": "paris-climate-accord",
     "clues": [
-      "La réponse est un texte diplomatique précis.",
-      "Il date de 2015.",
-      "La COP21 est le repère institutionnel."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 2015 ; espace : Paris et négociations climatiques.",
+      "Dernier verrou : Un compromis mondial fixe un horizon commun pour limiter le réchauffement."
     ],
     "explanation": "L’accord de Paris montre que le climat est devenu un objet historique global : scientifique, diplomatique, économique et social.",
     "caseTitle": "Dossier : le climat entre dans la diplomatie mondiale",
@@ -3919,7 +4035,8 @@ const mysteries = [
       "cop21",
       "paris"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   },
   {
     "id": "mystery-generative-ai-rc39",
@@ -3936,9 +4053,9 @@ const mysteries = [
     ],
     "lessonId": "ai-breakthrough-public",
     "clues": [
-      "La réponse attendue précise la famille d’IA concernée.",
-      "Elle devient visible dans la vie quotidienne au début des années 2020.",
-      "Texte, image et code sont les indices centraux."
+      "Ne réponds pas par un grand thème : le dossier cherche un objet, un lieu ou une pratique précis, pas une impression vague.",
+      "Cadre à resserrer — période : 2022 → 2026 ; espace : Monde numérique.",
+      "Dernier verrou : Dossier : quand l’outil devient producteur de contenus"
     ],
     "explanation": "L’IA générative est un bon sujet d’histoire du présent : elle oblige à relier technique, économie, culture, droit et usages sociaux.",
     "caseTitle": "Dossier : quand l’outil devient producteur de contenus",
@@ -3946,7 +4063,8 @@ const mysteries = [
       "ia",
       "intelligence artificielle"
     ],
-    "upgradedAdult": true
+    "upgradedAdult": true,
+    "contentQuality49": true
   }
 ];
 function dailyIndex(){

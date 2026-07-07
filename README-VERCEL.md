@@ -1,4 +1,4 @@
-# HistoDaily beta 48 — debug accueil et cours
+# HistoDaily beta 49 — debug accueil et cours
 
 Cette beta corrige deux retours de test importants : le champ de réponse du mystère doit être parfaitement utilisable sur ordinateur, et les cours ne doivent plus donner l’impression d’un gros pavé imposé.
 
@@ -17,8 +17,8 @@ Le contenu est devenu riche, mais il ne faut pas que l’app donne une sensation
 ## Vérifications
 
 - Syntaxe JS vérifiée.
-- API health passée en beta 48.
-- Cache/service-worker passés en beta 48.
+- API health passée en beta 49.
+- Cache/service-worker passés en beta 49.
 - Navigation Express / Complet / Quiz intégrée sans animation lourde.
 
 ## Note GitHub/Vercel
@@ -29,4 +29,11 @@ Cette variante retire `vercel.json` pour éviter l'erreur "Invalid Vercel file p
 - Accueil simplifié : mystère du jour, cours du jour, progression.
 - Correction du bouton Valider XP.
 - Express renforcé avec cadre, enjeu, preuve et piège.
-- Service worker beta48 pour éviter les caches beta47 mélangés.
+- Service worker beta49 pour éviter les caches beta47 mélangés.
+
+
+## Beta 49 — contenu et anti-spoil
+- Le cours du jour n’affiche plus son titre ni son résumé tant que le mystère du jour n’est pas résolu.
+- Les indices des mystères ont été réécrits pour progresser sans donner directement la réponse.
+- Les cartes Express remplacent le couple artificiel “preuve/piège” par “trace utile / erreur à éviter”.
+- Le contenu ne cherche pas à ajouter des blocs : il nettoie ce qui cassait l’expérience de jeu.

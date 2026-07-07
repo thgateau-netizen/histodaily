@@ -1,4 +1,4 @@
-const CACHE_NAME = "histodaily-beta48-debug";
+const CACHE_NAME = "histodaily-beta49-content-quality";
 const ASSETS = ["/", "/index.html", "/styles.css", "/app-core.js", "/app-quality.js", "/app-onboarding.js", "/app.js", "/lessons-lite.js", "/manifest.webmanifest"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));

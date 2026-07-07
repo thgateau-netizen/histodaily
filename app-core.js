@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.48",
-  assetsVersion: "1.0.0-beta.48",
+  version: "1.0.0-beta.49",
+  assetsVersion: "1.0.0-beta.49",
   storageKey: "histodaily_v100_beta14_state",
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
@@ -14,12 +14,12 @@ window.HISTODAILY_CORE = {
     friendNames: ["Manon", "PapyHistoire", "Louise", "Anatole"]
   },
   ui: {
-    versionLabel: "beta 48",
+    versionLabel: "beta 49",
     shareBaseUrl: "https://histodaily.app",
     releaseNotes: [
-      "Debug prioritaire : accueil réduit à 3 cartes utiles au lieu d’un empilement de blocs",
-      "Correction du bouton de validation des cours : plus de texte brut Valider +${lesson.xp}",
-      "Express renforcé : cadrage, enjeu, preuve et piège visibles sans ouvrir le cours complet"
+      "Anti-spoil : le cours du jour reste verrouillé tant que le mystère n’est pas résolu",
+      "Indices réécrits : progression sans donner la réponse au troisième indice",
+      "Contenu clarifié : on parle de trace utile et d’erreur à éviter, plus de blocs preuve/piège artificiels"
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
