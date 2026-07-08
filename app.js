@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.102";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.104";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -12,6 +12,15 @@ const data = {
   lessons: typeof HISTO_LESSONS !== "undefined" ? HISTO_LESSONS : {},
   mysteries: typeof HISTO_DAILY_MYSTERIES !== "undefined" && Array.isArray(HISTO_DAILY_MYSTERIES) ? HISTO_DAILY_MYSTERIES : []
 };
+
+const DISCIPLINES = [
+  { id: "history", title: "Histoire", emoji: "🏛️", accent: "#f6c453", description: "Périodes, peuples, événements et grands repères." },
+  { id: "art", title: "Art", emoji: "🎨", accent: "#fb7185", description: "Œuvres, styles, artistes et mouvements." },
+  { id: "cinema", title: "Cinéma", emoji: "🎬", accent: "#a78bfa", description: "Films, réalisateurs, scènes et courants." },
+  { id: "science-inventions", title: "Sciences & inventions", emoji: "🧪", accent: "#56d6ff", description: "Découvertes, machines, idées et technologies." },
+  { id: "economy", title: "Économie", emoji: "📈", accent: "#48d597", description: "Marchés, crises, monnaies et grandes notions." },
+  { id: "geography", title: "Géographie", emoji: "🗺️", accent: "#84cc16", description: "Pays, milieux, villes, frontières et cartes." }
+];
 
 
 const SCORE_BASE = HISTODAILY_CORE.scoring?.base || { facile: 95, moyen: 120, difficile: 150, expert: 180 };
@@ -50,6 +59,8 @@ const defaultState = {
   quizProgress: {},
   quizFeedback: {},
   solvedMysteries: {},
+  currentDiscipline: "history",
+  currentGroup: "origins",
   currentWorld: "prehistory",
   currentLessonId: null,
   currentMysteryId: null,
@@ -1032,17 +1043,19 @@ document.addEventListener("click", event => { if (isTextControl(event.target)) e
 
 function renderShell(content) {
   applyPerformanceMode();
-  app.innerHTML = `
-    <main class="app-shell tab-${state.tab}">
-      ${systemStatusMarkup()}
-      ${content}
-      <nav class="bottom-nav">
+  const immersiveLesson = state.tab === "lesson";
+  const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav">
         ${navButton("home", "⌂", "Accueil")}
-        ${navButton("learn", "📖", "Parcours")}
+        ${navButton("learn", "📖", "Cours")}
         ${navButton("mystery", "🕵️", "Mystère")}
         ${navButton("rank", "🏆", "Classement")}
         ${navButton("profile", "👤", "Profil")}
-      </nav>
+      </nav>`;
+  app.innerHTML = `
+    <main class="app-shell tab-${state.tab} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
+      ${systemStatusMarkup()}
+      ${content}
+      ${navMarkup}
     </main>`;
   document.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
@@ -1576,7 +1589,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Hominidé est un terme de classification biologique. En histoire scolaire, il sert souvent à parler des formes humaines et préhumaines proches de notre lignée."
       },
       {
@@ -1683,11 +1696,11 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Chaîne opératoire : suite de gestes nécessaires pour produire et utiliser un objet technique."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Ne juge pas un outil par son apparence. Observe les traces de fabrication, d’usage et le contexte où il a été trouvé."
       },
       {
@@ -1856,11 +1869,11 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Mobilité saisonnière : déplacement régulier lié aux ressources disponibles selon les moments de l’année."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Ne déduis pas toute l’économie d’un seul type de trace : croise os, plantes, outils, climat et organisation du site."
       },
       {
@@ -2055,11 +2068,11 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Lignée : ensemble de populations reliées par une histoire évolutive. Chez les humains, plusieurs lignées ont coexisté."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Croise fossiles, outils et ADN : chacun donne une partie du puzzle, aucun ne suffit seul."
       },
       {
@@ -2254,11 +2267,11 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Linéaire A : écriture utilisée en Crète minoenne, encore non déchiffrée de manière satisfaisante."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Quand les textes manquent, on raisonne avec l’architecture, les objets, les images et les traces de stockage."
       },
       {
@@ -2386,7 +2399,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Linéaire B : écriture administrative déchiffrée, utilisée dans des palais mycéniens et notant une forme ancienne de grec."
       },
       {
@@ -2518,11 +2531,11 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Système palatial : organisation centrée sur un palais qui administre ressources, productions, stocks, dépendants et échanges."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Pour expliquer une crise ancienne, on compare destructions, abandons, textes, climat possible, objets et changements d’habitat."
       },
       {
@@ -2629,7 +2642,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Limon : dépôt fertile laissé par la crue, essentiel à l’agriculture avant les grands aménagements modernes."
       },
       {
@@ -2731,7 +2744,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Deux Terres : expression qui désigne la Haute et la Basse-Égypte, dont l’union symbolise l’autorité du pharaon."
       },
       {
@@ -2927,7 +2940,7 @@ const READY_LESSON_PACKS = {
         "text": "Plus une explication invoque le miracle ou l’énigme absolue, moins elle aide à comprendre les ouvriers, les techniques, les carrières, les rampes, les rations et l’administration."
       },
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Ancien Empire : période majeure de l’Égypte pharaonique, associée aux grandes pyramides."
       },
       {
@@ -3010,7 +3023,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Propagande royale : mise en forme officielle du pouvoir, destinée à montrer le roi comme vainqueur, protecteur et choisi par les dieux."
       },
       {
@@ -3142,7 +3155,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Levant : région de la Méditerranée orientale, entre Égypte, Anatolie, Syrie-Palestine et grands royaumes du Proche-Orient."
       },
       {
@@ -3253,7 +3266,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Métèque : étranger libre vivant à Athènes, intégré économiquement mais exclu de la citoyenneté politique."
       },
       {
@@ -3323,7 +3336,7 @@ const READY_LESSON_PACKS = {
         "text": "Des Grecs combattent ou négocient avec les Perses. Le monde grec est fragmenté : cité, alliance et intérêt local comptent autant que l’identité culturelle."
       },
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Médiser : soutenir ou accepter la domination perse. Le mot montre que les Grecs eux-mêmes ne sont pas tous dans le même camp."
       },
       {
@@ -3502,11 +3515,11 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Fondation légendaire : récit d’origine qui donne du sens politique à une communauté, même quand il ne correspond pas directement aux faits."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "On croise les textes tardifs avec l’archéologie : aucun type de source ne suffit seul."
       },
       {
@@ -3597,7 +3610,7 @@ const READY_LESSON_PACKS = {
         "text": "La conquête de l’Italie repose sur un mélange de guerre, alliances, colonies et statuts juridiques."
       },
       {
-        "label": "Méthode",
+        "label": "Repère",
         "text": "Il faut regarder comment Rome traite différemment les vaincus : certains deviennent citoyens, alliés ou communautés liées par traité."
       },
       {
@@ -3634,7 +3647,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Allié italien : communauté liée à Rome par des obligations, notamment militaires, sans être nécessairement composée de citoyens romains complets."
       },
       {
@@ -3766,7 +3779,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Punique vient de Punicus, terme latin lié aux Phéniciens ; Carthage est une puissance issue de ce monde méditerranéen."
       },
       {
@@ -3898,7 +3911,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Guerre civile : conflit armé entre membres d’une même communauté politique, ici des Romains contre des Romains."
       },
       {
@@ -4009,7 +4022,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Princeps signifie “premier”. Le terme permet d’éviter le mot roi tout en signalant une supériorité politique."
       },
       {
@@ -4034,7 +4047,7 @@ const READY_LESSON_PACKS = {
         "a": "Premier, c’est-à-dire premier citoyen plutôt que roi affiché.",
         "why": "Le vocabulaire sert la stratégie politique.",
         "trap": "Traduire directement par empereur au sens moderne.",
-        "evidence": "Le bloc “Mot utile”."
+        "evidence": "Le cours."
       },
       {
         "q": "Quel pouvoir rend Auguste décisif ?",
@@ -4111,7 +4124,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Concile : assemblée d’évêques réunie pour trancher des questions de doctrine, de discipline ou d’organisation de l’Église."
       },
       {
@@ -4244,7 +4257,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Thing : assemblée locale où des hommes libres peuvent traiter de justice, d’accords et de conflits selon les régions."
       },
       {
@@ -4398,7 +4411,7 @@ const READY_LESSON_PACKS = {
         "text": "793 : attaque de Lindisfarne. 865 : arrivée de la Grande Armée en Angleterre. 885-886 : siège de Paris. 911 environ : accord autour de Rollon en Normandie."
       },
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Tribut : paiement imposé ou négocié pour obtenir la paix, le départ d’une armée ou la protection d’un chef armé."
       },
       {
@@ -4527,7 +4540,7 @@ const READY_LESSON_PACKS = {
         "text": "Oseberg et Gokstad en Norvège, Skuldelev au Danemark, sont des découvertes majeures pour comprendre les bateaux vikings."
       },
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Tirant d’eau : profondeur nécessaire à un bateau pour flotter. Un faible tirant d’eau facilite l’accès aux eaux peu profondes."
       },
       {
@@ -4651,7 +4664,7 @@ const READY_LESSON_PACKS = {
         "text": "L’Anse aux Meadows, à Terre-Neuve, est le grand site archéologique attestant une présence nordique en Amérique du Nord."
       },
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Saga : récit islandais médiéval, rédigé plus tard que les événements qu’il raconte ; utile, mais à croiser avec l’archéologie."
       },
       {
@@ -4771,7 +4784,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Dirham : monnaie d’argent du monde islamique, souvent retrouvée dans des dépôts scandinaves."
       },
       {
@@ -4903,7 +4916,7 @@ const READY_LESSON_PACKS = {
         "text": "Harald à la Dent bleue, roi danois du Xe siècle, est associé à la christianisation et à l’affirmation du pouvoir royal."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Pour étudier une conversion, regarde les textes, mais aussi les tombes, les églises, les croix, les noms et les pratiques qui persistent."
       },
       {
@@ -5031,7 +5044,7 @@ const READY_LESSON_PACKS = {
         "text": "La clé peut symboliser la gestion du foyer et des biens domestiques."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Le quotidien se lit dans les déchets, outils, maisons et traces alimentaires."
       },
       {
@@ -5245,7 +5258,7 @@ const READY_LESSON_PACKS = {
         "text": "Les dieux nordiques structurent des récits sur guerre, sagesse, tonnerre, fertilité, ruse et destin."
       },
       {
-        "label": "Méthode",
+        "label": "Repère",
         "text": "Il faut croiser textes tardifs, inscriptions runiques, tombes et objets."
       },
       {
@@ -5291,7 +5304,7 @@ const READY_LESSON_PACKS = {
         "text": "Dire que tous les morts vont au Valhalla simplifie trop la diversité des croyances."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Une saga raconte ; une tombe, une rune ou un objet permettent de vérifier autrement."
       }
     ],
@@ -5389,7 +5402,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Souveraineté nationale : principe selon lequel le pouvoir politique appartient à la nation."
       },
       {
@@ -5476,11 +5489,11 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Tiers état : ordre qui regroupe tous ceux qui ne sont ni nobles ni membres du clergé, donc l’immense majorité de la population."
       },
       {
-        "title": "Méthode",
+        "title": "Comment le lire",
         "text": "Pour comprendre 1789, il faut relier finances publiques, institutions, hiérarchies sociales et événements de rue."
       },
       {
@@ -5608,7 +5621,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Souveraineté nationale : principe selon lequel le pouvoir politique appartient à la nation, représentée par des institutions."
       },
       {
@@ -5740,7 +5753,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Salut public : idée selon laquelle des mesures extraordinaires sont justifiées pour sauver la République en danger."
       },
       {
@@ -5872,7 +5885,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Plébiscite : vote demandé au peuple pour approuver une décision ou un pouvoir, souvent encadré par le régime."
       },
       {
@@ -6004,7 +6017,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Équilibre européen : système diplomatique visant à empêcher qu’une seule puissance domine durablement le continent."
       },
       {
@@ -6115,7 +6128,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "Soviet : conseil d’ouvriers, soldats ou paysans, apparu dans les crises révolutionnaires russes."
       },
       {
@@ -6196,7 +6209,7 @@ const READY_LESSON_PACKS = {
     ],
     "deeper": [
       {
-        "title": "Mot utile",
+        "title": "Repère",
         "text": "STO : Service du travail obligatoire, qui envoie des travailleurs français en Allemagne et pousse certains réfractaires vers les maquis."
       },
       {
@@ -6281,10 +6294,19 @@ function lessonKeyFacts(lesson = {}, content = {}) {
 function lessonTakeaways(lesson = {}, content = {}) {
   const explicit = Array.isArray(content.takeaways) ? content.takeaways.filter(Boolean) : [];
   if (!explicit.length) return [];
-  return explicit.slice(0, 3).map((item, index) => {
-    const labels = ["Idée", "Repère", "Conséquence"];
+  return explicit.slice(0, 5).map((item, index) => {
+    const labels = ["Idée", "Repère", "Conséquence", "Nuance", "À retenir"];
     return typeof item === "string" ? { label: labels[index] || "À retenir", text: item } : { ...item, label: item.label || labels[index] || "À retenir" };
   });
+}
+function paragraphMarkup(text = "") {
+  const parts = String(text || "").split(/\n\s*\n/).map(part => part.trim()).filter(Boolean);
+  return (parts.length ? parts : [String(text || "").trim()].filter(Boolean)).map(part => `<p>${escapeHtml(part)}</p>`).join("");
+}
+function lessonTakeawayMarkup(takeaways = []) {
+  const items = (takeaways || []).filter(item => item && item.text).slice(0, 5);
+  if (!items.length) return "";
+  return `<section class="lesson-retain-block"><h2>Ce qu’il faut retenir</h2><ul>${items.map(item => `<li><b>${escapeHtml(item.label || "À retenir")}</b><span>${escapeHtml(item.text)}</span></li>`).join("")}</ul></section>`;
 }
 
 const EDITORIAL_NOTE_BLOCKED_PATTERNS = [
@@ -6320,7 +6342,7 @@ function editorialNoteIsConcrete(block = {}, lesson = {}, content = {}) {
   if (!title || !text || qualityWordCount(text) < 7) return false;
   const combined = `${title} ${text}`;
   if (EDITORIAL_NOTE_BLOCKED_PATTERNS.some(pattern => pattern.test(combined))) return false;
-  if (/^(bon réflexe|méthode|question utile)$/i.test(title) && qualityWordCount(text) < 14) return false;
+  if (/^(mot utile|méthode|methode|erreur fréquente|erreur frequente|bon réflexe|bon reflexe|question utile)$/i.test(title)) return false;
   if (EDITORIAL_NOTE_SIGNAL_PATTERNS.some(pattern => pattern.test(combined))) return true;
   const titleTokens = normalize(lesson.title || "").split(" ").filter(token => token.length >= 5);
   const haystack = normalize(combined);
@@ -6409,8 +6431,8 @@ function renderLesson() {
     ? `<div class="lesson-validation-done"><b>✅ Cours validé</b><span>${lessonDone(lesson.id) ? "Progression enregistrée." : "Quiz réussi : validation en attente de synchronisation."}</span></div>`
     : ``;
   renderShell(`
-    <header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml((typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS.find(g => g.id === lessonWorld(lesson).group)?.title : "") || "Cours")} › ${escapeHtml(lessonWorld(lesson).title || "Parcours")} › ${escapeHtml(content.period)}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(content.title)}</h1></div></header>
-    <article class="card reading-card two-speed-course lesson-tabbed-card">
+    <header class="topbar lesson-full-topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml((typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS.find(g => g.id === lessonWorld(lesson).group)?.title : "") || "Cours")} › ${escapeHtml(lessonWorld(lesson).title || "Parcours")} › ${escapeHtml(content.period)}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(content.title)}</h1></div></header>
+    <article class="card reading-card two-speed-course lesson-tabbed-card lesson-full-page">
       ${renderLessonText(lesson, content)}
       ${footer}
     </article>`);
@@ -6821,9 +6843,9 @@ function renderLessonText(lesson, content) {
       <section class="text-block express-block compact-reminder"><div class="section-title-row"><h2>Avant de creuser</h2><small>repères</small></div>${keyFactsMarkup || ""}<p>${escapeHtml(content.express[0] || content.hook)}</p></section>
       <section class="complete-course-panel" data-focus-target="complete">
         <div class="section-title-row"><h2>📚 Cours complet</h2><small>${estimatedMinutes} min de lecture</small></div>
-        ${completeBlocks.map(block => `<section class="text-block deep-reading-block"><h2>${escapeHtml(block.title)}</h2><p>${escapeHtml(block.text)}</p></section>`).join("")}
+        ${completeBlocks.map(block => `<section class="text-block deep-reading-block"><h2>${escapeHtml(block.title)}</h2><div class="deep-reading-text">${paragraphMarkup(block.text)}</div></section>`).join("")}
       </section>
-      ${editorialNotesMarkup(content, lesson)}
+      ${lessonTakeawayMarkup(takeaways)}
       <section class="lesson-next-choice"><button type="button" data-lesson-view="quiz">✅ Continuer vers le quiz</button></section>`;
   }
   if (view === "quiz") {
@@ -6841,16 +6863,16 @@ function renderLessonText(lesson, content) {
         </div>
       </section>`;
   }
-  const expressBits = Array.isArray(content.express) && content.express.length ? content.express.slice(0, 4) : [content.hook || "Sujet à replacer dans son contexte."];
+  const expressBits = Array.isArray(content.express) && content.express.length ? content.express.slice(0, 3) : [content.hook || "Sujet à replacer dans son contexte."];
   const labels = Array.isArray(content.expressLabels) && content.expressLabels.length
     ? content.expressLabels
-    : ["Repère clair", "Ce qui se passe", "Exemple concret", "À retenir"];
+    : ["Le sujet", "Ce qui change", "La nuance"];
   const remember = content.deeper?.find(block => /question de fond|ce qu|erreur fréquente|date à connaître/i.test(block.title || ""))?.text
     || content.complete?.at(-1)?.text
     || content.hook
     || expressBits.at(-1);
   const expressCards = expressBits.map((bit, index) => `<div><b>${index + 1} · ${escapeHtml(labels[index] || `Point ${index + 1}`)}</b><p>${escapeHtml(bit)}</p></div>`).join("");
-  const memoCard = expressBits.length >= 4 ? "" : `<div><b>${expressBits.length + 1} · À retenir</b><p>${escapeHtml(short(remember, 320))}</p></div>`;
+  const memoCard = "";
   return `${intro}${tabs}
     <section class="express-coach-card" data-focus-target="express">
       <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>Express</h2></div><small>utile et concret</small></div>
@@ -7749,6 +7771,7 @@ function renderProfile() {
   const friends = friendProfiles();
   renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Profil social</p><h1>${escapeHtml(state.pseudo)}</h1></div></header>
     ${publicProfileMarkup(myPlayerProfile())}
+    ${disciplineWheelMarkup()}
     <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Pas besoin de mail pour cette phase.</p></div><form data-pseudo-form novalidate><input data-pseudo-input name="pseudo" type="text" value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo" autocomplete="nickname" autocapitalize="words" enterkeyhint="done"/><button type="button" data-save-pseudo>Enregistrer</button></form><button type="button" class="ghost wide" data-pseudo-prompt>Modifier via fenêtre simple</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
     ${addFriendMarkup()}
     ${socialInviteLinkMarkup()}
@@ -7807,46 +7830,56 @@ function achievement(icon, label, on) { return `<div class="card achievement ${o
 
 
 /* =========================================================
-   HistoDaily — navigation en arborescence
-   Périodes -> thèmes / peuples -> cours -> express / complet / quiz
+   Cours — choix de discipline puis parcours rangé
+   Disciplines -> périodes -> thèmes -> cours -> express / complet / quiz
    ========================================================= */
-function treeAvailableWorlds() {
+function disciplineById(id) {
+  return DISCIPLINES.find(item => item.id === id) || DISCIPLINES[0];
+}
+function activeDisciplineId() {
+  return disciplineById(state.currentDiscipline || "history").id;
+}
+function worldDisciplineId(world = {}) {
+  return world.discipline || "history";
+}
+function treeAvailableWorlds(disciplineId = activeDisciplineId()) {
   const worlds = curatedWorlds();
   return (worlds.length ? worlds : data.worlds)
     .filter(world => curatedLessonsFor(world.id).length > 0)
+    .filter(world => worldDisciplineId(world) === disciplineId)
     .sort((a, b) => (a.sortStart ?? 999999) - (b.sortStart ?? 999999));
 }
-function treeGroups() {
+function treeGroups(disciplineId = activeDisciplineId()) {
   const baseGroups = typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS : [];
-  const worlds = treeAvailableWorlds();
+  const worlds = treeAvailableWorlds(disciplineId);
   const groupIds = new Set(worlds.map(world => world.group || "other"));
   const known = baseGroups.filter(group => groupIds.has(group.id));
   const missing = [...groupIds]
     .filter(id => !known.some(group => group.id === id))
-    .map(id => ({ id, title: "Autres parcours", range: "hors période", description: "Cours rangés hors découpage chronologique principal." }));
+    .map(id => ({ id, title: "Autres parcours", range: "hors période", description: "Cours rangés hors découpage principal." }));
   return [...known, ...missing];
 }
-function treeWorldsForGroup(groupId) {
-  return treeAvailableWorlds().filter(world => (world.group || "other") === groupId);
+function treeWorldsForGroup(groupId, disciplineId = activeDisciplineId()) {
+  return treeAvailableWorlds(disciplineId).filter(world => (world.group || "other") === groupId);
 }
-function treeActiveGroupId() {
+function treeActiveGroupId(disciplineId = activeDisciplineId()) {
   const currentWorld = data.worlds.find(world => world.id === state.currentWorld);
-  const preferred = state.currentGroup || currentWorld?.group || treeGroups()[0]?.id;
-  if (preferred && treeWorldsForGroup(preferred).length) return preferred;
-  return treeGroups()[0]?.id || preferred || "other";
+  const preferred = state.currentGroup || currentWorld?.group || treeGroups(disciplineId)[0]?.id;
+  if (preferred && treeWorldsForGroup(preferred, disciplineId).length) return preferred;
+  return treeGroups(disciplineId)[0]?.id || preferred || "other";
 }
-function treeActiveWorld(groupId = treeActiveGroupId()) {
-  const worlds = treeWorldsForGroup(groupId);
+function treeActiveWorld(groupId = treeActiveGroupId(), disciplineId = activeDisciplineId()) {
+  const worlds = treeWorldsForGroup(groupId, disciplineId);
   return worlds.find(world => world.id === state.currentWorld) || worlds[0] || activeWorld();
 }
 function treeLessonsForWorld(worldId) {
   return curatedLessonsFor(worldId).sort((a, b) => (a.order || 999) - (b.order || 999));
 }
-function treeLessonCountForGroup(groupId) {
-  return treeWorldsForGroup(groupId).reduce((sum, world) => sum + treeLessonsForWorld(world.id).length, 0);
+function treeLessonCountForGroup(groupId, disciplineId = activeDisciplineId()) {
+  return treeWorldsForGroup(groupId, disciplineId).reduce((sum, world) => sum + treeLessonsForWorld(world.id).length, 0);
 }
-function treeDoneCountForGroup(groupId) {
-  return treeWorldsForGroup(groupId).reduce((sum, world) => sum + treeLessonsForWorld(world.id).filter(lesson => lessonDone(lesson.id)).length, 0);
+function treeDoneCountForGroup(groupId, disciplineId = activeDisciplineId()) {
+  return treeWorldsForGroup(groupId, disciplineId).reduce((sum, world) => sum + treeLessonsForWorld(world.id).filter(lesson => lessonDone(lesson.id)).length, 0);
 }
 function treeDoneCountForWorld(worldId) {
   return treeLessonsForWorld(worldId).filter(lesson => lessonDone(lesson.id)).length;
@@ -7855,9 +7888,53 @@ function treeMysteryCountForWorld(worldId) {
   const ids = new Set(treeLessonsForWorld(worldId).map(lesson => lesson.id));
   return data.mysteries.filter(mystery => ids.has(mystery.lessonId)).length;
 }
-function treeGroupCard(group, active) {
-  const total = treeLessonCountForGroup(group.id);
-  const done = treeDoneCountForGroup(group.id);
+function lessonsForDiscipline(disciplineId = activeDisciplineId()) {
+  return treeAvailableWorlds(disciplineId).flatMap(world => treeLessonsForWorld(world.id));
+}
+function disciplineProgress(disciplineId = activeDisciplineId()) {
+  const lessons = lessonsForDiscipline(disciplineId);
+  const done = lessons.filter(lesson => lessonDone(lesson.id)).length;
+  return { done, total: lessons.length, progress: percent(done, lessons.length), ready: lessons.length > 0 };
+}
+function disciplineCard(discipline, active) {
+  const stats = disciplineProgress(discipline.id);
+  const status = stats.ready ? `${stats.done}/${stats.total} cours · ${stats.progress}%` : "bientôt";
+  return `<button class="discipline-card ${active ? "active" : ""}" data-discipline="${escapeHtml(discipline.id)}" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <span class="discipline-icon">${discipline.emoji}</span>
+    <strong>${escapeHtml(discipline.title)}</strong>
+    <small>${escapeHtml(status)}</small>
+    <em>${escapeHtml(discipline.description)}</em>
+  </button>`;
+}
+function disciplineSelectorMarkup(selectedId = activeDisciplineId()) {
+  return `<section class="discipline-picker card">
+    <div class="section-title-row">
+      <div><span class="card-label">Disciplines</span><h2>Choisis ce que tu veux apprendre</h2><p>Comme une langue dans Duolingo : tu choisis le domaine, puis tu avances dans ses cours.</p></div>
+      <small>${DISCIPLINES.length} domaines</small>
+    </div>
+    <div class="discipline-grid">${DISCIPLINES.map(item => disciplineCard(item, item.id === selectedId)).join("")}</div>
+  </section>`;
+}
+function selectDiscipline(disciplineId) {
+  const discipline = disciplineById(disciplineId);
+  const firstWorld = treeAvailableWorlds(discipline.id)[0];
+  setState({
+    currentDiscipline: discipline.id,
+    currentGroup: firstWorld?.group || state.currentGroup || "origins",
+    currentWorld: firstWorld?.id || state.currentWorld || "prehistory",
+    learnFilter: "all",
+    learnSearch: ""
+  });
+}
+function disciplineEmptyMarkup(discipline) {
+  return `<section class="card discipline-empty-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="discipline-empty-icon">${discipline.emoji}</div>
+    <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>La discipline est prête dans l’interface, pas encore remplie.</h2><p>On garde l’app légère : pas besoin d’ajouter cinquante cours vides. Dès qu’on écrira les contenus, ils apparaîtront ici avec le même système express, cours complet et quiz.</p></div>
+  </section>`;
+}
+function treeGroupCard(group, active, disciplineId = activeDisciplineId()) {
+  const total = treeLessonCountForGroup(group.id, disciplineId);
+  const done = treeDoneCountForGroup(group.id, disciplineId);
   const progress = percent(done, total);
   return `<article class="tree-card period-card ${active ? "active" : ""}" data-tree-group="${escapeHtml(group.id)}" tabindex="0" role="button">
     <div class="tree-card-main">
@@ -7878,7 +7955,7 @@ function treeWorldCard(world, active) {
     <div class="theme-icon" style="--theme-accent:${escapeHtml(world.accent || "#fbbf24")}">${world.emoji || "📚"}</div>
     <div>
       <h2>${escapeHtml(world.title)}</h2>
-      <p>${escapeHtml(world.subtitle || world.timeframe || "Parcours historique")}</p>
+      <p>${escapeHtml(world.subtitle || world.timeframe || "Parcours")}</p>
       <small>${escapeHtml(world.timeframe || "")}${world.timeframe ? " · " : ""}${lessons.length} cours${mysteries ? ` · ${mysteries} mystère${mysteries > 1 ? "s" : ""}` : ""}</small>
       <div class="mini-progress"><i style="width:${progress}%"></i></div>
     </div>
@@ -7903,40 +7980,81 @@ function treeLessonCard(lesson, index, world) {
     <strong>${status}</strong>
   </article>`;
 }
+function polarPoint(cx, cy, radius, angleDeg) {
+  const angle = (angleDeg - 90) * Math.PI / 180;
+  return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
+}
+function wheelSlicePath(index, total) {
+  const start = index * 360 / total;
+  const end = (index + 1) * 360 / total;
+  const a = polarPoint(50, 50, 47, start);
+  const b = polarPoint(50, 50, 47, end);
+  const large = end - start > 180 ? 1 : 0;
+  return `M 50 50 L ${a.x.toFixed(2)} ${a.y.toFixed(2)} A 47 47 0 ${large} 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)} Z`;
+}
+function disciplineWheelMarkup() {
+  const total = DISCIPLINES.length;
+  const slices = DISCIPLINES.map((discipline, index) => {
+    const stats = disciplineProgress(discipline.id);
+    const mid = (index + 0.5) * 360 / total;
+    const label = polarPoint(50, 50, 31, mid);
+    return `<g><path d="${wheelSlicePath(index, total)}" fill="${escapeHtml(discipline.accent)}" opacity="${stats.ready ? "0.92" : "0.42"}" stroke="rgba(5,9,20,.82)" stroke-width="1.4"></path><text x="${label.x.toFixed(1)}" y="${label.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${stats.progress}%</text></g>`;
+  }).join("");
+  const legend = DISCIPLINES.map(discipline => {
+    const stats = disciplineProgress(discipline.id);
+    return `<div class="discipline-progress-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${discipline.emoji}</span><strong>${escapeHtml(discipline.title)}</strong><em>${stats.ready ? `${stats.done}/${stats.total}` : "0/0"}</em><b>${stats.progress}%</b></div>`;
+  }).join("");
+  return `<section class="card trivial-profile-card">
+    <div class="section-title-row"><div><span class="card-label">Progression par discipline</span><h2>Ton camembert de culture</h2><p>Chaque tranche garde son propre pourcentage : l’idée est de remplir progressivement le profil comme un Trivial Pursuit.</p></div></div>
+    <div class="trivial-profile-layout"><div class="trivial-wheel-wrap"><svg class="trivial-wheel" viewBox="0 0 100 100" role="img" aria-label="Progression par discipline">${slices}<circle cx="50" cy="50" r="16" fill="rgba(5,9,20,.90)" stroke="rgba(255,255,255,.18)" stroke-width="1.2"></circle><text class="trivial-center" x="50" y="50" text-anchor="middle" dominant-baseline="middle">Profil</text></svg></div><div class="discipline-progress-list">${legend}</div></div>
+  </section>`;
+}
 function renderLearn() {
-  const groups = treeGroups();
-  const groupId = treeActiveGroupId();
+  const disciplineId = activeDisciplineId();
+  const discipline = disciplineById(disciplineId);
+  const groups = treeGroups(disciplineId);
+  if (!groups.length) {
+    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>Choisis une discipline</h1><p class="tree-subtitle">Histoire, art, cinéma, sciences, économie ou géographie.</p></div></header>
+      ${disciplineSelectorMarkup(disciplineId)}
+      ${disciplineEmptyMarkup(discipline)}`);
+    $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
+    document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
+    return;
+  }
+  const groupId = treeActiveGroupId(disciplineId);
   const group = groups.find(item => item.id === groupId) || groups[0] || {};
-  const worlds = treeWorldsForGroup(groupId);
-  const world = treeActiveWorld(groupId);
+  const worlds = treeWorldsForGroup(groupId, disciplineId);
+  const world = treeActiveWorld(groupId, disciplineId);
   const lessons = treeLessonsForWorld(world.id);
   const shownLessons = filterLessons(lessons);
-  const groupDone = treeDoneCountForGroup(groupId);
-  const groupTotal = treeLessonCountForGroup(groupId);
+  const groupDone = treeDoneCountForGroup(groupId, disciplineId);
+  const groupTotal = treeLessonCountForGroup(groupId, disciplineId);
   const worldDone = treeDoneCountForWorld(world.id);
   const worldProgress = percent(worldDone, lessons.length);
   renderShell(`
-    <header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>Arborescence</h1><p class="tree-subtitle">Période → peuple / civilisation / thème → cours → express, complet, quiz.</p></div></header>
+    <header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>Choisis une discipline</h1><p class="tree-subtitle">Tu choisis d’abord le domaine, puis les chapitres disponibles.</p></div></header>
+    ${disciplineSelectorMarkup(disciplineId)}
     <section class="tree-overview card">
-      <div><span class="card-label">Organisation</span><h2>${escapeHtml(group.title || "Période")}</h2><p>${escapeHtml(group.description || "Choisis une période puis un thème pour ne pas mélanger tous les cours.")}</p></div>
+      <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>${escapeHtml(group.title || "Période")}</h2><p>${escapeHtml(group.description || "Choisis une période puis un thème pour ne pas mélanger tous les cours.")}</p></div>
       <div class="tree-overview-stats"><div><b>${groupDone}/${groupTotal}</b><span>cours terminés</span></div><div><b>${worldDone}/${lessons.length}</b><span>${escapeHtml(world.title || "thème")}</span></div><div><b>${worldProgress}%</b><span>progression thème</span></div></div>
     </section>
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">1 · Grandes périodes</span><h2>Choisis la période historique</h2></div><small>${groups.length} périodes</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === groupId)).join("")}</div></section>
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">1 · Grandes périodes</span><h2>Choisis la période</h2></div><small>${groups.length} périodes</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === groupId, disciplineId)).join("")}</div></section>
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">2 · Peuples, civilisations, thèmes</span><h2>${escapeHtml(group.title || "Parcours")}</h2></div><small>${worlds.length} thèmes</small></div><div class="tree-grid themes-grid">${worlds.map(item => treeWorldCard(item, item.id === world.id)).join("")}</div></section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Sous-chapitres</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Change de thème : les autres cours sont encore en reprise."}</p><button data-learn-filter="all">Voir tous les cours disponibles</button></div>`}</div></section>`);
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Change de thème : les autres cours sont encore en reprise."}</p><button data-learn-filter="all">Voir tous les cours disponibles</button></div>`}</div></section>`);
   $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
+  document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
   document.querySelectorAll("[data-tree-group]").forEach(card => {
     const open = () => {
       const nextGroup = card.dataset.treeGroup;
-      const firstWorld = treeWorldsForGroup(nextGroup)[0];
-      setState({ currentGroup: nextGroup, currentWorld: firstWorld?.id || state.currentWorld, learnFilter: "all", learnSearch: "" });
+      const firstWorld = treeWorldsForGroup(nextGroup, disciplineId)[0];
+      setState({ currentDiscipline: disciplineId, currentGroup: nextGroup, currentWorld: firstWorld?.id || state.currentWorld, learnFilter: "all", learnSearch: "" });
     };
     card.addEventListener("click", open);
     card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
   });
   document.querySelectorAll("[data-tree-world]").forEach(card => {
-    const open = () => setState({ currentGroup: groupId, currentWorld: card.dataset.treeWorld, learnFilter: "all", learnSearch: "" });
+    const open = () => setState({ currentDiscipline: disciplineId, currentGroup: groupId, currentWorld: card.dataset.treeWorld, learnFilter: "all", learnSearch: "" });
     card.addEventListener("click", open);
     card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
   });
@@ -8009,8 +8127,8 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Ce qu’il faut retenir", text: "Étudier la fondation de Rome, ce n’est pas demander si la louve a vraiment existé. C’est comprendre comment une communauté devenue puissante relit ses origines pour expliquer son identité, ses institutions et sa vocation à intégrer puis dominer." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Fondation légendaire : récit d’origine qui donne du sens politique à une communauté, même quand il ne correspond pas directement aux faits." },
-      { title: "Méthode", text: "On croise les textes tardifs avec l’archéologie : aucun type de source ne suffit seul." },
+      { title: "Repère", text: "Fondation légendaire : récit d’origine qui donne du sens politique à une communauté, même quand il ne correspond pas directement aux faits." },
+      { title: "Comment le lire", text: "On croise les textes tardifs avec l’archéologie : aucun type de source ne suffit seul." },
       { title: "Erreur fréquente", text: "Dire seulement “Rome a été fondée par Romulus” revient à confondre mémoire civique et histoire des débuts urbains." }
     ],
     quiz: [
@@ -8033,7 +8151,7 @@ Object.assign(READY_LESSON_PACKS, {
     ],
     takeaways: [
       { label: "Idée forte", text: "La conquête de l’Italie repose sur un mélange de guerre, alliances, colonies et statuts juridiques." },
-      { label: "Méthode", text: "Il faut regarder comment Rome traite différemment les vaincus : certains deviennent citoyens, alliés ou communautés liées par traité." },
+      { label: "Repère", text: "Il faut regarder comment Rome traite différemment les vaincus : certains deviennent citoyens, alliés ou communautés liées par traité." },
       { label: "Conséquence", text: "Cette intégration donne à Rome des soldats, des ressources et une profondeur stratégique." }
     ],
     express: [
@@ -8049,7 +8167,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Préparer l’empire", text: "La domination de l’Italie donne à Rome une base humaine et matérielle immense. Ce n’est pas encore l’empire, mais c’est la condition de l’expansion méditerranéenne : sans l’Italie mobilisée, Rome ne résisterait pas aux guerres longues." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Allié italien : communauté liée à Rome par des obligations, notamment militaires, sans être nécessairement composée de citoyens romains complets." },
+      { title: "Repère", text: "Allié italien : communauté liée à Rome par des obligations, notamment militaires, sans être nécessairement composée de citoyens romains complets." },
       { title: "Nuance", text: "L’intégration romaine n’est pas égalitaire : elle donne des avantages à certains groupes et impose des contraintes fortes à d’autres." },
       { title: "Erreur fréquente", text: "Raconter seulement des batailles : la domination romaine dépend aussi du droit, des statuts, des routes, des colonies et de la mobilisation." }
     ],
@@ -8089,7 +8207,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Une victoire qui change Rome", text: "Les guerres puniques donnent à Rome des provinces, des tributs, des terres, des esclaves et un prestige immense. Mais elles renforcent aussi les écarts sociaux et le pouvoir des généraux, préparant les tensions de la fin de la République." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Punique vient de Punicus, terme latin lié aux Phéniciens ; Carthage est une puissance issue de ce monde méditerranéen." },
+      { title: "Repère", text: "Punique vient de Punicus, terme latin lié aux Phéniciens ; Carthage est une puissance issue de ce monde méditerranéen." },
       { title: "Nuance", text: "Cannes est une victoire éclatante d’Hannibal, mais une grande victoire tactique ne suffit pas toujours à gagner une guerre longue." },
       { title: "Erreur fréquente", text: "Transformer les guerres puniques en duel de héros entre Hannibal et Rome, en oubliant mer, ressources, alliances et provinces." }
     ],
@@ -8129,7 +8247,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. César dans une crise déjà avancée", text: "César franchit le Rubicon en 49 av. J.-C. et ouvre une nouvelle guerre civile. Il accélère la fin de la République, mais il n’en est pas la seule cause. Son ascension est possible parce que les équilibres anciens sont déjà brisés." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Guerre civile : conflit armé entre membres d’une même communauté politique, ici des Romains contre des Romains." },
+      { title: "Repère", text: "Guerre civile : conflit armé entre membres d’une même communauté politique, ici des Romains contre des Romains." },
       { title: "Nuance", text: "La République garde longtemps ses mots et ses magistratures, mais les pratiques politiques changent en profondeur." },
       { title: "Erreur fréquente", text: "Réduire la crise à une lutte de personnalités : les structures sociales et militaires comptent autant que les ambitions individuelles." }
     ],
@@ -8169,7 +8287,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Une transformation de l’Empire", text: "La christianisation change les monuments, les calendriers, les lois, les formes de charité, les conflits et la légitimité politique. Elle ne fait pas disparaître immédiatement l’Empire romain : elle participe à sa transformation tardive." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Concile : assemblée d’évêques réunie pour trancher des questions de doctrine, de discipline ou d’organisation de l’Église." },
+      { title: "Repère", text: "Concile : assemblée d’évêques réunie pour trancher des questions de doctrine, de discipline ou d’organisation de l’Église." },
       { title: "Nuance", text: "Le mot paganisme regroupe des cultes très variés ; il ne désigne pas une religion unique comparable à une Église centralisée." },
       { title: "Erreur fréquente", text: "Dire “Constantin convertit l’Empire” est trop rapide : il légalise, favorise et politise une évolution plus longue." }
     ],
@@ -8219,7 +8337,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Une mémoire durable", text: "L’idée des Deux Terres reste centrale pendant toute l’histoire pharaonique. Même des siècles plus tard, le pharaon est présenté comme celui qui tient ensemble la Haute et la Basse-Égypte. Le début du royaume devient ainsi une référence politique permanente." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Deux Terres : expression qui désigne la Haute et la Basse-Égypte, dont l’union symbolise l’autorité du pharaon." },
+      { title: "Repère", text: "Deux Terres : expression qui désigne la Haute et la Basse-Égypte, dont l’union symbolise l’autorité du pharaon." },
       { title: "Source à manier", text: "Une palette cérémonielle renseigne sur la mise en scène du pouvoir, mais pas directement sur tous les détails de l’événement représenté." },
       { title: "Erreur fréquente", text: "Croire qu’un seul roi fonde l’Égypte d’un geste simple. L’unification est aussi une construction administrative, religieuse et mémorielle." }
     ],
@@ -8259,7 +8377,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Des monuments comme langage politique", text: "Abou Simbel, Pi-Ramsès et les reliefs royaux ne servent pas seulement à décorer. Ils rendent le pouvoir visible, rappellent la protection divine du roi et fixent dans la pierre la version officielle de son règne." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Propagande royale : mise en forme officielle du pouvoir, destinée à montrer le roi comme vainqueur, protecteur et choisi par les dieux." },
+      { title: "Repère", text: "Propagande royale : mise en forme officielle du pouvoir, destinée à montrer le roi comme vainqueur, protecteur et choisi par les dieux." },
       { title: "Nuance", text: "Un récit royal peut contenir des faits, mais il sélectionne et organise ces faits pour produire une image avantageuse du souverain." },
       { title: "Erreur fréquente", text: "Raconter Qadesh comme une victoire nette de Ramsès II. L’intérêt historique est justement l’écart entre bataille, diplomatie et mémoire officielle." }
     ],
@@ -8299,7 +8417,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Une puissance connectée", text: "Dire que l’Égypte est connectée ne diminue pas son originalité. Au contraire, cela explique mieux sa durée : elle protège son cœur nilotique tout en utilisant des réseaux extérieurs pour obtenir ressources, prestige, alliés et informations." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Levant : région de la Méditerranée orientale, entre Égypte, Anatolie, Syrie-Palestine et grands royaumes du Proche-Orient." },
+      { title: "Repère", text: "Levant : région de la Méditerranée orientale, entre Égypte, Anatolie, Syrie-Palestine et grands royaumes du Proche-Orient." },
       { title: "Nuance", text: "Un contact peut être commercial, militaire, diplomatique, religieux ou artistique ; il ne signifie pas toujours domination dans un seul sens." },
       { title: "Erreur fréquente", text: "Imaginer une Égypte figée derrière le désert. Les sources montrent un royaume qui surveille, échange, emprunte, conquiert et négocie." }
     ],
@@ -8349,8 +8467,8 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Ce qu’il faut retenir", text: "La Crète minoenne est essentielle parce qu’elle montre que le monde grec a des racines égéennes plus anciennes et variées. Avant la polis, il existe déjà des palais, des réseaux, des techniques, des cultes et des sociétés hiérarchisées." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Linéaire A : écriture utilisée en Crète minoenne, encore non déchiffrée de manière satisfaisante." },
-      { title: "Méthode", text: "Quand les textes manquent, on raisonne avec l’architecture, les objets, les images et les traces de stockage." },
+      { title: "Repère", text: "Linéaire A : écriture utilisée en Crète minoenne, encore non déchiffrée de manière satisfaisante." },
+      { title: "Comment le lire", text: "Quand les textes manquent, on raisonne avec l’architecture, les objets, les images et les traces de stockage." },
       { title: "Erreur fréquente", text: "Projeter directement Athènes, la démocratie ou la philosophie classique sur la Crète minoenne." }
     ],
     quiz: [
@@ -8389,7 +8507,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Ce qu’il faut retenir", text: "Les Mycéniens sont importants parce qu’ils relient la Grèce à l’âge du Bronze palatial. Ils donnent un arrière-plan aux récits héroïques, mais leur histoire concrète se comprend surtout par palais, tablettes, tombes et objets." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Linéaire B : écriture administrative déchiffrée, utilisée dans des palais mycéniens et notant une forme ancienne de grec." },
+      { title: "Repère", text: "Linéaire B : écriture administrative déchiffrée, utilisée dans des palais mycéniens et notant une forme ancienne de grec." },
       { title: "Nuance", text: "Un poème peut garder une mémoire du passé sans être un document administratif contemporain." },
       { title: "Erreur fréquente", text: "Réduire Mycènes à la guerre de Troie et oublier les scribes, les terres, les stocks et les dépendants." }
     ],
@@ -8429,8 +8547,8 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Ce qu’il faut retenir", text: "La crise de -1200 est utile pour comprendre le passage entre âge du Bronze et monde grec archaïque. Elle montre qu’une civilisation peut s’effondrer comme système sans que les populations, les cultures et les mémoires disparaissent totalement." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Système palatial : organisation centrée sur un palais qui administre ressources, productions, stocks, dépendants et échanges." },
-      { title: "Méthode", text: "Pour expliquer une crise ancienne, on compare destructions, abandons, textes, climat possible, objets et changements d’habitat." },
+      { title: "Repère", text: "Système palatial : organisation centrée sur un palais qui administre ressources, productions, stocks, dépendants et échanges." },
+      { title: "Comment le lire", text: "Pour expliquer une crise ancienne, on compare destructions, abandons, textes, climat possible, objets et changements d’habitat." },
       { title: "Erreur fréquente", text: "Dire “les peuples de la mer ont tout détruit” comme si une seule formule expliquait une crise très large." }
     ],
     quiz: [
@@ -8481,8 +8599,8 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. L’irruption populaire", text: "La prise de la Bastille montre que la rue parisienne peut peser sur les événements. Dans les campagnes, la peur des complots aristocratiques et les violences contre les droits seigneuriaux accélèrent la décision d’abolir les privilèges. La Révolution devient à la fois politique, sociale et populaire." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Tiers état : ordre qui regroupe tous ceux qui ne sont ni nobles ni membres du clergé, donc l’immense majorité de la population." },
-      { title: "Méthode", text: "Pour comprendre 1789, il faut relier finances publiques, institutions, hiérarchies sociales et événements de rue." },
+      { title: "Repère", text: "Tiers état : ordre qui regroupe tous ceux qui ne sont ni nobles ni membres du clergé, donc l’immense majorité de la population." },
+      { title: "Comment le lire", text: "Pour comprendre 1789, il faut relier finances publiques, institutions, hiérarchies sociales et événements de rue." },
       { title: "Erreur fréquente", text: "Résumer 1789 à la Bastille. Le 14 juillet est majeur, mais il vient après une crise politique déjà ouverte." }
     ],
     quiz: [
@@ -8520,7 +8638,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Des droits universels, des exclusions réelles", text: "Le langage des droits est immense, mais son application est limitée. Le suffrage n’est pas universel, les femmes sont exclues du vote, l’esclavage colonial n’est pas aboli en 1789. Cette tension nourrit des débats et des luttes durables." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Souveraineté nationale : principe selon lequel le pouvoir politique appartient à la nation, représentée par des institutions." },
+      { title: "Repère", text: "Souveraineté nationale : principe selon lequel le pouvoir politique appartient à la nation, représentée par des institutions." },
       { title: "Nuance", text: "Un principe proclamé peut devenir une arme politique même lorsqu’il n’est pas encore appliqué partout." },
       { title: "Erreur fréquente", text: "Dire que 1789 installe immédiatement la démocratie moderne complète. La rupture est forte, mais les exclusions restent nombreuses." }
     ],
@@ -8559,7 +8677,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Violence et héritage difficile", text: "La Terreur laisse une mémoire lourde : répression, guillotine, guerres civiles, suspects. Mais elle ne doit pas être séparée du contexte de guerre et de peur politique. Comprendre n’est pas justifier : c’est expliquer les mécanismes de radicalisation." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Salut public : idée selon laquelle des mesures extraordinaires sont justifiées pour sauver la République en danger." },
+      { title: "Repère", text: "Salut public : idée selon laquelle des mesures extraordinaires sont justifiées pour sauver la République en danger." },
       { title: "Nuance", text: "La Terreur n’est pas un bloc simple : elle varie selon les lieux, les moments et les acteurs." },
       { title: "Erreur fréquente", text: "Commencer et finir la Révolution par la guillotine. Cela écrase les enjeux de souveraineté, de droits et de guerre." }
     ],
@@ -8598,7 +8716,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. L’Europe napoléonienne", text: "Les conquêtes exportent des réformes et bousculent les anciens pouvoirs. Mais la domination française entraîne impôts, conscription, occupations et résistances nationales. L’Empire vit de la guerre, et cette dynamique finit par l’épuiser." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Plébiscite : vote demandé au peuple pour approuver une décision ou un pouvoir, souvent encadré par le régime." },
+      { title: "Repère", text: "Plébiscite : vote demandé au peuple pour approuver une décision ou un pouvoir, souvent encadré par le régime." },
       { title: "Nuance", text: "Napoléon peut moderniser l’État tout en restreignant les libertés politiques : les deux ne s’annulent pas." },
       { title: "Erreur fréquente", text: "Faire de Napoléon seulement un héros ou seulement un dictateur. Historiquement, son régime combine stabilisation, autorité et guerre." }
     ],
@@ -8637,7 +8755,7 @@ Object.assign(READY_LESSON_PACKS, {
       { title: "5. Une Europe instable", text: "Les révolutions de 1830 puis 1848 montrent que la restauration ne ferme pas la période révolutionnaire. L’Europe du XIXe siècle se construit dans un conflit durable entre ordre monarchique, droits politiques et aspirations nationales." }
     ],
     deeper: [
-      { title: "Mot utile", text: "Équilibre européen : système diplomatique visant à empêcher qu’une seule puissance domine durablement le continent." },
+      { title: "Repère", text: "Équilibre européen : système diplomatique visant à empêcher qu’une seule puissance domine durablement le continent." },
       { title: "Nuance", text: "Restaurer un roi ne veut pas dire restaurer exactement l’Ancien Régime : les sociétés ont changé." },
       { title: "Erreur fréquente", text: "S’arrêter à Waterloo. La vraie question est ce que l’Europe fait ensuite de l’héritage révolutionnaire et impérial." }
     ],
@@ -8731,6 +8849,7 @@ function applyVisibleStateGuard({ save = true } = {}) {
   const cleanStreak = clampInt(state.streak, 0, 9999);
   if (cleanStreak !== state.streak) { state.streak = cleanStreak; changed = true; }
   if (!Number.isFinite(Number(state.discoverOffset))) { state.discoverOffset = 0; changed = true; }
+  if (!DISCIPLINES.some(item => item.id === state.currentDiscipline)) { state.currentDiscipline = "history"; changed = true; }
 
   if (state.currentLessonId && !curatedIds.has(state.currentLessonId)) {
     state.currentLessonId = null;
@@ -8753,5 +8872,148 @@ function applyVisibleStateGuard({ save = true } = {}) {
   if (!["all", "ready", "done", "todo"].includes(state.learnFilter)) { state.learnFilter = "all"; changed = true; }
   if (changed && save) saveState();
 }
+
+/* =========================================================
+   Beta 104 — disciplines + cours plein écran + contenus longform de départ
+   ========================================================= */
+const HISTODAILY_LONGFORM_OVERRIDES = {
+  "prehistory-hominids": {
+    express: [
+      "Les premiers hominines ne forment pas une ligne droite qui mènerait simplement à Homo sapiens. Pendant des millions d’années, plusieurs espèces proches de la lignée humaine apparaissent, coexistent parfois, puis disparaissent.",
+      "La bipédie est un changement majeur, mais elle ne signifie pas immédiatement langage, feu, outils complexes ou vie sociale moderne. L’évolution avance par combinaisons lentes : corps, alimentation, environnement, outils et coopération.",
+      "À retenir : l’histoire humaine ressemble à un buisson de lignées, pas à une échelle. Le bon réflexe est de parler d’adaptations et de traces, pas d’un progrès automatique vers nous."
+    ],
+    complete: [
+      { title: "1. Sortir de l’image du singe qui devient homme", text: "On a longtemps représenté l’évolution humaine comme une frise très simple : un singe courbé, puis un être de plus en plus droit, jusqu’à l’humain moderne. Cette image est pratique, mais elle raconte mal l’histoire. Les humains actuels ne descendent pas des singes actuels : ils partagent avec eux des ancêtres plus anciens. Surtout, la lignée humaine n’est pas une file indienne où chaque espèce remplace proprement la précédente.\n\nLes paléoanthropologues travaillent plutôt sur un ensemble de branches. Certaines lignées durent longtemps, d’autres disparaissent, certaines se chevauchent dans le temps. Il faut donc abandonner l’idée d’un escalier régulier. La préhistoire ancienne est une histoire d’essais évolutifs, d’adaptations locales et de traces fragmentaires." },
+      { title: "2. La bipédie, un changement majeur mais pas magique", text: "La bipédie compte beaucoup parce qu’elle modifie le rapport au corps et au milieu. Marcher sur deux jambes libère partiellement les mains, change la manière de se déplacer, permet de voir plus loin dans certains environnements et transforme le bassin, les jambes et la colonne vertébrale. Mais il ne faut pas lui faire dire trop de choses.\n\nÊtre bipède ne veut pas dire parler comme un humain moderne, fabriquer des outils complexes ou maîtriser le feu. Plusieurs caractères évoluent à des rythmes différents. Une espèce peut marcher sur deux jambes sans avoir un cerveau comparable au nôtre. C’est justement cette dissociation qui rend l’évolution humaine intéressante : il n’y a pas un bouton unique appelé “devenir humain”." },
+      { title: "3. Des espèces adaptées à des milieux différents", text: "Les premiers hominines vivent dans des environnements variés : zones boisées, savanes plus ouvertes, rives de lacs, régions où les ressources changent selon les saisons. Leur corps, leurs dents, leurs déplacements et leur alimentation sont liés à ces milieux. On ne doit donc pas les juger comme des versions ratées de nous-mêmes.\n\nUne espèce qui disparaît n’est pas forcément une impasse ridicule. Elle a pu être très bien adaptée pendant longtemps, puis être fragilisée par des changements climatiques, des concurrences, des migrations ou des transformations de son environnement. La disparition fait partie de l’histoire du vivant." },
+      { title: "4. Comment sait-on tout cela ?", text: "Pour ces périodes très anciennes, il n’existe évidemment aucun texte. Les chercheurs s’appuient sur des ossements, des dents, des empreintes, des outils parfois associés, des couches géologiques et des datations. Un fragment de mâchoire, une forme de bassin ou une trace de pas peuvent donner des informations importantes, mais jamais isolément.\n\nC’est pour cela que les scénarios changent avec les découvertes. Une nouvelle datation, un fossile trouvé dans une région inattendue ou une meilleure analyse d’un os déjà connu peuvent déplacer une hypothèse. Le cours ne doit donc pas donner l’impression d’un récit parfaitement fermé : il faut apprendre à penser avec des preuves incomplètes." },
+      { title: "5. Plusieurs humanités avant la nôtre", text: "La préhistoire récente confirme cette idée de pluralité. Homo sapiens a coexisté avec d’autres humains, comme Néandertal et Denisova. Ces groupes ne sont pas seulement des silhouettes de musée : ils avaient leurs propres adaptations, leurs techniques, leurs territoires et parfois des contacts avec Sapiens.\n\nCette coexistence oblige à parler de “plusieurs humanités”. Notre espèce n’apparaît pas dans un monde vide. Elle arrive dans un paysage déjà occupé par d’autres formes humaines. C’est une idée importante, parce qu’elle empêche de raconter l’histoire comme si tout avait toujours été destiné à nous produire." },
+      { title: "6. Ce que cette leçon change", text: "Le point essentiel n’est pas de retenir une liste de noms. Il faut retenir une manière de penser : l’évolution humaine est ramifiée, lente, inégale et reconstruite à partir de traces. Les premiers hominines ne sont pas des brouillons d’humains modernes, mais des espèces qui ont vécu dans des conditions précises.\n\nQuand tu verras ensuite Homo habilis, Homo erectus, Néandertal ou Sapiens, garde ce cadre en tête. Chaque espèce doit être comprise dans son environnement, avec ses capacités propres, ses limites et les preuves disponibles." }
+    ],
+    deeper: [],
+    takeaways: [
+      { label: "Idée forte", text: "L’évolution humaine ressemble à un buisson de lignées, pas à une progression droite vers Sapiens." },
+      { label: "Nuance", text: "La bipédie est majeure, mais elle ne déclenche pas automatiquement langage, feu ou outils complexes." },
+      { label: "Preuves", text: "On travaille avec des os, dents, empreintes, outils associés et couches géologiques." },
+      { label: "À éviter", text: "Présenter les espèces disparues comme des échecs ou des humains incomplets." }
+    ]
+  },
+  "prehistory-habilis": {
+    express: [
+      "Homo habilis vit surtout en Afrique de l’Est, entre environ 2,4 et 1,4 million d’années. Son nom signifie “homme habile”, car on l’a longtemps associé aux premiers outils de pierre.",
+      "Ces outils sont simples : des galets taillés et des éclats coupants. Ils servent à découper, casser des os, racler ou travailler des matières. Même rudimentaires, ils marquent une étape majeure : certains hominines commencent à transformer volontairement leur environnement.",
+      "Il faut rester prudent : Homo habilis n’a peut-être pas inventé les outils seul. Mais cette période montre que la technique devient un vrai avantage pour survivre."
+    ],
+    complete: [
+      { title: "1. Un nom célèbre, mais à manier avec prudence", text: "Homo habilis vit surtout en Afrique de l’Est il y a environ 2,4 à 1,4 million d’années. Son nom signifie “homme habile”, parce qu’on l’a longtemps associé aux premiers outils de pierre. Ce nom a beaucoup marqué les récits sur la Préhistoire : il donne l’impression d’un moment clair où un ancêtre humain aurait soudain compris comment fabriquer un outil.\n\nMais cette image est trop simple. Les plus anciens outils connus peuvent être plus anciens que les fossiles attribués à Homo habilis, et plusieurs espèces d’hominines ont pu fabriquer ou utiliser des objets transformés. Il ne faut donc pas chercher un inventeur unique. Ce qui compte, c’est de comprendre qu’à cette période la technique devient de plus en plus importante dans la survie." },
+      { title: "2. Des outils simples en apparence", text: "Les outils associés à cette période sont souvent appelés oldowayens. Ils peuvent sembler rudimentaires : des galets frappés pour obtenir un bord tranchant, des éclats de pierre coupants, des blocs servant à casser ou découper. Pourtant, leur simplicité apparente est trompeuse. Pour produire un éclat utilisable, il faut choisir une matière qui se fracture correctement, tenir compte de la forme du galet, frapper au bon endroit et obtenir un tranchant.\n\nL’objet final n’est donc qu’une partie de l’histoire. Ce qui intéresse les archéologues, c’est aussi la suite des gestes : choisir, frapper, détacher, utiliser, parfois transporter. Cette suite s’appelle une chaîne opératoire. Le terme n’a pas besoin d’être appris comme une définition scolaire : il désigne simplement le fait qu’un outil est le résultat d’une série d’actions organisées." },
+      { title: "3. À quoi servaient ces outils ?", text: "Ces outils ont probablement servi à découper de la viande, casser des os pour atteindre la moelle, racler des peaux ou travailler certains végétaux. Ils ne prouvent pas qu’Homo habilis était un grand chasseur organisé. Il pouvait aussi récupérer des carcasses laissées par de grands prédateurs, puis utiliser les éclats pour accéder rapidement à des ressources précieuses.\n\nC’est un point important : l’outil change la place de l’hominine dans son environnement. Avec une main nue ou des dents, certaines ressources restent difficiles à exploiter. Avec un éclat coupant ou une pierre de percussion, il devient possible d’ouvrir, de découper, de briser, de transformer. L’outil n’est pas seulement un objet : c’est une nouvelle manière d’agir sur le monde." },
+      { title: "4. Lire l’intelligence dans la pierre", text: "Un galet taillé ne permet pas de connaître directement les pensées d’Homo habilis. Mais il montre qu’un geste peut être anticipé : on frappe maintenant pour obtenir un tranchant qui servira ensuite. Cela suppose de l’observation, une mémoire des gestes efficaces, peut-être une forme d’apprentissage entre individus et une capacité à répéter un résultat utile.\n\nIl faut rester mesuré. Ces outils ne prouvent pas une intelligence moderne, un langage élaboré ou une culture comparable à celle de Sapiens. Ils montrent plutôt une première culture technique : des gestes simples, mais répétés, transmis et efficaces. C’est moins spectaculaire qu’une invention soudaine, mais historiquement beaucoup plus intéressant." },
+      { title: "5. Un monde avec plusieurs hominines", text: "Homo habilis ne vit pas dans une histoire où une seule espèce avance tranquillement vers nous. Plusieurs lignées humaines ou préhumaines coexistent, et les classifications restent discutées. Certains fossiles sont difficiles à attribuer, certaines découvertes déplacent les dates, et les outils ne sont pas toujours retrouvés directement avec l’espèce qui les a fabriqués.\n\nC’est pour cela qu’il faut éviter les phrases trop nettes du type : “Homo habilis invente les outils.” La réalité est plus prudente : Homo habilis appartient à un moment où des hominines fabriquent et utilisent des outils de pierre de manière régulière. Cette nuance est essentielle, parce qu’elle montre comment on raisonne en Préhistoire avec des traces incomplètes." },
+      { title: "6. Ce qu’il faut vraiment retenir", text: "Homo habilis est important parce qu’il appartient au moment où la technique devient une stratégie de survie. Les outils permettent d’accéder à de nouvelles ressources, de modifier les gestes du quotidien et peut-être de transmettre un savoir-faire. Même très simples, ils ouvrent une voie immense : plus tard viendront des bifaces, des lames, des pointes, des aiguilles, puis des techniques de plus en plus complexes.\n\nLa grande idée n’est donc pas “un homme malin invente le caillou coupant”. La grande idée, c’est qu’un objet fabriqué garde la trace d’un comportement : un besoin, un geste, un apprentissage et une relation nouvelle avec l’environnement." }
+    ],
+    deeper: [],
+    takeaways: [
+      { label: "Repère", text: "Homo habilis vit surtout en Afrique de l’Est entre environ 2,4 et 1,4 million d’années." },
+      { label: "Idée forte", text: "Un outil est une suite de gestes organisés, pas seulement un caillou coupant." },
+      { label: "Usages", text: "Les éclats servent à découper, casser, racler et accéder à de nouvelles ressources." },
+      { label: "Nuance", text: "Il ne faut pas dire trop vite qu’Homo habilis a inventé les outils seul." },
+      { label: "À retenir", text: "La technique devient un avantage majeur dans l’évolution humaine." }
+    ]
+  },
+  "prehistory-fire": {
+    express: [
+      "La maîtrise du feu ne veut pas dire qu’un humain “découvre” le feu un jour précis. Le vrai basculement est d’apprendre à l’utiliser régulièrement : l’entretenir, le contrôler, le transporter parfois et organiser des activités autour du foyer.",
+      "Les preuves sont délicates : charbons, sols rougis, os brûlés, pierres chauffées. Les archéologues doivent distinguer un incendie naturel d’un foyer réellement entretenu par des humains.",
+      "Le feu change le quotidien : cuisson, chaleur, lumière, protection, vie sociale du soir et transformation des matériaux. C’est une maîtrise progressive, pas une invention unique et simple."
+    ],
+    complete: [
+      { title: "1. Voir le feu n’est pas le maîtriser", text: "Les humains ont forcément rencontré des feux naturels très tôt : incendies provoqués par la foudre, braises après un feu de brousse, branches brûlantes dans le paysage. Mais voir le feu ne signifie pas le maîtriser. La vraie question historique n’est donc pas “qui a découvert le feu ?”, mais à partir de quand des groupes humains savent-ils l’utiliser de manière régulière.\n\nEntre ramasser une branche enflammée et entretenir un foyer stable, il existe un grand écart technique. Il faut garder des braises, ajouter du combustible, contrôler l’espace, éviter que le feu s’éteigne ou devienne dangereux. C’est cette capacité à faire du feu un outil du quotidien qui transforme la vie humaine." },
+      { title: "2. Des traces difficiles à interpréter", text: "Étudier le feu ancien est compliqué. Les chercheurs cherchent des charbons, des os brûlés, des pierres chauffées, des foyers, des sols rougis par la chaleur. Mais un incendie naturel peut aussi produire du brûlé. Une trace noire ne suffit donc pas à prouver un foyer humain.\n\nCe qui compte, c’est le contexte : les traces sont-elles répétées ? Sont-elles situées dans un espace d’habitat ? Sont-elles associées à des outils, des os travaillés ou des activités humaines ? Plus les indices se croisent, plus l’hypothèse d’une maîtrise régulière devient solide." },
+      { title: "3. Manger, digérer, se protéger", text: "Le feu modifie profondément l’alimentation. La cuisson attendrit certains aliments, rend certaines ressources plus digestes, change les goûts et peut réduire certains risques sanitaires. Elle permet aussi de traiter des végétaux, de cuire de la viande ou de rendre exploitables des aliments qui seraient difficiles à consommer crus.\n\nLe feu protège également du froid et peut éloigner certains animaux. Dans des milieux plus rudes ou lors de nuits froides, cette chaleur n’est pas un détail : elle peut rendre possible l’occupation de lieux et de saisons auparavant plus difficiles." },
+      { title: "4. Lumière, temps social et techniques", text: "Le feu prolonge la journée. Autour d’un foyer, les activités peuvent continuer après la tombée de la nuit : préparer des aliments, entretenir des outils, surveiller le groupe, échanger. On ne peut pas prouver facilement les conversations ou les récits, mais le foyer crée un espace de rassemblement.\n\nIl permet aussi de transformer des matériaux. Chauffer une pierre, durcir une pointe en bois, travailler certaines matières : le feu devient peu à peu un outil technique. Il ne sert pas seulement à se réchauffer ; il change la manière de fabriquer, de vivre et d’occuper l’espace." },
+      { title: "5. Une progression inégale", text: "Il ne faut pas imaginer une invention mondiale et immédiate. La maîtrise du feu est probablement progressive, variable selon les régions et les périodes. Certains groupes ont pu l’utiliser occasionnellement, d’autres de manière plus régulière. Les preuves ne sont pas toujours conservées, et leur interprétation reste discutée pour les périodes les plus anciennes.\n\nCette prudence est importante : elle évite le récit trop simple où “l’homme découvre le feu” comme dans une scène de film. L’histoire réelle est faite d’usages, d’apprentissages, de pertes, de reprises et d’adaptations." },
+      { title: "6. Ce qu’il faut retenir", text: "La maîtrise du feu est une révolution parce qu’elle touche plusieurs dimensions à la fois : alimentation, protection, chaleur, lumière, sociabilité et technique. C’est l’un de ces changements qui ne se résume pas à un objet, mais transforme tout un mode de vie.\n\nLa bonne idée à garder est donc simple : le feu devient important quand il devient contrôlé et régulier. Ce n’est pas seulement une flamme ; c’est un nouvel outil pour habiter le monde." }
+    ],
+    deeper: [],
+    takeaways: [
+      { label: "Idée forte", text: "Le sujet n’est pas la découverte du feu, mais sa maîtrise régulière." },
+      { label: "Preuves", text: "Charbons, foyers, sols rougis, os brûlés et pierres chauffées doivent être interprétés ensemble." },
+      { label: "Effets", text: "Le feu change alimentation, chaleur, protection, lumière et sociabilité." },
+      { label: "Nuance", text: "La maîtrise est progressive et inégale selon les lieux." }
+    ]
+  },
+  "prehistory-hunt": {
+    express: [
+      "Les chasseurs-cueilleurs ne vivent pas seulement de chasse spectaculaire. Leur survie repose sur une connaissance fine des saisons, des animaux, des plantes, des points d’eau et des déplacements.",
+      "Ils combinent chasse, pêche, collecte, charognage parfois, fabrication d’outils et coopération. La mobilité n’est pas de l’errance : c’est une stratégie pour suivre les ressources.",
+      "À retenir : ces sociétés ne sont pas “primitives”. Elles ont des savoirs précis, adaptés à leur environnement, même si elles ne construisent pas encore de villes ni d’États."
+    ],
+    complete: [
+      { title: "1. Une économie de connaissance", text: "On imagine souvent les chasseurs-cueilleurs comme des groupes qui suivent au hasard les animaux. C’est faux. Leur survie dépend d’une connaissance très précise du milieu : saisons, migrations, fruits disponibles, plantes comestibles, points d’eau, pierres utiles, abris possibles, dangers.\n\nCette connaissance n’est pas écrite, mais elle est transmise par l’expérience, l’observation et l’apprentissage. Dans un monde sans agriculture, savoir où et quand trouver une ressource est aussi important que posséder un outil." },
+      { title: "2. Chasser, mais pas seulement", text: "La chasse est importante, surtout dans certaines régions et à certaines périodes, mais elle ne résume pas toute l’alimentation. Les groupes collectent des végétaux, ramassent des fruits, tubercules ou graines, pêchent parfois, exploitent des coquillages, récupèrent des œufs ou utilisent des carcasses.\n\nCette diversité est une force. Elle évite de dépendre d’une seule ressource. Selon les saisons, les groupes peuvent changer de campement, modifier leurs activités ou cibler d’autres aliments." },
+      { title: "3. La mobilité comme stratégie", text: "Être mobile ne signifie pas errer sans but. Les déplacements suivent souvent des logiques connues : retour vers certains lieux, circulation entre zones de chasse, campements temporaires, halte près d’un point d’eau ou d’une source de pierre.\n\nCette mobilité permet d’éviter l’épuisement local des ressources et de s’adapter aux variations du climat. Elle demande aussi une organisation : transporter ce qui est utile, abandonner ce qui ne vaut pas l’effort, savoir quand repartir." },
+      { title: "4. Coopération et techniques", text: "La chasse, la découpe, le transport, la préparation des peaux ou la fabrication des outils supposent des gestes coordonnés. Même sans institutions visibles comme un État ou une ville, ces groupes ont des règles, des apprentissages et des formes d’entraide.\n\nLes outils ne sont pas seulement des armes. Ils servent à couper, racler, percer, préparer, réparer. Une société de chasseurs-cueilleurs est donc aussi une société technique, capable d’adapter ses objets aux ressources disponibles." },
+      { title: "5. Éviter le cliché du “primitif”", text: "Le mot “primitif” donne une image fausse, comme si ces sociétés étaient simples ou inférieures. Elles n’ont pas les mêmes formes d’organisation que les sociétés agricoles, mais elles possèdent des savoirs très élaborés sur leur environnement.\n\nLeur mode de vie peut durer très longtemps parce qu’il est efficace dans certains milieux. Il ne faut donc pas le présenter comme une étape ratée avant les villages. C’est une manière cohérente de vivre avec les ressources disponibles." },
+      { title: "6. Ce qu’il faut retenir", text: "Les chasseurs-cueilleurs vivent d’un équilibre entre mobilité, diversité alimentaire, savoir écologique et coopération. Leur histoire montre que l’intelligence humaine ne se mesure pas seulement aux monuments ou à l’écriture.\n\nAvant l’agriculture, les humains ont déjà transformé leurs milieux, transmis des techniques et organisé leur vie sociale. C’est ce socle qui permet de comprendre la suite du Néolithique." }
+    ],
+    deeper: [],
+    takeaways: [
+      { label: "Idée forte", text: "La chasse-cueillette repose sur une connaissance précise des milieux." },
+      { label: "Nuance", text: "La chasse ne résume pas toute l’alimentation : collecte, pêche et ressources variées comptent aussi." },
+      { label: "Mobilité", text: "Se déplacer est une stratégie organisée, pas une errance." },
+      { label: "À éviter", text: "Décrire ces sociétés comme simples ou inférieures." }
+    ]
+  },
+  "prehistory-agriculture": {
+    express: [
+      "Le Néolithique correspond au développement progressif de l’agriculture, de l’élevage et de villages plus stables. Ce n’est pas un passage immédiat à une vie meilleure, mais une transformation lente des rapports au milieu.",
+      "Cultiver et élever permet de produire davantage, de stocker, de rester plus longtemps au même endroit. Mais cela apporte aussi de nouvelles contraintes : travail régulier, dépendance aux récoltes, maladies, inégalités possibles.",
+      "À retenir : l’agriculture change tout — alimentation, habitat, population, propriété, temps de travail et organisation sociale — mais elle ne remplace pas partout la chasse-cueillette au même rythme."
+    ],
+    complete: [
+      { title: "1. Une transformation, pas un miracle", text: "Le Néolithique est souvent présenté comme une “révolution”, parce que ses conséquences sont immenses. Mais sur le terrain, le changement est progressif. Les humains ne se réveillent pas un matin en décidant d’abandonner la chasse-cueillette. Dans plusieurs régions du monde, des groupes commencent peu à peu à sélectionner des plantes, contrôler des animaux, rester plus longtemps au même endroit et stocker des ressources.\n\nCette transformation ne se produit pas partout en même temps. Le Croissant fertile est un foyer majeur, mais il existe d’autres foyers de domestication. Le rythme dépend des milieux, des espèces disponibles, des contacts et des choix des groupes humains." },
+      { title: "2. Domestiquer les plantes et les animaux", text: "Domestiquer, ce n’est pas seulement utiliser une plante ou capturer un animal. C’est modifier progressivement une espèce par sélection. Les humains gardent les graines les plus utiles, favorisent certaines plantes, contrôlent la reproduction d’animaux plus dociles ou plus rentables.\n\nAvec le temps, les espèces domestiques changent. Les céréales cultivées, les moutons, chèvres, bovins ou porcs ne sont plus exactement leurs formes sauvages. La domestication transforme donc à la fois les sociétés humaines et le vivant qui les entoure." },
+      { title: "3. Villages, stockage et nouvelles contraintes", text: "L’agriculture favorise des habitats plus stables. Les groupes peuvent construire des maisons plus durables, stocker des céréales, protéger des réserves et organiser les travaux selon les saisons. Cela permet parfois une croissance de la population, car les ressources produites sont plus prévisibles.\n\nMais cette stabilité crée aussi des contraintes. Les champs demandent du travail régulier. Les récoltes peuvent échouer. Le stockage attire des vols ou des conflits. La proximité avec les animaux favorise certaines maladies. Il ne faut donc pas raconter l’agriculture comme un progrès simple et confortable." },
+      { title: "4. Des sociétés qui se complexifient", text: "Quand les populations augmentent et que les réserves deviennent importantes, les relations sociales changent. Il peut apparaître des différences de richesse, des tensions autour des terres, des formes de spécialisation du travail et des lieux de pouvoir plus visibles.\n\nCela ne signifie pas que tous les villages deviennent immédiatement des États. Mais le Néolithique prépare des conditions nouvelles : surplus, stockage, sédentarisation relative, échanges, conflits et organisation collective. Ces éléments seront essentiels pour comprendre les premières civilisations." },
+      { title: "5. Une diffusion lente et inégale", text: "L’agriculture se diffuse par migrations, contacts, imitations et adaptations locales. Certains groupes adoptent vite des pratiques agricoles, d’autres conservent longtemps des modes de vie fondés sur la chasse, la pêche ou la collecte. Il peut aussi y avoir des mélanges.\n\nC’est une nuance importante : l’histoire n’avance pas au même rythme partout. Le Néolithique n’est pas une date unique, mais un ensemble de transformations qui touchent les régions à des moments différents." },
+      { title: "6. Ce qu’il faut retenir", text: "Le Néolithique change la relation entre humains et nature. Au lieu de seulement prélever des ressources, certains groupes les produisent, les sélectionnent et les stockent. Cette nouvelle stratégie transforme l’habitat, la démographie, le travail et les rapports sociaux.\n\nLa grande idée n’est pas “l’agriculture est un progrès”. La grande idée est plus intéressante : produire sa nourriture donne de nouvelles possibilités, mais crée aussi de nouvelles dépendances." }
+    ],
+    deeper: [],
+    takeaways: [
+      { label: "Idée forte", text: "Le Néolithique transforme la production de nourriture, l’habitat et l’organisation sociale." },
+      { label: "Nuance", text: "L’agriculture n’est pas un progrès simple : elle apporte aussi contraintes et dépendances." },
+      { label: "Repère", text: "La transformation est progressive et inégale selon les régions." },
+      { label: "Suite", text: "Stockage, villages et surplus préparent les premières civilisations." }
+    ]
+  },
+  "prehistory-sapiens": {
+    express: [
+      "Homo sapiens apparaît en Afrique puis se diffuse progressivement dans plusieurs régions du monde. Il n’arrive pas dans un monde vide : il rencontre parfois d’autres humanités, comme Néandertal ou Denisova.",
+      "Son succès ne tient pas à un seul “super-pouvoir”. Il combine mobilité, adaptation, outils, langage probable, coopération, transmission culturelle et capacité à vivre dans des milieux très différents.",
+      "À retenir : Sapiens n’est pas la fin logique d’une échelle. C’est une espèce humaine parmi d’autres, devenue dominante dans une histoire faite de migrations, contacts et disparitions."
+    ],
+    complete: [
+      { title: "1. Une espèce venue d’Afrique", text: "Homo sapiens apparaît en Afrique avant de se diffuser progressivement hors du continent. Cette origine africaine est importante, parce qu’elle casse les anciens récits qui imaginaient une naissance séparée des humains modernes dans chaque région du monde. Les données fossiles et génétiques montrent plutôt une histoire de départs, de migrations et de mélanges.\n\nCela ne veut pas dire qu’un seul groupe part un jour pour conquérir la planète. Les sorties d’Afrique sont complexes, étalées, parfois suivies d’échecs ou de retours. L’expansion de Sapiens est un processus long, pas une marche militaire." },
+      { title: "2. Un monde déjà habité", text: "Quand Sapiens se déplace, il ne rencontre pas toujours des territoires vides. D’autres humanités existent, notamment Néandertal en Europe et en Asie occidentale, Denisova en Asie, et probablement d’autres groupes encore mal connus. Certaines de ces rencontres laissent des traces génétiques chez les humains actuels.\n\nCette coexistence change le récit. Sapiens n’est pas simplement “l’homme moderne” arrivant après tous les autres. Il est une espèce humaine parmi d’autres, qui finit par devenir dominante dans des conditions historiques et environnementales particulières." },
+      { title: "3. Pourquoi Sapiens réussit-il ?", text: "Il n’y a pas une cause unique. Le succès de Sapiens tient probablement à une combinaison : mobilité, réseaux sociaux, techniques variées, langage élaboré, coopération, capacité d’apprentissage et adaptation à des milieux très différents. Ces éléments se renforcent les uns les autres.\n\nIl faut se méfier des explications trop simples : un cerveau plus gros, une arme meilleure, une supériorité automatique. L’histoire est faite de petits avantages cumulés, de contextes climatiques, de rencontres et de transmissions culturelles." },
+      { title: "4. Techniques, symboles et culture", text: "Sapiens fabrique des outils, travaille des matières variées, se déplace sur de longues distances et développe des formes symboliques : parures, pigments, images, sépultures selon les périodes et les régions. Ces traces ne doivent pas être lues comme une apparition soudaine de “l’esprit moderne”, mais comme des indices d’une culture de plus en plus riche.\n\nLa culture permet de transmettre des solutions sans tout réinventer. Un groupe peut apprendre des gestes, des itinéraires, des récits, des techniques. C’est un avantage immense pour vivre dans des milieux changeants." },
+      { title: "5. Disparitions et métissages", text: "Les autres humanités disparaissent progressivement, mais l’histoire n’est pas seulement celle d’un remplacement brutal. Il y a aussi des contacts et des métissages. Une partie de l’ADN de Néandertal ou de Denisova se retrouve chez certains humains actuels.\n\nCela oblige à nuancer la notion de victoire de Sapiens. Il devient dominant, mais il porte aussi des traces de ces rencontres. L’humanité actuelle est donc liée à une histoire plus large que notre seule espèce prise isolément." },
+      { title: "6. Ce qu’il faut retenir", text: "Homo sapiens est important parce qu’il permet de comprendre migrations, adaptations, culture et coexistence entre humanités. Son histoire n’est pas une conclusion écrite d’avance : c’est le résultat d’une expansion progressive dans un monde complexe.\n\nLa grande idée est de refuser deux clichés : Sapiens comme héros supérieur depuis toujours, ou Sapiens comme simple étape finale. Il faut le comprendre comme une espèce très adaptable, prise dans des réseaux de contacts, d’apprentissages et de milieux." }
+    ],
+    deeper: [],
+    takeaways: [
+      { label: "Repère", text: "Sapiens apparaît en Afrique puis se diffuse progressivement." },
+      { label: "Nuance", text: "Il coexiste avec d’autres humanités et conserve des traces de certains métissages." },
+      { label: "Idée forte", text: "Son succès vient d’une combinaison d’adaptation, coopération, culture et mobilité." },
+      { label: "À éviter", text: "Présenter Sapiens comme l’aboutissement automatique de l’évolution." }
+    ]
+  }
+};
+Object.entries(HISTODAILY_LONGFORM_OVERRIDES).forEach(([id, patch]) => {
+  READY_LESSON_PACKS[id] = { ...(READY_LESSON_PACKS[id] || {}), ...patch };
+});
+
 applyVisibleStateGuard();
 window.addEventListener("DOMContentLoaded", render);

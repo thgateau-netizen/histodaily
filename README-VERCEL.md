@@ -1,6 +1,6 @@
-# HistoDaily — paquet de déploiement beta102
+# HistoDaily — paquet de déploiement beta104
 
-Version : `1.0.0-beta.102`
+Version : `1.0.0-beta.104`
 
 Build public resserré pour test privé.
 

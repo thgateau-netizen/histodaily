@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.102",
-  assetsVersion: "1.0.0-beta.102",
+  version: "1.0.0-beta.104",
+  assetsVersion: "1.0.0-beta.104",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 102",
+    versionLabel: "beta 104",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Build public allégé : seuls les cours et mystères réellement prêts sont embarqués.",
-      "Mystères du jour reliés aux cours disponibles.",
-      "Indices de mystères mieux écrits et parcours plus sobres."
+      "Choix de discipline façon Duolingo avant les cours.",
+      "Profil enrichi avec camembert de progression par domaine.",
+      "Cours histoire conservés en plein écran, sans ajouter de contenu artificiel."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

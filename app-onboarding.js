@@ -1,5 +1,5 @@
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.102",
+  version: "1.0.0-beta.104",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

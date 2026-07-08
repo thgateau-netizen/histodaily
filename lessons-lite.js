@@ -1,4 +1,4 @@
-const HISTODAILY_CONTENT_VERSION = "1.0.0-beta.102-public-core";
+const HISTODAILY_CONTENT_VERSION = "1.0.0-beta.104-public-core";
 const HISTO_WORLD_GROUPS = [
   {
     "id": "origins",
