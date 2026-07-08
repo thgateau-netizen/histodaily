@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.105";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.108";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -15,17 +15,18 @@ const data = {
 
 const DISCIPLINES = [
   { id: "history", title: "Histoire", emoji: "🏛️", accent: "#f6c453", description: "Périodes, peuples, événements et grands repères." },
-  { id: "art", title: "Art", emoji: "🎨", accent: "#fb7185", description: "Œuvres, styles, artistes et mouvements." },
-  { id: "cinema", title: "Cinéma", emoji: "🎬", accent: "#a78bfa", description: "Films, réalisateurs, scènes et courants." },
-  { id: "science-inventions", title: "Sciences & inventions", emoji: "🧪", accent: "#56d6ff", description: "Découvertes, machines, idées et technologies." },
+  { id: "art", title: "Art", emoji: "🎨", accent: "#fb7185", description: "Histoire de l’art, œuvres, artistes et mouvements." },
+  { id: "cinema", title: "Cinéma", emoji: "🎬", accent: "#a78bfa", description: "Histoire du cinéma, films, réalisateurs et courants." },
+  { id: "science-inventions", title: "Sciences & inventions", emoji: "🧪", accent: "#56d6ff", description: "Histoire des sciences, découvertes et inventions." },
   { id: "economy", title: "Économie", emoji: "📈", accent: "#48d597", description: "Marchés, crises, monnaies et grandes notions." },
-  { id: "geography", title: "Géographie", emoji: "🗺️", accent: "#84cc16", description: "Pays, milieux, villes, frontières et cartes." }
+  { id: "geography", title: "Géographie", emoji: "🗺️", accent: "#84cc16", description: "Pays, milieux, villes, frontières et cartes." },
+  { id: "music", title: "Musique", emoji: "🎼", accent: "#f59e0b", description: "Histoire de la musique, styles, compositeurs et révolutions sonores." }
 ];
 
 const DISCIPLINE_OUTLINES = {
   art: {
     groups: [
-      { id: "art-reading", title: "1. Lire une œuvre", range: "bases", description: "Composition, couleur, perspective, symbole : les réflexes pour regarder une image sans réciter une fiche." },
+      { id: "art-reading", title: "Hors-série · Lire une œuvre", range: "méthode", description: "Composition, couleur, perspective, symbole : un module utile pour analyser une image sans réciter une fiche." },
       { id: "art-ancient-medieval", title: "2. Antiquité et Moyen Âge", range: "Antiquité → XVe siècle", description: "Temples, statues, icônes, manuscrits, vitraux et arts religieux." },
       { id: "art-renaissance-classical", title: "3. Renaissance et classicisme", range: "XVe → XVIIIe siècle", description: "Perspective, humanisme, baroque, académies, pouvoir et grands décors." },
       { id: "art-modern", title: "4. Modernités", range: "XIXe → XXe siècle", description: "Impressionnisme, avant-gardes, abstraction, photographie et rupture avec l’académie." },
@@ -45,8 +46,8 @@ const DISCIPLINE_OUTLINES = {
   },
   cinema: {
     groups: [
-      { id: "cinema-language", title: "1. Langage du cinéma", range: "bases", description: "Plan, cadre, montage, son, point de vue : comprendre comment un film raconte." },
-      { id: "cinema-birth", title: "2. Naissance et muet", range: "1895 → 1929", description: "Premières projections, burlesque, montage soviétique et grandes formes du muet." },
+      { id: "cinema-language", title: "Hors-série · Langage du cinéma", range: "méthode", description: "Plan, cadre, montage et son pour mieux lire les films historiques du parcours." },
+      { id: "cinema-birth", title: "1. Naissance et muet", range: "1895 → 1929", description: "Premières projections, Lumière, Méliès, burlesque, montage soviétique et grandes formes du muet." },
       { id: "cinema-classical", title: "3. Âge classique", range: "1930 → 1960", description: "Hollywood, genres, studios, stars, film noir et grands récits populaires." },
       { id: "cinema-new-waves", title: "4. Nouveaux cinémas", range: "1945 → 1980", description: "Néoréalisme, Nouvelle Vague, cinéma d’auteur et ruptures de mise en scène." },
       { id: "cinema-contemporary", title: "5. Cinéma contemporain", range: "1980 → aujourd’hui", description: "Blockbusters, animation, séries, plateformes, franchises et cinéma mondial." }
@@ -54,7 +55,7 @@ const DISCIPLINE_OUTLINES = {
     worlds: [
       { id: "cinema-shot-frame", title: "Plan et cadrage", emoji: "🎥", subtitle: "Ce que la caméra choisit", timeframe: "bases", accent: "#a78bfa", group: "cinema-language", sortStart: 1 },
       { id: "cinema-editing-sound", title: "Montage et son", emoji: "✂️", subtitle: "Rythme, ellipses, musique", timeframe: "bases", accent: "#f472b6", group: "cinema-language", sortStart: 2 },
-      { id: "cinema-early", title: "Premiers films", emoji: "🎞️", subtitle: "Lumière, Méliès, attractions", timeframe: "1895 → 1914", accent: "#f59e0b", group: "cinema-birth", sortStart: 10 },
+      { id: "cinema-early", title: "Naissance du cinéma", emoji: "🎞️", subtitle: "Lumière, Méliès, attractions", timeframe: "1895 → 1914", accent: "#f59e0b", group: "cinema-birth", sortStart: 10 },
       { id: "cinema-silent", title: "Grand muet", emoji: "🤍", subtitle: "Burlesque, expressionnisme, montage", timeframe: "1914 → 1929", accent: "#94a3b8", group: "cinema-birth", sortStart: 11 },
       { id: "cinema-hollywood", title: "Hollywood classique", emoji: "⭐", subtitle: "Studios, genres, stars", timeframe: "1930 → 1960", accent: "#facc15", group: "cinema-classical", sortStart: 20 },
       { id: "cinema-film-noir", title: "Film noir et genres", emoji: "🌃", subtitle: "Polar, western, mélodrame", timeframe: "1940 → 1960", accent: "#64748b", group: "cinema-classical", sortStart: 21 },
@@ -65,16 +66,16 @@ const DISCIPLINE_OUTLINES = {
   },
   "science-inventions": {
     groups: [
-      { id: "sci-method", title: "1. Observer et mesurer", range: "bases", description: "Méthode scientifique, expérience, preuve, instruments et erreurs de raisonnement." },
-      { id: "sci-earth-life", title: "2. Terre, ciel et vivant", range: "Antiquité → aujourd’hui", description: "Astronomie, Terre, évolution, vivant, microbes et environnement." },
-      { id: "sci-energy-matter", title: "3. Énergie et matière", range: "XVIIe → XXe siècle", description: "Mécanique, électricité, chimie, atome, lumière et grandes lois physiques." },
-      { id: "sci-medicine-tech", title: "4. Médecine et techniques", range: "XVIIIe → XXe siècle", description: "Vaccins, hygiène, machines, industrie, transports et innovations utiles." },
+      { id: "sci-method", title: "Hors-série · Méthode et preuves", range: "méthode", description: "Comment les savants observent, mesurent, testent et corrigent leurs idées." },
+      { id: "sci-earth-life", title: "1. Ciel, Terre et vivant", range: "Antiquité → aujourd’hui", description: "Histoire de l’astronomie, de la Terre, de l’évolution, des microbes et du vivant." },
+      { id: "sci-energy-matter", title: "2. Énergie, matière et grandes lois", range: "XVIIe → XXe siècle", description: "Mécanique, électricité, chimie, atome, lumière et inventions liées aux lois physiques." },
+      { id: "sci-medicine-tech", title: "3. Médecine, machines et industrie", range: "XVIIIe → XXe siècle", description: "Vaccins, hygiène, vapeur, moteurs, transports et innovations qui changent les sociétés." },
       { id: "sci-digital-space", title: "5. Informatique et espace", range: "XXe → XXIe siècle", description: "Ordinateurs, réseaux, IA, satellites, fusées et exploration spatiale." }
     ],
     worlds: [
       { id: "sci-method-proof", title: "Méthode scientifique", emoji: "🔎", subtitle: "Observer, tester, corriger", timeframe: "bases", accent: "#56d6ff", group: "sci-method", sortStart: 1 },
       { id: "sci-instruments", title: "Instruments et mesures", emoji: "📏", subtitle: "Voir plus loin, mesurer mieux", timeframe: "bases", accent: "#38bdf8", group: "sci-method", sortStart: 2 },
-      { id: "sci-astronomy", title: "Astronomie", emoji: "🪐", subtitle: "Du ciel ancien à l’espace", timeframe: "Antiquité → aujourd’hui", accent: "#818cf8", group: "sci-earth-life", sortStart: 10 },
+      { id: "sci-astronomy", title: "Copernic, Galilée et le ciel", emoji: "🪐", subtitle: "Quand l’observation change le monde", timeframe: "XVIe → XVIIe siècle", accent: "#818cf8", group: "sci-earth-life", sortStart: 10 },
       { id: "sci-evolution", title: "Évolution et vivant", emoji: "🧬", subtitle: "Espèces, sélection, biodiversité", timeframe: "XIXe → aujourd’hui", accent: "#22c55e", group: "sci-earth-life", sortStart: 11 },
       { id: "sci-mechanics-electricity", title: "Mécanique et électricité", emoji: "⚙️", subtitle: "Forces, machines, courant", timeframe: "XVIIe → XIXe siècle", accent: "#facc15", group: "sci-energy-matter", sortStart: 20 },
       { id: "sci-atom-energy", title: "Atome et énergie", emoji: "⚛️", subtitle: "Matière, radioactivité, nucléaire", timeframe: "XIXe → XXe siècle", accent: "#f97316", group: "sci-energy-matter", sortStart: 21 },
@@ -121,6 +122,26 @@ const DISCIPLINE_OUTLINES = {
       { id: "geo-borders", title: "Frontières et puissance", emoji: "🛂", subtitle: "États, mers, conflits, alliances", timeframe: "monde contemporain", accent: "#fb7185", group: "geo-power", sortStart: 30 },
       { id: "geo-resources-energy", title: "Ressources et énergie", emoji: "⛽", subtitle: "Eau, sols, pétrole, transition", timeframe: "monde contemporain", accent: "#10b981", group: "geo-resources", sortStart: 40 },
       { id: "geo-flows", title: "Flux et mondialisation", emoji: "🚢", subtitle: "Routes, ports, câbles, échanges", timeframe: "monde contemporain", accent: "#14b8a6", group: "geo-resources", sortStart: 41 }
+    ]
+  },
+
+  music: {
+    groups: [
+      { id: "music-origins-medieval", title: "1. Des rites anciens au Moyen Âge", range: "Antiquité → XVe siècle", description: "Musique rituelle, chant, notation, Église, transmission orale et premières polyphonies." },
+      { id: "music-renaissance-baroque", title: "2. Renaissance et baroque", range: "XVe → XVIIIe siècle", description: "Polyphonie, naissance de l’opéra, instruments, mécènes, Bach, Vivaldi et grands styles européens." },
+      { id: "music-classical-romantic", title: "3. Classique et romantique", range: "XVIIIe → XIXe siècle", description: "Symphonie, sonate, orchestre, Beethoven, émotions romantiques et virtuosité." },
+      { id: "music-modern-recording", title: "4. Musique enregistrée", range: "XXe siècle", description: "Jazz, blues, rock, studio, disque, radio et transformation de l’écoute." },
+      { id: "music-contemporary", title: "5. Pop, électronique et musiques mondiales", range: "XXe → XXIe siècle", description: "Pop, rap, électronique, samples, streaming, scènes mondiales et nouvelles circulations." }
+    ],
+    worlds: [
+      { id: "music-medieval", title: "Chant médiéval", emoji: "⛪", subtitle: "Du chant grégorien à la polyphonie", timeframe: "Moyen Âge", accent: "#f59e0b", group: "music-origins-medieval", sortStart: 10 },
+      { id: "music-renaissance", title: "Renaissance musicale", emoji: "🎶", subtitle: "Voix, polyphonies, cours", timeframe: "XVe → XVIe siècle", accent: "#fb7185", group: "music-renaissance-baroque", sortStart: 20 },
+      { id: "music-baroque", title: "Baroque et opéra", emoji: "🎻", subtitle: "Bach, Vivaldi, théâtre musical", timeframe: "XVIIe → XVIIIe siècle", accent: "#c084fc", group: "music-renaissance-baroque", sortStart: 21 },
+      { id: "music-classical", title: "Classicisme", emoji: "🎼", subtitle: "Mozart, Haydn, formes claires", timeframe: "XVIIIe siècle", accent: "#facc15", group: "music-classical-romantic", sortStart: 30 },
+      { id: "music-romantic", title: "Romantisme", emoji: "🌙", subtitle: "Beethoven, Chopin, orchestre", timeframe: "XIXe siècle", accent: "#a78bfa", group: "music-classical-romantic", sortStart: 31 },
+      { id: "music-jazz-blues", title: "Jazz et blues", emoji: "🎷", subtitle: "Improvisation, swing, clubs", timeframe: "XXe siècle", accent: "#38bdf8", group: "music-modern-recording", sortStart: 40 },
+      { id: "music-rock-pop", title: "Rock et pop", emoji: "🎸", subtitle: "Studio, radio, culture jeune", timeframe: "XXe siècle", accent: "#ef4444", group: "music-modern-recording", sortStart: 41 },
+      { id: "music-rap-electronic", title: "Rap et électronique", emoji: "🎧", subtitle: "Samples, machines, streaming", timeframe: "XXe → XXIe siècle", accent: "#22c55e", group: "music-contemporary", sortStart: 50 }
     ]
   }
 };
@@ -9149,6 +9170,1615 @@ const HISTODAILY_LONGFORM_OVERRIDES = {
 Object.entries(HISTODAILY_LONGFORM_OVERRIDES).forEach(([id, patch]) => {
   READY_LESSON_PACKS[id] = { ...(READY_LESSON_PACKS[id] || {}), ...patch };
 });
+
+
+/*
+   Beta 106 — modes disciplinaires pilotés depuis l’accueil
+   Objectif : l’accueil devient le vrai hub de choix du domaine. Le mystère,
+   les propositions de cours et les raccourcis suivent le mode actif.
+*/
+const DISCIPLINE_MODE_COPY = {
+  history: {
+    label: "Mode Histoire",
+    shortLabel: "Histoire",
+    noun: "historique",
+    headline: "Un mystère historique par jour, puis le cours qui va avec.",
+    promise: "Périodes, événements et grands repères avancent ensemble.",
+    discoveryTitle: "Des cours d’histoire à reprendre",
+    discoveryIntro: "Trois portes d’entrée courtes, dans des époques différentes."
+  },
+  art: {
+    label: "Mode Art",
+    shortLabel: "Art",
+    noun: "artistique",
+    headline: "Parcours l’histoire de l’art par périodes, œuvres et ruptures visuelles.",
+    promise: "Les mouvements, artistes et œuvres avancent dans une logique historique ; l’analyse d’image reste un hors-série utile.",
+    discoveryTitle: "Cours d’histoire de l’art",
+    discoveryIntro: "On privilégie quelques vrais cours bien écrits : Renaissance, impressionnisme, avant-gardes, contemporain."
+  },
+  cinema: {
+    label: "Mode Cinéma",
+    shortLabel: "Cinéma",
+    noun: "de cinéma",
+    headline: "Suis l’histoire du cinéma, de l’attraction Lumière aux plateformes.",
+    promise: "Périodes, inventions, genres et réalisateurs passent avant les fiches de technique pure.",
+    discoveryTitle: "Cours d’histoire du cinéma",
+    discoveryIntro: "On part des premières projections, puis on avance vers le muet, Hollywood, les nouvelles vagues et le contemporain."
+  },
+  "science-inventions": {
+    label: "Mode Sciences & inventions",
+    shortLabel: "Sciences",
+    noun: "scientifique",
+    headline: "Découvre l’histoire des sciences et des inventions, pas seulement des notions abstraites.",
+    promise: "Savants, instruments, machines, médecine, énergie et espace suivent une chronologie lisible.",
+    discoveryTitle: "Cours d’histoire des sciences",
+    discoveryIntro: "On raconte les découvertes et les inventions comme des épisodes historiques, avec contexte, conflits et conséquences."
+  },
+  economy: {
+    label: "Mode Économie",
+    shortLabel: "Économie",
+    noun: "économique",
+    headline: "Comprends les prix, crises et choix collectifs sans jargon inutile.",
+    promise: "Notions, monnaie, entreprises, crises et mondialisation sont rangées par niveaux.",
+    discoveryTitle: "Entrées possibles en économie",
+    discoveryIntro: "Des notions de base aux crises et inégalités, avec une progression lisible."
+  },
+  geography: {
+    label: "Mode Géographie",
+    shortLabel: "Géographie",
+    noun: "géographique",
+    headline: "Lis le monde : cartes, territoires, villes, frontières et ressources.",
+    promise: "Chaque thème part d’une question concrète sur l’espace et les sociétés.",
+    discoveryTitle: "Entrées possibles en géographie",
+    discoveryIntro: "On prépare un parcours par cartes, milieux, villes, puissances et ressources."
+  },
+  music: {
+    label: "Mode Musique",
+    shortLabel: "Musique",
+    noun: "musical",
+    headline: "Traverse l’histoire de la musique, des chants médiévaux au streaming.",
+    promise: "Styles, instruments, lieux d’écoute et révolutions techniques avancent ensemble.",
+    discoveryTitle: "Entrées possibles en musique",
+    discoveryIntro: "On commence par quelques vrais cours d’histoire de la musique, pas un catalogue vide de genres."
+  }
+};
+
+const DISCIPLINE_MODE_MYSTERIES = [
+  {
+    id: "art-mystery-impressionism-mode",
+    discipline: "art",
+    difficulty: "moyen",
+    title: "Une peinture qui garde la trace de la lumière",
+    caseTitle: "Mouvement artistique à identifier",
+    prompt: "Des peintres sortent de l’atelier, travaillent par touches visibles et s’intéressent moins au contour parfait qu’à la lumière changeante, aux reflets et à l’instant perçu.",
+    answer: "L’impressionnisme",
+    aliases: ["impressionnisme", "les impressionnistes", "mouvement impressionniste"],
+    clues: [
+      "Mouvement artistique lié à la lumière, aux touches visibles et aux scènes modernes.",
+      "France · seconde moitié du XIXe siècle · Monet, Renoir, Degas ou Pissarro.",
+      "Le nom vient d’un tableau de Monet et d’une critique moqueuse devenue étiquette."
+    ],
+    explanation: "L’impressionnisme rompt avec la peinture académique en privilégiant la sensation visuelle, la lumière et la modernité des sujets.",
+    blockedGuesses: ["monet", "peinture", "art moderne", "lumiere"]
+  },
+  {
+    id: "cinema-mystery-melies-mode",
+    discipline: "cinema",
+    difficulty: "moyen",
+    title: "Le magicien qui envoie le cinéma dans la Lune",
+    caseTitle: "Pionnier du cinéma à identifier",
+    prompt: "Ancien illusionniste, il comprend très vite que la caméra peut créer des disparitions, des décors impossibles et des voyages imaginaires. Son nom reste lié au cinéma de trucage et au Voyage dans la Lune.",
+    answer: "Georges Méliès",
+    aliases: ["georges melies", "georges méliès", "melies", "méliès"],
+    clues: [
+      "Pionnier français du cinéma, venu de la magie et du spectacle.",
+      "Il utilise décors, arrêts de caméra et trucages pour inventer des mondes.",
+      "Son film le plus célèbre montre une fusée plantée dans l’œil de la Lune."
+    ],
+    explanation: "Georges Méliès montre que le cinéma peut inventer l’impossible, pas seulement enregistrer le réel. Il ouvre une voie majeure vers la fiction, les effets spéciaux et le spectacle filmé.",
+    blockedGuesses: ["cinema", "lune", "trucage", "voyage dans la lune"]
+  },
+  {
+    id: "science-mystery-galileo-mode",
+    discipline: "science-inventions",
+    difficulty: "moyen",
+    title: "Un ciel qui ne tourne plus simplement autour de nous",
+    caseTitle: "Savant à identifier",
+    prompt: "Avec une lunette, il observe des reliefs sur la Lune, des satellites autour de Jupiter et des phénomènes qui fragilisent l’idée d’un ciel parfait organisé autour de la Terre.",
+    answer: "Galilée",
+    aliases: ["galilee", "galilée", "galileo", "galileo galilei", "galilée galilei"],
+    clues: [
+      "Savant associé à la lunette astronomique et aux débats autour de l’héliocentrisme.",
+      "Italie · début du XVIIe siècle · observations de la Lune et de Jupiter.",
+      "Son conflit avec l’Église devient l’un des épisodes célèbres de l’histoire des sciences."
+    ],
+    explanation: "Galilée utilise l’observation instrumentée pour défendre une nouvelle manière de comprendre le ciel. Son importance vient autant des observations que de la méthode et du conflit intellectuel qu’elles déclenchent.",
+    blockedGuesses: ["lunette", "jupiter", "heliocentrisme", "copernic"]
+  },
+  {
+    id: "economy-mystery-inflation-mode",
+    discipline: "economy",
+    difficulty: "facile",
+    title: "Quand la monnaie achète moins qu’avant",
+    caseTitle: "Notion économique à identifier",
+    prompt: "Les prix augmentent de manière générale. Le problème n’est pas seulement qu’un produit coûte plus cher, mais que le pouvoir d’achat de la monnaie diminue dans l’ensemble de l’économie.",
+    answer: "L’inflation",
+    aliases: ["inflation", "l inflation", "hausse generale des prix", "hausse générale des prix"],
+    clues: [
+      "Notion économique liée à une hausse générale et durable des prix.",
+      "Elle touche le pouvoir d’achat, les salaires, l’épargne, les taux et les choix des banques centrales.",
+      "Il ne faut pas la confondre avec la hausse isolée du prix d’un seul bien."
+    ],
+    explanation: "L’inflation désigne une augmentation générale des prix qui réduit le pouvoir d’achat de la monnaie. Elle se mesure, s’explique et se combat avec des outils économiques différents selon les causes.",
+    blockedGuesses: ["prix", "argent", "euro", "crise"]
+  },
+  {
+    id: "geography-mystery-mercator-mode",
+    discipline: "geography",
+    difficulty: "moyen",
+    title: "Une carte utile aux marins, mais trompeuse pour les tailles",
+    caseTitle: "Projection cartographique à identifier",
+    prompt: "Elle conserve les angles et facilite la navigation, mais agrandit fortement les régions proches des pôles. Le Groenland paraît alors beaucoup plus comparable à l’Afrique qu’il ne l’est réellement.",
+    answer: "La projection de Mercator",
+    aliases: ["projection de mercator", "mercator", "carte de mercator", "projection mercator"],
+    clues: [
+      "Notion de cartographie : représenter une sphère sur une surface plane impose des déformations.",
+      "Cette projection est très utile pour les routes maritimes car elle conserve les angles.",
+      "Elle grossit les hautes latitudes : Groenland, Europe du Nord ou Russie paraissent très grands."
+    ],
+    explanation: "La projection de Mercator est pratique pour la navigation, mais elle déforme fortement les surfaces près des pôles. Elle montre qu’une carte est toujours un choix, jamais une copie neutre du monde.",
+    blockedGuesses: ["carte", "projection", "groenland", "planisphere"]
+  }
+  ,{
+    id: "music-mystery-jazz-mode",
+    discipline: "music",
+    difficulty: "moyen",
+    title: "Une musique née du blues, du rythme et de l’improvisation",
+    caseTitle: "Genre musical à identifier",
+    prompt: "Née aux États-Unis au tournant du XXe siècle, cette musique mêle héritages afro-américains, improvisation, swing, clubs, orchestres, solos et transformations constantes.",
+    answer: "Le jazz",
+    aliases: ["jazz", "le jazz"],
+    clues: [
+      "Genre majeur de l’histoire de la musique du XXe siècle.",
+      "Improvisation, swing, blues et clubs sont des indices importants.",
+      "Louis Armstrong, Duke Ellington ou Miles Davis appartiennent à son histoire."
+    ],
+    explanation: "Le jazz naît dans un contexte afro-américain et devient une révolution musicale mondiale : improvisation, rythme, timbre, enregistrement et liberté d’interprétation transforment l’écoute.",
+    blockedGuesses: ["blues", "swing", "musique", "improvisation"]
+  }
+];
+
+(function registerDisciplineModeMysteries() {
+  if (!Array.isArray(data.mysteries)) data.mysteries = [];
+  const known = new Set(data.mysteries.map(item => item.id));
+  DISCIPLINE_MODE_MYSTERIES.forEach(item => {
+    if (!known.has(item.id)) data.mysteries.push({ ...item, modeMystery: true, manualCluesB97: true, cluesCleaned: true });
+  });
+})();
+
+function disciplineModeCopy(disciplineId = activeDisciplineId()) {
+  return DISCIPLINE_MODE_COPY[disciplineById(disciplineId).id] || DISCIPLINE_MODE_COPY.history;
+}
+function mysteryDisciplineId(mystery = {}) {
+  if (mystery.discipline) return disciplineById(mystery.discipline).id;
+  const lesson = mystery?.lessonId ? allLessons().find(item => item.id === mystery.lessonId) : null;
+  if (lesson) return worldDisciplineId(lessonWorld(lesson));
+  return "history";
+}
+function historyMysteryPool() {
+  const curatedIds = new Set(curatedLessons().map(lesson => lesson.id));
+  const historyMysteries = (data.mysteries || []).filter(mystery => mysteryDisciplineId(mystery) === "history");
+  const linked = historyMysteries.filter(mystery => mystery?.lessonId && curatedIds.has(mystery.lessonId));
+  return linked.length ? linked : historyMysteries;
+}
+function publicMysteries(disciplineId = activeDisciplineId()) {
+  const id = disciplineById(disciplineId || "history").id;
+  if (id === "history") return historyMysteryPool();
+  const pool = (data.mysteries || []).filter(mystery => mysteryDisciplineId(mystery) === id);
+  return pool.length ? pool : historyMysteryPool();
+}
+function mysteryForDisciplineDayOffset(disciplineId = activeDisciplineId(), offset = 0) {
+  const pool = publicMysteries(disciplineId);
+  if (!pool.length) return null;
+  const index = ((todayIndex() - offset) % pool.length + pool.length) % pool.length;
+  return pool[index];
+}
+function mysteryForDayOffset(offset = 0) { return mysteryForDisciplineDayOffset(activeDisciplineId(), offset); }
+function dailyMystery() { return mysteryForDayOffset(0); }
+function isTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); }
+function mysteryById(id) { return publicMysteries().find(m => m.id === id) || (data.mysteries || []).find(m => m.id === id); }
+function currentMystery() {
+  const pool = publicMysteries();
+  const selected = pool.find(m => m.id === state.currentMysteryId);
+  return selected && isAccessibleMystery(selected.id) ? selected : dailyMystery();
+}
+function mysteryStats() {
+  const pool = publicMysteries();
+  const solved = pool.filter(m => mysterySolved(m.id)).length;
+  const expertSolved = pool.filter(m => m.difficulty === "expert" && mysterySolved(m.id)).length;
+  const expertTotal = pool.filter(m => m.difficulty === "expert").length;
+  const solvedItems = pool.map(m => state.solvedMysteries?.[m.id]).filter(Boolean);
+  const avgScore = solvedItems.length ? Math.round(solvedItems.reduce((sum, item) => sum + (item.score || 0), 0) / solvedItems.length) : 0;
+  return { solved, total: pool.length || 0, expertSolved, expertTotal, avgScore };
+}
+
+function disciplineHomeStats(disciplineId = activeDisciplineId()) {
+  const discipline = disciplineById(disciplineId);
+  const progress = disciplineProgress(discipline.id);
+  const groups = treeGroups(discipline.id);
+  const worlds = treeAvailableWorlds(discipline.id);
+  const readyLessons = lessonsForDiscipline(discipline.id).filter(isCuratedLesson);
+  return { discipline, progress, groups, worlds, readyLessons };
+}
+function firstWorldForDiscipline(disciplineId = activeDisciplineId()) {
+  return treeAvailableWorlds(disciplineId)[0] || null;
+}
+function switchHomeDiscipline(disciplineId) {
+  const discipline = disciplineById(disciplineId);
+  const firstWorld = firstWorldForDiscipline(discipline.id);
+  const nextMystery = mysteryForDisciplineDayOffset(discipline.id, 0);
+  setState({
+    tab: "home",
+    currentDiscipline: discipline.id,
+    currentGroup: firstWorld?.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
+    currentWorld: firstWorld?.id || state.currentWorld,
+    currentMysteryId: nextMystery?.id || null,
+    learnFilter: "all",
+    learnSearch: "",
+    discoverOffset: 0
+  });
+}
+function openModeLearn(disciplineId = activeDisciplineId(), worldId = null) {
+  const discipline = disciplineById(disciplineId);
+  const targetWorld = (worldId && treeAvailableWorlds(discipline.id).find(world => world.id === worldId)) || firstWorldForDiscipline(discipline.id);
+  setState({
+    tab: "learn",
+    currentDiscipline: discipline.id,
+    currentGroup: targetWorld?.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
+    currentWorld: targetWorld?.id || state.currentWorld,
+    learnFilter: "all",
+    learnSearch: ""
+  });
+}
+function modeSwitcherMarkup() {
+  return `<section class="home-mode-switcher" aria-label="Choix du domaine">
+    ${DISCIPLINES.map(item => {
+      const active = item.id === activeDisciplineId();
+      const stats = disciplineProgress(item.id);
+      return `<button type="button" class="mode-pill ${active ? "active" : ""}" data-home-discipline="${escapeHtml(item.id)}" style="--discipline-accent:${escapeHtml(item.accent)}"><span>${item.emoji}</span><strong>${escapeHtml(disciplineModeCopy(item.id).shortLabel)}</strong><small>${stats.progress}%</small></button>`;
+    }).join("")}
+  </section>`;
+}
+function modeSnapshotMarkup(disciplineId = activeDisciplineId()) {
+  const { discipline, progress, groups, worlds, readyLessons } = disciplineHomeStats(disciplineId);
+  const mode = disciplineModeCopy(discipline.id);
+  const readyText = readyLessons.length ? `${readyLessons.length} cours prêts` : `${worlds.length} thèmes posés`;
+  return `<section class="card home-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="home-mode-card-main"><span class="mode-badge">${discipline.emoji} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
+    <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${groups.length}</b><span>grands chapitres</span></div><div><b>${readyText}</b><span>${readyLessons.length ? "contenu" : "structure"}</span></div></div>
+  </section>`;
+}
+function modeContinueMarkup(disciplineId = activeDisciplineId()) {
+  if (disciplineId === "history") return homeContinueMarkup();
+  const { discipline, groups, worlds } = disciplineHomeStats(disciplineId);
+  const first = worlds[0] || null;
+  const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
+  return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${first.emoji || discipline.emoji} ${escapeHtml(first.title)}` : "Parcours prêt"}</h2></div><small>${groups.length} chapitres</small></div>
+    <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} ${first?.planned ? "Le thème est posé : on pourra ensuite écrire le vrai cours express, complet et quiz." : ""}</p>
+    <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
+    <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les chapitres</button></div>
+  </section>`;
+}
+function modeRecommendationItems(disciplineId = activeDisciplineId()) {
+  const worlds = treeAvailableWorlds(disciplineId).slice();
+  if (!worlds.length) return [];
+  const groups = treeGroups(disciplineId);
+  const slot = discoverySlot();
+  const selected = [];
+  const usedGroups = new Set();
+  const ordered = worlds.sort((a, b) => (Number(a.sortStart) || 0) - (Number(b.sortStart) || 0) || String(a.id).localeCompare(String(b.id)));
+  for (let i = 0; i < ordered.length && selected.length < 3; i += 1) {
+    const world = ordered[(i + slot) % ordered.length];
+    if (usedGroups.has(world.group) && selected.length < Math.min(3, groups.length)) continue;
+    usedGroups.add(world.group);
+    selected.push(world);
+  }
+  for (const world of ordered) {
+    if (selected.length >= 3) break;
+    if (!selected.some(item => item.id === world.id)) selected.push(world);
+  }
+  return selected.slice(0, 3);
+}
+function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
+  if (disciplineId === "history") return homeDiscoveryMarkup(homeDiscoveryLessons());
+  const discipline = disciplineById(disciplineId);
+  const mode = disciplineModeCopy(discipline.id);
+  const groups = treeGroups(discipline.id);
+  const items = modeRecommendationItems(discipline.id);
+  return `<section class="card home-main-card home-discovery-card mode-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours proposés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
+    <p>${escapeHtml(mode.discoveryIntro)}</p>
+    <div class="home-discovery-grid">
+      ${items.map((world, index) => {
+        const group = groups.find(item => item.id === world.group) || {};
+        return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+          <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
+          <h3>${world.emoji || discipline.emoji} ${escapeHtml(world.title)}</h3>
+          <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
+          <small>${escapeHtml(world.timeframe || group.range || "parcours")}</small>
+          <button type="button" data-open-mode-world="${escapeHtml(world.id)}">Ouvrir</button>
+        </article>`;
+      }).join("")}
+    </div>
+    <div class="home-card-footer"><span>On garde des contenus propres : structure d’abord, vrais cours ensuite.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
+  </section>`;
+}
+function renderHome() {
+  const disciplineId = activeDisciplineId();
+  const discipline = disciplineById(disciplineId);
+  const mode = disciplineModeCopy(disciplineId);
+  const mystery = dailyMystery();
+  const reward = dailyRewardPreview();
+  const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
+  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} 💎 si tu résous aujourd’hui`;
+  renderShell(`
+    <header class="hero compact home-clean-hero home-mode-hero" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div>
+        <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
+        <h1>${escapeHtml(mode.headline)}</h1>
+        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
+      </div>
+    </header>
+
+    ${modeSwitcherMarkup()}
+    ${modeSnapshotMarkup(disciplineId)}
+
+    ${mystery ? `<section class="card home-main-card home-mystery-card mode-mystery-card" data-home-mystery role="button" tabindex="0" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="section-title-row">
+        <div><span class="card-label">🕵️ Mystère ${escapeHtml(mode.noun)} du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
+        <small>${solvedToday ? "résolu" : difficultyStars(mystery.difficulty)}</small>
+      </div>
+      <p>${escapeHtml(short(mysteryTeaser(mystery), 205))}</p>
+      <div class="home-card-footer"><span>${escapeHtml(nextLabel)}</span><button>${solvedToday ? "Revoir" : "Jouer"}</button></div>
+    </section>` : `<section class="card home-main-card"><h2>Aucun mystère chargé</h2><p>La donnée mystère est vide ou inaccessible.</p></section>`}
+
+    ${modeContinueMarkup(disciplineId)}
+    ${modeRecommendationsMarkup(disciplineId)}
+
+    <section class="home-secondary-actions">
+      <button class="ghost" data-open-mode-learn="${escapeHtml(disciplineId)}">Parcours ${escapeHtml(mode.shortLabel)}</button>
+      <button class="ghost" data-home-rank>Classement</button>
+      <button class="ghost" data-home-profile>Profil</button>
+    </section>`);
+
+  document.querySelectorAll("[data-home-discipline]").forEach(btn => btn.addEventListener("click", () => switchHomeDiscipline(btn.dataset.homeDiscipline)));
+  const openMystery = () => mystery && setState({ tab: "mystery", currentMysteryId: mystery.id });
+  const mysteryCard = $(`[data-home-mystery]`);
+  mysteryCard?.addEventListener("click", openMystery);
+  mysteryCard?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openMystery(); } });
+  document.querySelectorAll("[data-home-continue]").forEach(btn => btn.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    openLessonFromHome(btn.dataset.homeContinue, btn.dataset.homeContinueView || "express");
+  }));
+  document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("click", event => {
+    event.stopPropagation();
+    openDiscoveredLesson(card.dataset.homeDiscovery);
+  }));
+  document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDiscoveredLesson(card.dataset.homeDiscovery); }
+  }));
+  document.querySelectorAll("[data-home-discovery-open]").forEach(btn => btn.addEventListener("click", event => {
+    event.stopPropagation();
+    openDiscoveredLesson(btn.dataset.homeDiscoveryOpen);
+  }));
+  $(`[data-refresh-discovery]`)?.addEventListener("click", event => {
+    event.preventDefault();
+    setState({ discoverOffset: (Number(state.discoverOffset) || 0) + 1 });
+  });
+  document.querySelectorAll("[data-open-mode-learn]").forEach(btn => btn.addEventListener("click", () => openModeLearn(btn.dataset.openModeLearn || disciplineId)));
+  document.querySelectorAll("[data-mode-world]").forEach(card => {
+    const open = () => openModeLearn(disciplineId, card.dataset.modeWorld);
+    card.addEventListener("click", event => { event.stopPropagation(); open(); });
+    card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
+  });
+  document.querySelectorAll("[data-open-mode-world]").forEach(btn => btn.addEventListener("click", event => {
+    event.stopPropagation();
+    openModeLearn(disciplineId, btn.dataset.openModeWorld);
+  }));
+  $(`[data-home-rank]`)?.addEventListener("click", () => setState({ tab: "rank" }));
+  $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
+}
+
+function disciplineWheelMarkup() {
+  const total = DISCIPLINES.length;
+  const allStats = DISCIPLINES.map(discipline => ({ discipline, stats: disciplineProgress(discipline.id) }));
+  const average = Math.round(allStats.reduce((sum, item) => sum + item.stats.progress, 0) / Math.max(1, allStats.length));
+  const slices = allStats.map(({ discipline, stats }, index) => {
+    const mid = (index + 0.5) * 360 / total;
+    const label = polarPoint(50, 50, 34, mid);
+    const fillOuter = 15 + (31 * stats.progress / 100);
+    const main = ringSlicePath(index, total, 14, 47, 2.4);
+    const fill = stats.progress > 0 ? ringSlicePath(index, total, 14, Math.max(18, fillOuter), 2.4) : "";
+    return `<g class="culture-token-segment" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <path class="token-back" d="${main}" fill="${escapeHtml(discipline.accent)}"></path>
+      ${fill ? `<path class="token-fill" d="${fill}" fill="${escapeHtml(discipline.accent)}"></path>` : ""}
+      <text class="token-percent" x="${label.x.toFixed(1)}" y="${label.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${stats.progress}%</text>
+    </g>`;
+  }).join("");
+  const legend = allStats.map(({ discipline, stats }) => {
+    const meta = stats.ready ? `${stats.done}/${stats.total} cours` : `${stats.chapters || 0} chapitres`; 
+    return `<div class="discipline-progress-row token-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${discipline.emoji}</span><strong>${escapeHtml(discipline.title)}</strong><em>${escapeHtml(meta)}</em><b>${stats.progress}%</b></div>`;
+  }).join("");
+  return `<section class="card trivial-profile-card culture-profile-card culture-token-card">
+    <div class="section-title-row"><div><span class="card-label">Profil culturel</span><h2>Ton jeton de culture</h2><p>Chaque tranche représente une discipline. Les pourcentages montent avec les cours réellement validés.</p></div><small>${average}% moyen</small></div>
+    <div class="trivial-profile-layout"><div class="trivial-wheel-wrap"><svg class="trivial-wheel culture-wheel culture-token" viewBox="0 0 100 100" role="img" aria-label="Progression par discipline"><circle class="token-outer" cx="50" cy="50" r="49"></circle>${slices}<circle class="token-core" cx="50" cy="50" r="18"></circle><text class="trivial-center token-center" x="50" y="46" text-anchor="middle" dominant-baseline="middle">Profil</text><text class="wheel-average token-average" x="50" y="56" text-anchor="middle" dominant-baseline="middle">${average}%</text></svg></div><div class="discipline-progress-list">${legend}</div></div>
+  </section>`;
+}
+
+
+/* =========================================================
+   Beta 107 — thèmes par discipline + premiers vrais cours transversaux
+   Objectif : chaque mode a sa couleur, et chaque discipline reçoit peu de contenu,
+   mais du contenu vraiment lisible : express court, complet narratif, quiz 5 questions.
+   ========================================================= */
+const BETA107_DISCIPLINE_THEME = {
+  history: { accent: "#f6c453", bg1: "#19395c", bg2: "#07111f", bg3: "#050914", glow1: "rgba(246,196,83,.20)", glow2: "rgba(86,214,255,.16)" },
+  art: { accent: "#fb7185", bg1: "#3d1631", bg2: "#120b1d", bg3: "#070711", glow1: "rgba(251,113,133,.24)", glow2: "rgba(192,132,252,.17)" },
+  cinema: { accent: "#a78bfa", bg1: "#24184f", bg2: "#100b22", bg3: "#05050d", glow1: "rgba(167,139,250,.25)", glow2: "rgba(239,68,68,.13)" },
+  "science-inventions": { accent: "#56d6ff", bg1: "#0a3c52", bg2: "#071827", bg3: "#040b12", glow1: "rgba(86,214,255,.26)", glow2: "rgba(34,197,94,.13)" },
+  economy: { accent: "#48d597", bg1: "#0b3d2e", bg2: "#071b18", bg3: "#04100f", glow1: "rgba(72,213,151,.24)", glow2: "rgba(250,204,21,.11)" },
+  geography: { accent: "#84cc16", bg1: "#29420b", bg2: "#101b0a", bg3: "#061005", glow1: "rgba(132,204,22,.24)", glow2: "rgba(56,189,248,.13)" },
+  music: { accent: "#f59e0b", bg1: "#4a2507", bg2: "#1f1208", bg3: "#0d0905", glow1: "rgba(245,158,11,.25)", glow2: "rgba(251,113,133,.14)" }
+};
+function applyDisciplineTheme(disciplineId = activeDisciplineId()) {
+  const id = disciplineById(disciplineId || "history").id;
+  const theme = BETA107_DISCIPLINE_THEME[id] || BETA107_DISCIPLINE_THEME.history;
+  const root = document.documentElement;
+  if (!root) return;
+  root.dataset.discipline = id;
+  root.style.setProperty("--accent", theme.accent);
+  root.style.setProperty("--theme-accent", theme.accent);
+  root.style.setProperty("--theme-bg1", theme.bg1);
+  root.style.setProperty("--theme-bg2", theme.bg2);
+  root.style.setProperty("--theme-bg3", theme.bg3);
+  root.style.setProperty("--theme-glow1", theme.glow1);
+  root.style.setProperty("--theme-glow2", theme.glow2);
+  document.body?.setAttribute("data-discipline", id);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", theme.bg3);
+}
+function renderShell(content) {
+  applyPerformanceMode();
+  applyDisciplineTheme();
+  const immersiveLesson = state.tab === "lesson";
+  const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav">
+        ${navButton("home", "⌂", "Accueil")}
+        ${navButton("learn", "📖", "Cours")}
+        ${navButton("mystery", "🕵️", "Mystère")}
+        ${navButton("rank", "🏆", "Classement")}
+        ${navButton("profile", "👤", "Profil")}
+      </nav>`;
+  app.innerHTML = `
+    <main class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
+      ${systemStatusMarkup()}
+      ${content}
+      ${navMarkup}
+    </main>`;
+  document.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
+    const tab = btn.dataset.tab;
+    const patch = { tab };
+    if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
+    setState(patch);
+  }));
+  activateTextControls(app);
+}
+const BETA107_LESSONS = {
+  "art-read-image": [
+    {
+      "id": "art-read-image-basics",
+      "title": "Hors-série — Lire une œuvre sans réciter une fiche",
+      "period": "Hors-série · méthode de lecture",
+      "location": "Musée, livre, écran",
+      "emoji": "👁️",
+      "xp": 60,
+      "order": 80
+    }
+  ],
+  "cinema-shot-frame": [
+    {
+      "id": "cinema-shot-frame-basics",
+      "title": "Hors-série — Plan et cadrage",
+      "period": "Hors-série · langage du cinéma",
+      "location": "Cinéma",
+      "emoji": "🎥",
+      "xp": 60,
+      "order": 80
+    }
+  ],
+  "sci-method-proof": [
+    {
+      "id": "sci-method-proof-basics",
+      "title": "Hors-série — La méthode scientifique",
+      "period": "Hors-série · méthode et preuves",
+      "location": "Sciences",
+      "emoji": "🔎",
+      "xp": 60,
+      "order": 80
+    }
+  ],
+  "eco-supply-demand": [
+    {
+      "id": "eco-supply-demand-basics",
+      "title": "Prix, offre et demande : pourquoi les prix bougent",
+      "period": "Bases économiques",
+      "location": "Marchés",
+      "emoji": "⚖️",
+      "xp": 60,
+      "order": 1
+    }
+  ],
+  "geo-maps": [
+    {
+      "id": "geo-maps-scale-basics",
+      "title": "Cartes et échelles : une carte n’est jamais neutre",
+      "period": "Bases géographiques",
+      "location": "Monde",
+      "emoji": "🧭",
+      "xp": 60,
+      "order": 1
+    }
+  ],
+  "art-renaissance": [
+    {
+        "id": "art-renaissance-perspective",
+        "title": "Renaissance : perspective et nouveau regard",
+        "period": "XVe → XVIe siècle",
+        "location": "Italie puis Europe",
+        "emoji": "🖼️",
+        "xp": 65,
+        "order": 1
+    }
+],
+  "cinema-early": [
+    {
+        "id": "cinema-early-lumiere-melies",
+        "title": "Naissance du cinéma : Lumière et Méliès",
+        "period": "1895 → 1914",
+        "location": "France puis monde",
+        "emoji": "🎞️",
+        "xp": 65,
+        "order": 1
+    }
+],
+  "sci-astronomy": [
+    {
+        "id": "sci-galileo-revolution",
+        "title": "Galilée et la lunette : le ciel devient observable",
+        "period": "XVIIe siècle",
+        "location": "Italie",
+        "emoji": "🪐",
+        "xp": 65,
+        "order": 1
+    }
+],
+  "music-medieval": [
+    {
+        "id": "music-gregorian-polyphony",
+        "title": "Du chant grégorien aux premières polyphonies",
+        "period": "Moyen Âge",
+        "location": "Europe chrétienne",
+        "emoji": "⛪",
+        "xp": 65,
+        "order": 1
+    }
+]
+};
+const BETA107_READY_PACKS = {
+  "art-read-image-basics": {
+    "hook": "Une œuvre ne se comprend pas en récitant tout de suite le nom de l’artiste. Avant l’étiquette, il faut apprendre à regarder : cadrage, composition, lumière, matière, sujet et contexte.",
+    "keyFacts": [
+      "Question de départ : qu’est-ce que l’image me fait voir en premier ?",
+      "Outils : composition, lignes, couleurs, lumière, matière, format",
+      "Contexte : époque, commande, lieu d’exposition, public visé",
+      "Piège : réduire l’œuvre à “c’est beau” ou à une biographie d’artiste"
+    ],
+    "express": [
+      "Lire une œuvre, ce n’est pas deviner une signification cachée au hasard. Le bon réflexe est de commencer par ce qui se voit : le format, les personnages ou objets, les lignes fortes, la lumière, les couleurs et l’endroit où l’œil est attiré en premier.",
+      "Ensuite seulement, on interprète. Une couleur, un geste, un regard, un décor ou un symbole peuvent avoir du sens, mais ils doivent être reliés à l’image elle-même et à son contexte : époque, commande, fonction religieuse, politique, décorative ou marchande.",
+      "À retenir : une bonne lecture d’œuvre suit un chemin simple. Observer précisément, décrire sans inventer, expliquer avec le contexte, puis formuler une idée. Ce n’est ni une fiche Wikipédia, ni un avis du type “j’aime / je n’aime pas”."
+    ],
+    "complete": [
+      {
+        "title": "1. Regarder avant de nommer",
+        "text": "Le premier piège, face à une œuvre, est de vouloir immédiatement reconnaître un artiste, un style ou un mouvement. C’est rassurant, mais cela peut empêcher de voir l’image. Avant de dire “c’est de la Renaissance”, “c’est impressionniste” ou “c’est moderne”, il faut décrire ce qui est réellement sous les yeux.\n\nOn commence donc par les faits visibles : format horizontal ou vertical, scène pleine ou vide, personnages nombreux ou isolés, décor intérieur ou extérieur, couleurs dominantes, lumière douce ou violente, gestes, regards, objets importants. Cette description n’est pas une étape scolaire inutile : elle évite d’interpréter dans le vide."
+      },
+      {
+        "title": "2. La composition dirige le regard",
+        "text": "Une image est organisée. Même quand elle semble spontanée, elle propose souvent un chemin pour l’œil. Des lignes verticales peuvent donner une impression de stabilité, des diagonales créer du mouvement, une figure centrale attirer l’attention, un vide produire du silence ou de la tension.\n\nRegarder la composition, c’est se demander où l’artiste place les éléments et pourquoi. Ce qui est grand, lumineux, central ou isolé n’a pas le même poids que ce qui reste dans l’ombre ou au bord du cadre. Une œuvre ne raconte donc pas seulement par son sujet, mais aussi par la manière dont elle range les formes."
+      },
+      {
+        "title": "3. Couleur, lumière et matière",
+        "text": "Les couleurs ne servent pas seulement à décorer. Elles créent une atmosphère, hiérarchisent les éléments, suggèrent une émotion ou rappellent des codes. Une lumière très contrastée peut dramatiser une scène ; une lumière diffuse peut donner une impression de calme ; une palette froide peut produire de la distance.\n\nLa matière compte aussi. Une peinture lisse, une touche visible, une sculpture polie, un collage, une photographie ou une installation ne donnent pas le même rapport au spectateur. Dans l’art, le “comment c’est fait” fait partie du sens autant que le “ce que ça représente”."
+      },
+      {
+        "title": "4. Sujet, symboles et contexte",
+        "text": "Une fois l’observation posée, on peut interpréter. Le sujet apparent ne suffit pas toujours : une scène religieuse peut aussi parler de pouvoir, un portrait peut construire une image sociale, une nature morte peut évoquer le temps qui passe, une abstraction peut chercher à libérer la couleur ou la forme.\n\nLe contexte aide à ne pas plaquer n’importe quelle idée. Qui commande l’œuvre ? Où devait-elle être vue ? À quelle époque ? Pour quel public ? Une image placée dans une église, un palais, un salon bourgeois, un musée ou une rue ne fonctionne pas de la même manière."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Lire une œuvre, c’est articuler trois niveaux : ce que je vois, comment c’est organisé, ce que cela peut signifier dans un contexte. Le but n’est pas de produire une phrase compliquée, mais une explication solide.\n\nLa meilleure méthode reste simple : observer, décrire, relier, interpréter. Une bonne analyse ne commence pas par un jugement de goût, mais par des indices précis visibles dans l’œuvre."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Méthode",
+        "text": "Observer précisément avant d’interpréter."
+      },
+      {
+        "label": "Composition",
+        "text": "Le placement des formes dirige le regard et construit du sens."
+      },
+      {
+        "label": "Contexte",
+        "text": "Époque, commande et lieu d’exposition changent la lecture."
+      },
+      {
+        "label": "Piège",
+        "text": "Ne pas remplacer l’analyse par une biographie ou un simple avis de goût."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "méthode",
+        "q": "Quel est le premier réflexe pour lire une œuvre ?",
+        "a": "Commencer par observer et décrire précisément ce qui se voit avant de donner une interprétation.",
+        "why": "Cela évite d’inventer un sens sans appui visuel.",
+        "trap": "Commencer directement par le nom de l’artiste ou par un avis personnel.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "composition",
+        "q": "Pourquoi la composition est-elle importante ?",
+        "a": "Parce qu’elle organise l’image, dirige le regard et donne un poids différent aux éléments.",
+        "why": "Le sens vient aussi de l’organisation visuelle.",
+        "trap": "Croire que seul le sujet représenté compte.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "matière",
+        "q": "Que peuvent apporter couleur, lumière et matière ?",
+        "a": "Elles créent une atmosphère, hiérarchisent les éléments et participent au sens de l’œuvre.",
+        "why": "La forme visuelle n’est pas une décoration secondaire.",
+        "trap": "Les traiter comme de simples détails esthétiques.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "contexte",
+        "q": "Pourquoi faut-il replacer l’œuvre dans son contexte ?",
+        "a": "Parce que la commande, l’époque, le lieu et le public modifient ce que l’image cherche à produire.",
+        "why": "Une œuvre ne fonctionne pas pareil dans une église, un palais, un musée ou la rue.",
+        "trap": "Lire toutes les images comme si elles avaient la même fonction.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quelle formule résume la bonne méthode ?",
+        "a": "Observer, décrire, relier au contexte, puis interpréter.",
+        "why": "C’est le chemin le plus solide pour éviter le commentaire vague.",
+        "trap": "Faire une fiche de noms ou dire seulement “j’aime / je n’aime pas”.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "cinema-shot-frame-basics": {
+    "hook": "Au cinéma, la caméra ne montre jamais tout. Un plan est déjà un choix : ce qui entre dans le cadre, ce qui reste hors champ, la distance au personnage et la place donnée au spectateur.",
+    "keyFacts": [
+      "Notion : le plan est une portion de film entre deux coupes",
+      "Cadrage : ce que l’image inclut ou exclut",
+      "Effets : proximité, tension, information, point de vue",
+      "Piège : croire que la caméra enregistre seulement la réalité"
+    ],
+    "express": [
+      "Un plan n’est pas une simple image. C’est une décision de mise en scène : la caméra choisit une distance, un angle, un cadre et une durée. Elle décide ce que le spectateur peut voir, mais aussi ce qu’il ne peut pas voir.",
+      "Un gros plan rapproche d’un visage ou d’un détail ; un plan large situe un personnage dans un décor ; une plongée peut fragiliser ; une contre-plongée peut donner de la puissance. Le hors-champ compte aussi, car une menace invisible peut être plus forte qu’un objet montré clairement.",
+      "À retenir : comprendre le cadrage, c’est comprendre comment un film fabrique notre regard. Le cinéma ne raconte pas seulement par son scénario, mais par l’organisation concrète des images."
+    ],
+    "complete": [
+      {
+        "title": "1. Un plan est un choix",
+        "text": "On peut définir simplement un plan comme une portion de film comprise entre deux coupes. Mais cette définition technique ne suffit pas. Un plan est surtout un choix de regard : où placer la caméra, à quelle distance, avec quel angle, pendant combien de temps, et avec quoi dans le cadre.\n\nLe spectateur a souvent l’impression de “voir la scène”, comme s’il était libre. En réalité, le film organise fortement ce qu’il regarde. Le cadre décide ce qui est visible, ce qui est caché, ce qui paraît important et ce qui reste secondaire."
+      },
+      {
+        "title": "2. La distance change la relation aux personnages",
+        "text": "Un plan large montre un espace. Il situe un personnage dans un décor, une ville, une foule, un désert ou une pièce. Il peut donner une impression de solitude, de menace ou au contraire d’ampleur. Un plan moyen rapproche l’action. Un gros plan attire l’attention sur un visage, une main, un objet, une larme, une arme ou un détail.\n\nLa distance n’est donc pas neutre. Plus la caméra s’approche, plus elle impose une proximité émotionnelle ou une information précise. Plus elle s’éloigne, plus elle peut replacer l’individu dans un monde plus vaste."
+      },
+      {
+        "title": "3. Angle, hauteur et point de vue",
+        "text": "L’angle de prise de vue influence aussi la perception. Une plongée, filmée d’en haut, peut rendre un personnage plus fragile, surveillé ou écrasé par l’espace. Une contre-plongée, filmée d’en bas, peut le rendre plus imposant, inquiétant ou héroïque. Ces effets ne sont pas automatiques, mais ils orientent la sensation.\n\nLe point de vue est tout aussi important. La caméra peut sembler extérieure à l’action, ou au contraire adopter la perception d’un personnage. Elle peut nous faire savoir plus que lui, moins que lui, ou exactement ce qu’il sait. C’est une manière de fabriquer suspense, surprise ou empathie."
+      },
+      {
+        "title": "4. Le hors-champ : ce qu’on ne voit pas",
+        "text": "Le cadre crée toujours un hors-champ : tout ce qui existe dans l’univers du film mais n’apparaît pas dans l’image. Le cinéma utilise énormément cette zone invisible. Un bruit derrière une porte, un regard vers un espace vide, une ombre ou une réaction de personnage peuvent faire exister quelque chose sans le montrer.\n\nC’est particulièrement fort dans le suspense ou l’horreur, mais pas seulement. Le hors-champ peut suggérer la violence, la foule, le pouvoir, le danger ou le passé. Ce qui n’est pas montré peut parfois produire plus d’effet que ce qui est frontalement visible."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Analyser un film, ce n’est pas seulement résumer l’histoire. Il faut regarder comment l’histoire est montrée. Le plan et le cadrage sont les premières briques de cette fabrication : distance, angle, durée, champ, hors-champ.\n\nLa grande idée est simple : la caméra construit notre regard. Quand on comprend ce choix, on commence à lire le cinéma comme un langage, pas seulement comme un scénario illustré."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Définition",
+        "text": "Un plan est une portion de film entre deux coupes, mais aussi un choix de regard."
+      },
+      {
+        "label": "Distance",
+        "text": "Plan large, plan moyen et gros plan ne produisent pas la même relation au personnage."
+      },
+      {
+        "label": "Hors-champ",
+        "text": "Ce qui n’est pas visible peut produire tension, menace ou attente."
+      },
+      {
+        "label": "Idée forte",
+        "text": "Le cinéma raconte aussi par la manière dont il cadre."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "définition",
+        "q": "Qu’est-ce qu’un plan au cinéma ?",
+        "a": "Une portion de film entre deux coupes, mais aussi un choix de cadrage, de distance, d’angle et de durée.",
+        "why": "Le cours insiste sur la dimension technique et expressive du plan.",
+        "trap": "Le réduire à une image isolée sans intention.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "effet",
+        "q": "Que produit souvent un gros plan ?",
+        "a": "Il rapproche le spectateur d’un visage, d’un détail ou d’une émotion en imposant une forte attention.",
+        "why": "La distance change la relation au personnage ou à l’objet.",
+        "trap": "Croire qu’un gros plan sert seulement à faire joli.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "angle",
+        "q": "Pourquoi l’angle de caméra compte-t-il ?",
+        "a": "Parce qu’une plongée ou une contre-plongée peut orienter la perception d’un personnage ou d’une situation.",
+        "why": "La hauteur de caméra influence la sensation de fragilité, de puissance ou de menace.",
+        "trap": "Penser que tous les angles racontent la même chose.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "notion",
+        "q": "Qu’appelle-t-on le hors-champ ?",
+        "a": "Ce qui existe dans l’univers du film mais reste en dehors de l’image visible.",
+        "why": "Le hors-champ est créé par le cadre lui-même.",
+        "trap": "Le confondre avec une erreur ou un élément absent du récit.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi le cadrage est-il central dans l’analyse d’un film ?",
+        "a": "Parce qu’il construit le regard du spectateur et participe au récit autant que le scénario.",
+        "why": "C’est la conclusion du cours.",
+        "trap": "Résumer seulement l’histoire sans regarder la mise en scène.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "sci-method-proof-basics": {
+    "hook": "La science n’est pas une collection de vérités apprises par cœur. C’est une manière de produire des connaissances en acceptant de tester, mesurer, corriger et parfois abandonner une idée séduisante.",
+    "keyFacts": [
+      "Point de départ : une question ou une observation",
+      "Outils : hypothèse, expérience, mesure, comparaison, reproductibilité",
+      "Force : accepter la correction par les faits et par d’autres chercheurs",
+      "Piège : confondre opinion, intuition et preuve"
+    ],
+    "express": [
+      "La méthode scientifique commence souvent par une observation ou une question. On propose ensuite une hypothèse, c’est-à-dire une explication possible, puis on cherche un moyen de la tester. Une idée scientifique doit pouvoir être confrontée à des faits, pas seulement sembler convaincante.",
+      "L’expérience, la mesure et la comparaison servent à limiter les impressions personnelles. Un résultat devient plus solide s’il est vérifié, critiqué, reproduit ou confirmé par plusieurs approches. La science avance donc aussi par erreurs corrigées.",
+      "À retenir : la science n’est pas “croire les savants”. C’est organiser le doute pour construire des connaissances plus fiables que l’opinion, même si ces connaissances peuvent être améliorées avec de nouvelles preuves."
+    ],
+    "complete": [
+      {
+        "title": "1. Partir d’un problème",
+        "text": "Une démarche scientifique ne commence pas forcément par une grande théorie. Elle peut partir d’une observation simple : un astre se déplace, une maladie se transmet, une plante pousse mieux dans certaines conditions, un matériau réagit à la chaleur. L’important est de transformer cette observation en question précise.\n\nPlus la question est claire, plus on peut la tester. “Pourquoi les gens tombent-ils malades ?” est immense. “Ce microbe est-il présent chez les patients atteints de cette maladie ?” devient plus contrôlable. La science gagne en force quand elle rend les problèmes examinables."
+      },
+      {
+        "title": "2. Hypothèse ne veut pas dire devinette",
+        "text": "Une hypothèse est une explication possible, mais elle doit être formulée de manière à pouvoir être mise à l’épreuve. Si aucune observation imaginable ne peut la contredire, elle sort du terrain scientifique.\n\nCela ne veut pas dire qu’une hypothèse est faible. Au contraire, c’est souvent une idée forte, mais exposée au risque d’être fausse. La science accepte ce risque : une idée qui résiste à des tests exigeants devient plus robuste qu’une idée protégée de toute critique."
+      },
+      {
+        "title": "3. Mesurer pour sortir de l’impression",
+        "text": "Les sens humains sont utiles, mais ils trompent facilement. On peut mal estimer une distance, confondre corrélation et cause, se souvenir surtout des cas spectaculaires, ou voir ce qu’on s’attend à voir. Les instruments et les mesures servent à réduire ces pièges.\n\nMesurer ne suffit pas automatiquement : il faut aussi comparer, définir les conditions, répéter, contrôler les biais. Une expérience bien construite cherche à isoler ce qui varie réellement, afin de ne pas attribuer un effet à la mauvaise cause."
+      },
+      {
+        "title": "4. La correction fait partie de la méthode",
+        "text": "Une connaissance scientifique n’est pas sacrée. Elle peut être discutée, corrigée, précisée ou remplacée si de meilleures preuves apparaissent. C’est parfois déroutant, car on peut croire qu’un changement signifie que “la science s’est trompée”. En réalité, cette capacité de correction est l’une de ses forces.\n\nLa critique par d’autres chercheurs compte beaucoup : refaire un calcul, tester un résultat, chercher une erreur, proposer une autre interprétation. La science n’avance pas seulement grâce aux génies isolés, mais grâce à des communautés qui vérifient et discutent."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "La méthode scientifique n’est pas une recette magique, mais une discipline du doute. Elle transforme des questions en hypothèses testables, utilise mesures et comparaisons, puis accepte la correction.\n\nLa grande différence avec une opinion n’est pas que la science serait toujours définitive. C’est qu’elle s’oblige à donner des raisons, des preuves et des procédures permettant à d’autres de vérifier ou de contester."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Méthode",
+        "text": "Une hypothèse scientifique doit pouvoir être testée."
+      },
+      {
+        "label": "Preuve",
+        "text": "Mesure, comparaison et reproductibilité rendent une idée plus solide."
+      },
+      {
+        "label": "Doute",
+        "text": "Corriger une théorie n’est pas une faiblesse : c’est le fonctionnement normal de la science."
+      },
+      {
+        "label": "Piège",
+        "text": "Une intuition convaincante n’est pas une preuve."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "définition",
+        "q": "Qu’est-ce qu’une hypothèse scientifique ?",
+        "a": "Une explication possible formulée de manière à pouvoir être testée par des faits ou des observations.",
+        "why": "Elle doit être exposée au risque d’être contredite.",
+        "trap": "La confondre avec une simple opinion séduisante.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "méthode",
+        "q": "Pourquoi mesure-t-on ?",
+        "a": "Pour sortir des impressions personnelles, comparer correctement et limiter les biais.",
+        "why": "Les sens et la mémoire peuvent tromper.",
+        "trap": "Croire qu’une impression forte suffit comme preuve.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "preuve",
+        "q": "Qu’est-ce qui rend un résultat plus solide ?",
+        "a": "Le fait qu’il soit vérifié, discuté, répété ou confirmé par plusieurs approches.",
+        "why": "La robustesse vient de la confrontation aux tests.",
+        "trap": "Le croire vrai seulement parce qu’une personne connue l’affirme.",
+        "evidence": "Blocs 3 et 4."
+      },
+      {
+        "kind": "nuance",
+        "q": "Pourquoi une connaissance scientifique peut-elle changer ?",
+        "a": "Parce qu’elle peut être corrigée ou précisée quand de nouvelles preuves ou de meilleures méthodes apparaissent.",
+        "why": "La correction est une force de la démarche scientifique.",
+        "trap": "Dire que changer d’avis prouve que tout se vaut.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quelle différence avec une opinion ?",
+        "a": "La science doit fournir des preuves et des procédures que d’autres peuvent vérifier ou contester.",
+        "why": "C’est la discipline du doute organisé.",
+        "trap": "Résumer la science à “croire les savants”.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "eco-supply-demand-basics": {
+    "hook": "Un prix n’est pas seulement un chiffre posé sur une étiquette. Il signale des raretés, des coûts, des envies, des anticipations, des rapports de force et parfois des paniques.",
+    "keyFacts": [
+      "Offre : quantité que les vendeurs sont prêts à proposer",
+      "Demande : quantité que les acheteurs veulent ou peuvent acheter",
+      "Prix : résultat d’un équilibre, mais aussi d’un contexte",
+      "Piège : croire que le prix reflète toujours la valeur morale ou l’utilité réelle"
+    ],
+    "express": [
+      "L’offre désigne ce que les vendeurs peuvent ou veulent mettre sur le marché. La demande désigne ce que les acheteurs veulent et peuvent acheter. Quand la demande augmente fortement ou que l’offre se réduit, le prix a souvent tendance à monter.",
+      "Mais ce mécanisme n’explique pas tout tout seul. Les coûts de production, les stocks, la concurrence, les taxes, les anticipations, la saison, les pénuries ou la mode peuvent aussi modifier les prix. Un marché réel est rarement un schéma parfaitement propre.",
+      "À retenir : offre et demande donnent une base très utile pour comprendre les prix, mais il faut toujours demander ce qui bouge concrètement : quantité disponible, nombre d’acheteurs, pouvoir d’achat, coûts et contexte."
+    ],
+    "complete": [
+      {
+        "title": "1. Le prix comme signal",
+        "text": "Dans la vie quotidienne, on voit le prix comme une somme à payer. En économie, il sert aussi de signal. Il indique qu’un bien est plus ou moins rare, plus ou moins demandé, plus ou moins coûteux à produire ou à transporter. Quand un prix change, il raconte souvent qu’un élément du marché a bougé.\n\nCe signal n’est pas parfait. Un prix peut être influencé par une mode, une taxe, une situation de monopole, une panique, une spéculation ou une règle publique. Mais il reste une information centrale pour comprendre les choix des producteurs et des consommateurs."
+      },
+      {
+        "title": "2. L’offre : ce qui arrive sur le marché",
+        "text": "L’offre correspond à la quantité que les vendeurs sont prêts à proposer à différents prix. Elle dépend des coûts de production, des salaires, des matières premières, de l’énergie, des machines, de la météo, des stocks ou des capacités de transport.\n\nSi produire devient plus cher, certains vendeurs réduisent leur offre ou demandent un prix plus élevé. Si une innovation rend la production plus facile, l’offre peut augmenter. L’offre n’est donc pas seulement une volonté : elle dépend de contraintes très concrètes."
+      },
+      {
+        "title": "3. La demande : envie et pouvoir d’achat",
+        "text": "La demande n’est pas simplement le désir. Beaucoup de gens peuvent vouloir un produit sans pouvoir l’acheter. En économie, la demande dépend à la fois des préférences, du revenu, du prix, des alternatives disponibles et des anticipations.\n\nSi un produit devient à la mode, si les revenus augmentent ou si les acheteurs craignent une pénurie, la demande peut monter. À l’inverse, si le prix devient trop élevé ou si un substitut apparaît, elle peut baisser. La demande est donc une combinaison d’envie, de moyens et de contexte."
+      },
+      {
+        "title": "4. Pourquoi les prix bougent",
+        "text": "Quand la demande augmente plus vite que l’offre, le prix monte souvent : beaucoup d’acheteurs se disputent une quantité limitée. Quand l’offre augmente ou que la demande baisse, le prix peut diminuer. Ce raisonnement donne une grille simple et puissante.\n\nMais il faut rester prudent. Dans certains secteurs, les prix sont réglementés, subventionnés ou dominés par quelques grandes entreprises. Dans d’autres, ils dépendent fortement des marchés mondiaux. L’offre et la demande restent utiles, mais elles doivent être replacées dans des institutions et des rapports de force."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Offre et demande ne sont pas une formule magique, mais une première carte pour comprendre les prix. La bonne question n’est pas seulement “le prix monte-t-il ?”, mais “qu’est-ce qui a changé du côté des vendeurs, des acheteurs, des coûts ou des règles ?”.\n\nUn prix ne dit pas forcément ce qu’une chose “vaut vraiment”. Il dit surtout comment un marché organise à un moment donné une rencontre entre rareté, coûts, désir, pouvoir d’achat et contexte."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Offre",
+        "text": "Quantité que les vendeurs peuvent ou veulent proposer."
+      },
+      {
+        "label": "Demande",
+        "text": "Envie d’acheter combinée au pouvoir d’achat."
+      },
+      {
+        "label": "Prix",
+        "text": "Signal utile, mais influencé par le contexte et les règles."
+      },
+      {
+        "label": "Nuance",
+        "text": "Un marché réel n’est pas toujours un schéma pur."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "définition",
+        "q": "Que désigne l’offre ?",
+        "a": "La quantité que les vendeurs sont prêts à proposer sur un marché à différents prix.",
+        "why": "Elle dépend notamment des coûts, stocks et capacités de production.",
+        "trap": "La confondre avec la demande des acheteurs.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "définition",
+        "q": "Pourquoi la demande n’est-elle pas seulement l’envie ?",
+        "a": "Parce qu’elle dépend aussi du pouvoir d’achat, du prix, des alternatives et du contexte.",
+        "why": "Vouloir un produit ne signifie pas pouvoir l’acheter.",
+        "trap": "Réduire la demande au désir pur.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "mécanisme",
+        "q": "Que se passe-t-il souvent si la demande augmente alors que l’offre reste limitée ?",
+        "a": "Le prix a tendance à monter, car davantage d’acheteurs se disputent une quantité limitée.",
+        "why": "C’est le mécanisme central du cours.",
+        "trap": "Dire que le prix baisse automatiquement.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "nuance",
+        "q": "Pourquoi le schéma offre-demande ne suffit-il pas toujours ?",
+        "a": "Parce que les prix peuvent aussi dépendre des taxes, règles publiques, monopoles, subventions ou marchés mondiaux.",
+        "why": "Les marchés réels sont encadrés par des institutions.",
+        "trap": "Imaginer un marché toujours parfaitement libre et simple.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quelle question faut-il poser quand un prix bouge ?",
+        "a": "Qu’est-ce qui a changé du côté de l’offre, de la demande, des coûts, des règles ou du contexte ?",
+        "why": "C’est la méthode la plus utile pour analyser un prix.",
+        "trap": "Dire seulement “c’est cher” ou “c’est la faute des vendeurs”.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "geo-maps-scale-basics": {
+    "hook": "Une carte a l’air objective, mais elle résulte toujours de choix : projection, échelle, centrage, couleurs, figurés et informations gardées ou supprimées.",
+    "keyFacts": [
+      "Carte : représentation simplifiée d’un espace",
+      "Échelle : rapport entre distance sur la carte et distance réelle",
+      "Projection : méthode pour représenter une sphère sur un plan",
+      "Piège : croire qu’une carte est une copie neutre du monde"
+    ],
+    "express": [
+      "Une carte simplifie le monde pour le rendre lisible. Elle choisit ce qu’elle montre : routes, reliefs, frontières, densités, climats, flux, richesses ou risques. Ce choix dépend du but de la carte, pas seulement de la réalité du terrain.",
+      "L’échelle change tout. Une carte mondiale montre les grands contrastes mais écrase les détails locaux. Une carte de quartier montre beaucoup de précision mais ne permet pas de comprendre les grands ensembles. Aucune échelle ne dit tout.",
+      "À retenir : une carte est un outil très puissant, mais jamais neutre. Pour la lire, il faut regarder le titre, la légende, l’échelle, la projection et se demander ce que la carte montre — et ce qu’elle cache."
+    ],
+    "complete": [
+      {
+        "title": "1. Une carte simplifie",
+        "text": "Le monde est trop complexe pour être représenté entièrement. Une carte sélectionne donc des informations : routes, villes, fleuves, frontières, reliefs, climats, densités de population, flux commerciaux ou zones de conflit. Ce tri rend la carte lisible, mais il crée aussi un point de vue.\n\nUne carte routière, une carte météo, une carte militaire et une carte scolaire du monde ne répondent pas à la même question. Elles peuvent représenter le même espace, mais pas le même problème. Lire une carte commence donc par une question simple : pourquoi cette carte a-t-elle été faite ?"
+      },
+      {
+        "title": "2. L’échelle change le raisonnement",
+        "text": "L’échelle indique le rapport entre la distance sur la carte et la distance réelle. Une grande échelle montre un petit espace avec beaucoup de détails, comme une ville ou une vallée. Une petite échelle montre un espace très vaste avec moins de détails, comme un continent ou le monde.\n\nChanger d’échelle peut changer l’explication. Un quartier peut sembler favorisé à l’échelle d’une ville, mais appartenir à une région en difficulté à l’échelle nationale. Une frontière peut paraître nette sur une carte du monde, mais beaucoup plus complexe localement."
+      },
+      {
+        "title": "3. Représenter une sphère sur un plan déforme forcément",
+        "text": "La Terre est proche d’une sphère, alors qu’une carte est plane. Pour passer de l’une à l’autre, il faut utiliser une projection. Aucune projection ne conserve parfaitement à la fois les formes, les surfaces, les distances et les angles. Il y a toujours un compromis.\n\nCertaines projections sont utiles pour la navigation, d’autres pour comparer les surfaces, d’autres pour montrer les continents de manière plus équilibrée. Le problème n’est pas qu’une projection “ment” forcément, mais qu’elle sert un usage précis et déforme autre chose."
+      },
+      {
+        "title": "4. Légende, couleurs et catégories",
+        "text": "La légende est la grammaire de la carte. Elle explique les couleurs, les figurés, les seuils et les catégories. Deux cartes peuvent donner une impression très différente simplement parce qu’elles ne découpent pas les données de la même manière.\n\nPar exemple, choisir trois catégories de richesse ou sept catégories ne produit pas le même effet visuel. Utiliser du rouge pour un phénomène peut suggérer l’urgence ou le danger. La carte est donc aussi un langage graphique."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Une carte n’est pas une copie neutre du monde : c’est une représentation construite pour répondre à une question. Elle simplifie, sélectionne, déforme et hiérarchise. C’est ce qui la rend utile, mais aussi ce qui oblige à la lire avec méthode.\n\nLe bon réflexe est de vérifier le titre, la source, l’échelle, la légende, la projection et les choix de catégories. Une carte bien lue ne donne pas seulement une réponse : elle révèle aussi la manière dont on a posé la question."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Échelle",
+        "text": "Changer d’échelle change souvent l’explication."
+      },
+      {
+        "label": "Projection",
+        "text": "Mettre une sphère à plat impose toujours des déformations."
+      },
+      {
+        "label": "Légende",
+        "text": "Elle donne les règles de lecture de la carte."
+      },
+      {
+        "label": "Piège",
+        "text": "Une carte est utile, mais jamais totalement neutre."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "définition",
+        "q": "Pourquoi une carte simplifie-t-elle forcément le monde ?",
+        "a": "Parce qu’elle sélectionne certaines informations pour rendre un espace lisible selon un objectif précis.",
+        "why": "Toute carte fait un tri.",
+        "trap": "Croire qu’elle montre tout le réel.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "échelle",
+        "q": "Que change l’échelle d’une carte ?",
+        "a": "Elle change le niveau de détail et peut modifier l’explication d’un phénomène.",
+        "why": "Un même espace ne se comprend pas pareil localement et mondialement.",
+        "trap": "Penser qu’une seule échelle suffit toujours.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "projection",
+        "q": "Pourquoi une projection déforme-t-elle toujours quelque chose ?",
+        "a": "Parce qu’elle transforme une surface proche d’une sphère en surface plane.",
+        "why": "On ne peut pas conserver parfaitement formes, surfaces, distances et angles à la fois.",
+        "trap": "Chercher une carte plane totalement exacte.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "légende",
+        "q": "Pourquoi la légende est-elle essentielle ?",
+        "a": "Parce qu’elle explique les couleurs, figurés, seuils et catégories utilisés par la carte.",
+        "why": "C’est la grammaire de la carte.",
+        "trap": "Lire seulement les couleurs sans vérifier leur signification.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quel réflexe faut-il avoir devant une carte ?",
+        "a": "Regarder le titre, la source, l’échelle, la légende, la projection et ce que la carte choisit de montrer ou de cacher.",
+        "why": "C’est la méthode de lecture critique.",
+        "trap": "La prendre comme une copie neutre du monde.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "art-renaissance-perspective": {
+    "hook": "À la Renaissance, l’art européen ne change pas seulement de style : il change de manière de regarder le monde. Le corps, l’espace, la lumière et l’Antiquité redeviennent des terrains d’expérience.",
+    "keyFacts": [
+        "Repère : XVe-XVIe siècles, d’abord en Italie puis en Europe",
+        "Idée forte : la perspective donne une profondeur mathématique à l’image",
+        "Contexte : humanisme, redécouverte de l’Antiquité, mécénat des villes et des princes",
+        "Piège : croire que la Renaissance efface brutalement tout le Moyen Âge"
+    ],
+    "express": [
+        "La Renaissance artistique naît surtout en Italie aux XVe et XVIe siècles. Les artistes s’intéressent davantage au corps humain, à l’espace, aux ruines antiques, à la lumière et à la place de l’homme dans le monde.",
+        "La perspective est l’une des grandes nouveautés : elle permet de construire une impression de profondeur avec des lignes, un point de fuite et des proportions cohérentes. L’image semble devenir un espace organisé, presque mesurable.",
+        "À retenir : la Renaissance n’est pas juste un retour à l’Antiquité. C’est une nouvelle ambition : représenter le monde de façon plus construite, plus humaine, plus savante, tout en restant liée aux commandes religieuses et politiques."
+    ],
+    "complete": [
+        {
+            "title": "1. Un changement de regard",
+            "text": "Quand on parle de Renaissance en art, on pense souvent à des noms immenses : Léonard de Vinci, Michel-Ange, Raphaël, Botticelli. Mais le plus important n’est pas seulement la liste des artistes. Ce qui change, c’est le regard porté sur le monde. Les peintres et sculpteurs veulent représenter des corps plus crédibles, des espaces plus profonds, des émotions plus lisibles et des scènes mieux organisées.\n\nCette transformation naît surtout dans les villes italiennes, où les commanditaires religieux, les familles puissantes et les princes utilisent l’art pour montrer leur prestige. L’artiste reste souvent au service d’une commande, mais son statut grandit : il n’est plus seulement un artisan anonyme, il devient parfois une figure reconnue pour son invention et son savoir."
+        },
+        {
+            "title": "2. La perspective, une révolution discrète",
+            "text": "La perspective linéaire donne à l’image une profondeur organisée. Des lignes convergent vers un point de fuite ; les objets diminuent avec la distance ; l’espace semble obéir à une logique géométrique. Pour le spectateur, le tableau devient presque une fenêtre ouverte sur un monde construit.\n\nCette technique n’est pas seulement un truc de dessin. Elle traduit une idée très forte : le monde peut être observé, mesuré et ordonné par l’intelligence humaine. L’art rejoint alors les mathématiques, l’architecture et l’étude de la nature. Une peinture de la Renaissance n’est donc pas seulement belle : elle est souvent savante."
+        },
+        {
+            "title": "3. Le corps humain reprend de l’importance",
+            "text": "Les artistes de la Renaissance étudient davantage l’anatomie, les proportions et le mouvement. Le corps n’est plus seulement un signe religieux ou symbolique : il devient un sujet d’observation. Même dans les scènes bibliques, les personnages prennent du poids, du volume, des gestes et des émotions.\n\nCe retour au corps s’appuie aussi sur l’admiration pour l’Antiquité grecque et romaine. Les statues antiques, les ruines et les textes anciens nourrissent un idéal de beauté, d’équilibre et de dignité humaine. Mais il ne s’agit pas de copier mécaniquement le passé : les artistes réinventent ces modèles pour répondre aux besoins de leur temps."
+        },
+        {
+            "title": "4. Religion, pouvoir et humanisme",
+            "text": "La Renaissance ne remplace pas le religieux par le moderne du jour au lendemain. Une grande partie des œuvres reste chrétienne : Vierges, saints, fresques d’églises, retables, scènes bibliques. La nouveauté vient plutôt de la manière de représenter ces sujets : décors plus crédibles, corps plus humains, émotions plus présentes, composition plus stable.\n\nLe contexte humaniste compte aussi. Les élites valorisent l’étude, les langues anciennes, la philosophie, l’histoire et la dignité de l’homme. L’art devient un lieu où se rencontrent foi, prestige politique, savoir antique et curiosité pour le monde réel."
+        },
+        {
+            "title": "5. Ce qu’il faut retenir",
+            "text": "La Renaissance artistique est une étape majeure parce qu’elle transforme la manière de construire une image. Perspective, anatomie, lumière, composition et références antiques donnent aux œuvres une ambition nouvelle.\n\nIl faut cependant éviter une vision trop brutale : le Moyen Âge ne disparaît pas d’un coup, et les artistes de la Renaissance continuent souvent à travailler pour l’Église ou les puissants. La nouveauté tient surtout à l’alliance entre tradition, observation, savoir et confiance dans les capacités humaines."
+        }
+    ],
+    "deeper": [],
+    "takeaways": [
+        {
+            "label": "Repère",
+            "text": "La Renaissance artistique se développe surtout en Italie aux XVe-XVIe siècles."
+        },
+        {
+            "label": "Perspective",
+            "text": "Elle organise la profondeur de l’image avec une logique géométrique."
+        },
+        {
+            "label": "Humanisme",
+            "text": "Le corps, l’homme et l’Antiquité prennent une place nouvelle."
+        },
+        {
+            "label": "Nuance",
+            "text": "La Renaissance reste liée aux commandes religieuses et politiques."
+        }
+    ],
+    "quiz": [
+        {
+            "kind": "repère",
+            "q": "Où la Renaissance artistique se développe-t-elle d’abord fortement ?",
+            "a": "Surtout dans les villes italiennes, avant de se diffuser en Europe.",
+            "why": "Le cours insiste sur le rôle des villes italiennes et des commanditaires.",
+            "trap": "Dire simplement “partout en Europe en même temps”.",
+            "evidence": "Bloc 1."
+        },
+        {
+            "kind": "notion",
+            "q": "À quoi sert la perspective linéaire ?",
+            "a": "À organiser la profondeur de l’image grâce à des lignes, un point de fuite et des proportions cohérentes.",
+            "why": "Elle donne l’impression d’un espace mesurable.",
+            "trap": "La réduire à une couleur ou à un décor.",
+            "evidence": "Bloc 2."
+        },
+        {
+            "kind": "analyse",
+            "q": "Pourquoi la perspective est-elle plus qu’un simple truc de dessin ?",
+            "a": "Parce qu’elle montre l’idée que le monde peut être observé, mesuré et organisé par l’intelligence humaine.",
+            "why": "Elle relie l’art aux mathématiques et à l’observation.",
+            "trap": "Croire que c’est seulement décoratif.",
+            "evidence": "Bloc 2."
+        },
+        {
+            "kind": "contexte",
+            "q": "Quel rôle joue l’Antiquité dans la Renaissance ?",
+            "a": "Elle fournit des modèles de beauté, de proportions et de dignité humaine que les artistes réinventent.",
+            "why": "Les artistes s’inspirent des statues, ruines et textes anciens.",
+            "trap": "Dire qu’ils copient simplement le passé.",
+            "evidence": "Bloc 3."
+        },
+        {
+            "kind": "nuance",
+            "q": "Pourquoi ne faut-il pas dire que la Renaissance efface totalement le Moyen Âge ?",
+            "a": "Parce que beaucoup d’œuvres restent religieuses et commandées par l’Église ou les puissants, même si la manière de représenter change.",
+            "why": "La rupture est réelle, mais progressive et mélangée à des continuités.",
+            "trap": "Présenter la Renaissance comme un redémarrage total.",
+            "evidence": "Bloc 4."
+        }
+    ]
+},
+  "cinema-early-lumiere-melies": {
+    "hook": "Le cinéma ne naît pas immédiatement comme un art du grand récit. Il commence comme une attraction : une machine qui montre le réel, surprend le public et invente peu à peu ses propres pouvoirs.",
+    "keyFacts": [
+        "Repère : 1895, premières projections publiques des frères Lumière",
+        "Lumière : vues du réel, scènes brèves, effet de présence",
+        "Méliès : trucages, féerie, studio, imaginaire",
+        "Piège : croire que le cinéma devient tout de suite un film narratif moderne"
+    ],
+    "express": [
+        "À la fin du XIXe siècle, le cinéma apparaît comme une invention technique et un spectacle. Les frères Lumière filment des scènes courtes du quotidien : sortie d’usine, train, repas, rue, gestes ordinaires. Le choc vient de voir le réel bouger sur un écran.",
+        "Georges Méliès comprend très vite que la caméra peut aussi fabriquer de l’imaginaire. Il utilise décors, trucages, arrêts de caméra, surimpressions et mise en scène pour créer des films féeriques, dont Le Voyage dans la Lune.",
+        "À retenir : le cinéma naît entre deux pôles qui resteront essentiels : enregistrer le monde et inventer un monde. Le documentaire, la fiction, le trucage et le spectacle sont déjà en germe."
+    ],
+    "complete": [
+        {
+            "title": "1. Une invention et un spectacle",
+            "text": "Le cinéma naît à la fin du XIXe siècle dans un monde fasciné par les machines, la photographie, l’électricité, les expositions et les attractions. Il ne se présente pas tout de suite comme un art comparable au roman ou au théâtre. Au départ, c’est aussi une curiosité technique : des images photographiques qui bougent devant un public.\n\nLes premières séances impressionnent parce qu’elles donnent une sensation de présence. Voir des ouvriers sortir d’une usine, un train entrer en gare ou une famille à table peut sembler banal aujourd’hui. Pour les premiers spectateurs, c’est un événement : le réel paraît revenir sous forme de mouvement."
+        },
+        {
+            "title": "2. Les frères Lumière : capter le monde",
+            "text": "Les frères Lumière ne filment pas des histoires longues. Ils réalisent des vues courtes : une action simple, souvent prise sur le vif ou légèrement organisée. Leur cinéma montre le quotidien, les gestes, les lieux, les foules, les machines, les déplacements.\n\nCe cinéma est important parce qu’il installe l’un des grands pouvoirs du film : enregistrer une trace du monde. Même quand une scène est choisie ou composée, elle garde une force documentaire. Le cinéma devient une manière de conserver des gestes, des visages et des espaces."
+        },
+        {
+            "title": "3. Méliès : inventer l’impossible",
+            "text": "Georges Méliès vient du spectacle et de la magie. Il comprend que le cinéma ne sert pas seulement à montrer ce qui existe : il peut aussi faire apparaître ce qui n’existe pas. Avec des décors peints, des costumes, des machines, des arrêts de caméra et des trucages, il transforme l’écran en scène d’illusion.\n\nSes films ouvrent la voie à la fiction spectaculaire. Le Voyage dans la Lune, avec son imaginaire scientifique et féerique, montre déjà que le cinéma peut construire un univers. Méliès n’est pas seulement un bricoleur amusant : il invente une partie du langage du spectacle filmé."
+        },
+        {
+            "title": "4. Deux directions qui restent vivantes",
+            "text": "Lumière et Méliès sont souvent opposés : d’un côté le réel, de l’autre l’imaginaire. Cette opposition est simple, mais elle aide à comprendre la naissance du cinéma. Très tôt, le film peut être document, fiction, attraction, trucage, souvenir ou rêve.\n\nToute l’histoire du cinéma gardera cette tension. Un film peut chercher à capter une ville telle qu’elle est, ou construire un monde totalement artificiel. Il peut observer, manipuler, raconter, émerveiller. Dès ses débuts, le cinéma n’a donc pas une seule identité."
+        },
+        {
+            "title": "5. Ce qu’il faut retenir",
+            "text": "La naissance du cinéma n’est pas seulement une date technique. C’est l’apparition d’un nouveau rapport aux images : le mouvement, la projection collective et la possibilité de faire croire à une présence.\n\nLes frères Lumière montrent la puissance d’enregistrement du réel ; Méliès montre la puissance d’invention. Entre ces deux pôles, l’histoire du cinéma va développer le documentaire, la fiction, le montage, les genres, les studios et les grands spectacles."
+        }
+    ],
+    "deeper": [],
+    "takeaways": [
+        {
+            "label": "Repère",
+            "text": "Les projections Lumière de 1895 marquent un moment fondateur."
+        },
+        {
+            "label": "Lumière",
+            "text": "Le cinéma capte le réel, les gestes et les lieux."
+        },
+        {
+            "label": "Méliès",
+            "text": "Le cinéma invente des mondes grâce au décor et au trucage."
+        },
+        {
+            "label": "Idée forte",
+            "text": "Le cinéma naît entre document et imaginaire."
+        }
+    ],
+    "quiz": [
+        {
+            "kind": "repère",
+            "q": "Pourquoi les premières vues Lumière impressionnent-elles le public ?",
+            "a": "Parce qu’elles montrent des images photographiques en mouvement, donnant une forte sensation de présence du réel.",
+            "why": "Le choc vient de voir le réel bouger sur un écran.",
+            "trap": "Croire qu’elles impressionnent par des scénarios complexes.",
+            "evidence": "Bloc 1."
+        },
+        {
+            "kind": "notion",
+            "q": "Que filment surtout les frères Lumière ?",
+            "a": "Des scènes courtes du quotidien, des gestes, des lieux, des foules ou des machines.",
+            "why": "Leur cinéma installe la puissance d’enregistrement du monde.",
+            "trap": "Dire qu’ils tournent surtout des longs métrages de fiction.",
+            "evidence": "Bloc 2."
+        },
+        {
+            "kind": "personnage",
+            "q": "Qu’apporte Méliès à la naissance du cinéma ?",
+            "a": "Il montre que la caméra peut inventer l’impossible avec décors, trucages, arrêts de caméra et mise en scène.",
+            "why": "Il vient de la magie et du spectacle.",
+            "trap": "Le réduire à un simple opérateur d’actualités.",
+            "evidence": "Bloc 3."
+        },
+        {
+            "kind": "exemple",
+            "q": "Quel film de Méliès est cité comme exemple d’imaginaire scientifique et féerique ?",
+            "a": "Le Voyage dans la Lune.",
+            "why": "Le cours l’utilise pour montrer la fiction spectaculaire.",
+            "trap": "Répondre Sortie d’usine, qui renvoie plutôt aux Lumière.",
+            "evidence": "Bloc 3."
+        },
+        {
+            "kind": "synthèse",
+            "q": "Quels sont les deux grands pôles présents dès la naissance du cinéma ?",
+            "a": "Enregistrer le monde et inventer un monde.",
+            "why": "Lumière et Méliès symbolisent ces deux directions.",
+            "trap": "Dire seulement “divertir” ou “informer”.",
+            "evidence": "Conclusion."
+        }
+    ]
+},
+  "sci-galileo-revolution": {
+    "hook": "Galilée ne change pas le ciel en regardant plus fort à l’œil nu. Il le change en utilisant un instrument, en observant des détails inattendus et en obligeant les savants à discuter avec les faits.",
+    "keyFacts": [
+        "Repère : début du XVIIe siècle",
+        "Instrument : lunette astronomique améliorée",
+        "Observations : relief de la Lune, satellites de Jupiter, phases de Vénus",
+        "Enjeu : fragiliser l’idée d’un ciel parfait centré sur la Terre"
+    ],
+    "express": [
+        "Au début du XVIIe siècle, Galilée améliore et utilise la lunette astronomique pour observer le ciel. Il voit des reliefs sur la Lune, des satellites autour de Jupiter et des phénomènes qui ne s’accordent pas bien avec l’idée d’un univers parfaitement centré sur la Terre.",
+        "Son importance ne vient pas seulement d’une découverte isolée. Galilée montre la force d’une science instrumentée : un objet technique permet de voir ce que l’œil ne voyait pas, puis ces observations deviennent des arguments dans un débat savant.",
+        "À retenir : Galilée appartient à la révolution scientifique parce qu’il associe observation, instruments, mathématiques, publication et controverse. L’histoire des sciences avance ici avec des preuves, mais aussi avec des conflits d’idées."
+    ],
+    "complete": [
+        {
+            "title": "1. Un ciel ancien remis en question",
+            "text": "Pendant longtemps, la représentation dominante du cosmos place la Terre au centre. Le ciel est souvent imaginé comme un domaine parfait, régulier, différent du monde terrestre. Cette vision n’est pas absurde pour son époque : à l’œil nu, la Terre semble immobile et les astres paraissent tourner autour de nous.\n\nAvant Galilée, Copernic a déjà proposé un modèle héliocentrique, où la Terre tourne autour du Soleil. Mais une idée ne s’impose pas seulement parce qu’elle est élégante. Il faut des arguments, des observations, des calculs et une communauté capable d’en discuter."
+        },
+        {
+            "title": "2. La lunette transforme l’observation",
+            "text": "Galilée n’invente pas seul la lunette, mais il l’améliore et l’oriente vers le ciel. Ce geste est décisif. L’instrument agrandit, révèle des détails et rend visibles des phénomènes que l’œil nu ne pouvait pas saisir correctement.\n\nLa science change alors de dimension : voir ne signifie plus seulement regarder directement. Voir peut passer par un instrument, donc par une technique. La qualité de l’observation dépend de l’objet utilisé, de son réglage et de la manière d’interpréter ce qu’il montre."
+        },
+        {
+            "title": "3. Des observations qui dérangent",
+            "text": "Galilée observe que la Lune n’est pas une sphère parfaitement lisse : elle semble avoir des reliefs, des ombres, des irrégularités. Il observe aussi des points lumineux qui tournent autour de Jupiter. Cela montre qu’il existe des corps célestes qui ne tournent pas directement autour de la Terre.\n\nLes phases de Vénus renforcent également les difficultés du vieux modèle géocentrique. Chaque observation ne détruit pas tout à elle seule, mais l’ensemble fragilise une vision ancienne du cosmos. Le ciel devient un espace physique observable, moins parfait et plus complexe."
+        },
+        {
+            "title": "4. Science, publication et conflit",
+            "text": "Galilée publie, défend ses idées et entre dans des débats très tendus. Son histoire est célèbre à cause du conflit avec l’Église, mais il ne faut pas la réduire à une opposition simple entre science et religion. Les enjeux mêlent interprétation des textes, autorité intellectuelle, preuves disponibles, politique et prestige.\n\nCe qui compte pour l’histoire des sciences, c’est que les observations instrumentées deviennent des arguments publics. Les savants ne discutent plus seulement à partir de traditions : ils doivent tenir compte de ce que les instruments rendent visible."
+        },
+        {
+            "title": "5. Ce qu’il faut retenir",
+            "text": "Galilée incarne un moment où l’histoire des sciences s’accélère. L’instrument, l’observation, le calcul, la publication et la controverse transforment la manière de produire du savoir.\n\nLa grande idée n’est pas que Galilée aurait tout découvert seul. Il s’inscrit dans une chaîne de savants, de techniques et de débats. Mais il montre de façon spectaculaire qu’une invention optique peut modifier notre place dans l’univers."
+        }
+    ],
+    "deeper": [],
+    "takeaways": [
+        {
+            "label": "Instrument",
+            "text": "La lunette permet de voir des phénomènes invisibles à l’œil nu."
+        },
+        {
+            "label": "Observations",
+            "text": "Lune irrégulière, satellites de Jupiter et phases de Vénus fragilisent l’ancien cosmos."
+        },
+        {
+            "label": "Histoire",
+            "text": "Galilée s’inscrit dans la révolution scientifique, après Copernic."
+        },
+        {
+            "label": "Nuance",
+            "text": "Le conflit ne se résume pas à science contre religion de manière simpliste."
+        }
+    ],
+    "quiz": [
+        {
+            "kind": "repère",
+            "q": "À quelle période Galilée utilise-t-il la lunette pour observer le ciel ?",
+            "a": "Au début du XVIIe siècle.",
+            "why": "C’est le moment de ses observations astronomiques majeures.",
+            "trap": "Le placer dans l’Antiquité.",
+            "evidence": "Express et bloc 1."
+        },
+        {
+            "kind": "instrument",
+            "q": "Pourquoi la lunette est-elle décisive ?",
+            "a": "Parce qu’elle révèle des détails et des phénomènes que l’œil nu ne voyait pas correctement.",
+            "why": "Elle transforme la manière d’observer.",
+            "trap": "Dire qu’elle sert seulement à confirmer des traditions anciennes.",
+            "evidence": "Bloc 2."
+        },
+        {
+            "kind": "observation",
+            "q": "Que montrent les satellites observés autour de Jupiter ?",
+            "a": "Qu’il existe des corps célestes qui ne tournent pas directement autour de la Terre.",
+            "why": "Cela fragilise l’idée que tout tourne autour de nous.",
+            "trap": "Dire qu’ils prouvent que Jupiter tourne autour de la Terre.",
+            "evidence": "Bloc 3."
+        },
+        {
+            "kind": "nuance",
+            "q": "Pourquoi le conflit autour de Galilée est-il complexe ?",
+            "a": "Parce qu’il mêle interprétation religieuse, autorité, preuves, politique et prestige intellectuel.",
+            "why": "Le cours évite le résumé simpliste science contre religion.",
+            "trap": "Le réduire à un duel caricatural.",
+            "evidence": "Bloc 4."
+        },
+        {
+            "kind": "synthèse",
+            "q": "Quelle grande leçon historique donne l’épisode Galilée ?",
+            "a": "Un instrument technique peut transformer les observations disponibles et donc notre vision du monde.",
+            "why": "La lunette modifie la place de la Terre dans les débats savants.",
+            "trap": "Dire seulement que Galilée a regardé le ciel.",
+            "evidence": "Conclusion."
+        }
+    ]
+},
+  "music-gregorian-polyphony": {
+    "hook": "Avant les orchestres, les albums et les concerts modernes, une grande partie de la musique européenne se transmet par la voix, le rite et la mémoire. Puis l’écriture musicale change lentement la manière de composer.",
+    "keyFacts": [
+        "Repère : Moyen Âge européen",
+        "Chant grégorien : chant religieux monodique, sans accompagnement instrumental dominant",
+        "Notation : outil pour fixer et transmettre les mélodies",
+        "Polyphonie : plusieurs voix différentes chantées ensemble"
+    ],
+    "express": [
+        "Au Moyen Âge, la musique européenne est très liée à la religion. Le chant grégorien est un chant d’Église, généralement monodique : une seule ligne mélodique, chantée par des voix, sans logique d’orchestre moderne.",
+        "L’écriture musicale devient essentielle. Les signes notés aident à transmettre les mélodies plus fidèlement et à organiser le chant dans des communautés éloignées. La musique commence à se conserver autrement que par la seule mémoire.",
+        "À retenir : l’apparition progressive de la polyphonie change tout. Quand plusieurs voix indépendantes se superposent, la musique devient un espace construit, avec des rapports entre lignes, tensions et accords naissants."
+    ],
+    "complete": [
+        {
+            "title": "1. Une musique liée au rite",
+            "text": "Au Moyen Âge, une grande partie de la musique savante européenne est liée à l’Église. Elle accompagne la prière, les offices, les fêtes religieuses et l’organisation du temps liturgique. Il ne faut pas l’imaginer comme un concert moderne : elle a d’abord une fonction rituelle et collective.\n\nLe chant grégorien est l’un des repères majeurs de cette histoire. Il s’agit d’un chant généralement monodique : plusieurs chanteurs peuvent chanter ensemble, mais ils suivent une même ligne mélodique. L’effet recherché n’est pas la virtuosité individuelle, mais l’unité, la clarté du texte et la continuité du rite."
+        },
+        {
+            "title": "2. La mémoire ne suffit plus",
+            "text": "Dans les sociétés où l’écriture musicale est limitée, la transmission repose beaucoup sur l’oralité, l’apprentissage et la mémoire. Mais à mesure que les répertoires grandissent et que les pratiques doivent circuler entre monastères, écoles et cathédrales, il devient utile de fixer davantage les mélodies.\n\nLes premiers systèmes de notation ne ressemblent pas immédiatement aux partitions modernes. Ils indiquent progressivement les mouvements de la voix, les hauteurs relatives, puis des repères plus précis. Cette évolution est décisive : écrire la musique permet de la conserver, de l’enseigner et de la complexifier."
+        },
+        {
+            "title": "3. La polyphonie change l’écoute",
+            "text": "La grande transformation vient de la polyphonie. Au lieu d’une seule ligne mélodique, plusieurs voix différentes peuvent se superposer. Elles ne chantent pas toutes exactement la même chose : elles se répondent, se croisent, se soutiennent. La musique devient un espace vertical et horizontal à la fois.\n\nCette nouveauté demande une organisation plus fine. Il faut penser les intervalles, les entrées des voix, les consonances, les tensions et les résolutions. La polyphonie n’est donc pas seulement un effet plus riche : elle transforme la composition musicale."
+        },
+        {
+            "title": "4. Des écoles et des lieux",
+            "text": "Les grandes églises, les monastères et les cathédrales jouent un rôle majeur dans cette histoire. Les lieux d’enseignement et de pratique permettent de transmettre des techniques, d’expérimenter et de stabiliser des formes. La musique savante médiévale n’est pas seulement un héritage flou : elle se construit dans des institutions.\n\nIl existe aussi des musiques profanes, des chants de troubadours, de trouvères, de fêtes ou de cours. Mais le chant religieux et la notation liturgique restent essentiels pour comprendre la naissance d’une tradition écrite qui influencera longtemps la musique européenne."
+        },
+        {
+            "title": "5. Ce qu’il faut retenir",
+            "text": "L’histoire de la musique médiévale montre un passage important : de la transmission surtout orale vers une musique de plus en plus notée, organisée et construite. Le chant grégorien donne un repère de musique monodique liée au rite ; la polyphonie ouvre la voie à des architectures sonores plus complexes.\n\nIl ne faut pas juger cette musique comme une version primitive de la musique moderne. Elle répond à d’autres fonctions, d’autres lieux et d’autres manières d’écouter. Mais elle pose des bases fondamentales : notation, composition, rapports entre voix et mémoire écrite du son."
+        }
+    ],
+    "deeper": [],
+    "takeaways": [
+        {
+            "label": "Chant grégorien",
+            "text": "Chant religieux généralement monodique, lié au rite."
+        },
+        {
+            "label": "Notation",
+            "text": "Elle aide à transmettre, conserver et complexifier les mélodies."
+        },
+        {
+            "label": "Polyphonie",
+            "text": "Plusieurs voix différentes se superposent et transforment la composition."
+        },
+        {
+            "label": "Nuance",
+            "text": "La musique médiévale n’est pas primitive : elle répond à d’autres fonctions."
+        }
+    ],
+    "quiz": [
+        {
+            "kind": "définition",
+            "q": "Qu’est-ce qu’un chant monodique ?",
+            "a": "Un chant organisé autour d’une seule ligne mélodique.",
+            "why": "Le chant grégorien est présenté comme généralement monodique.",
+            "trap": "Le confondre avec plusieurs voix indépendantes.",
+            "evidence": "Bloc 1."
+        },
+        {
+            "kind": "contexte",
+            "q": "À quoi sert principalement le chant grégorien dans le cours ?",
+            "a": "À accompagner la prière, les offices et le temps liturgique de l’Église.",
+            "why": "Il a d’abord une fonction rituelle.",
+            "trap": "L’imaginer comme un concert moderne.",
+            "evidence": "Bloc 1."
+        },
+        {
+            "kind": "invention",
+            "q": "Pourquoi la notation musicale devient-elle importante ?",
+            "a": "Parce qu’elle permet de transmettre, conserver, enseigner et complexifier les mélodies.",
+            "why": "La mémoire seule devient insuffisante pour des répertoires plus vastes.",
+            "trap": "Dire qu’elle sert seulement à décorer les manuscrits.",
+            "evidence": "Bloc 2."
+        },
+        {
+            "kind": "notion",
+            "q": "Qu’est-ce que la polyphonie change ?",
+            "a": "Elle superpose plusieurs voix différentes et oblige à penser leurs relations, tensions et résolutions.",
+            "why": "Elle transforme la composition.",
+            "trap": "Dire qu’elle signifie seulement chanter plus fort.",
+            "evidence": "Bloc 3."
+        },
+        {
+            "kind": "synthèse",
+            "q": "Quelle grande évolution résume ce cours ?",
+            "a": "Le passage d’une musique surtout transmise par la voix et le rite vers une musique plus notée, organisée et polyphonique.",
+            "why": "C’est l’idée centrale de la leçon.",
+            "trap": "Résumer le Moyen Âge musical à une absence de technique.",
+            "evidence": "Conclusion."
+        }
+    ]
+}
+};
+(function registerBeta107Content() {
+  Object.entries(BETA107_LESSONS).forEach(([worldId, items]) => {
+    if (!Array.isArray(data.lessons[worldId])) data.lessons[worldId] = [];
+    const known = new Set(data.lessons[worldId].map(item => item.id));
+    items.forEach(item => { if (!known.has(item.id)) data.lessons[worldId].push(item); });
+  });
+  ["art-read-image-basics", "cinema-shot-frame-basics", "sci-method-proof-basics", "eco-supply-demand-basics", "geo-maps-scale-basics", "art-renaissance-perspective", "cinema-early-lumiere-melies", "sci-galileo-revolution", "music-gregorian-polyphony"].forEach(id => PUBLISHED_LESSON_IDS.add(id));
+  Object.assign(READY_LESSON_PACKS, BETA107_READY_PACKS);
+})();
+function allDisciplineWorlds() {
+  const planned = Object.values(PLANNED_DISCIPLINE_WORLDS || {}).flat();
+  const map = new Map();
+  [...(data.worlds || []), ...planned].forEach(world => { if (world?.id && !map.has(world.id)) map.set(world.id, world); });
+  return Array.from(map.values());
+}
+function activeWorld() {
+  return allDisciplineWorlds().find(w => w.id === state.currentWorld) || data.worlds[0] || allDisciplineWorlds()[0] || {};
+}
+function curatedWorlds() {
+  const ids = new Set(curatedLessons().map(lesson => lessonWorldId(lesson.id)));
+  return allDisciplineWorlds().filter(world => ids.has(world.id));
+}
+function visibleWorlds(limit = 20) {
+  const worlds = curatedWorlds();
+  return (worlds.length ? worlds : allDisciplineWorlds()).slice(0, limit);
+}
+function lessonWorld(lesson = {}) {
+  const id = lessonWorldId(lesson.id);
+  return allDisciplineWorlds().find(world => world.id === id) || activeWorld() || {};
+}
+function lessonDisciplineId(lesson = {}) {
+  return worldDisciplineId(lessonWorld(lesson));
+}
+function publicMysteryIds() {
+  return new Set((data.mysteries || []).map(mystery => mystery.id));
+}
+function readyLessonsForDiscipline(disciplineId = activeDisciplineId()) {
+  return lessonsForDiscipline(disciplineId)
+    .filter(isCuratedLesson)
+    .sort((a, b) => (a.order || 999) - (b.order || 999) || String(a.id).localeCompare(String(b.id)));
+}
+function pickModeLesson(disciplineId = activeDisciplineId()) {
+  const lessons = readyLessonsForDiscipline(disciplineId);
+  if (!lessons.length) return null;
+  const current = lessons.find(item => item.id === state.currentLessonId && !lessonDone(item.id));
+  if (current) return current;
+  return lessons.find(item => !lessonDone(item.id) && !lessonLockedByDailyMystery(item)) || lessons.find(item => !lessonDone(item.id)) || lessons[0];
+}
+function modeContinueMarkup(disciplineId = activeDisciplineId()) {
+  if (disciplineId === "history") return homeContinueMarkup();
+  const discipline = disciplineById(disciplineId);
+  const lessons = readyLessonsForDiscipline(discipline.id);
+  if (!lessons.length) {
+    const { groups, worlds } = disciplineHomeStats(disciplineId);
+    const first = worlds[0] || null;
+    const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
+    return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${first.emoji || discipline.emoji} ${escapeHtml(first.title)}` : "Parcours prêt"}</h2></div><small>${groups.length} chapitres</small></div>
+      <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} Le thème est posé : on ajoutera ensuite un vrai cours express, complet et quiz.</p>
+      <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
+      <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les chapitres</button></div>
+    </section>`;
+  }
+  const lesson = pickModeLesson(discipline.id);
+  const content = buildLessonContent(lesson);
+  const done = lessons.filter(item => lessonDone(item.id)).length;
+  const ratio = percent(done, lessons.length);
+  const progress = quizProgressForLesson(lesson.id, normalizeQuizPack(content.quiz, lesson, content).length);
+  const action = progress.answeredCount && !progress.passed ? `Reprendre le quiz (${progress.answeredCount}/${progress.total})` : (lessonDone(lesson.id) ? "Revoir" : "Commencer");
+  const view = progress.answeredCount && !progress.passed ? "quiz" : "express";
+  return `<section class="card home-main-card home-continue-card mode-continue-card mode-course-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${lesson.emoji || discipline.emoji} ${escapeHtml(content.title || lesson.title)}</h2></div><small>${ratio}%</small></div>
+    <p>${escapeHtml(short(content.hook || content.express?.[0] || discipline.description, 190))}</p>
+    <div class="mode-progress-line"><i style="width:${Math.max(5, ratio)}%"></i></div>
+    <div class="home-card-footer"><span>${done}/${lessons.length} cours validés</span><button type="button" data-home-continue="${escapeHtml(lesson.id)}" data-home-continue-view="${escapeHtml(view)}">${escapeHtml(action)}</button></div>
+  </section>`;
+}
+function rotatedModeLessons(disciplineId = activeDisciplineId(), max = 3) {
+  const lessons = readyLessonsForDiscipline(disciplineId);
+  if (!lessons.length) return [];
+  const start = (Number(state.discoverOffset) || 0) % lessons.length;
+  return lessons.slice(start).concat(lessons.slice(0, start)).slice(0, max);
+}
+function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
+  if (disciplineId === "history") return homeDiscoveryMarkup(homeDiscoveryLessons());
+  const discipline = disciplineById(disciplineId);
+  const mode = disciplineModeCopy(discipline.id);
+  const lessons = rotatedModeLessons(discipline.id, 3);
+  if (lessons.length) {
+    return `<section class="card home-main-card home-discovery-card mode-recommend-card mode-course-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours proposés</span><h2>Peu de cours, mais vraiment écrits</h2></div><small>${lessons.length} cours prêt${lessons.length > 1 ? "s" : ""}</small></div>
+      <p>On ajoute progressivement des cours complets : express court, vrai texte de lecture et quiz directement tiré du contenu.</p>
+      <div class="home-discovery-grid">
+        ${lessons.map((lesson, index) => {
+          const world = lessonWorld(lesson);
+          const content = buildLessonContent(lesson);
+          const done = lessonDone(lesson.id);
+          return `<article class="home-discovery-item ${done ? "done" : ""} mode-lesson-item" data-home-discovery="${escapeHtml(lesson.id)}" tabindex="0" role="button">
+            <span class="home-discovery-kicker">${escapeHtml(world.title || discipline.title)} · cours ${index + 1}</span>
+            <h3>${lesson.emoji || discipline.emoji} ${escapeHtml(content.title || lesson.title)}</h3>
+            <p>${escapeHtml(short(content.hook || content.express?.[0] || "Un vrai cours à lire avant le quiz.", 165))}</p>
+            <small>⚡ express · 📚 complet · ✅ quiz</small>
+            <button type="button" data-home-discovery-open="${escapeHtml(lesson.id)}">${done ? "Revoir" : "Commencer"}</button>
+          </article>`;
+        }).join("")}
+      </div>
+      <div class="home-card-footer"><span>Le reste du domaine reste structuré en chapitres.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
+    </section>`;
+  }
+  const groups = treeGroups(discipline.id);
+  const items = modeRecommendationItems(discipline.id);
+  return `<section class="card home-main-card home-discovery-card mode-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · pistes</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
+    <p>${escapeHtml(mode.discoveryIntro)}</p>
+    <div class="home-discovery-grid">
+      ${items.map((world, index) => {
+        const group = groups.find(item => item.id === world.group) || {};
+        return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+          <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
+          <h3>${world.emoji || discipline.emoji} ${escapeHtml(world.title)}</h3>
+          <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
+          <small>${escapeHtml(world.timeframe || group.range || "parcours")}</small>
+          <button type="button" data-open-mode-world="${escapeHtml(world.id)}">Ouvrir</button>
+        </article>`;
+      }).join("")}
+    </div>
+    <div class="home-card-footer"><span>On garde des contenus propres : structure d’abord, vrais cours ensuite.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
+  </section>`;
+}
 
 applyVisibleStateGuard();
 window.addEventListener("DOMContentLoaded", render);

@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.105",
-  assetsVersion: "1.0.0-beta.105",
+  version: "1.0.0-beta.108",
+  assetsVersion: "1.0.0-beta.108",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 105",
+    versionLabel: "beta 108",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Grands chapitres préparés dans Art, Cinéma, Sciences & inventions, Économie et Géographie.",
-      "Camembert du profil retravaillé avec un rendu plus propre et plus lisible.",
-      "Réglages sécurisés : plus de panneau déroulant fragile sur mobile."
+      "Thème couleur dynamique selon la discipline active.",
+      "Premiers vrais cours ajoutés en art, cinéma, sciences, économie et géographie.",
+      "Accueil amélioré : les modes non historiques proposent maintenant des cours réels quand ils existent."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
