@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.108";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.111";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -191,6 +191,7 @@ const defaultState = {
   currentWorld: "prehistory",
   currentLessonId: null,
   currentMysteryId: null,
+  currentMysteryDiscipline: "history",
   lessonFocus: null,
   lessonView: "express",
   seenHints: {},
@@ -1071,9 +1072,13 @@ function guessFeedback(rawGuess, mystery) {
   return "Non. Aucun indice automatique : cherche plutôt ce que toutes les traces du dossier ont en commun.";
 }
 function submitGuess(event) {
-  event.preventDefault();
-  const mystery = currentMystery();
-  const input = event.currentTarget.querySelector("input");
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+  const form = event?.currentTarget?.matches?.("[data-guess]") ? event.currentTarget : document.querySelector("[data-guess]");
+  const input = form?.querySelector("input") || document.querySelector("[data-guess-input]");
+  const selected = state.currentMysteryId ? mysteryById(state.currentMysteryId) : null;
+  const mystery = (selected && isSelectedMysteryPlayable(selected)) ? selected : currentMystery();
+  if (!mystery?.id) return;
   const guess = input?.value || "";
   state.mysteryTries[mystery.id] = (state.mysteryTries[mystery.id] || 0) + 1;
   if (isAcceptedGuess(guess, mystery)) {
@@ -1094,10 +1099,12 @@ function submitGuess(event) {
   } else {
     state.mysteryFeedback = { ...(state.mysteryFeedback || {}), [mystery.id]: guessFeedback(guess, mystery) };
     saveState();
-    input.value = "";
-    input.placeholder = "Réponse plus précise…";
-    input.classList.add("shake");
-    setTimeout(() => input.classList.remove("shake"), 450);
+    if (input) {
+      input.value = "";
+      input.placeholder = "Réponse plus précise…";
+      input.classList.add("shake");
+      setTimeout(() => input.classList.remove("shake"), 450);
+    }
     render();
   }
 }
@@ -1120,10 +1127,15 @@ function installPromptMarkup() {
   return `<section class="card install-card soft-panel"><div><span class="card-label">App mobile</span><h2>Installe HistoDaily en raccourci.</h2><p>${platformInstallHint()} C’est plus rapide pour revenir au mystère du jour.</p></div><div class="install-actions"><button data-install-app>${canPrompt ? "Installer" : "Comment faire"}</button><button class="ghost" data-dismiss-install>Plus tard</button></div>${state.installFeedback ? `<p>${escapeHtml(state.installFeedback)}</p>` : ""}</section>`;
 }
 
-function releaseNotesMarkup() {
+function releaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
   if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
-  return `<section class="card release-card soft-panel"><div><span class="card-label">Mise à jour</span><h2>Mise à jour de confort</h2><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul></div><button class="ghost" data-dismiss-release>OK</button></section>`;
+  const versionLabel = HISTODAILY_CORE.ui?.versionLabel || APP_VERSION;
+  return `<section class="card release-card soft-panel ${home ? "home-release-card" : ""}"><div class="section-title-row"><div><span class="card-label">Journal de version</span><h2>Version ${escapeHtml(versionLabel)}</h2></div><small>Dernière maj</small></div><p>Ce qui a changé dans cette version :</p><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul><div class="home-card-footer"><span>${escapeHtml(APP_VERSION)}</span><button class="ghost" data-dismiss-release>OK</button></div></section>`;
+}
+function homeVersionPillMarkup() {
+  const versionLabel = HISTODAILY_CORE.ui?.versionLabel || APP_VERSION;
+  return `<span class="version-pill">${escapeHtml(versionLabel)}</span>`;
 }
 function performanceMode() { return state.performanceMode === "light" ? "light" : "balanced"; }
 function applyPerformanceMode() {
@@ -1208,7 +1220,7 @@ function renderHome() {
       <div>
         <p class="eyebrow">HistoDaily</p>
         <h1>Un mystère historique par jour, puis le cours qui va avec.</h1>
-        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
+        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
     </header>
 
@@ -1225,13 +1237,15 @@ function renderHome() {
 
     ${homeDiscoveryMarkup(discoveries)}
 
+    ${releaseNotesMarkup({ home: true })}
+
     <section class="home-secondary-actions">
       <button class="ghost" data-go-learn>Parcours complet</button>
       <button class="ghost" data-home-rank>Classement</button>
       <button class="ghost" data-home-profile>Profil</button>
     </section>`);
 
-  const openMystery = () => mystery && setState({ tab: "mystery", currentMysteryId: mystery.id });
+  const openMystery = () => { const did = typeof disciplineId !== "undefined" ? disciplineId : activeDisciplineId(); return mystery && setState({ tab: "mystery", currentMysteryId: mystery.id, currentMysteryDiscipline: did, currentDiscipline: did }); };
   const mysteryCard = $(`[data-home-mystery]`);
   mysteryCard?.addEventListener("click", openMystery);
   mysteryCard?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openMystery(); } });
@@ -1259,6 +1273,7 @@ function renderHome() {
   document.querySelectorAll("[data-go-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn" })));
   $(`[data-home-rank]`)?.addEventListener("click", () => setState({ tab: "rank" }));
   $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
+  $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
 }
 
 function renderLearn() {
@@ -1287,7 +1302,7 @@ function renderLearn() {
   $(`[data-clear-learn-search]`)?.addEventListener("click", () => setState({ learnSearch: "" }));
   document.querySelectorAll("[data-ready-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: btn.dataset.readyLesson, lessonFocus: "express", lessonView: "express" })));
   document.querySelectorAll("[data-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: btn.dataset.lesson, lessonFocus: "express", lessonView: "express" })));
-  document.querySelectorAll("[data-locked-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null })));
+  document.querySelectorAll("[data-locked-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() })));
 }
 function lessonCard(lesson, index) {
   const done = lessonDone(lesson.id);
@@ -6543,7 +6558,7 @@ function renderLesson() {
   if (lessonLockedByDailyMystery(lesson)) {
     renderShell(lessonLockMarkup(lesson));
     document.querySelectorAll("[data-back-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "express" })));
-    $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null }));
+    $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() }));
     return;
   }
   const requestedLessonFocus = state.lessonFocus;
@@ -6581,7 +6596,7 @@ function renderLesson() {
     if (nextView && nextView !== state.lessonView) setState({ lessonView: nextView, lessonFocus: null });
   }));
   document.querySelectorAll("[data-reading-mode]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); setReadingMode(btn.dataset.readingMode); }));
-  document.querySelectorAll("[data-open-linked-mystery]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); setState({ tab: "mystery", currentMysteryId: btn.dataset.openLinkedMystery }); }));
+  document.querySelectorAll("[data-open-linked-mystery]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); setState({ tab: "mystery", currentMysteryId: btn.dataset.openLinkedMystery, currentMysteryDiscipline: mysteryById(btn.dataset.openLinkedMystery) ? mysteryDisciplineId(mysteryById(btn.dataset.openLinkedMystery)) : activeDisciplineId() }); }));
   bindLessonDisclosureControls();
 }
 function bindLessonDisclosureControls() {
@@ -7037,7 +7052,7 @@ function renderMystery() {
       ${!solved ? `<div class="score-explain"><b>Barème clair</b><span>indice choisi : -${SCORE_PENALTY_HINT} XP potentiel · essai supplémentaire : -${SCORE_PENALTY_EXTRA_TRY} XP · aucune aide donnée automatiquement</span></div>${scoreBreakdownMarkup(mystery.id)}` : ""}
       <div class="hints">${(mystery.clues || []).slice(0, hints).map((c, index) => `<p><b>${escapeHtml(mysteryHintLabels()[index] || `Indice ${index + 1}`)}</b> · ${escapeHtml(c)}</p>`).join("")}</div>
       ${feedback && !solved ? `<p class="guess-feedback">${escapeHtml(feedback)}</p>` : ""}
-      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}${scoreSyncMarkup(mystery.id)}<div class="after-actions"><button data-go-rank>Voir le classement</button><button class="ghost" data-open-profile-after>Profil</button></div></div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" /><button type="submit">Valider</button></form><button class="ghost wide" data-hint>${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
+      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}${scoreSyncMarkup(mystery.id)}<div class="after-actions"><button data-go-rank>Voir le classement</button><button class="ghost" data-open-profile-after>Profil</button></div></div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" /><button type="submit" data-guess-submit>Valider</button></form><button class="ghost wide" data-hint>${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
     </section>
     ${solved && lesson ? `<section class="card after-mystery">
       <div class="card-label">Après le mystère</div>
@@ -7068,11 +7083,18 @@ function renderMystery() {
     <section class="card small-leader social-teaser"><div class="section-title-row"><h2>Classement du jour</h2><button class="ghost mini-button" data-go-rank>Voir</button></div>${leaderboardRows("daily").slice(0,5).map(row => `<div><span>${row.rank}. ${escapeHtml(row.name)}</span><strong>${row.score}</strong></div>`).join("")}</section>`);
   $("[data-home]")?.addEventListener("click", () => setState({ tab: "home" }));
   $("[data-home-stop]")?.addEventListener("click", () => setState({ tab: "home" }));
-  $("[data-guess]")?.addEventListener("submit", submitGuess);
+  const guessForm = $("[data-guess]");
+  guessForm?.addEventListener("submit", submitGuess);
+  $("[data-guess-submit]")?.addEventListener("click", event => {
+    event.stopPropagation();
+    if (guessForm?.requestSubmit) guessForm.requestSubmit();
+    else submitGuess({ preventDefault() {}, stopPropagation() {}, currentTarget: guessForm });
+  });
   const guessInput = $("[data-guess-input]");
   if (guessInput) {
     ["pointerdown", "mousedown", "click", "touchstart"].forEach(type => guessInput.addEventListener(type, event => event.stopPropagation(), { passive: true }));
     guessInput.addEventListener("click", event => { event.currentTarget.focus(); });
+    guessInput.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); guessForm?.requestSubmit ? guessForm.requestSubmit() : submitGuess({ preventDefault() {}, stopPropagation() {}, currentTarget: guessForm }); } });
     if (window.matchMedia && window.matchMedia("(pointer: fine)").matches) setTimeout(() => guessInput.focus({ preventScroll: true }), 90);
   }
   $("[data-hint]")?.addEventListener("click", () => revealHint(mystery.id));
@@ -7083,7 +7105,7 @@ function renderMystery() {
     lessonFocus: btn.dataset.focus || "express",
     lessonView: btn.dataset.focus || "express"
   })));
-  document.querySelectorAll("[data-open-mystery-id]").forEach(btn => btn.addEventListener("click", () => setState({ currentMysteryId: btn.dataset.openMysteryId, archiveFeedback: "" })));
+  document.querySelectorAll("[data-open-mystery-id]").forEach(btn => btn.addEventListener("click", () => setState({ currentMysteryId: btn.dataset.openMysteryId, currentMysteryDiscipline: mysteryById(btn.dataset.openMysteryId) ? mysteryDisciplineId(mysteryById(btn.dataset.openMysteryId)) : activeDisciplineId(), archiveFeedback: "" })));
   document.querySelectorAll("[data-unlock-mystery]").forEach(btn => btn.addEventListener("click", () => unlockPastMystery(btn.dataset.unlockMystery)));
   $(`[data-scroll-archives]`)?.addEventListener("click", () => $(`[data-archive-shelf]`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
   $(`[data-go-rank]`)?.addEventListener("click", () => setState({ tab: "rank", rankScope: "daily" }));
@@ -8228,7 +8250,7 @@ function renderLearn() {
     card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
   });
   document.querySelectorAll("[data-locked-lesson]").forEach(card => {
-    const open = () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null });
+    const open = () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() });
     card.addEventListener("click", open);
     card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
   });
@@ -9387,10 +9409,19 @@ function mysteryForDayOffset(offset = 0) { return mysteryForDisciplineDayOffset(
 function dailyMystery() { return mysteryForDayOffset(0); }
 function isTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); }
 function mysteryById(id) { return publicMysteries().find(m => m.id === id) || (data.mysteries || []).find(m => m.id === id); }
+function mysteryDisciplineMatchesCurrent(mystery = {}) {
+  return mysteryDisciplineId(mystery) === activeDisciplineId();
+}
+function isSelectedMysteryPlayable(mystery = {}) {
+  if (!mystery?.id) return false;
+  if (mysterySolved(mystery.id) || state.unlockedMysteries?.[mystery.id]) return true;
+  if (mysteryDisciplineMatchesCurrent(mystery) && isTodayMystery(mystery.id)) return true;
+  return Boolean(state.currentMysteryId === mystery.id && state.currentMysteryDiscipline === mysteryDisciplineId(mystery));
+}
 function currentMystery() {
-  const pool = publicMysteries();
-  const selected = pool.find(m => m.id === state.currentMysteryId);
-  return selected && isAccessibleMystery(selected.id) ? selected : dailyMystery();
+  const selected = state.currentMysteryId ? mysteryById(state.currentMysteryId) : null;
+  if (selected && isSelectedMysteryPlayable(selected)) return selected;
+  return dailyMystery();
 }
 function mysteryStats() {
   const pool = publicMysteries();
@@ -9527,7 +9558,7 @@ function renderHome() {
       <div>
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
-        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span></div>
+        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
     </header>
 
@@ -9546,6 +9577,8 @@ function renderHome() {
     ${modeContinueMarkup(disciplineId)}
     ${modeRecommendationsMarkup(disciplineId)}
 
+    ${releaseNotesMarkup({ home: true })}
+
     <section class="home-secondary-actions">
       <button class="ghost" data-open-mode-learn="${escapeHtml(disciplineId)}">Parcours ${escapeHtml(mode.shortLabel)}</button>
       <button class="ghost" data-home-rank>Classement</button>
@@ -9553,7 +9586,7 @@ function renderHome() {
     </section>`);
 
   document.querySelectorAll("[data-home-discipline]").forEach(btn => btn.addEventListener("click", () => switchHomeDiscipline(btn.dataset.homeDiscipline)));
-  const openMystery = () => mystery && setState({ tab: "mystery", currentMysteryId: mystery.id });
+  const openMystery = () => mystery && setState({ tab: "mystery", currentMysteryId: mystery.id, currentMysteryDiscipline: disciplineId, currentDiscipline: disciplineId });
   const mysteryCard = $(`[data-home-mystery]`);
   mysteryCard?.addEventListener("click", openMystery);
   mysteryCard?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openMystery(); } });
@@ -9589,6 +9622,7 @@ function renderHome() {
   }));
   $(`[data-home-rank]`)?.addEventListener("click", () => setState({ tab: "rank" }));
   $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
+  $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
 }
 
 function disciplineWheelMarkup() {
@@ -10659,6 +10693,757 @@ const BETA107_READY_PACKS = {
   ["art-read-image-basics", "cinema-shot-frame-basics", "sci-method-proof-basics", "eco-supply-demand-basics", "geo-maps-scale-basics", "art-renaissance-perspective", "cinema-early-lumiere-melies", "sci-galileo-revolution", "music-gregorian-polyphony"].forEach(id => PUBLISHED_LESSON_IDS.add(id));
   Object.assign(READY_LESSON_PACKS, BETA107_READY_PACKS);
 })();
+
+
+// Beta 109 — quelques vrais cours supplémentaires, sans remplissage artificiel.
+const BETA109_LESSONS = {
+  "art-impressionism": [
+    {
+      "id": "art-impressionism-modern-life",
+      "title": "Impressionnisme : peindre la lumière et la vie moderne",
+      "period": "XIXe siècle",
+      "location": "France",
+      "emoji": "🌤️",
+      "xp": 65,
+      "order": 1
+    }
+  ],
+  "cinema-hollywood": [
+    {
+      "id": "cinema-hollywood-studio-system",
+      "title": "Hollywood classique : studios, genres et stars",
+      "period": "1930 → 1960",
+      "location": "États-Unis",
+      "emoji": "⭐",
+      "xp": 65,
+      "order": 1
+    }
+  ],
+  "sci-vaccines-microbes": [
+    {
+      "id": "sci-pasteur-microbes-vaccines",
+      "title": "Pasteur, microbes et vaccins : une révolution médicale",
+      "period": "XIXe siècle",
+      "location": "France puis monde",
+      "emoji": "🦠",
+      "xp": 65,
+      "order": 1
+    }
+  ],
+  "eco-inflation-rates": [
+    {
+      "id": "eco-inflation-money-value",
+      "title": "Inflation : quand l’argent perd de sa valeur",
+      "period": "XXe → XXIe siècle",
+      "location": "Économies modernes",
+      "emoji": "📉",
+      "xp": 65,
+      "order": 1
+    }
+  ],
+  "geo-maps": [
+    {
+      "id": "geo-mercator-projection",
+      "title": "Mercator : la carte utile qui déforme le monde",
+      "period": "XVIe siècle → aujourd’hui",
+      "location": "Monde",
+      "emoji": "🧭",
+      "xp": 65,
+      "order": 2
+    }
+  ],
+  "music-jazz-blues": [
+    {
+      "id": "music-jazz-birth",
+      "title": "Naissance du jazz : blues, swing et improvisation",
+      "period": "Début du XXe siècle",
+      "location": "États-Unis",
+      "emoji": "🎷",
+      "xp": 65,
+      "order": 1
+    }
+  ]
+};
+const BETA109_READY_PACKS = {
+  "art-impressionism-modern-life": {
+    "hook": "L’impressionnisme n’est pas seulement une peinture floue et jolie. C’est une rupture : des artistes quittent l’atelier, regardent la ville moderne, les loisirs, la lumière changeante, et acceptent que le tableau garde la trace d’un instant.",
+    "keyFacts": [
+      "Contexte : France du XIXe siècle, villes transformées, loisirs modernes, peinture en plein air",
+      "Idée forte : saisir une impression visuelle plutôt que finir une scène parfaitement lisse",
+      "Technique : touches visibles, couleurs claires, ombres colorées, cadrages parfois inspirés de la photographie",
+      "Piège : croire que les impressionnistes peignent mal ; ils choisissent une autre manière de voir"
+    ],
+    "express": [
+      "L’impressionnisme apparaît en France dans la seconde moitié du XIXe siècle. Des peintres comme Monet, Renoir, Degas ou Pissarro veulent représenter la lumière, les effets atmosphériques, les loisirs et la ville moderne plutôt que les grands sujets historiques ou mythologiques attendus par l’art officiel.",
+      "Leur peinture choque parce qu’elle paraît inachevée : les touches restent visibles, les contours sont moins fermés, les couleurs sont plus claires. En réalité, ce choix permet de saisir un instant : un reflet sur l’eau, une gare pleine de vapeur, une danse, une rue, un déjeuner, un paysage qui change avec l’heure.",
+      "À retenir : l’impressionnisme marque une étape essentielle vers l’art moderne. Il ne cherche plus seulement à représenter proprement un sujet, mais à montrer comment le monde est perçu dans un moment précis."
+    ],
+    "complete": [
+      {
+        "title": "1. Rompre avec la peinture officielle",
+        "text": "Au XIXe siècle, la peinture reconnue par les institutions valorise souvent les grands sujets : histoire antique, mythologie, scènes religieuses ou portraits très travaillés. Les tableaux doivent paraître finis, maîtrisés, dignes d’être exposés au Salon officiel. L’impressionnisme arrive comme une provocation parce qu’il semble refuser cette finition classique.\n\nLes impressionnistes ne sont pas des amateurs incapables de peindre proprement. Ils choisissent de déplacer l’attention. Le sujet compte moins que l’effet visuel : la lumière d’un matin, le brouillard, la vitesse d’une foule, les reflets sur l’eau, la vibration d’un paysage. Le tableau devient le témoignage d’un regard situé dans un instant."
+      },
+      {
+        "title": "2. Peindre la lumière et l’instant",
+        "text": "Ce qui intéresse beaucoup ces peintres, c’est la manière dont la lumière transforme tout. Un même lieu peut changer selon l’heure, la météo, la saison ou la position du spectateur. Monet pousse cette idée très loin avec ses séries : cathédrales, meules, nymphéas. Le motif reste comparable, mais la perception change.\n\nPour rendre ces variations, la touche devient visible. Les couleurs se juxtaposent plutôt que d’être toujours fondues. Les ombres ne sont pas simplement noires ; elles peuvent devenir bleutées, violettes, colorées. Le tableau demande alors au regard du spectateur de recomposer l’impression d’ensemble."
+      },
+      {
+        "title": "3. La vie moderne entre dans le tableau",
+        "text": "L’impressionnisme accompagne aussi les transformations de la société. Paris se modernise, les gares, les boulevards, les cafés, les théâtres et les loisirs deviennent des sujets possibles. On peint des promeneurs, des danseuses, des canotiers, des terrasses, des champs ou des trains. Ce ne sont pas toujours des scènes héroïques, mais elles racontent une époque.\n\nLa photographie et les estampes japonaises influencent aussi les cadrages. Certains tableaux coupent les corps, décentrent le sujet ou donnent une impression de moment saisi sur le vif. La modernité n’est donc pas seulement dans le thème : elle est aussi dans la manière de cadrer et de regarder."
+      },
+      {
+        "title": "4. Un scandale devenu classique",
+        "text": "Aujourd’hui, l’impressionnisme est très populaire, parfois au point de paraître décoratif. Mais à ses débuts, il est critiqué. On reproche aux tableaux leur aspect rapide, leur manque de contours, leur indifférence aux sujets nobles. Le mot “impressionnisme” lui-même vient d’abord d’une moquerie autour du tableau de Monet Impression, soleil levant.\n\nCette histoire montre un mécanisme important de l’art : ce qui paraît scandaleux à une époque peut devenir central ensuite. L’impressionnisme ouvre la voie à d’autres ruptures modernes, parce qu’il affirme que peindre, ce n’est pas seulement copier le monde, mais traduire une perception."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "L’impressionnisme transforme la peinture en mettant au premier plan la lumière, l’instant et la sensation visuelle. Il s’intéresse à la vie moderne autant qu’aux paysages, et il accepte que la touche du peintre reste visible.\n\nLa grande idée n’est pas “ils peignent flou”. La vraie idée est plus forte : le tableau peut montrer la manière dont un regard perçoit le monde à un moment donné. C’est pour cela que l’impressionnisme est une étape majeure de l’histoire de l’art moderne."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Rupture",
+        "text": "L’impressionnisme refuse la finition lisse et les seuls grands sujets officiels."
+      },
+      {
+        "label": "Technique",
+        "text": "Touches visibles, couleurs claires et ombres colorées servent à rendre la lumière."
+      },
+      {
+        "label": "Modernité",
+        "text": "La ville, les loisirs, les gares et les instants ordinaires deviennent dignes d’être peints."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Dans quel pays l’impressionnisme apparaît-il surtout ?",
+        "a": "En France.",
+        "why": "Le cours situe le mouvement en France au XIXe siècle.",
+        "trap": "Le présenter comme un mouvement d’abord italien ou grec antique.",
+        "evidence": "Express et bloc 1."
+      },
+      {
+        "kind": "compréhension",
+        "q": "Pourquoi les tableaux impressionnistes ont-ils pu paraître inachevés ?",
+        "a": "Parce que les touches restent visibles, les contours sont moins fermés et l’effet d’instant prime sur la finition lisse.",
+        "why": "C’est une critique centrale faite aux impressionnistes.",
+        "trap": "Dire qu’ils ne savaient pas peindre.",
+        "evidence": "Express et bloc 4."
+      },
+      {
+        "kind": "notion",
+        "q": "Que cherchent-ils souvent à saisir ?",
+        "a": "La lumière, l’atmosphère et la perception d’un instant.",
+        "why": "C’est l’idée principale du mouvement.",
+        "trap": "Seulement raconter des scènes mythologiques.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "contexte",
+        "q": "Quels sujets modernes entrent dans leurs tableaux ?",
+        "a": "Les gares, boulevards, loisirs, cafés, danseuses, promenades ou scènes ordinaires de la vie moderne.",
+        "why": "Le cours insiste sur la modernisation des sujets.",
+        "trap": "Limiter le mouvement aux paysages vides.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi l’impressionnisme compte-t-il dans l’histoire de l’art ?",
+        "a": "Il ouvre une voie moderne en montrant que peindre peut traduire une perception, pas seulement copier un sujet.",
+        "why": "C’est la conclusion du cours.",
+        "trap": "Réduire le mouvement à une peinture décorative.",
+        "evidence": "Bloc 5."
+      }
+    ]
+  },
+  "cinema-hollywood-studio-system": {
+    "hook": "Hollywood classique n’est pas seulement un âge d’or nostalgique. C’est un système industriel complet : studios, contrats, stars, genres, décors, scénarios et salles organisent une machine à produire des films très lisibles et très efficaces.",
+    "keyFacts": [
+      "Période forte : surtout des années 1930 aux années 1950",
+      "Organisation : grands studios, contrats, équipes techniques, vedettes et genres codifiés",
+      "Genres : western, comédie musicale, film noir, mélodrame, comédie, aventure",
+      "Piège : croire que le cinéma classique est seulement vieux ; il invente beaucoup de règles encore utilisées"
+    ],
+    "express": [
+      "Entre les années 1930 et 1950, Hollywood fonctionne comme une grande industrie du cinéma. Les studios contrôlent une grande partie de la fabrication : acteurs sous contrat, réalisateurs, scénaristes, techniciens, décors, promotion et parfois salles de projection.",
+      "Ce système produit des films très codifiés. Le western, la comédie musicale, le film noir, le mélodrame ou la comédie ont leurs décors, leurs personnages et leurs attentes. Le spectateur sait souvent dans quel monde il entre, mais chaque film peut varier la formule.",
+      "À retenir : Hollywood classique construit une grammaire populaire du cinéma. Beaucoup de règles de récit, de montage, de star-system et de genres viennent de cette période, même quand le cinéma contemporain les détourne."
+    ],
+    "complete": [
+      {
+        "title": "1. Un cinéma devenu industrie",
+        "text": "Le cinéma naît comme attraction et spectacle populaire, puis devient progressivement une industrie massive. À Hollywood, les grands studios organisent la production de manière très structurée. Ils possèdent des plateaux, emploient des équipes, signent des contrats avec les acteurs et planifient les films comme des produits culturels destinés à un large public.\n\nCette organisation permet de produire beaucoup de films, vite, avec une qualité technique élevée. Le cinéma classique hollywoodien n’est donc pas seulement une affaire d’artistes isolés. C’est une machine collective où le scénario, la lumière, le décor, le montage, le jeu d’acteur et la promotion sont pensés ensemble."
+      },
+      {
+        "title": "2. Le règne des genres",
+        "text": "Un élément central de Hollywood classique est le genre. Le western promet des frontières, des duels, des chevaux et des conflits moraux. La comédie musicale promet danse, chant et spectacle. Le film noir installe des rues sombres, des crimes, des détectives et une atmosphère trouble. Le mélodrame travaille les émotions familiales ou amoureuses.\n\nLe genre n’est pas une prison : c’est un contrat avec le spectateur. On sait à peu près ce qu’on vient voir, mais le plaisir vient de la variation. Un bon film classique donne une impression de clarté, tout en jouant avec les attentes."
+      },
+      {
+        "title": "3. Stars et récits lisibles",
+        "text": "Hollywood développe aussi le star-system. Les acteurs deviennent des images publiques : leur visage, leur voix, leur silhouette et leur réputation attirent les spectateurs. Une star n’est pas seulement une personne qui joue dans un film ; c’est une promesse. Voir Humphrey Bogart, Marilyn Monroe, John Wayne ou Audrey Hepburn donne déjà une direction imaginaire.\n\nLes récits sont souvent construits pour être lisibles. Les objectifs des personnages sont clairs, les scènes s’enchaînent efficacement, le montage évite de perdre le spectateur. Cette fluidité peut sembler naturelle, mais elle repose sur un énorme savoir-faire."
+      },
+      {
+        "title": "4. Un système puissant mais limité",
+        "text": "Le système des studios donne une efficacité impressionnante, mais il a aussi des limites. Il peut enfermer les acteurs dans des rôles, formater les histoires, contrôler les carrières et reproduire des visions sociales dominantes. Les règles morales de censure limitent aussi ce qui peut être montré ou raconté.\n\nPourtant, de nombreux réalisateurs et techniciens réussissent à créer des œuvres fortes à l’intérieur de ces contraintes. C’est l’un des intérêts de cette période : comprendre comment une industrie très organisée peut produire à la fois des formules répétées et des films majeurs."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Hollywood classique est un moment où le cinéma devient une industrie culturelle extrêmement efficace. Les studios, les stars, les genres et les récits lisibles construisent une langue populaire du cinéma mondial.\n\nCe n’est pas seulement du “vieux cinéma”. Beaucoup de blockbusters, séries, franchises et films de genre actuels héritent encore de cette organisation : promettre un monde identifiable, guider le spectateur et renouveler une formule sans la casser complètement."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Industrie",
+        "text": "Les studios organisent la production avec des équipes, contrats, décors et stratégies de diffusion."
+      },
+      {
+        "label": "Genres",
+        "text": "Western, comédie musicale, film noir ou mélodrame servent de contrats avec le public."
+      },
+      {
+        "label": "Héritage",
+        "text": "Le cinéma actuel reprend encore beaucoup de règles du récit classique hollywoodien."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Quelle période correspond surtout au Hollywood classique présenté ici ?",
+        "a": "Des années 1930 aux années 1950 environ.",
+        "why": "Le cours situe ce système au cœur du XXe siècle.",
+        "trap": "Le placer uniquement avant 1900.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "organisation",
+        "q": "Que contrôlent les grands studios ?",
+        "a": "Une grande partie de la fabrication : acteurs, équipes, décors, scénarios, promotion et parfois salles.",
+        "why": "C’est l’idée d’un système industriel.",
+        "trap": "Croire que chaque film est fabriqué sans organisation collective.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "notion",
+        "q": "Pourquoi les genres sont-ils importants ?",
+        "a": "Ils créent un contrat avec le spectateur et organisent les attentes autour de décors, personnages et situations.",
+        "why": "Le cours explique le rôle des genres.",
+        "trap": "Dire qu’un genre empêche toute variation.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "compréhension",
+        "q": "Qu’est-ce que le star-system ?",
+        "a": "La construction d’acteurs comme images publiques capables d’attirer le public et de promettre un type de film.",
+        "why": "La star dépasse la simple présence d’un acteur.",
+        "trap": "Réduire la star à son salaire.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi Hollywood classique influence-t-il encore le cinéma actuel ?",
+        "a": "Parce qu’il a fixé des règles de récit, de genres, de stars et d’efficacité narrative encore reprises ou détournées.",
+        "why": "C’est la conclusion du cours.",
+        "trap": "Le considérer comme un cinéma sans héritage.",
+        "evidence": "Bloc 5."
+      }
+    ]
+  },
+  "sci-pasteur-microbes-vaccines": {
+    "hook": "Au XIXe siècle, comprendre que des êtres microscopiques peuvent provoquer des maladies change la médecine, l’hygiène, l’industrie alimentaire et la manière de penser la prévention. Pasteur incarne cette révolution, même s’il s’inscrit dans une histoire collective.",
+    "keyFacts": [
+      "Contexte : XIXe siècle, progrès du microscope, débats sur les causes des maladies",
+      "Idée forte : les microbes peuvent être liés à la fermentation, aux infections et à certaines maladies",
+      "Applications : pasteurisation, hygiène, vaccination, laboratoire expérimental",
+      "Piège : croire que Pasteur découvre seul toute la microbiologie"
+    ],
+    "express": [
+      "Au XIXe siècle, les savants comprennent progressivement que des micro-organismes invisibles à l’œil nu jouent un rôle dans la fermentation, les infections et certaines maladies. Cette idée transforme la médecine : les maladies ne sont plus seulement expliquées par l’air mauvais ou les déséquilibres du corps.",
+      "Louis Pasteur devient célèbre parce qu’il relie expériences de laboratoire, applications concrètes et prévention. Ses travaux sur les fermentations, la pasteurisation et certains vaccins montrent qu’une découverte scientifique peut changer l’agriculture, l’alimentation, la chirurgie et la santé publique.",
+      "À retenir : la révolution microbienne ne vient pas d’un seul homme, mais Pasteur en est une figure majeure. Elle impose une nouvelle idée : prévenir, stériliser, vacciner et contrôler les microbes peut sauver des vies."
+    ],
+    "complete": [
+      {
+        "title": "1. Avant les microbes : des explications floues",
+        "text": "Pendant longtemps, les maladies sont expliquées par des causes très générales : mauvais air, humeurs déséquilibrées, faiblesse du corps, corruption des lieux. Certaines observations sont justes, mais les mécanismes restent mal compris. On sait parfois qu’une maladie se transmet, sans savoir exactement par quoi.\n\nAu XIXe siècle, l’amélioration des microscopes, des laboratoires et des méthodes expérimentales permet de mieux étudier les êtres minuscules. La grande bascule consiste à relier des micro-organismes précis à des phénomènes précis : fermentation, putréfaction, infection, maladies animales ou humaines."
+      },
+      {
+        "title": "2. Pasteur et la preuve expérimentale",
+        "text": "Pasteur ne travaille pas seulement avec des idées abstraites. Il met en place des expériences pour tester des hypothèses. Ses recherches sur la fermentation montrent que des micro-organismes vivants peuvent transformer des matières. Il combat aussi l’idée que la vie microscopique apparaîtrait spontanément dans certaines conditions.\n\nCe point est important pour l’histoire des sciences : la preuve ne vient pas d’une intuition géniale isolée, mais d’un dispositif. Il faut comparer, contrôler, montrer que telle condition produit tel résultat. La microbiologie se construit donc avec des instruments, des gestes de laboratoire et des débats."
+      },
+      {
+        "title": "3. De la science à la vie quotidienne",
+        "text": "Les conséquences dépassent largement le laboratoire. La pasteurisation consiste à chauffer certains liquides pour limiter les micro-organismes dangereux ou indésirables. Cela transforme la conservation alimentaire et la sécurité de produits comme le lait.\n\nL’idée microbienne transforme aussi l’hygiène. Si des microbes peuvent provoquer des infections, alors nettoyer, stériliser les instruments, protéger les plaies et organiser les espaces de soin deviennent des gestes essentiels. La médecine moderne ne repose pas seulement sur des médicaments : elle repose aussi sur la prévention."
+      },
+      {
+        "title": "4. Vaccins et prévention",
+        "text": "Pasteur est aussi associé à la vaccination, notamment contre des maladies animales et à l’épisode célèbre de la rage. Le principe général est de préparer l’organisme à résister à une maladie, en utilisant une forme affaiblie ou contrôlée de l’agent responsable ou de ses effets.\n\nIl faut cependant éviter le récit trop héroïque. D’autres savants, médecins et traditions expérimentales comptent énormément dans l’histoire des vaccins et de la microbiologie. Pasteur est une figure majeure parce qu’il réunit recherche, démonstration publique, applications et institution scientifique."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "La révolution microbienne change la façon de penser les maladies. Elle montre que l’invisible peut avoir des effets massifs et que l’on peut agir avant la catastrophe : stériliser, vacciner, surveiller, isoler, contrôler les contaminations.\n\nL’importance de Pasteur vient donc autant de ses découvertes que de la nouvelle culture scientifique qu’il représente : laboratoire, expérimentation, preuve, application industrielle et médecine préventive."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Révolution",
+        "text": "Les microbes deviennent des acteurs essentiels pour comprendre fermentations, infections et maladies."
+      },
+      {
+        "label": "Prévention",
+        "text": "Hygiène, stérilisation, pasteurisation et vaccination transforment la santé publique."
+      },
+      {
+        "label": "Nuance",
+        "text": "Pasteur est central, mais la microbiologie est une histoire collective."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "À quel siècle Pasteur appartient-il principalement ?",
+        "a": "Au XIXe siècle.",
+        "why": "Le cours situe la révolution microbienne dans ce contexte.",
+        "trap": "Le placer dans l’Antiquité.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "notion",
+        "q": "Quelle idée transforme la médecine ?",
+        "a": "Des micro-organismes peuvent être liés aux fermentations, infections et maladies.",
+        "why": "C’est le cœur de la révolution microbienne.",
+        "trap": "Dire que seules les humeurs expliquent les maladies.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "méthode",
+        "q": "Pourquoi le laboratoire est-il important ?",
+        "a": "Parce qu’il permet de tester, comparer et contrôler les conditions pour produire des preuves.",
+        "why": "Le cours insiste sur la preuve expérimentale.",
+        "trap": "Réduire Pasteur à une intuition sans expérience.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "application",
+        "q": "À quoi sert la pasteurisation ?",
+        "a": "À chauffer certains liquides pour limiter des micro-organismes dangereux ou indésirables.",
+        "why": "C’est une application concrète des travaux sur les microbes.",
+        "trap": "La confondre avec une vaccination.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi cette révolution dépasse-t-elle le laboratoire ?",
+        "a": "Parce qu’elle change l’alimentation, l’hygiène, la chirurgie, la prévention et la santé publique.",
+        "why": "Le cours montre les conséquences sociales et médicales.",
+        "trap": "La limiter à une découverte théorique.",
+        "evidence": "Bloc 5."
+      }
+    ]
+  },
+  "eco-inflation-money-value": {
+    "hook": "L’inflation est souvent vécue comme une simple hausse de prix au supermarché. En réalité, c’est un phénomène plus large : quand les prix augmentent de manière générale, la monnaie ne permet plus d’acheter la même quantité de biens et de services.",
+    "keyFacts": [
+      "Définition : hausse générale et durable des prix",
+      "Effet : baisse du pouvoir d’achat de la monnaie si les revenus ne suivent pas",
+      "Causes possibles : demande forte, coûts de production, énergie, monnaie, anticipations",
+      "Piège : confondre inflation et hausse isolée du prix d’un seul produit"
+    ],
+    "express": [
+      "L’inflation désigne une hausse générale et durable des prix. Si une seule baguette augmente dans une boulangerie, ce n’est pas forcément de l’inflation. Si beaucoup de prix montent dans l’économie, alors chaque euro permet d’acheter un peu moins qu’avant.",
+      "Elle peut venir de plusieurs sources : demande trop forte, énergie plus chère, salaires ou matières premières en hausse, problèmes de production, création monétaire, anticipations des entreprises et des ménages. Une inflation faible peut accompagner l’activité, mais une inflation trop forte désorganise les choix.",
+      "À retenir : l’inflation n’est pas seulement “les prix montent”. C’est une perte de valeur de la monnaie dans l’ensemble de l’économie, avec des effets sur salaires, épargne, crédits, taux d’intérêt et pouvoir d’achat."
+    ],
+    "complete": [
+      {
+        "title": "1. Une hausse générale, pas un prix isolé",
+        "text": "Le premier réflexe est de confondre inflation et hausse d’un prix. Or un prix peut augmenter pour une raison locale : une récolte mauvaise, une pénurie temporaire, une marque plus chère, une taxe spécifique. L’inflation commence quand la hausse touche largement l’économie et se prolonge.\n\nC’est pour cela qu’on la mesure avec des paniers de biens et de services. On observe l’évolution de nombreux prix : alimentation, logement, énergie, transports, loisirs, services. L’indicateur reste imparfait, car chacun ne consomme pas exactement le même panier, mais il donne une vision d’ensemble."
+      },
+      {
+        "title": "2. La monnaie perd du pouvoir d’achat",
+        "text": "Dire que les prix montent revient aussi à dire que la monnaie achète moins. Si ton revenu reste identique alors que les prix augmentent, ton pouvoir d’achat baisse. Tu possèdes le même nombre d’euros, mais ces euros donnent accès à moins de choses.\n\nCette idée est essentielle : l’inflation n’est pas seulement un problème de chiffres. Elle modifie les arbitrages quotidiens, l’épargne, les négociations salariales et les décisions d’achat. Elle peut toucher plus durement les ménages qui consacrent une grande part de leur budget aux dépenses indispensables."
+      },
+      {
+        "title": "3. Plusieurs causes possibles",
+        "text": "Il n’existe pas une seule inflation. Une économie peut connaître une inflation de demande si beaucoup d’acheteurs veulent consommer alors que l’offre ne suit pas. Elle peut connaître une inflation par les coûts si l’énergie, les matières premières ou les salaires augmentent fortement pour les entreprises.\n\nLes anticipations comptent aussi. Si les entreprises pensent que les coûts vont continuer à monter, elles peuvent augmenter leurs prix. Si les salariés anticipent une hausse durable des prix, ils demandent des salaires plus élevés. L’inflation peut donc s’entretenir en partie par les comportements."
+      },
+      {
+        "title": "4. Pourquoi les banques centrales réagissent",
+        "text": "Les banques centrales surveillent l’inflation parce qu’une monnaie trop instable rend les décisions difficiles. Quand les prix augmentent vite, il devient plus compliqué de comparer, d’épargner, d’investir ou de fixer des contrats. Pour ralentir l’inflation, une banque centrale peut relever ses taux, ce qui rend le crédit plus cher et freine une partie de la demande.\n\nMais l’action est délicate. Freiner trop brutalement peut ralentir l’économie et peser sur l’emploi. Ne rien faire peut laisser l’inflation s’installer. L’économie est donc souvent une affaire d’arbitrages, pas de bouton magique."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "L’inflation est une hausse générale des prix qui diminue le pouvoir d’achat de la monnaie. Elle peut avoir des causes différentes et ne touche pas tout le monde de la même manière.\n\nLa bonne question n’est pas seulement “quel prix a augmenté ?”, mais “est-ce que l’ensemble des prix, des revenus, des crédits et de l’épargne est en train de changer ?”. C’est ce qui fait de l’inflation une notion centrale pour comprendre l’économie quotidienne."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Définition",
+        "text": "L’inflation est une hausse générale et durable des prix."
+      },
+      {
+        "label": "Pouvoir d’achat",
+        "text": "Si les revenus ne suivent pas, chaque euro achète moins de choses."
+      },
+      {
+        "label": "Arbitrage",
+        "text": "La lutte contre l’inflation peut aussi ralentir l’activité économique."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "définition",
+        "q": "Qu’est-ce que l’inflation ?",
+        "a": "Une hausse générale et durable des prix.",
+        "why": "C’est la définition centrale du cours.",
+        "trap": "La confondre avec la hausse isolée d’un seul prix.",
+        "evidence": "Express et bloc 1."
+      },
+      {
+        "kind": "compréhension",
+        "q": "Pourquoi l’inflation réduit-elle le pouvoir d’achat ?",
+        "a": "Parce que la même somme d’argent permet d’acheter moins de biens et services.",
+        "why": "Le cours explique la perte de valeur de la monnaie.",
+        "trap": "Dire qu’on a forcément moins d’euros sur son compte.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "causes",
+        "q": "Cite deux causes possibles d’inflation.",
+        "a": "Une demande trop forte, des coûts de production plus élevés, l’énergie chère ou les anticipations.",
+        "why": "Le cours présente plusieurs sources possibles.",
+        "trap": "Croire qu’il n’existe qu’une seule cause.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "institution",
+        "q": "Pourquoi les banques centrales peuvent-elles relever les taux ?",
+        "a": "Pour rendre le crédit plus cher, freiner une partie de la demande et ralentir l’inflation.",
+        "why": "C’est un outil classique de politique monétaire.",
+        "trap": "Dire que cela augmente directement tous les salaires.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi l’inflation est-elle une notion quotidienne ?",
+        "a": "Parce qu’elle touche prix, revenus, épargne, crédits et choix de consommation.",
+        "why": "Le cours relie la notion à la vie économique concrète.",
+        "trap": "La réduire à un débat technique réservé aux banques.",
+        "evidence": "Bloc 5."
+      }
+    ]
+  },
+  "geo-mercator-projection": {
+    "hook": "Une carte paraît souvent évidente : on croit voir le monde tel qu’il est. La projection de Mercator montre l’inverse. Elle est très utile pour naviguer, mais elle déforme fortement les surfaces et change notre perception des continents.",
+    "keyFacts": [
+      "Problème : représenter une sphère sur un plan impose des déformations",
+      "Mercator : projection utile aux marins parce qu’elle conserve les angles",
+      "Limite : les hautes latitudes sont agrandies, comme le Groenland ou le nord de l’Europe",
+      "Piège : croire qu’une carte est une copie neutre du monde"
+    ],
+    "express": [
+      "La Terre est presque sphérique, mais une carte est plane. Pour passer de l’une à l’autre, il faut choisir une projection. Ce choix conserve certains éléments et en déforme d’autres : les formes, les distances, les angles ou les surfaces.",
+      "La projection de Mercator, créée au XVIe siècle, est très utile pour la navigation parce qu’elle conserve les angles. Les routes maritimes peuvent être suivies plus facilement. Mais elle agrandit énormément les régions proches des pôles : le Groenland, le Canada ou la Russie paraissent beaucoup plus grands qu’ils ne le sont par rapport aux zones tropicales.",
+      "À retenir : Mercator n’est pas une “mauvaise carte”. C’est une carte faite pour un usage. Le problème commence quand on l’utilise comme image neutre des tailles réelles du monde."
+    ],
+    "complete": [
+      {
+        "title": "1. Le problème de toute carte",
+        "text": "Une carte du monde doit résoudre un problème impossible parfaitement : représenter une surface courbe sur une surface plane. C’est comme essayer d’aplatir une peau d’orange sans la déchirer ni la déformer. Il faut forcément accepter des compromis.\n\nUne projection cartographique choisit donc ce qu’elle préserve le mieux. Certaines projections respectent davantage les surfaces, d’autres les formes locales, les distances ou les angles. Aucune ne donne tout parfaitement. Lire une carte, c’est comprendre le choix qui a été fait."
+      },
+      {
+        "title": "2. Pourquoi Mercator est utile",
+        "text": "La projection de Mercator est mise au point au XVIe siècle, dans un contexte où la navigation maritime prend une importance majeure. Son intérêt est de conserver les angles. Pour un marin, cela permet de tracer plus simplement une direction constante sur la carte.\n\nCet avantage explique son immense succès. Mercator n’est donc pas une erreur absurde : c’est un outil puissant pour un usage précis. Beaucoup de problèmes viennent du fait que cette carte est devenue une image familière du monde, utilisée bien au-delà de son objectif de départ."
+      },
+      {
+        "title": "3. La déformation des surfaces",
+        "text": "Le défaut célèbre de Mercator concerne les surfaces. Plus on s’approche des pôles, plus les régions sont agrandies. Le Groenland paraît énorme, l’Europe du Nord et la Russie prennent beaucoup de place, tandis que les régions proches de l’équateur paraissent relativement réduites.\n\nCette déformation influence notre imagination géographique. Un territoire qui semble grand sur une carte paraît spontanément plus important. À l’inverse, certains espaces d’Afrique, d’Amérique du Sud ou d’Asie du Sud-Est peuvent paraître moins vastes qu’ils ne le sont réellement."
+      },
+      {
+        "title": "4. Une carte est toujours un point de vue",
+        "text": "La leçon importante dépasse Mercator. Une carte n’est jamais seulement une fenêtre neutre. Elle sélectionne, simplifie, nomme, centre, colore et hiérarchise. Le choix du centre du planisphère, de l’échelle, des frontières, des couleurs ou de la projection produit déjà un message.\n\nCela ne veut pas dire que toutes les cartes mentent. Cela veut dire qu’elles répondent à une question. Une carte routière, une carte météo, une carte militaire ou une carte scolaire ne montrent pas le monde de la même manière, parce qu’elles ne servent pas au même usage."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Mercator est une projection très utile pour la navigation, mais trompeuse si on la prend comme représentation fidèle des surfaces. Elle conserve les angles, mais agrandit les hautes latitudes.\n\nLa grande idée géographique est simple : avant de croire une carte, il faut demander à quoi elle sert. Une carte n’est pas le monde ; c’est une représentation choisie du monde."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Projection",
+        "text": "Passer de la sphère au plan impose toujours des déformations."
+      },
+      {
+        "label": "Usage",
+        "text": "Mercator est excellent pour certains usages de navigation."
+      },
+      {
+        "label": "Esprit critique",
+        "text": "Une carte doit toujours être lue comme un choix de représentation."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "définition",
+        "q": "Pourquoi une projection cartographique est-elle nécessaire ?",
+        "a": "Parce qu’il faut représenter une surface courbe sur une surface plane.",
+        "why": "C’est le problème de base de toute carte du monde.",
+        "trap": "Croire qu’une carte peut tout conserver parfaitement.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "repère",
+        "q": "À quel usage la projection de Mercator est-elle particulièrement utile ?",
+        "a": "À la navigation maritime.",
+        "why": "Elle conserve les angles, ce qui aide les marins.",
+        "trap": "Dire qu’elle sert d’abord à comparer les surfaces réelles.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "limite",
+        "q": "Quelle grande déformation produit Mercator ?",
+        "a": "Elle agrandit fortement les régions proches des pôles.",
+        "why": "C’est le défaut principal présenté dans le cours.",
+        "trap": "Dire qu’elle réduit le Groenland.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "compréhension",
+        "q": "Pourquoi cette déformation peut-elle influencer notre vision du monde ?",
+        "a": "Parce qu’un territoire qui paraît plus grand peut sembler plus important.",
+        "why": "Le cours relie carte et imagination géographique.",
+        "trap": "Croire que la taille visuelle n’a aucun effet.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quelle question faut-il poser devant une carte ?",
+        "a": "À quoi sert cette carte et quels choix de représentation fait-elle ?",
+        "why": "C’est la conclusion méthodologique du cours.",
+        "trap": "Prendre toute carte comme une copie neutre du monde.",
+        "evidence": "Bloc 5."
+      }
+    ]
+  },
+  "music-jazz-birth": {
+    "hook": "Le jazz naît dans un monde de métissages, de violences sociales, de fêtes, de clubs, de fanfares, de blues et de spirituals. Son histoire n’est pas seulement celle d’un style : c’est une révolution de la manière de jouer, d’écouter et d’improviser.",
+    "keyFacts": [
+      "Contexte : États-Unis, héritages afro-américains, Nouvelle-Orléans, début du XXe siècle",
+      "Éléments : blues, ragtime, swing, improvisation, timbres, rythmes syncopés",
+      "Diffusion : clubs, disques, radio, orchestres, tournées",
+      "Piège : réduire le jazz à une musique de fond calme"
+    ],
+    "express": [
+      "Le jazz apparaît aux États-Unis au tournant du XXe siècle, dans un contexte afro-américain marqué par le blues, les chants religieux, les fanfares, les rythmes syncopés et les musiques de danse. La Nouvelle-Orléans occupe une place importante dans ce récit, même si l’histoire du jazz est plus large.",
+      "Sa grande nouveauté est l’importance donnée à l’improvisation, au swing, au timbre et à l’interaction entre musiciens. Une mélodie peut servir de point de départ, puis chaque instrument transforme, répond, relance et invente dans le moment.",
+      "À retenir : le jazz n’est pas une musique figée. C’est une tradition de transformation permanente. Il influence ensuite le blues moderne, le rock, la soul, le funk, le rap et une grande partie des musiques populaires du XXe siècle."
+    ],
+    "complete": [
+      {
+        "title": "1. Des racines afro-américaines",
+        "text": "Le jazz naît dans l’histoire afro-américaine des États-Unis. Il hérite de chants de travail, de spirituals, du blues, de fanfares, de musiques de danse et de traditions rythmiques africaines transformées par l’histoire de l’esclavage, de la ségrégation et des villes américaines.\n\nIl faut éviter l’image d’une invention soudaine par un seul musicien. Le jazz apparaît par croisements : instruments européens, rythmes syncopés, mémoire du blues, culture des rues, fêtes, clubs et communautés. La Nouvelle-Orléans est souvent présentée comme un lieu majeur parce qu’elle concentre fanfares, brass bands, danse et circulation musicale."
+      },
+      {
+        "title": "2. Improviser sans jouer au hasard",
+        "text": "L’improvisation est l’un des grands marqueurs du jazz, mais improviser ne signifie pas jouer n’importe quoi. Les musiciens s’appuient sur une grille, une mélodie, un rythme, une mémoire du style et une écoute très fine des autres. L’invention se fait dans un cadre.\n\nC’est ce qui rend cette musique vivante : une même pièce peut changer d’un concert à l’autre. Le soliste propose une phrase, la rythmique répond, un autre instrument relance. Le morceau devient une conversation organisée autant qu’une composition."
+      },
+      {
+        "title": "3. Swing, timbre et corps",
+        "text": "Le jazz transforme aussi la sensation du rythme. Le swing donne une pulsation souple, difficile à réduire à une simple écriture sur partition. Le corps compte : on danse, on marque le tempo, on ressent un balancement.\n\nLe timbre est tout aussi important. Une trompette, un saxophone ou une voix ne cherchent pas seulement une note “pure”. Ils peuvent plier le son, le salir, le faire crier, sourire ou pleurer. Dans le jazz, la personnalité sonore devient presque une signature."
+      },
+      {
+        "title": "4. Disques, clubs et diffusion mondiale",
+        "text": "Au XXe siècle, le jazz se diffuse grâce aux clubs, aux orchestres, aux tournées, aux disques et à la radio. Des figures comme Louis Armstrong, Duke Ellington, Billie Holiday, Charlie Parker ou Miles Davis montrent que le jazz change sans cesse : New Orleans, swing, bebop, cool, hard bop, free jazz, fusion.\n\nChaque période invente une nouvelle manière de jouer. Le jazz devient donc une histoire de styles successifs, mais aussi une méthode : reprendre un matériau, le transformer, y inscrire une voix personnelle."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Le jazz est une révolution musicale parce qu’il place l’improvisation, le rythme, le timbre et l’interaction au centre. Il naît d’une histoire sociale précise, mais devient rapidement une langue mondiale.\n\nLa grande idée à garder : le jazz n’est pas une musique de fond élégante. C’est une musique d’invention, de tension et de liberté contrôlée, qui a profondément influencé la musique du XXe siècle."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Racines",
+        "text": "Le jazz naît d’héritages afro-américains et de croisements culturels."
+      },
+      {
+        "label": "Improvisation",
+        "text": "Inventer dans le moment ne veut pas dire jouer au hasard."
+      },
+      {
+        "label": "Influence",
+        "text": "Le jazz transforme durablement les musiques populaires du XXe siècle."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Dans quel pays le jazz apparaît-il ?",
+        "a": "Aux États-Unis.",
+        "why": "Le cours situe sa naissance dans un contexte afro-américain américain.",
+        "trap": "Le présenter comme une invention française médiévale.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "contexte",
+        "q": "Quelle ville est souvent associée aux débuts du jazz ?",
+        "a": "La Nouvelle-Orléans.",
+        "why": "Le cours la présente comme un lieu majeur de brassage musical.",
+        "trap": "Dire que toute l’histoire du jazz se limite à cette ville.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "notion",
+        "q": "Pourquoi l’improvisation n’est-elle pas du hasard ?",
+        "a": "Parce qu’elle s’appuie sur un cadre, une écoute, une grille, une mélodie et une mémoire du style.",
+        "why": "Le cours insiste sur la liberté contrôlée.",
+        "trap": "Croire que les musiciens jouent sans règles.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "style",
+        "q": "Quels éléments sont centraux dans le jazz ?",
+        "a": "L’improvisation, le swing, le timbre, le rythme et l’interaction entre musiciens.",
+        "why": "Ce sont les marqueurs récurrents du cours.",
+        "trap": "Réduire le jazz à une musique calme de restaurant.",
+        "evidence": "Express et bloc 3."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi le jazz influence-t-il autant le XXe siècle musical ?",
+        "a": "Parce qu’il invente une manière de transformer les matériaux, d’improviser et de faire entendre une voix personnelle.",
+        "why": "C’est la conclusion du cours.",
+        "trap": "Le voir comme un style figé.",
+        "evidence": "Bloc 5."
+      }
+    ]
+  }
+};
+const BETA109_MODE_MYSTERIES = [
+  {
+    "id": "art-mystery-impressionism-mode",
+    "discipline": "art",
+    "difficulty": "facile",
+    "title": "Des touches visibles et une lumière qui change",
+    "caseTitle": "Mouvement artistique à identifier",
+    "prompt": "Ces peintres français du XIXe siècle choquent d’abord parce que leurs tableaux semblent inachevés. Ils veulent saisir les effets de lumière, les loisirs modernes et la sensation d’un instant.",
+    "answer": "L’impressionnisme",
+    "aliases": [
+      "impressionnisme",
+      "l impressionnisme",
+      "l’impressionnisme",
+      "impressionnistes"
+    ],
+    "clues": [
+      "Monet, Renoir, Degas ou Pissarro y sont associés.",
+      "Touches visibles, couleurs claires, ombres colorées.",
+      "Le nom vient d’abord d’une moquerie autour d’Impression, soleil levant."
+    ],
+    "explanation": "L’impressionnisme marque une rupture vers l’art moderne : peindre la perception, la lumière et l’instant plutôt qu’un sujet parfaitement lissé.",
+    "blockedGuesses": [
+      "monet",
+      "peinture",
+      "lumiere",
+      "renoir"
+    ]
+  },
+  {
+    "id": "cinema-mystery-hollywood-studios",
+    "discipline": "cinema",
+    "difficulty": "moyen",
+    "title": "La grande machine à rêves des studios",
+    "caseTitle": "Période du cinéma à identifier",
+    "prompt": "Entre les années 1930 et 1950, grands studios, stars sous contrat, genres codifiés et récits très lisibles structurent une industrie du film devenue mondiale.",
+    "answer": "Hollywood classique",
+    "aliases": [
+      "hollywood classique",
+      "age classique hollywoodien",
+      "âge classique hollywoodien",
+      "cinema classique hollywoodien",
+      "cinéma classique hollywoodien"
+    ],
+    "clues": [
+      "Studios, stars, westerns, comédies musicales et films noirs.",
+      "Un cinéma très industriel, mais aussi très efficace narrativement.",
+      "Beaucoup de blockbusters actuels héritent encore de ses règles."
+    ],
+    "explanation": "Hollywood classique construit une grammaire populaire du cinéma : genres, stars, montage fluide, récits lisibles et production industrielle.",
+    "blockedGuesses": [
+      "hollywood",
+      "studio",
+      "western",
+      "star"
+    ]
+  },
+  {
+    "id": "science-mystery-pasteur-microbes",
+    "discipline": "science-inventions",
+    "difficulty": "facile",
+    "title": "L’invisible qui change la médecine",
+    "caseTitle": "Savant à identifier",
+    "prompt": "Ses travaux sur les fermentations, les microbes, la pasteurisation et certains vaccins incarnent la révolution microbienne du XIXe siècle.",
+    "answer": "Louis Pasteur",
+    "aliases": [
+      "pasteur",
+      "louis pasteur"
+    ],
+    "clues": [
+      "Figure française du XIXe siècle.",
+      "Son nom est associé à un procédé de chauffage de liquides pour limiter certains micro-organismes.",
+      "Il est aussi lié à l’histoire des vaccins et de la rage."
+    ],
+    "explanation": "Pasteur représente la révolution microbienne : comprendre, contrôler et prévenir l’action des micro-organismes dans la médecine et la vie quotidienne.",
+    "blockedGuesses": [
+      "microbe",
+      "vaccin",
+      "rage",
+      "pasteurisation"
+    ]
+  },
+  {
+    "id": "music-mystery-jazz-birth-109",
+    "discipline": "music",
+    "difficulty": "facile",
+    "title": "Improviser sans jouer au hasard",
+    "caseTitle": "Genre musical à identifier",
+    "prompt": "Né aux États-Unis au tournant du XXe siècle, il mêle blues, swing, timbres expressifs, clubs et improvisation dans un cadre partagé.",
+    "answer": "Le jazz",
+    "aliases": [
+      "jazz",
+      "le jazz"
+    ],
+    "clues": [
+      "Nouvelle-Orléans est souvent associée à ses débuts.",
+      "Louis Armstrong et Duke Ellington sont des figures majeures.",
+      "L’improvisation, le swing et l’interaction y sont essentiels."
+    ],
+    "explanation": "Le jazz est une révolution musicale afro-américaine qui place l’invention dans le moment, le rythme et la personnalité sonore au centre.",
+    "blockedGuesses": [
+      "blues",
+      "swing",
+      "improvisation",
+      "nouvelle orleans"
+    ]
+  }
+];
+(function registerBeta109Content() {
+  Object.entries(BETA109_LESSONS).forEach(([worldId, items]) => {
+    if (!Array.isArray(data.lessons[worldId])) data.lessons[worldId] = [];
+    const known = new Set(data.lessons[worldId].map(item => item.id));
+    items.forEach(item => { if (!known.has(item.id)) data.lessons[worldId].push(item); });
+  });
+  ["art-impressionism-modern-life", "cinema-hollywood-studio-system", "sci-pasteur-microbes-vaccines", "eco-inflation-money-value", "geo-mercator-projection", "music-jazz-birth"].forEach(id => PUBLISHED_LESSON_IDS.add(id));
+  Object.assign(READY_LESSON_PACKS, BETA109_READY_PACKS);
+  if (!Array.isArray(data.mysteries)) data.mysteries = [];
+  const knownMysteries = new Set(data.mysteries.map(item => item.id));
+  BETA109_MODE_MYSTERIES.forEach(item => { if (!knownMysteries.has(item.id)) data.mysteries.push({ ...item, modeMystery: true, beta109: true, manualCluesB97: true, cluesCleaned: true }); });
+})();
+
 function allDisciplineWorlds() {
   const planned = Object.values(PLANNED_DISCIPLINE_WORLDS || {}).flat();
   const map = new Map();

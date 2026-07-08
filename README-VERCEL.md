@@ -1,8 +1,8 @@
-# HistoDaily — paquet de déploiement beta106
+# HistoDaily — paquet de déploiement beta111
 
-Version : `1.0.0-beta.106`
+Version : `1.0.0-beta.111`
 
-Build public resserré pour test privé.
+Build public resserré pour test privé. Ajout du journal de version sur l’accueil.
 
 ## Contenu public
 
@@ -13,6 +13,7 @@ Build public resserré pour test privé.
 - PWA installable
 - scores locaux disponibles hors ligne
 - classements et amis activables avec les variables Supabase
+- validation des réponses de mystère renforcée sur mobile
 
 ## Déploiement Vercel
 
@@ -44,3 +45,17 @@ SUPABASE_SERVICE_ROLE_KEY=...
 - Recentrage Art/Cinéma/Sciences sur l’histoire des œuvres, films, sciences et inventions.
 - Ajout de quelques vrais cours longs : Renaissance, naissance du cinéma, Galilée, chant médiéval/polyphonie.
 - Les modules de méthode restent présents mais passent en hors-série.
+
+
+## Beta 109
+- Ajout de 6 vrais cours longs, sans bourrage : impressionnisme, Hollywood classique, Pasteur/microbes, inflation, Mercator et naissance du jazz.
+- Ajout de nouveaux mystères liés à ces domaines pour que l’accueil reste cohérent avec le mode choisi.
+- Les contenus gardent la structure validée : express court, cours complet narratif, points à retenir et 5 questions vraiment tirées du texte.
+
+## Beta 110
+- Correctif ciblé sur les mystères : validation robuste, feedback visible et réponses Napoléon/Bonaparte acceptées.
+
+## Beta 111
+- Ajout d’une carte “Journal de version” sur l’accueil.
+- Affichage visible de la version courante sur l’accueil.
+- Préparation d’un suivi propre des nouveautés à chaque push de mise à jour.
