@@ -351,3 +351,137 @@ input:focus, textarea:focus, select:focus {
 /* beta104 disciplines : choix façon langue + camembert profil */
 .discipline-picker{border-color:rgba(86,214,255,.18);background:radial-gradient(circle at 95% 0,rgba(86,214,255,.10),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035))}
 .discipline-picker .section-title-row{align-items:flex-start}.discipline-picker .section-title-row p{margin:.25rem 0 0;color:var(--muted);line-height:1.45}.discipline-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.discipline-card{display:grid;gap:5px;text-align:left;padding:13px;border:1px solid rgba(255,255,255,.10);border-radius:20px;background:rgba(5,9,20,.28);transition:transform .16s ease,border-color .16s ease,background .16s ease;min-height:136px}.discipline-card:active{transform:scale(.99)}.discipline-card.active{border-color:color-mix(in srgb,var(--discipline-accent,#f6c453) 62%,transparent);background:radial-gradient(circle at 95% 0,color-mix(in srgb,var(--discipline-accent,#f6c453) 20%,transparent),transparent 48%),rgba(255,255,255,.07)}.discipline-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:16px;background:color-mix(in srgb,var(--discipline-accent,#f6c453) 22%,transparent);font-size:1.45rem}.discipline-card strong{font-size:.98rem;line-height:1.1}.discipline-card small{color:color-mix(in srgb,var(--discipline-accent,#f6c453) 86%,white);font-weight:1000}.discipline-card em{font-style:normal;color:var(--muted);font-size:.78rem;line-height:1.25}.discipline-empty-card{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;border-color:color-mix(in srgb,var(--discipline-accent,#f6c453) 32%,transparent);background:radial-gradient(circle at 0 0,color-mix(in srgb,var(--discipline-accent,#f6c453) 12%,transparent),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035))}.discipline-empty-icon{display:grid;place-items:center;width:64px;height:64px;border-radius:24px;background:color-mix(in srgb,var(--discipline-accent,#f6c453) 22%,transparent);font-size:2rem}.trivial-profile-card{overflow:hidden}.trivial-profile-card p{margin:.25rem 0 0}.trivial-profile-layout{display:grid;gap:16px;align-items:center}.trivial-wheel-wrap{display:grid;place-items:center}.trivial-wheel{width:min(100%,265px);filter:drop-shadow(0 18px 34px rgba(0,0,0,.26))}.trivial-wheel text{fill:#fff;font-size:8px;font-weight:1000;paint-order:stroke;stroke:rgba(5,9,20,.72);stroke-width:2px;stroke-linejoin:round}.trivial-wheel .trivial-center{font-size:7px;fill:#ffe3a3;stroke:none;letter-spacing:.02em}.discipline-progress-list{display:grid;gap:8px}.discipline-progress-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:9px;align-items:center;padding:9px 10px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:rgba(5,9,20,.24)}.discipline-progress-row span{display:grid;place-items:center;width:30px;height:30px;border-radius:12px;background:color-mix(in srgb,var(--discipline-accent,#f6c453) 18%,transparent)}.discipline-progress-row strong{font-size:.9rem}.discipline-progress-row em{font-style:normal;color:var(--muted);font-size:.78rem}.discipline-progress-row b{color:color-mix(in srgb,var(--discipline-accent,#f6c453) 88%,white);font-size:.88rem}@media(min-width:760px){.discipline-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.trivial-profile-layout{grid-template-columns:260px 1fr}.discipline-card{min-height:146px}}@media(max-width:420px){.discipline-grid{grid-template-columns:1fr}.discipline-empty-card{grid-template-columns:1fr}.discipline-empty-icon{width:56px;height:56px}.trivial-wheel{width:230px}.discipline-progress-row{grid-template-columns:auto 1fr auto}.discipline-progress-row em{display:none}}
+
+/* beta105 : disciplines préparées + profil culturel plus premium */
+.culture-profile-card{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(255,255,255,.13);
+  background:
+    radial-gradient(circle at 15% 8%,rgba(246,196,83,.14),transparent 34%),
+    radial-gradient(circle at 95% 10%,rgba(86,214,255,.10),transparent 30%),
+    linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+}
+.culture-profile-card::before{
+  content:"";
+  position:absolute;
+  inset:12px;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,.055);
+  pointer-events:none;
+}
+.culture-profile-card .section-title-row small{
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  color:#ffe6ad;
+  font-weight:1000;
+}
+.culture-wheel{
+  width:min(100%,292px);
+  overflow:visible;
+  filter:drop-shadow(0 24px 42px rgba(0,0,0,.34));
+}
+.culture-wheel .wheel-halo{
+  fill:rgba(255,255,255,.035);
+  stroke:rgba(255,255,255,.16);
+  stroke-width:.6;
+}
+.culture-wheel .wheel-back{
+  opacity:.26;
+  stroke:rgba(5,9,20,.86);
+  stroke-width:1.05;
+}
+.culture-wheel .wheel-fill{
+  opacity:.95;
+  stroke:rgba(255,255,255,.20);
+  stroke-width:.42;
+}
+.culture-wheel .wheel-core{
+  fill:rgba(5,9,20,.94);
+  stroke:rgba(255,255,255,.22);
+  stroke-width:1.15;
+  filter:drop-shadow(0 10px 16px rgba(0,0,0,.35));
+}
+.culture-wheel .wheel-emoji{
+  font-size:7.2px;
+  stroke:none;
+  paint-order:normal;
+}
+.culture-wheel .wheel-percent{
+  fill:#fff;
+  font-size:5.3px;
+  font-weight:1000;
+  letter-spacing:-.02em;
+  paint-order:stroke;
+  stroke:rgba(5,9,20,.78);
+  stroke-width:1.45px;
+  stroke-linejoin:round;
+}
+.culture-wheel .trivial-center{
+  fill:#fff1bd;
+  font-size:4.6px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  stroke:none;
+}
+.culture-wheel .wheel-average{
+  fill:#fff;
+  font-size:7px;
+  font-weight:1000;
+  stroke:none;
+}
+.culture-profile-card .discipline-progress-list{
+  gap:9px;
+}
+.culture-profile-card .discipline-progress-row{
+  position:relative;
+  overflow:hidden;
+  grid-template-columns:auto 1fr auto auto;
+  border-color:color-mix(in srgb,var(--discipline-accent,#f6c453) 22%,rgba(255,255,255,.09));
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--discipline-accent,#f6c453) 17%,transparent),transparent 58%),
+    rgba(255,255,255,.045);
+}
+.culture-profile-card .discipline-progress-row::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:var(--discipline-accent,#f6c453);
+  opacity:.95;
+}
+.culture-profile-card .discipline-progress-row span{
+  margin-left:2px;
+  background:color-mix(in srgb,var(--discipline-accent,#f6c453) 24%,transparent);
+}
+.profile-settings-card{
+  display:grid;
+  gap:12px;
+}
+.profile-settings-card .settings-inner{
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:22px;
+  padding:13px;
+  background:rgba(5,9,20,.22);
+}
+.profile-settings-card .settings-inner.card{
+  box-shadow:none;
+}
+.planned-lessons-note{
+  border-color:rgba(255,255,255,.11);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));
+}
+.tree-card.period-card .tree-progress-line b{
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+@media(max-width:420px){
+  .culture-wheel{width:248px}
+  .culture-profile-card .discipline-progress-row{grid-template-columns:auto 1fr auto}
+  .culture-profile-card .discipline-progress-row em{display:none}
+}

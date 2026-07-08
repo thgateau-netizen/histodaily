@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.104",
-  assetsVersion: "1.0.0-beta.104",
+  version: "1.0.0-beta.105",
+  assetsVersion: "1.0.0-beta.105",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 104",
+    versionLabel: "beta 105",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Choix de discipline façon Duolingo avant les cours.",
-      "Profil enrichi avec camembert de progression par domaine.",
-      "Cours histoire conservés en plein écran, sans ajouter de contenu artificiel."
+      "Grands chapitres préparés dans Art, Cinéma, Sciences & inventions, Économie et Géographie.",
+      "Camembert du profil retravaillé avec un rendu plus propre et plus lisible.",
+      "Réglages sécurisés : plus de panneau déroulant fragile sur mobile."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

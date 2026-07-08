@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.104";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.105";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -21,6 +21,112 @@ const DISCIPLINES = [
   { id: "economy", title: "Économie", emoji: "📈", accent: "#48d597", description: "Marchés, crises, monnaies et grandes notions." },
   { id: "geography", title: "Géographie", emoji: "🗺️", accent: "#84cc16", description: "Pays, milieux, villes, frontières et cartes." }
 ];
+
+const DISCIPLINE_OUTLINES = {
+  art: {
+    groups: [
+      { id: "art-reading", title: "1. Lire une œuvre", range: "bases", description: "Composition, couleur, perspective, symbole : les réflexes pour regarder une image sans réciter une fiche." },
+      { id: "art-ancient-medieval", title: "2. Antiquité et Moyen Âge", range: "Antiquité → XVe siècle", description: "Temples, statues, icônes, manuscrits, vitraux et arts religieux." },
+      { id: "art-renaissance-classical", title: "3. Renaissance et classicisme", range: "XVe → XVIIIe siècle", description: "Perspective, humanisme, baroque, académies, pouvoir et grands décors." },
+      { id: "art-modern", title: "4. Modernités", range: "XIXe → XXe siècle", description: "Impressionnisme, avant-gardes, abstraction, photographie et rupture avec l’académie." },
+      { id: "art-contemporary", title: "5. Art contemporain", range: "1945 → aujourd’hui", description: "Installations, performance, design, street art, marché et musées contemporains." }
+    ],
+    worlds: [
+      { id: "art-read-image", title: "Lire une image", emoji: "👁️", subtitle: "Voir avant de juger", timeframe: "bases", accent: "#fb7185", group: "art-reading", sortStart: 1 },
+      { id: "art-composition-color", title: "Composition et couleur", emoji: "🎛️", subtitle: "Cadre, lumière, rythme", timeframe: "bases", accent: "#f97316", group: "art-reading", sortStart: 2 },
+      { id: "art-antiquity", title: "Arts antiques", emoji: "🏺", subtitle: "Égypte, Grèce, Rome", timeframe: "Antiquité", accent: "#facc15", group: "art-ancient-medieval", sortStart: 10 },
+      { id: "art-medieval", title: "Images médiévales", emoji: "⛪", subtitle: "Vitraux, icônes, manuscrits", timeframe: "Ve → XVe siècle", accent: "#38bdf8", group: "art-ancient-medieval", sortStart: 11 },
+      { id: "art-renaissance", title: "Renaissance", emoji: "🖼️", subtitle: "Perspective, corps, humanisme", timeframe: "XVe → XVIe siècle", accent: "#fb7185", group: "art-renaissance-classical", sortStart: 20 },
+      { id: "art-baroque-classicism", title: "Baroque et classicisme", emoji: "🏛️", subtitle: "Pouvoir, mouvement, règles", timeframe: "XVIIe → XVIIIe siècle", accent: "#c084fc", group: "art-renaissance-classical", sortStart: 21 },
+      { id: "art-impressionism", title: "Impressionnisme", emoji: "🌤️", subtitle: "Lumière, modernité, plein air", timeframe: "XIXe siècle", accent: "#f472b6", group: "art-modern", sortStart: 30 },
+      { id: "art-avantgardes", title: "Avant-gardes", emoji: "⚡", subtitle: "Cubisme, dada, abstraction", timeframe: "1900 → 1945", accent: "#a78bfa", group: "art-modern", sortStart: 31 },
+      { id: "art-contemporary-practices", title: "Pratiques contemporaines", emoji: "🧩", subtitle: "Installation, performance, street art", timeframe: "1945 → aujourd’hui", accent: "#22c55e", group: "art-contemporary", sortStart: 40 }
+    ]
+  },
+  cinema: {
+    groups: [
+      { id: "cinema-language", title: "1. Langage du cinéma", range: "bases", description: "Plan, cadre, montage, son, point de vue : comprendre comment un film raconte." },
+      { id: "cinema-birth", title: "2. Naissance et muet", range: "1895 → 1929", description: "Premières projections, burlesque, montage soviétique et grandes formes du muet." },
+      { id: "cinema-classical", title: "3. Âge classique", range: "1930 → 1960", description: "Hollywood, genres, studios, stars, film noir et grands récits populaires." },
+      { id: "cinema-new-waves", title: "4. Nouveaux cinémas", range: "1945 → 1980", description: "Néoréalisme, Nouvelle Vague, cinéma d’auteur et ruptures de mise en scène." },
+      { id: "cinema-contemporary", title: "5. Cinéma contemporain", range: "1980 → aujourd’hui", description: "Blockbusters, animation, séries, plateformes, franchises et cinéma mondial." }
+    ],
+    worlds: [
+      { id: "cinema-shot-frame", title: "Plan et cadrage", emoji: "🎥", subtitle: "Ce que la caméra choisit", timeframe: "bases", accent: "#a78bfa", group: "cinema-language", sortStart: 1 },
+      { id: "cinema-editing-sound", title: "Montage et son", emoji: "✂️", subtitle: "Rythme, ellipses, musique", timeframe: "bases", accent: "#f472b6", group: "cinema-language", sortStart: 2 },
+      { id: "cinema-early", title: "Premiers films", emoji: "🎞️", subtitle: "Lumière, Méliès, attractions", timeframe: "1895 → 1914", accent: "#f59e0b", group: "cinema-birth", sortStart: 10 },
+      { id: "cinema-silent", title: "Grand muet", emoji: "🤍", subtitle: "Burlesque, expressionnisme, montage", timeframe: "1914 → 1929", accent: "#94a3b8", group: "cinema-birth", sortStart: 11 },
+      { id: "cinema-hollywood", title: "Hollywood classique", emoji: "⭐", subtitle: "Studios, genres, stars", timeframe: "1930 → 1960", accent: "#facc15", group: "cinema-classical", sortStart: 20 },
+      { id: "cinema-film-noir", title: "Film noir et genres", emoji: "🌃", subtitle: "Polar, western, mélodrame", timeframe: "1940 → 1960", accent: "#64748b", group: "cinema-classical", sortStart: 21 },
+      { id: "cinema-neorealism-newwave", title: "Néoréalisme et Nouvelle Vague", emoji: "🚲", subtitle: "Rue, auteur, liberté", timeframe: "1945 → 1968", accent: "#38bdf8", group: "cinema-new-waves", sortStart: 30 },
+      { id: "cinema-blockbuster", title: "Blockbuster et franchises", emoji: "🚀", subtitle: "Spectacle, marketing, univers", timeframe: "1975 → aujourd’hui", accent: "#ef4444", group: "cinema-contemporary", sortStart: 40 },
+      { id: "cinema-animation-world", title: "Animation et cinémas du monde", emoji: "🌍", subtitle: "Studios, styles, circulations", timeframe: "XXe → XXIe siècle", accent: "#22c55e", group: "cinema-contemporary", sortStart: 41 }
+    ]
+  },
+  "science-inventions": {
+    groups: [
+      { id: "sci-method", title: "1. Observer et mesurer", range: "bases", description: "Méthode scientifique, expérience, preuve, instruments et erreurs de raisonnement." },
+      { id: "sci-earth-life", title: "2. Terre, ciel et vivant", range: "Antiquité → aujourd’hui", description: "Astronomie, Terre, évolution, vivant, microbes et environnement." },
+      { id: "sci-energy-matter", title: "3. Énergie et matière", range: "XVIIe → XXe siècle", description: "Mécanique, électricité, chimie, atome, lumière et grandes lois physiques." },
+      { id: "sci-medicine-tech", title: "4. Médecine et techniques", range: "XVIIIe → XXe siècle", description: "Vaccins, hygiène, machines, industrie, transports et innovations utiles." },
+      { id: "sci-digital-space", title: "5. Informatique et espace", range: "XXe → XXIe siècle", description: "Ordinateurs, réseaux, IA, satellites, fusées et exploration spatiale." }
+    ],
+    worlds: [
+      { id: "sci-method-proof", title: "Méthode scientifique", emoji: "🔎", subtitle: "Observer, tester, corriger", timeframe: "bases", accent: "#56d6ff", group: "sci-method", sortStart: 1 },
+      { id: "sci-instruments", title: "Instruments et mesures", emoji: "📏", subtitle: "Voir plus loin, mesurer mieux", timeframe: "bases", accent: "#38bdf8", group: "sci-method", sortStart: 2 },
+      { id: "sci-astronomy", title: "Astronomie", emoji: "🪐", subtitle: "Du ciel ancien à l’espace", timeframe: "Antiquité → aujourd’hui", accent: "#818cf8", group: "sci-earth-life", sortStart: 10 },
+      { id: "sci-evolution", title: "Évolution et vivant", emoji: "🧬", subtitle: "Espèces, sélection, biodiversité", timeframe: "XIXe → aujourd’hui", accent: "#22c55e", group: "sci-earth-life", sortStart: 11 },
+      { id: "sci-mechanics-electricity", title: "Mécanique et électricité", emoji: "⚙️", subtitle: "Forces, machines, courant", timeframe: "XVIIe → XIXe siècle", accent: "#facc15", group: "sci-energy-matter", sortStart: 20 },
+      { id: "sci-atom-energy", title: "Atome et énergie", emoji: "⚛️", subtitle: "Matière, radioactivité, nucléaire", timeframe: "XIXe → XXe siècle", accent: "#f97316", group: "sci-energy-matter", sortStart: 21 },
+      { id: "sci-vaccines-microbes", title: "Microbes et vaccins", emoji: "🦠", subtitle: "Pasteur, hygiène, médecine", timeframe: "XIXe → XXe siècle", accent: "#10b981", group: "sci-medicine-tech", sortStart: 30 },
+      { id: "sci-industry-transport", title: "Machines et transports", emoji: "🚂", subtitle: "Vapeur, moteur, aviation", timeframe: "XVIIIe → XXe siècle", accent: "#f59e0b", group: "sci-medicine-tech", sortStart: 31 },
+      { id: "sci-computers-space", title: "Informatique et espace", emoji: "🛰️", subtitle: "Ordinateurs, réseaux, fusées", timeframe: "XXe → XXIe siècle", accent: "#a78bfa", group: "sci-digital-space", sortStart: 40 }
+    ]
+  },
+  economy: {
+    groups: [
+      { id: "eco-basics", title: "1. Notions de base", range: "bases", description: "Rareté, choix, prix, offre, demande, valeur, travail et productivité." },
+      { id: "eco-markets-firms", title: "2. Marchés et entreprises", range: "bases → moderne", description: "Concurrence, monopoles, coûts, innovation, entreprise et organisation du travail." },
+      { id: "eco-money", title: "3. Monnaie, banques et inflation", range: "Antiquité → aujourd’hui", description: "Monnaie, crédit, banques centrales, inflation, taux et confiance." },
+      { id: "eco-crises-policy", title: "4. Crises et politiques publiques", range: "XIXe → XXIe siècle", description: "Crises financières, chômage, État, impôts, dette et politiques économiques." },
+      { id: "eco-global", title: "5. Mondialisation et inégalités", range: "XIXe → XXIe siècle", description: "Commerce mondial, développement, inégalités, ressources et modèles économiques." }
+    ],
+    worlds: [
+      { id: "eco-supply-demand", title: "Prix, offre et demande", emoji: "⚖️", subtitle: "Pourquoi les prix bougent", timeframe: "bases", accent: "#48d597", group: "eco-basics", sortStart: 1 },
+      { id: "eco-work-productivity", title: "Travail et productivité", emoji: "🛠️", subtitle: "Produire plus, produire autrement", timeframe: "bases", accent: "#84cc16", group: "eco-basics", sortStart: 2 },
+      { id: "eco-firms", title: "Entreprises et concurrence", emoji: "🏢", subtitle: "Coûts, stratégie, monopoles", timeframe: "bases", accent: "#22c55e", group: "eco-markets-firms", sortStart: 10 },
+      { id: "eco-innovation", title: "Innovation et croissance", emoji: "💡", subtitle: "Technique, capital, institutions", timeframe: "moderne", accent: "#facc15", group: "eco-markets-firms", sortStart: 11 },
+      { id: "eco-money-banks", title: "Monnaie et banques", emoji: "🏦", subtitle: "Crédit, confiance, banques centrales", timeframe: "Antiquité → aujourd’hui", accent: "#38bdf8", group: "eco-money", sortStart: 20 },
+      { id: "eco-inflation-rates", title: "Inflation et taux", emoji: "📉", subtitle: "Pouvoir d’achat, crédit, prix", timeframe: "XXe → XXIe siècle", accent: "#fb7185", group: "eco-money", sortStart: 21 },
+      { id: "eco-crises", title: "Crises économiques", emoji: "🌪️", subtitle: "Bulles, paniques, récessions", timeframe: "XIXe → XXIe siècle", accent: "#ef4444", group: "eco-crises-policy", sortStart: 30 },
+      { id: "eco-state-debt", title: "État, dette et impôts", emoji: "📜", subtitle: "Choix collectifs et arbitrages", timeframe: "moderne", accent: "#a78bfa", group: "eco-crises-policy", sortStart: 31 },
+      { id: "eco-globalization", title: "Mondialisation et inégalités", emoji: "🌐", subtitle: "Commerce, développement, écarts", timeframe: "XIXe → XXIe siècle", accent: "#14b8a6", group: "eco-global", sortStart: 40 }
+    ]
+  },
+  geography: {
+    groups: [
+      { id: "geo-reading", title: "1. Lire le monde", range: "bases", description: "Cartes, échelles, coordonnées, projections, paysages et vocabulaire géographique." },
+      { id: "geo-environments", title: "2. Milieux et climats", range: "planète", description: "Reliefs, océans, climats, risques, biodiversité et changement global." },
+      { id: "geo-population-cities", title: "3. Populations et villes", range: "monde contemporain", description: "Démographie, migrations, urbanisation, métropoles et fractures urbaines." },
+      { id: "geo-power", title: "4. États, frontières et puissance", range: "monde contemporain", description: "Territoires, frontières, mers, puissance, conflits et organisations régionales." },
+      { id: "geo-resources", title: "5. Ressources et mondialisation", range: "monde contemporain", description: "Énergie, eau, agriculture, transports, flux, production et dépendances." }
+    ],
+    worlds: [
+      { id: "geo-maps", title: "Cartes et échelles", emoji: "🧭", subtitle: "Lire une carte sans se faire piéger", timeframe: "bases", accent: "#84cc16", group: "geo-reading", sortStart: 1 },
+      { id: "geo-landscapes", title: "Paysages et territoires", emoji: "🏞️", subtitle: "Observer, décrire, expliquer", timeframe: "bases", accent: "#22c55e", group: "geo-reading", sortStart: 2 },
+      { id: "geo-climates", title: "Climats et milieux", emoji: "🌦️", subtitle: "Zones, contraintes, adaptations", timeframe: "planète", accent: "#38bdf8", group: "geo-environments", sortStart: 10 },
+      { id: "geo-risks", title: "Risques et changement global", emoji: "🌋", subtitle: "Aléas, vulnérabilités, prévention", timeframe: "planète", accent: "#f97316", group: "geo-environments", sortStart: 11 },
+      { id: "geo-population", title: "Population et migrations", emoji: "👥", subtitle: "Densités, transitions, mobilités", timeframe: "monde contemporain", accent: "#facc15", group: "geo-population-cities", sortStart: 20 },
+      { id: "geo-cities", title: "Villes et métropoles", emoji: "🏙️", subtitle: "Urbanisation, réseaux, inégalités", timeframe: "monde contemporain", accent: "#a78bfa", group: "geo-population-cities", sortStart: 21 },
+      { id: "geo-borders", title: "Frontières et puissance", emoji: "🛂", subtitle: "États, mers, conflits, alliances", timeframe: "monde contemporain", accent: "#fb7185", group: "geo-power", sortStart: 30 },
+      { id: "geo-resources-energy", title: "Ressources et énergie", emoji: "⛽", subtitle: "Eau, sols, pétrole, transition", timeframe: "monde contemporain", accent: "#10b981", group: "geo-resources", sortStart: 40 },
+      { id: "geo-flows", title: "Flux et mondialisation", emoji: "🚢", subtitle: "Routes, ports, câbles, échanges", timeframe: "monde contemporain", accent: "#14b8a6", group: "geo-resources", sortStart: 41 }
+    ]
+  }
+};
+
+const PLANNED_DISCIPLINE_GROUPS = Object.fromEntries(Object.entries(DISCIPLINE_OUTLINES).map(([id, value]) => [id, value.groups || []]));
+const PLANNED_DISCIPLINE_WORLDS = Object.fromEntries(Object.entries(DISCIPLINE_OUTLINES).map(([id, value]) => [id, (value.worlds || []).map(world => ({ ...world, discipline: id, planned: true, unlockedByDefault: false }))]));
 
 
 const SCORE_BASE = HISTODAILY_CORE.scoring?.base || { facile: 95, moyen: 120, difficile: 150, expert: 180 };
@@ -823,6 +929,9 @@ function filterLessons(lessons) {
   return filtered;
 }
 function learnFilterMarkup(all, shown) {
+  if (!all.length) {
+    return `<section class="card learn-filter-card planned-lessons-note"><div><span class="card-label">Cours à écrire</span><h2>Le squelette du domaine est posé.</h2><p>Les grands chapitres sont rangés. Il reste à remplir les vrais cours, sans ajouter de contenu vide juste pour faire nombre.</p></div></section>`;
+  }
   const filter = learnFilter();
   const search = learnSearchQuery();
   const counts = {
@@ -7760,8 +7869,14 @@ function resetProgressOnly({ silent = false } = {}) {
 function backupToolsMarkup() {
   return `<section class="card backup-card"><div><span class="card-label">Sauvegarde locale</span><h2>Garde une copie de sécurité.</h2><p>Copie ou télécharge ta progression. Tu peux la restaurer plus tard sur le même navigateur.</p></div><div class="backup-actions"><button data-export-save>Copier sauvegarde</button><button class="ghost" data-download-save>Télécharger</button><button class="ghost" data-import-save>Restaurer</button></div>${state.backupFeedback ? `<p>${escapeHtml(state.backupFeedback)}</p>` : ""}</section>`;
 }
+function settingsInnerMarkup(markup, extraClass = "") {
+  return String(markup || "")
+    .replace(/<section class="card /, `<div class="settings-inner ${extraClass} `)
+    .replace(/<section class="card"/, `<div class="settings-inner ${extraClass}"`)
+    .replace(/<\/section>\s*$/, "</div>");
+}
 function profileSettingsMarkup() {
-  return `<details class="card profile-advanced"><summary>Réglages</summary>${performanceSettingsMarkup()}${recentDailyCalendarMarkup({ compact: true })}</details>`;
+  return `<section class="card profile-settings-card"><div class="section-title-row"><div><span class="card-label">Réglages</span><h2>Préférences et contrôle</h2><p>J’ai retiré le panneau déroulant qui pouvait provoquer un plantage sur certains navigateurs mobiles.</p></div></div>${settingsInnerMarkup(performanceSettingsMarkup(), "performance-card")}${settingsInnerMarkup(recentDailyCalendarMarkup({ compact: true }), "calendar-card")}</section>`;
 }
 function inviteToolsMarkup() {
   return `<section class="card invite-card"><div><span class="card-label">Code ami</span><h2>Ton profil partageable</h2><p>Pas de chat. Ce code sert seulement à t’ajouter en ami et voir ton profil dans les classements.</p></div><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button data-share-invite>Partager</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
@@ -7844,13 +7959,17 @@ function worldDisciplineId(world = {}) {
 }
 function treeAvailableWorlds(disciplineId = activeDisciplineId()) {
   const worlds = curatedWorlds();
-  return (worlds.length ? worlds : data.worlds)
+  const realWorlds = (worlds.length ? worlds : data.worlds)
     .filter(world => curatedLessonsFor(world.id).length > 0)
-    .filter(world => worldDisciplineId(world) === disciplineId)
+    .filter(world => worldDisciplineId(world) === disciplineId);
+  const plannedWorlds = PLANNED_DISCIPLINE_WORLDS[disciplineId] || [];
+  const realIds = new Set(realWorlds.map(world => world.id));
+  return [...realWorlds, ...plannedWorlds.filter(world => !realIds.has(world.id))]
     .sort((a, b) => (a.sortStart ?? 999999) - (b.sortStart ?? 999999));
 }
 function treeGroups(disciplineId = activeDisciplineId()) {
-  const baseGroups = typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS : [];
+  const historyGroups = typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS : [];
+  const baseGroups = PLANNED_DISCIPLINE_GROUPS[disciplineId]?.length ? PLANNED_DISCIPLINE_GROUPS[disciplineId] : historyGroups;
   const worlds = treeAvailableWorlds(disciplineId);
   const groupIds = new Set(worlds.map(world => world.group || "other"));
   const known = baseGroups.filter(group => groupIds.has(group.id));
@@ -7894,11 +8013,21 @@ function lessonsForDiscipline(disciplineId = activeDisciplineId()) {
 function disciplineProgress(disciplineId = activeDisciplineId()) {
   const lessons = lessonsForDiscipline(disciplineId);
   const done = lessons.filter(lesson => lessonDone(lesson.id)).length;
-  return { done, total: lessons.length, progress: percent(done, lessons.length), ready: lessons.length > 0 };
+  const worlds = treeAvailableWorlds(disciplineId);
+  const groups = treeGroups(disciplineId);
+  return {
+    done,
+    total: lessons.length,
+    progress: percent(done, lessons.length),
+    ready: lessons.length > 0,
+    chapters: groups.length,
+    themes: worlds.length,
+    planned: worlds.length > 0 && lessons.length === 0
+  };
 }
 function disciplineCard(discipline, active) {
   const stats = disciplineProgress(discipline.id);
-  const status = stats.ready ? `${stats.done}/${stats.total} cours · ${stats.progress}%` : "bientôt";
+  const status = stats.ready ? `${stats.done}/${stats.total} cours · ${stats.progress}%` : (stats.planned ? `${stats.chapters} grands chapitres · bientôt` : "bientôt");
   return `<button class="discipline-card ${active ? "active" : ""}" data-discipline="${escapeHtml(discipline.id)}" style="--discipline-accent:${escapeHtml(discipline.accent)}">
     <span class="discipline-icon">${discipline.emoji}</span>
     <strong>${escapeHtml(discipline.title)}</strong>
@@ -7956,7 +8085,7 @@ function treeWorldCard(world, active) {
     <div>
       <h2>${escapeHtml(world.title)}</h2>
       <p>${escapeHtml(world.subtitle || world.timeframe || "Parcours")}</p>
-      <small>${escapeHtml(world.timeframe || "")}${world.timeframe ? " · " : ""}${lessons.length} cours${mysteries ? ` · ${mysteries} mystère${mysteries > 1 ? "s" : ""}` : ""}</small>
+      <small>${escapeHtml(world.timeframe || "")}${world.timeframe ? " · " : ""}${lessons.length ? `${lessons.length} cours` : "cours à écrire"}${mysteries ? ` · ${mysteries} mystère${mysteries > 1 ? "s" : ""}` : ""}</small>
       <div class="mini-progress"><i style="width:${progress}%"></i></div>
     </div>
   </article>`;
@@ -7984,29 +8113,35 @@ function polarPoint(cx, cy, radius, angleDeg) {
   const angle = (angleDeg - 90) * Math.PI / 180;
   return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
 }
-function wheelSlicePath(index, total) {
-  const start = index * 360 / total;
-  const end = (index + 1) * 360 / total;
-  const a = polarPoint(50, 50, 47, start);
-  const b = polarPoint(50, 50, 47, end);
+function ringSlicePath(index, total, innerRadius, outerRadius, gapDeg = 1.2) {
+  const start = index * 360 / total + gapDeg;
+  const end = (index + 1) * 360 / total - gapDeg;
+  const outerStart = polarPoint(50, 50, outerRadius, start);
+  const outerEnd = polarPoint(50, 50, outerRadius, end);
+  const innerEnd = polarPoint(50, 50, innerRadius, end);
+  const innerStart = polarPoint(50, 50, innerRadius, start);
   const large = end - start > 180 ? 1 : 0;
-  return `M 50 50 L ${a.x.toFixed(2)} ${a.y.toFixed(2)} A 47 47 0 ${large} 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)} Z`;
+  return `M ${outerStart.x.toFixed(2)} ${outerStart.y.toFixed(2)} A ${outerRadius} ${outerRadius} 0 ${large} 1 ${outerEnd.x.toFixed(2)} ${outerEnd.y.toFixed(2)} L ${innerEnd.x.toFixed(2)} ${innerEnd.y.toFixed(2)} A ${innerRadius} ${innerRadius} 0 ${large} 0 ${innerStart.x.toFixed(2)} ${innerStart.y.toFixed(2)} Z`;
 }
 function disciplineWheelMarkup() {
   const total = DISCIPLINES.length;
-  const slices = DISCIPLINES.map((discipline, index) => {
-    const stats = disciplineProgress(discipline.id);
+  const allStats = DISCIPLINES.map(discipline => ({ discipline, stats: disciplineProgress(discipline.id) }));
+  const average = Math.round(allStats.reduce((sum, item) => sum + item.stats.progress, 0) / Math.max(1, allStats.length));
+  const slices = allStats.map(({ discipline, stats }, index) => {
     const mid = (index + 0.5) * 360 / total;
-    const label = polarPoint(50, 50, 31, mid);
-    return `<g><path d="${wheelSlicePath(index, total)}" fill="${escapeHtml(discipline.accent)}" opacity="${stats.ready ? "0.92" : "0.42"}" stroke="rgba(5,9,20,.82)" stroke-width="1.4"></path><text x="${label.x.toFixed(1)}" y="${label.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${stats.progress}%</text></g>`;
+    const percentLabel = polarPoint(50, 50, 37, mid);
+    const emojiLabel = polarPoint(50, 50, 27, mid);
+    const fillOuter = 22 + (26 * stats.progress / 100);
+    const fill = stats.progress > 0.5 ? `<path class="wheel-fill" d="${ringSlicePath(index, total, 22, fillOuter, 1.7)}" fill="${escapeHtml(discipline.accent)}"></path>` : "";
+    return `<g class="wheel-segment" style="--discipline-accent:${escapeHtml(discipline.accent)}"><path class="wheel-back" d="${ringSlicePath(index, total, 22, 48, 1.7)}" fill="${escapeHtml(discipline.accent)}"></path>${fill}<text class="wheel-emoji" x="${emojiLabel.x.toFixed(1)}" y="${emojiLabel.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${discipline.emoji}</text><text class="wheel-percent" x="${percentLabel.x.toFixed(1)}" y="${percentLabel.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${stats.progress}%</text></g>`;
   }).join("");
-  const legend = DISCIPLINES.map(discipline => {
-    const stats = disciplineProgress(discipline.id);
-    return `<div class="discipline-progress-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${discipline.emoji}</span><strong>${escapeHtml(discipline.title)}</strong><em>${stats.ready ? `${stats.done}/${stats.total}` : "0/0"}</em><b>${stats.progress}%</b></div>`;
+  const legend = allStats.map(({ discipline, stats }) => {
+    const meta = stats.ready ? `${stats.done}/${stats.total} cours` : `${stats.chapters || 0} chapitres`; 
+    return `<div class="discipline-progress-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${discipline.emoji}</span><strong>${escapeHtml(discipline.title)}</strong><em>${escapeHtml(meta)}</em><b>${stats.progress}%</b></div>`;
   }).join("");
-  return `<section class="card trivial-profile-card">
-    <div class="section-title-row"><div><span class="card-label">Progression par discipline</span><h2>Ton camembert de culture</h2><p>Chaque tranche garde son propre pourcentage : l’idée est de remplir progressivement le profil comme un Trivial Pursuit.</p></div></div>
-    <div class="trivial-profile-layout"><div class="trivial-wheel-wrap"><svg class="trivial-wheel" viewBox="0 0 100 100" role="img" aria-label="Progression par discipline">${slices}<circle cx="50" cy="50" r="16" fill="rgba(5,9,20,.90)" stroke="rgba(255,255,255,.18)" stroke-width="1.2"></circle><text class="trivial-center" x="50" y="50" text-anchor="middle" dominant-baseline="middle">Profil</text></svg></div><div class="discipline-progress-list">${legend}</div></div>
+  return `<section class="card trivial-profile-card culture-profile-card">
+    <div class="section-title-row"><div><span class="card-label">Profil culturel</span><h2>Ton camembert de progression</h2><p>Chaque domaine garde sa tranche. Les cours validés remplissent progressivement la couleur, sans mélanger les disciplines.</p></div><small>${average}% moyen</small></div>
+    <div class="trivial-profile-layout"><div class="trivial-wheel-wrap"><svg class="trivial-wheel culture-wheel" viewBox="0 0 100 100" role="img" aria-label="Progression par discipline"><circle class="wheel-halo" cx="50" cy="50" r="49"></circle>${slices}<circle class="wheel-core" cx="50" cy="50" r="17"></circle><text class="trivial-center" x="50" y="47" text-anchor="middle" dominant-baseline="middle">Culture</text><text class="wheel-average" x="50" y="56" text-anchor="middle" dominant-baseline="middle">${average}%</text></svg></div><div class="discipline-progress-list">${legend}</div></div>
   </section>`;
 }
 function renderLearn() {
@@ -8036,12 +8171,12 @@ function renderLearn() {
     ${disciplineSelectorMarkup(disciplineId)}
     <section class="tree-overview card">
       <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>${escapeHtml(group.title || "Période")}</h2><p>${escapeHtml(group.description || "Choisis une période puis un thème pour ne pas mélanger tous les cours.")}</p></div>
-      <div class="tree-overview-stats"><div><b>${groupDone}/${groupTotal}</b><span>cours terminés</span></div><div><b>${worldDone}/${lessons.length}</b><span>${escapeHtml(world.title || "thème")}</span></div><div><b>${worldProgress}%</b><span>progression thème</span></div></div>
+      <div class="tree-overview-stats"><div><b>${groupTotal ? `${groupDone}/${groupTotal}` : "plan"}</b><span>${groupTotal ? "cours terminés" : "chapitre posé"}</span></div><div><b>${lessons.length ? `${worldDone}/${lessons.length}` : "plan"}</b><span>${escapeHtml(world.title || "thème")}</span></div><div><b>${worldProgress}%</b><span>progression thème</span></div></div>
     </section>
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">1 · Grandes périodes</span><h2>Choisis la période</h2></div><small>${groups.length} périodes</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === groupId, disciplineId)).join("")}</div></section>
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">2 · Peuples, civilisations, thèmes</span><h2>${escapeHtml(group.title || "Parcours")}</h2></div><small>${worlds.length} thèmes</small></div><div class="tree-grid themes-grid">${worlds.map(item => treeWorldCard(item, item.id === world.id)).join("")}</div></section>
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">1 · Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === groupId, disciplineId)).join("")}</div></section>
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">2 · Thèmes du chapitre</span><h2>${escapeHtml(group.title || "Parcours")}</h2></div><small>${worlds.length} thèmes</small></div><div class="tree-grid themes-grid">${worlds.map(item => treeWorldCard(item, item.id === world.id)).join("")}</div></section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Change de thème : les autres cours sont encore en reprise."}</p><button data-learn-filter="all">Voir tous les cours disponibles</button></div>`}</div></section>`);
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "Cours à écrire."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Change de thème : les autres cours sont encore en reprise.") : "Le thème est placé dans la discipline. On ajoutera ensuite un vrai cours complet, son express et son quiz."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
   $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
   document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
   document.querySelectorAll("[data-tree-group]").forEach(card => {

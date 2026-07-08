@@ -1,13 +1,13 @@
-const CACHE_NAME = "histodaily-beta104-disciplines";
-const APP_VERSION = "1.0.0-beta.104";
+const CACHE_NAME = "histodaily-beta105-disciplines-outline";
+const APP_VERSION = "1.0.0-beta.105";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.104",
-  "/app-core.js?v=1.0.0-beta.104",
-  "/app-onboarding.js?v=1.0.0-beta.104",
-  "/app.js?v=1.0.0-beta.104",
-  "/lessons-lite.js?v=1.0.0-beta.104",
+  "/styles.css?v=1.0.0-beta.105",
+  "/app-core.js?v=1.0.0-beta.105",
+  "/app-onboarding.js?v=1.0.0-beta.105",
+  "/app.js?v=1.0.0-beta.105",
+  "/lessons-lite.js?v=1.0.0-beta.105",
   "/manifest.webmanifest"
 ];
 

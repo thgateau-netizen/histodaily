@@ -1,6 +1,6 @@
-# HistoDaily — paquet de déploiement beta104
+# HistoDaily — paquet de déploiement beta105
 
-Version : `1.0.0-beta.104`
+Version : `1.0.0-beta.105`
 
 Build public resserré pour test privé.
 
@@ -27,3 +27,9 @@ SUPABASE_SERVICE_ROLE_KEY=...
 
 Les cours non prêts ne sont pas embarqués dans ce build public.
 Les rapports qualité sont fournis à côté du zip, pas dans le paquet de déploiement.
+
+
+## Beta 105
+- Grands chapitres ajoutés pour Art, Cinéma, Sciences & inventions, Économie et Géographie.
+- Profil culturel plus propre.
+- Réglages sans panneau déroulant fragile.
