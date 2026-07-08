@@ -1,7 +1,8 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.63",
-  assetsVersion: "1.0.0-beta.63",
-  storageKey: "histodaily_v100_beta14_state",
+  version: "1.0.0-beta.102",
+  assetsVersion: "1.0.0-beta.102",
+  storageKey: "histodaily_state",
+  legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup"],
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
     floor: { facile: 35, moyen: 45, difficile: 55, expert: 70 },
@@ -14,20 +15,25 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 63",
+    versionLabel: "beta 102",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Ajout et retrait d’amis plus fiables",
-      "Noms des joueurs mieux actualisés dans les classements",
-      "Interface nettoyée des formulations de chantier",
-      "Rafraîchissement social plus clair après modification du profil"
+      "Build public allégé : seuls les cours et mystères réellement prêts sont embarqués.",
+      "Mystères du jour reliés aux cours disponibles.",
+      "Indices de mystères mieux écrits et parcours plus sobres."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
   storage: {
     safeRead(primaryKey, backupKey) {
-      try { return localStorage.getItem(primaryKey) || localStorage.getItem(backupKey); }
-      catch { return null; }
+      try {
+        const keys = [primaryKey, backupKey, ...(window.HISTODAILY_CORE?.legacyStorageKeys || [])].filter(Boolean);
+        for (const key of keys) {
+          const value = localStorage.getItem(key);
+          if (value) return value;
+        }
+      } catch {}
+      return null;
     },
     safeWrite(primaryKey, backupKey, value) {
       try {
