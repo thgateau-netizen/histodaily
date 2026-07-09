@@ -1270,7 +1270,7 @@ button:focus-visible,.home-discovery-item:focus-visible,.tree-card:focus-visible
 
 
 /* Beta130 — nettoyage visible */
-.release-card,.version-pill,.beta-mystery-refresh,.beta-mystery-count,.beta115-health-card{display:none!important}
+.version-pill,.beta-mystery-refresh,.beta-mystery-count,.beta115-health-card{display:none!important}
 .social-backend.compact,.invite-link-card.compact,.profile-settings-card.compact,.performance-card.compact,.backup-card.compact,.beta128-sync-card.compact{padding:14px 15px}
 .social-backend.compact h2,.invite-link-card.compact h2,.profile-settings-card.compact h2,.performance-card.compact h2,.beta128-sync-card.compact h2{font-size:1.05rem;margin:.05rem 0 .25rem}
 .social-backend.compact p,.invite-link-card.compact p,.performance-card.compact p,.beta128-sync-card.compact p{font-size:.88rem;margin:0;color:var(--muted)}
@@ -1280,3 +1280,10 @@ button:focus-visible,.home-discovery-item:focus-visible,.tree-card:focus-visible
 .backup-card.compact[open] .backup-actions{margin-top:12px}
 .home-mode-hero .hero-metrics{gap:8px;flex-wrap:wrap}.home-mode-hero .hero-metrics span{white-space:nowrap}
 @media(max-width:520px){.social-backend.compact{grid-template-columns:1fr}.social-backend.compact .social-backend-actions{justify-content:space-between}.invite-link-card.compact .home-actions-row{grid-template-columns:1fr 1fr}.profile-settings-card.compact .settings-inner{padding:0}}
+
+
+/* Beta135 — patch note public */
+.home-release-card{display:block!important;border-color:rgba(86,214,255,.18);background:radial-gradient(circle at 96% 0,rgba(86,214,255,.12),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.034));}
+.home-release-card .section-title-row small{font-size:.72rem;}
+.home-release-card ul{margin:10px 0 0;padding-left:18px;color:#dce8f5;line-height:1.45;font-size:.9rem;}
+.home-release-card .home-card-footer span{color:var(--muted,#b8c0d8);font-weight:800;}

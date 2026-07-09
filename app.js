@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.134";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.135";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -847,7 +847,7 @@ function dailyRoadmapMarkup() {
     const reward = offset === 0 ? `${dailyRewardPreview().gems} 💎` : "archive";
     return `<div class="roadmap-day ${offset === 0 ? "today" : "past"}"><b>${escapeHtml(label)}</b><span>${difficultyStars(mystery.difficulty)} ${difficultyLabel(mystery.difficulty)}</span><small>${escapeHtml(stateLabel)} · ${escapeHtml(reward)}</small></div>`;
   }).join("");
-  return `<section class="card daily-roadmap-card soft-panel"><div class="section-title-row"><div><span class="card-label">Rythme quotidien</span><h2>Les derniers dossiers, sans promesse de contenu vide.</h2></div><small>prochain dans ${timeToNextDaily()}</small></div><div class="roadmap-grid">${rows}</div></section>`;
+  return `<section class="card daily-roadmap-card soft-panel"><div class="section-title-row"><div><span class="card-label">Rythme quotidien</span><h2>Les derniers dossiers disponibles.</h2></div><small>prochain dans ${timeToNextDaily()}</small></div><div class="roadmap-grid">${rows}</div></section>`;
 }
 
 function recentDailyCalendarMarkup({ compact = false } = {}) {
@@ -881,7 +881,7 @@ function weeklyScoreMarkup() {
   return `<section class="card weekly-detail-card"><div class="section-title-row"><div><span class="card-label">Contrôle score</span><h2>Détail de ta semaine</h2></div><small>${scoreForScope("week")} XP</small></div><div class="week-score-strip">${rows.map(row => `<div class="${row.played ? "played" : ""}"><b>${escapeHtml(row.label)}</b><span>${row.score}</span></div>`).join("")}</div></section>`;
 }
 function lessonQualityLabel(lesson) {
-  return isCuratedLesson(lesson) ? "cours prêt" : "en reprise";
+  return isCuratedLesson(lesson) ? "point d’entrée" : "à explorer";
 }
 function nextReadyLesson() {
   const ready = readyLessons();
@@ -936,7 +936,7 @@ function readyProgressMarkup() {
   if (!ready.length) return "";
   const done = ready.filter(lesson => lessonDone(lesson.id)).length;
   const ratio = percent(done, ready.length);
-  return `<section class="card ready-progress-card soft-panel"><div class="section-title-row"><div><span class="card-label">Cours prêts</span><h2>${done}/${ready.length} cours validés</h2></div><small>${ratio}%</small></div><p>Les parcours proposés ici sont les plus solides : lecture claire, détails utiles, quiz cohérent.</p><div class="progress"><i style="width:${ratio}%"></i></div><button class="ghost wide" data-open-ready-list>Voir les cours</button></section>`;
+  return `<section class="card ready-progress-card soft-panel"><div class="section-title-row"><div><span class="card-label">Parcours</span><h2>${done}/${ready.length} cours validés</h2></div><small>${ratio}%</small></div><p>Les parcours recommandés ici sont les plus solides : lecture claire, détails utiles, quiz cohérent.</p><div class="progress"><i style="width:${ratio}%"></i></div><button class="ghost wide" data-open-ready-list>Voir les cours</button></section>`;
 }
 function learnFilter() {
   const allowed = ["all", "ready", "linked", "todo"];
@@ -1007,7 +1007,7 @@ function stateHealthReport() {
     ready,
     backup: true,
     lastOk,
-    status: publicMysteries().length && allLessons().length ? "OK" : "contenu incomplet"
+    status: publicMysteries().length && allLessons().length ? "OK" : "contenu à compléter"
   };
 }
 
@@ -1159,7 +1159,7 @@ function releaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
   if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
   const versionLabel = HISTODAILY_CORE.ui?.versionLabel || APP_VERSION;
-  return `<section class="card release-card soft-panel ${home ? "home-release-card" : ""}"><div class="section-title-row"><div><span class="card-label">Journal de version</span><h2>Version ${escapeHtml(versionLabel)}</h2></div><small>Dernière maj</small></div><p>Ce qui a changé dans cette version :</p><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul><div class="home-card-footer"><span>${escapeHtml(APP_VERSION)}</span><button class="ghost" data-dismiss-release>OK</button></div></section>`;
+  return `<section class="card release-card soft-panel ${home ? "home-release-card" : ""}"><div class="section-title-row"><div><span class="card-label">Nouveautés</span><h2>Mise à jour HistoDaily</h2></div><small>Dernière mise à jour</small></div><p>Ce qui a changé dans cette version :</p><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul><div class="home-card-footer"><span>Bon jeu.</span><button class="ghost" data-dismiss-release>OK</button></div></section>`;
 }
 function homeVersionPillMarkup() {
   const versionLabel = HISTODAILY_CORE.ui?.versionLabel || APP_VERSION;
@@ -1178,7 +1178,7 @@ function setPerformanceMode(mode) {
 function performanceSettingsMarkup() {
   const mode = performanceMode();
   const label = mode === "light" ? "Mode fluide" : "Animations visuelles";
-  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(label)}</h2><p>${mode === "light" ? "Mode recommandé : navigation plus rapide, flous coupés, animations désactivées et sauvegarde moins bloquante." : "Mode plus joli mais plus lourd : à garder seulement si le téléphone reste parfaitement fluide."}</p></div><div class="performance-actions"><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">⚡ Fluide</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">✨ Visuel</button></div></section>`;
+  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(label)}</h2><p>${mode === "light" ? "Navigation rapide et animations légères pour garder l’app fluide." : "Animations plus visibles. À garder si ton téléphone reste fluide."}</p></div><div class="performance-actions"><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">⚡ Fluide</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">✨ Visuel</button></div></section>`;
 }
 async function installApp() {
   if (!installPromptEvent) {
@@ -1249,7 +1249,7 @@ function renderHome() {
     <header class="hero compact home-clean-hero">
       <div>
         <p class="eyebrow">HistoDaily</p>
-        <h1>Un mystère historique par jour, puis le cours qui va avec.</h1>
+        <h1>Un mystère par jour, puis le cours qui va avec.</h1>
         <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
     </header>
@@ -1270,7 +1270,7 @@ function renderHome() {
     ${releaseNotesMarkup({ home: true })}
 
     <section class="home-secondary-actions">
-      <button class="ghost" data-go-learn>Parcours complet</button>
+      <button class="ghost" data-go-learn>Explorer les cours</button>
       <button class="ghost" data-home-rank>Classement</button>
       <button class="ghost" data-home-profile>Profil</button>
     </section>`);
@@ -1317,9 +1317,9 @@ function renderLearn() {
     <header class="topbar"><button data-back-home>←</button><div><p class="eyebrow">Parcours</p><h1>${escapeHtml(world.title || "Histoire")}</h1></div></header>
     <section class="chips">${worlds.map(w => `<button data-world="${w.id}" class="chip ${w.id === world.id ? "active" : ""}">${w.emoji || "📚"} ${escapeHtml(w.title)}</button>`).join("")}</section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    ${curatedInWorld.length ? `<section class="card ready-strip"><div><span class="card-label">À commencer ici</span><h2>${curatedInWorld.length} cours prêt${curatedInWorld.length > 1 ? "s" : ""} dans ce chapitre</h2><p>Quelques cours prêts pour entrer dans le chapitre sans se perdre.</p></div><div class="ready-mini-list">${curatedInWorld.slice(0,3).map(lesson => `<button data-ready-lesson="${lesson.id}">${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
+    ${curatedInWorld.length ? `<section class="card ready-strip"><div><span class="card-label">À commencer ici</span><h2>${curatedInWorld.length} cours à découvrir</h2><p>Une sélection pour entrer dans le chapitre sans se perdre.</p></div><div class="ready-mini-list">${curatedInWorld.slice(0,3).map(lesson => `<button data-ready-lesson="${lesson.id}">${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
     <section class="lesson-list">
-      ${shownLessons.map((lesson, index) => lessonCard(lesson, index)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Change de chapitre : les autres cours sont encore en reprise."}</p><button data-learn-filter="all">Voir tous les cours disponibles</button></div>`}
+      ${shownLessons.map((lesson, index) => lessonCard(lesson, index)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre chapitre ou reviens au parcours principal."}</p><button data-learn-filter="all">Voir tous les cours disponibles</button></div>`}
     </section>`);
   $("[data-back-home]")?.addEventListener("click", () => setState({ tab: "home" }));
   document.querySelectorAll("[data-world]").forEach(btn => btn.addEventListener("click", () => setState({ currentWorld: btn.dataset.world })));
@@ -6630,7 +6630,7 @@ function renderLesson() {
   const quizPassed = lessonQuizPassed(lesson.id);
   const canComplete = lessonDone(lesson.id) || quizPassed;
   const footer = canComplete
-    ? `<div class="lesson-validation-done"><b>✅ Cours validé</b><span>${lessonDone(lesson.id) ? "Progression enregistrée." : "Quiz réussi : validation en attente de synchronisation."}</span></div>`
+    ? `<div class="lesson-validation-done"><b>✅ Cours validé</b><span>${lessonDone(lesson.id) ? "Progression enregistrée." : "Quiz réussi : progression prise en compte."}</span></div>`
     : ``;
   renderShell(`
     <header class="topbar lesson-full-topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml((typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS.find(g => g.id === lessonWorld(lesson).group)?.title : "") || "Cours")} › ${escapeHtml(lessonWorld(lesson).title || "Parcours")} › ${escapeHtml(content.period)}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(content.title)}</h1></div></header>
@@ -7034,9 +7034,9 @@ function renderLessonText(lesson, content) {
       </div>
     </section>`;
   const intro = `<section class="lesson-hook">
-      <span class="card-label">${content.ready ? "⭐ Cours prêt" : fastLabel}</span>
+      <span class="card-label">${content.ready ? "⭐ Sélection" : fastLabel}</span>
       <p>${escapeHtml(content.hook)}</p>
-      <div class="lesson-meta"><span>${content.ready ? "⭐ cours prêt" : "🧭 cours guidé"}</span><span>⚡ express court</span><span>📚 lecture complète</span><span>✅ quiz obligatoire</span></div>
+      <div class="lesson-meta"><span>${content.ready ? "⭐ sélection" : "🧭 repères"}</span><span>⚡ express court</span><span>📚 lecture complète</span><span>✅ quiz obligatoire</span></div>
     </section>`;
   if (view === "complete") {
     const completeBlocks = expandedCompleteBlocks(lesson, content);
@@ -7976,7 +7976,7 @@ function settingsInnerMarkup(markup, extraClass = "") {
     .replace(/<\/section>\s*$/, "</div>");
 }
 function profileSettingsMarkup() {
-  return `<section class="card profile-settings-card"><div class="section-title-row"><div><span class="card-label">Réglages</span><h2>Préférences et contrôle</h2><p>J’ai retiré le panneau déroulant qui pouvait provoquer un plantage sur certains navigateurs mobiles.</p></div></div>${settingsInnerMarkup(performanceSettingsMarkup(), "performance-card")}${settingsInnerMarkup(recentDailyCalendarMarkup({ compact: true }), "calendar-card")}</section>`;
+  return `<section class="card profile-settings-card"><div class="section-title-row"><div><span class="card-label">Réglages</span><h2>Préférences et contrôle</h2><p>Choisis ton mode d’affichage et retrouve ton rythme de jeu.</p></div></div>${settingsInnerMarkup(performanceSettingsMarkup(), "performance-card")}${settingsInnerMarkup(recentDailyCalendarMarkup({ compact: true }), "calendar-card")}</section>`;
 }
 function inviteToolsMarkup() {
   return `<section class="card invite-card"><div><span class="card-label">Code ami</span><h2>Ton profil partageable</h2><p>Pas de chat. Ce code sert seulement à t’ajouter en ami et voir ton profil dans les classements.</p></div><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button data-share-invite>Partager</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
@@ -7987,7 +7987,7 @@ function renderProfile() {
   renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Profil social</p><h1>${escapeHtml(state.pseudo)}</h1></div></header>
     ${publicProfileMarkup(myPlayerProfile())}
     ${disciplineWheelMarkup()}
-    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Pas besoin de mail pour cette phase.</p></div><form data-pseudo-form novalidate><input data-pseudo-input name="pseudo" type="text" value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo" autocomplete="nickname" autocapitalize="words" enterkeyhint="done"/><button type="button" data-save-pseudo>Enregistrer</button></form><button type="button" class="ghost wide" data-pseudo-prompt>Modifier via fenêtre simple</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
+    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Tu peux le modifier à tout moment.</p></div><form data-pseudo-form novalidate><input data-pseudo-input name="pseudo" type="text" value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo" autocomplete="nickname" autocapitalize="words" enterkeyhint="done"/><button type="button" data-save-pseudo>Enregistrer</button></form><button type="button" class="ghost wide" data-pseudo-prompt>Modifier via fenêtre simple</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
     ${addFriendMarkup()}
     ${socialInviteLinkMarkup()}
     ${friendListMarkup()}
@@ -8276,7 +8276,7 @@ function renderLearn() {
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">1 · Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === groupId, disciplineId)).join("")}</div></section>
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">2 · Thèmes du chapitre</span><h2>${escapeHtml(group.title || "Parcours")}</h2></div><small>${worlds.length} thèmes</small></div><div class="tree-grid themes-grid">${worlds.map(item => treeWorldCard(item, item.id === world.id)).join("")}</div></section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "Cours à écrire."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Change de thème : les autres cours sont encore en reprise.") : "Le thème est placé dans la discipline. On ajoutera ensuite un vrai cours complet, son express et son quiz."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "Cours à écrire."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre thème ou reviens au parcours principal.") : "Explore un autre thème pour l’instant."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
   $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
   document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
   document.querySelectorAll("[data-tree-group]").forEach(card => {
@@ -9260,7 +9260,7 @@ const DISCIPLINE_MODE_COPY = {
     label: "Mode Histoire",
     shortLabel: "Histoire",
     noun: "historique",
-    headline: "Un mystère historique par jour, puis le cours qui va avec.",
+    headline: "Un mystère par jour, puis le cours qui va avec.",
     promise: "Périodes, événements et grands repères avancent ensemble.",
     discoveryTitle: "Des cours d’histoire à reprendre",
     discoveryIntro: "Trois portes d’entrée courtes, dans des époques différentes."
@@ -9656,7 +9656,7 @@ function modeSwitcherMarkup() {
 function modeSnapshotMarkup(disciplineId = activeDisciplineId()) {
   const { discipline, progress, groups, worlds, readyLessons } = disciplineHomeStats(disciplineId);
   const mode = disciplineModeCopy(discipline.id);
-  const readyText = readyLessons.length ? `${readyLessons.length} cours prêts` : `${worlds.length} thèmes posés`;
+  const readyText = readyLessons.length ? `${readyLessons.length} cours` : `${worlds.length} thèmes posés`;
   return `<section class="card home-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
     <div class="home-mode-card-main"><span class="mode-badge">${discipline.emoji} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
     <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${groups.length}</b><span>grands chapitres</span></div><div><b>${readyText}</b><span>${readyLessons.length ? "contenu" : "structure"}</span></div></div>
@@ -9668,8 +9668,8 @@ function modeContinueMarkup(disciplineId = activeDisciplineId()) {
   const first = worlds[0] || null;
   const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
   return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${first.emoji || discipline.emoji} ${escapeHtml(first.title)}` : "Parcours prêt"}</h2></div><small>${groups.length} chapitres</small></div>
-    <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} ${first?.planned ? "Le thème est posé : on pourra ensuite écrire le vrai cours express, complet et quiz." : ""}</p>
+    <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${first.emoji || discipline.emoji} ${escapeHtml(first.title)}` : "Parcours"}</h2></div><small>${groups.length} chapitres</small></div>
+    <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} ${first?.planned ? "Explore les chapitres disponibles dans cette discipline." : ""}</p>
     <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
     <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les chapitres</button></div>
   </section>`;
@@ -9701,7 +9701,7 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
   const groups = treeGroups(discipline.id);
   const items = modeRecommendationItems(discipline.id);
   return `<section class="card home-main-card home-discovery-card mode-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours proposés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
+    <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
     <p>${escapeHtml(mode.discoveryIntro)}</p>
     <div class="home-discovery-grid">
       ${items.map((world, index) => {
@@ -13190,8 +13190,8 @@ function modeContinueMarkup(disciplineId = activeDisciplineId()) {
     const first = worlds[0] || null;
     const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
     return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${first.emoji || discipline.emoji} ${escapeHtml(first.title)}` : "Parcours prêt"}</h2></div><small>${groups.length} chapitres</small></div>
-      <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} Le thème est posé : on ajoutera ensuite un vrai cours express, complet et quiz.</p>
+      <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${first.emoji || discipline.emoji} ${escapeHtml(first.title)}` : "Parcours"}</h2></div><small>${groups.length} chapitres</small></div>
+      <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} Explore les chapitres disponibles dans cette discipline.</p>
       <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
       <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les chapitres</button></div>
     </section>`;
@@ -13223,8 +13223,8 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
   const lessons = rotatedModeLessons(discipline.id, 3);
   if (lessons.length) {
     return `<section class="card home-main-card home-discovery-card mode-recommend-card mode-course-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours proposés</span><h2>Peu de cours, mais vraiment écrits</h2></div><small>${lessons.length} cours prêt${lessons.length > 1 ? "s" : ""}</small></div>
-      <p>On ajoute progressivement des cours complets : express court, vrai texte de lecture et quiz directement tiré du contenu.</p>
+      <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>Les meilleurs points d’entrée</h2></div><small>${lessons.length} cours${lessons.length > 1 ? "s" : ""}</small></div>
+      <p>Chaque proposition te donne un résumé rapide, une lecture plus posée et un quiz pour vérifier que tu as compris.</p>
       <div class="home-discovery-grid">
         ${lessons.map((lesson, index) => {
           const world = lessonWorld(lesson);
@@ -13233,13 +13233,13 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
           return `<article class="home-discovery-item ${done ? "done" : ""} mode-lesson-item" data-home-discovery="${escapeHtml(lesson.id)}" tabindex="0" role="button">
             <span class="home-discovery-kicker">${escapeHtml(world.title || discipline.title)} · cours ${index + 1}</span>
             <h3>${lesson.emoji || discipline.emoji} ${escapeHtml(content.title || lesson.title)}</h3>
-            <p>${escapeHtml(short(content.hook || content.express?.[0] || "Un vrai cours à lire avant le quiz.", 165))}</p>
+            <p>${escapeHtml(short(content.hook || content.express?.[0] || "Un sujet à découvrir avant le quiz.", 165))}</p>
             <small>⚡ express · 📚 complet · ✅ quiz</small>
             <button type="button" data-home-discovery-open="${escapeHtml(lesson.id)}">${done ? "Revoir" : "Commencer"}</button>
           </article>`;
         }).join("")}
       </div>
-      <div class="home-card-footer"><span>Le reste du domaine reste structuré en chapitres.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
+      <div class="home-card-footer"><span>Tu peux aussi parcourir toute la discipline par chapitres.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
     </section>`;
   }
   const groups = treeGroups(discipline.id);
@@ -13299,15 +13299,15 @@ function performanceSettingsMarkup() {
   const copy = {
     smart: {
       label: "Fluide animé",
-      text: "Recommandé : petites transitions transform/opacity, pas de gros flous, rendu cadencé pour garder l’app nerveuse sur mobile."
+      text: "Recommandé : transitions légères et navigation rapide sur mobile."
     },
     static: {
       label: "Statique",
-      text: "Zéro animation décorative. À utiliser si un téléphone ancien rame encore ou si tu veux tester la stabilité brute."
+      text: "Animations coupées pour privilégier la stabilité sur les téléphones plus lents."
     },
     balanced: {
       label: "Visuel",
-      text: "Plus joli, mais plus lourd : à garder seulement si les onglets restent parfaitement fluides."
+      text: "Plus animé. À garder si ton téléphone reste fluide."
     }
   }[mode] || { label: "Fluide animé", text: "Mode recommandé." };
   return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(copy.label)}</h2><p>${escapeHtml(copy.text)}</p></div><div class="performance-actions three"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">⚡ Animé</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">🧊 Statique</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">✨ Visuel</button></div></section>`;
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.134";
+const BETA124_VERSION = "1.0.0-beta.135";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.134";
+const BETA125_VERSION = "1.0.0-beta.135";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.134";
+const BETA126_VERSION = "1.0.0-beta.135";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.134";
+const BETA127_VERSION = "1.0.0-beta.135";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.134";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.135";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.134";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.135";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.134";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.135";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15755,7 +15755,7 @@ socialInviteLinkMarkup = function beta130SocialInviteLinkMarkup() {
 // Les réglages restent accessibles, mais on cache les outils avancés par défaut.
 performanceSettingsMarkup = function beta130PerformanceSettingsMarkup() {
   const mode = performanceMode();
-  return `<section class="card performance-card compact"><div><span class="card-label">Affichage</span><h2>${mode === "static" ? "Mode statique" : "Mode fluide"}</h2><p>Garde le mode fluide sauf si ton téléphone rame.</p></div><div class="performance-actions"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">Fluide</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">Statique</button></div></section>`;
+  return `<section class="card performance-card compact"><div><span class="card-label">Affichage</span><h2>${mode === "static" ? "Mode statique" : "Mode fluide"}</h2><p>Le mode fluide convient à la plupart des téléphones.</p></div><div class="performance-actions"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">Fluide</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">Statique</button></div></section>`;
 };
 backupToolsMarkup = function beta130BackupToolsMarkup() {
   return `<details class="card backup-card compact"><summary><span><b>Sauvegarde locale</b><em>Exporter / restaurer si besoin</em></span></summary><div class="backup-actions"><button data-export-save>Copier</button><button class="ghost" data-download-save>Télécharger</button><button class="ghost" data-import-save>Restaurer</button></div>${state.backupFeedback ? `<p>${escapeHtml(state.backupFeedback)}</p>` : ""}</details>`;
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.134";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.135";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.134";
+const BETA132_SAFE_VERSION = "1.0.0-beta.135";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.134";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.135";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.134";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.135";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16422,4 +16422,40 @@ try {
   queueSaveState(50);
   window.HistoDaily = { version: BETA134_PROFILE_TAP_VERSION, disciplineSwitchFix: true, safeLeaderboard: true, profileTapFix: true };
   if (state.tab === "rank") beta134DecorateClickableLeaderboard();
+} catch {}
+
+
+/* =========================================================
+   Beta 135 — nettoyage de copie utilisateur
+   Patch note visible, vocabulaire moins interne, accueil plus clair.
+   ========================================================= */
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.135";
+
+releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
+  const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
+  if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
+  return `<section class="card release-card soft-panel ${home ? "home-release-card" : ""}">
+    <div class="section-title-row"><div><span class="card-label">Nouveautés</span><h2>Mise à jour HistoDaily</h2></div><small>Dernière mise à jour</small></div>
+    <p>Ce qui change dans l’app :</p>
+    <ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul>
+    <div class="home-card-footer"><span>Bon jeu.</span><button class="ghost" data-dismiss-release>OK</button></div>
+  </section>`;
+};
+homeVersionPillMarkup = function beta135HomeVersionPillMarkup() { return ""; };
+
+// Copie plus propre pour les réglages et le profil.
+performanceSettingsMarkup = function beta135PerformanceSettingsMarkup() {
+  const mode = performanceMode();
+  return `<section class="card performance-card compact"><div><span class="card-label">Affichage</span><h2>${mode === "static" ? "Mode statique" : "Mode fluide"}</h2><p>Le mode fluide convient à la plupart des téléphones.</p></div><div class="performance-actions"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">Fluide</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">Statique</button></div></section>`;
+};
+profileSettingsMarkup = function beta135ProfileSettingsMarkup() {
+  return `<section class="card profile-settings-card compact"><div class="section-title-row"><div><span class="card-label">Réglages</span><h2>Préférences</h2><p>Affichage, rythme de jeu et sauvegarde restent accessibles depuis ton profil.</p></div></div>${settingsInnerMarkup(performanceSettingsMarkup(), "performance-card")}${settingsInnerMarkup(recentDailyCalendarMarkup({ compact: true }), "calendar-card")}</section>`;
+};
+try {
+  window.HistoDaily = { version: BETA135_COPY_CLEAN_VERSION, profileTapFix: true, copyClean: true };
+  if (state.beta135CopyCleanVersion !== BETA135_COPY_CLEAN_VERSION) {
+    state.beta135CopyCleanVersion = BETA135_COPY_CLEAN_VERSION;
+    saveState();
+    render({ immediate: true });
+  }
 } catch {}

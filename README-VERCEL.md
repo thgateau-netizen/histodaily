@@ -1,21 +1,17 @@
-# HistoDaily beta134 — profile tap fix
+# HistoDaily beta135 — product copy clean
 
-Correctif ciblé après test téléphone : le classement fonctionne et les disciplines se changent bien, mais le tap sur un joueur du classement pouvait ne plus ouvrir sa fiche profil.
+Passe de nettoyage visible après les tests mobiles.
 
-## Corrections
-- Délégation globale dédiée aux taps sur les lignes du classement `[data-view-profile]`.
-- Ouverture de fiche joueur indépendante des écouteurs posés après rendu.
-- Comparaison de profils plus robuste entre `player_id`, `id`, code ami et valeurs numériques/string.
-- Ligne de classement explicitement cliquable en `type="button"`.
-- Bouton “Demander en ami” sécurisé par la même délégation globale.
-- Z-index/pointer-events renforcés uniquement sur les lignes de classement et cartes profil.
-- Cache PWA renouvelé en `1.0.0-beta.134`.
+## Changements
+- Patch note remis sur l’accueil sous forme “Nouveautés”.
+- Retrait des formulations de chantier sur les écrans visibles.
+- Accueil et cartes de disciplines rendus plus naturels pour un utilisateur.
+- Profil et réglages simplifiés sans retirer les sécurités internes.
+- Cache PWA renouvelé en `1.0.0-beta.135`.
 - Aucun changement Supabase nécessaire.
 
 ## Test rapide
-1. Ouvrir le classement du jour.
-2. Toucher un autre joueur.
-3. Vérifier que sa fiche profil s’ouvre.
-4. Toucher “Demander en ami”.
-5. Vérifier sur l’autre appareil que la demande apparaît.
-6. Revenir au classement puis changer d’onglet et de discipline.
+1. Ouvrir l’accueil et vérifier la carte Nouveautés.
+2. Changer de discipline.
+3. Ouvrir le classement puis un profil joueur.
+4. Revenir au profil et vérifier que les réglages restent sobres.

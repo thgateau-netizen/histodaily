@@ -1,13 +1,13 @@
-const CACHE_NAME = "histodaily-beta134-profile-tap-fix-v1";
-const APP_VERSION = "1.0.0-beta.134";
+const CACHE_NAME = "histodaily-beta135-copy-clean-v1";
+const APP_VERSION = "1.0.0-beta.135";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.134",
-  "/app-core.js?v=1.0.0-beta.134",
-  "/app-onboarding.js?v=1.0.0-beta.134",
-  "/app.js?v=1.0.0-beta.134",
-  "/lessons-lite.js?v=1.0.0-beta.134",
+  "/styles.css?v=1.0.0-beta.135",
+  "/app-core.js?v=1.0.0-beta.135",
+  "/app-onboarding.js?v=1.0.0-beta.135",
+  "/app.js?v=1.0.0-beta.135",
+  "/lessons-lite.js?v=1.0.0-beta.135",
   "/manifest.webmanifest"
 ];
 
