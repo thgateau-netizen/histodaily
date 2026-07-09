@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.165";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.166";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -19111,4 +19111,231 @@ try {
   const oldSave = typeof saveState === "function" ? saveState : null; if(oldSave) saveState=function beta165SaveState(){ repairSocial(); saveProfile("save"); return oldSave(); };
   const oldSet = typeof setState === "function" ? setState : null; if(oldSet) setState=function beta165SetState(patch={},options={}){ if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"rankScope")) patch={...patch,rankScope:VALID_SCOPES.has(patch.rankScope)?patch.rankScope:"daily"}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"friends")) patch={...patch,friends:normalizeFriends(patch.friends)}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"pseudo")) patch={...patch,pseudo:str(patch.pseudo).slice(0,18)||state.pseudo||"Invité"}; const r=oldSet(patch,options); try{if(repairSocial()) queueSaveState?.(120)}catch{} try{saveProfile("setState")}catch{} return r; };
   try { repairSocial(); saveProfile("startup"); const style=document.createElement("style"); style.id="beta165-stabilisation-style"; style.textContent=`[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase}.beta165-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px}.beta165-friend-add-form button{min-height:52px}.rank-tabs [data-rank-scope]{pointer-events:auto!important;touch-action:manipulation!important;position:relative;z-index:3}.beta165-rank-summary{grid-template-columns:repeat(4,minmax(0,1fr))}.beta165-leaderboard .rank-row{touch-action:manipulation;pointer-events:auto}.beta165-quiz-runner{content-visibility:auto;contain-intrinsic-size:620px;overflow:clip}.beta165-quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 16px}.beta165-quiz-progress i{height:8px;border-radius:999px;background:rgba(255,255,255,.14)}.beta165-quiz-progress i.current{background:rgba(246,196,83,.82)}.beta165-quiz-progress i.ok{background:rgba(72,213,151,.85)}.beta165-quiz-progress i.ko{background:rgba(251,113,133,.82)}.beta165-single-question .quiz-choice{touch-action:manipulation;pointer-events:auto;min-height:54px}.beta165-quiz-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px}.beta165-quiz-footer button{min-height:48px}.beta165-score-panel{display:grid;gap:4px;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055)}.beta165-score-panel.good{border-color:rgba(72,213,151,.45);background:rgba(72,213,151,.12)}.complete-course-panel,.leaderboard-modern,.friends-list-card{content-visibility:auto;contain-intrinsic-size:900px}.skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important}@media(max-width:520px){.beta165-rank-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.beta165-friend-add-form,.beta165-quiz-footer{grid-template-columns:1fr;display:grid}.beta165-friend-add-form button,.beta165-quiz-footer button{width:100%}}`; if(!document.getElementById(style.id)) document.head.appendChild(style); state.beta165StabilisationVersion=BETA165_VERSION; window.HistoDaily={...(window.HistoDaily||{}),version:BETA165_VERSION,beta165Stabilisation:true,quizFlow:true,leaderboardTotalXp:true}; queueSaveState?.(150); if(["rank","profile","lesson","mystery","publicProfile"].includes(state.tab)) renderSoon(); } catch(e){ try{console.warn("beta165",e)}catch{} }
+})();
+
+
+/* Beta166 — correctif demandes d'amis réelles Supabase.
+   Cause corrigée : la beta165 ajoutait localement l'ami avant l'appel serveur.
+   Du coup beta125SendFriendRequest voyait déjà l'ami dans state.friends et annulait l'envoi.
+   Ici l'ajout par code crée une vraie demande sortante, sans créer l'amitié locale. */
+(function beta166FriendRequestsFix(){
+  const BETA166_VERSION = "1.0.0-beta.166";
+  const SENT_KEY = `${STORAGE_KEY || "histodaily_state"}_beta166_sent_friend_requests`;
+  const DRAFT_KEY = `${STORAGE_KEY || "histodaily_state"}_friend_code_draft`;
+  const str = v => String(v ?? "");
+  const safeName = v => (typeof sanitizePseudo === "function" ? sanitizePseudo(v) : str(v).trim().slice(0, 18)) || "Ami";
+  const norm = v => {
+    try { return typeof normalizeFriendCode === "function" ? normalizeFriendCode(v || "") : str(v).toUpperCase().replace(/\s+/g, "").replace(/[^A-Z0-9-]/g, ""); }
+    catch { return str(v).toUpperCase().replace(/\s+/g, "").replace(/[^A-Z0-9-]/g, ""); }
+  };
+  const suffix = v => {
+    try { return typeof friendCodeSuffix === "function" ? friendCodeSuffix(v || "") : norm(v).split("-").filter(Boolean).pop() || ""; }
+    catch { return norm(v).split("-").filter(Boolean).pop() || ""; }
+  };
+  const sameCode = (a,b) => {
+    const ca = norm(a), cb = norm(b);
+    if (!ca || !cb) return false;
+    if (ca === cb) return true;
+    const sa = suffix(ca), sb = suffix(cb);
+    return Boolean(sa && sb && sa === sb);
+  };
+  const parse = raw => {
+    try { return typeof parseFriendCode === "function" ? parseFriendCode(raw || "") : null; }
+    catch { return null; }
+  };
+  const currentRequests = () => {
+    const req = state.friendRequests && typeof state.friendRequests === "object" ? state.friendRequests : {};
+    return {
+      incoming: Array.isArray(req.incoming) ? req.incoming : [],
+      outgoing: Array.isArray(req.outgoing) ? req.outgoing : [],
+      history: Array.isArray(req.history) ? req.history : []
+    };
+  };
+  const localGetJson = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key) || "null") ?? fallback; } catch { return fallback; } };
+  const localSetJson = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} };
+  const sentMap = () => localGetJson(SENT_KEY, {});
+  const markSent = code => { const map = sentMap(); map[norm(code)] = Date.now(); localSetJson(SENT_KEY, map); };
+  const friendEntries = () => Object.entries(state.friends && typeof state.friends === "object" && !Array.isArray(state.friends) ? state.friends : {});
+  const findFriendByCode = code => friendEntries().find(([, f]) => sameCode(f?.code || f?.friendCode || f?.id, code));
+  const isLocalOnlyFriend = f => Boolean(f && (f.local === true || f.pendingServerStats === true || (f.badges || []).includes?.("Demande")) && !f.server && !f.online);
+  function removeLocalOnlyFriend(code){
+    let removed = null;
+    const next = { ...(state.friends || {}) };
+    Object.entries(next).forEach(([key, f]) => {
+      const fcode = f?.code || f?.friendCode || f?.id || key;
+      if (sameCode(fcode, code) && isLocalOnlyFriend(f)) {
+        removed = removed || f;
+        delete next[key];
+      }
+    });
+    if (removed) state.friends = next;
+    return removed;
+  }
+  function outgoingMatches(req, player){
+    const code = player.friendCode || player.code || player.id || "";
+    const id = player.playerId || "";
+    return Boolean((id && (req.targetPlayerId === id || req.otherPlayerId === id)) || sameCode(req.targetFriendCode || req.otherFriendCode || req.friendCode || req.code, code));
+  }
+  function setOutgoing(player, statusText = "Demande envoyée"){
+    const code = norm(player.friendCode || player.code || player.id || "");
+    const req = currentRequests();
+    const localReq = {
+      direction: "outgoing",
+      status: "pending",
+      targetPlayerId: player.playerId || "",
+      targetFriendCode: code,
+      targetPseudo: safeName(player.name || player.pseudo || "Ami"),
+      otherPlayerId: player.playerId || "",
+      otherFriendCode: code,
+      otherPseudo: safeName(player.name || player.pseudo || "Ami"),
+      source: "beta166",
+      createdAt: new Date().toISOString()
+    };
+    state.friendRequests = { ...req, outgoing: [localReq, ...req.outgoing.filter(r => !outgoingMatches(r, player))] };
+    state.friendFeedback = statusText;
+    state.friendRequestFeedback = statusText;
+    try { queueSaveState?.(120); } catch {}
+  }
+  async function postFriendRequest(player, { silent = false } = {}){
+    const targetCode = norm(player.friendCode || player.code || player.id || "");
+    const targetPlayerId = str(player.playerId || "");
+    const targetPseudo = safeName(player.name || player.pseudo || "Ami");
+    if (!targetCode && !targetPlayerId) throw new Error("code cible manquant");
+    if (sameCode(targetCode, typeof friendCode === "function" ? friendCode() : "")) throw new Error("code personnel");
+    removeLocalOnlyFriend(targetCode);
+    setOutgoing({ ...player, friendCode: targetCode, code: targetCode, name: targetPseudo }, silent ? "Demande synchronisée…" : `Demande envoyée à ${targetPseudo}.`);
+    if (typeof isOnline !== "undefined" && !isOnline) {
+      state.friendFeedback = `Demande préparée pour ${targetPseudo}. Elle partira quand le réseau sera disponible.`;
+      return { ok: true, localOnly: true };
+    }
+    try { await syncMyProfileToServer?.({ source: "beta166-friend-request" }); } catch {}
+    const body = {
+      playerId: typeof playerIdMe === "function" ? playerIdMe() : "",
+      pseudo: typeof currentPseudo === "function" ? currentPseudo() : (state.pseudo || "Joueur"),
+      myFriendCode: typeof friendCode === "function" ? friendCode() : "",
+      targetPlayerId,
+      targetFriendCode: targetCode,
+      targetPseudo,
+      level: typeof level === "function" ? level() : 1,
+      xp: Number(state.xp || 0),
+      totalXp: (function(){ try { return typeof totalXp === "function" ? totalXp() : Number(state.xp || 0); } catch { return Number(state.xp || 0); } })(),
+      solvedCount: Object.keys(state.solvedMysteries || {}).length,
+      streak: Number(state.streak || 0),
+      source: "beta166"
+    };
+    const response = await fetch("/api/v1/friends/request", {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const json = await response.json().catch(() => ({}));
+    if (!response.ok || json?.ok === false || json?.mode === "supabase-error") {
+      throw new Error(json?.message || `HTTP ${response.status}`);
+    }
+    if (json.requests) {
+      try { typeof beta125SetFriendRequests === "function" ? beta125SetFriendRequests(json.requests) : (state.friendRequests = json.requests); }
+      catch { state.friendRequests = json.requests; }
+    }
+    if (Array.isArray(json.friends) && json.alreadyFriend) {
+      try { mergeServerFriends?.(json.friends); } catch {}
+    }
+    markSent(targetCode);
+    state.friendFeedback = json.alreadyFriend ? `${targetPseudo} est déjà dans tes amis.` : `Demande envoyée en ligne à ${targetPseudo}.`;
+    state.friendRequestFeedback = state.friendFeedback;
+    state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "supabase", message: json.message || "Demande envoyée." };
+    try { queueSaveState?.(120); } catch {}
+    return json;
+  }
+  async function addFriendByRawValue(raw){
+    const parsed = parse(raw);
+    const value = str(raw || "").toUpperCase();
+    state.friendCodeDraft = value;
+    try { localStorage.setItem(DRAFT_KEY, value); } catch {}
+    if (!parsed) {
+      if (typeof setState === "function") setState({ friendFeedback: "Code ami invalide. Format attendu : PSEUDO-ABC123.", friendCodeDraft: value });
+      else state.friendFeedback = "Code ami invalide. Format attendu : PSEUDO-ABC123.";
+      return false;
+    }
+    const code = norm(parsed.code || parsed.id || value);
+    if (sameCode(code, typeof friendCode === "function" ? friendCode() : "")) {
+      if (typeof setState === "function") setState({ friendFeedback: "C’est ton propre code. Partage-le, mais ne l’ajoute pas à tes amis.", friendCodeDraft: value });
+      return false;
+    }
+    const existing = findFriendByCode(code);
+    if (existing && !isLocalOnlyFriend(existing[1])) {
+      if (typeof setState === "function") setState({ friendFeedback: `${existing[1]?.name || parsed.pseudo || "Cet ami"} est déjà dans tes amis.`, friendCodeDraft: "" });
+      return false;
+    }
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
+    state.friendCodeDraft = "";
+    try {
+      await postFriendRequest({ id: code, code, friendCode: code, name: parsed.pseudo || "Ami", playerId: "" });
+    } catch (error) {
+      setOutgoing({ id: code, code, friendCode: code, name: parsed.pseudo || "Ami" }, `${parsed.pseudo || "Ami"} : demande gardée localement, mais pas écrite dans Supabase (${error?.message || "connexion"}).`);
+    }
+    try { render?.({ immediate: true }); } catch { try { renderSoon?.(); } catch {} }
+    return true;
+  }
+  const previousAddFriend = typeof addFriend === "function" ? addFriend : null;
+  addFriend = function beta166AddFriend(event){
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    event?.stopImmediatePropagation?.();
+    const form = event?.target?.closest?.("[data-add-friend]") || document.querySelector("[data-add-friend]");
+    const input = form?.querySelector?.("[data-friend-code-input],input[name='friendCode'],input");
+    return addFriendByRawValue(input?.value || state.friendCodeDraft || "");
+  };
+  if (typeof syncFriendToServer === "function") {
+    syncFriendToServer = async function beta166SyncFriendToServer(friend){
+      const code = norm(friend?.code || friend?.friendCode || friend?.id || "");
+      if (!code) return null;
+      return postFriendRequest({ ...friend, code, friendCode: code, name: friend?.name || friend?.pseudo || "Ami" }, { silent: true });
+    };
+  }
+  async function convertBeta165LocalFriends(){
+    const candidates = friendEntries().filter(([, f]) => isLocalOnlyFriend(f));
+    if (!candidates.length) return;
+    for (const [, f] of candidates.slice(0, 5)) {
+      const code = norm(f.code || f.friendCode || f.id || "");
+      if (!code) continue;
+      const sent = sentMap();
+      const recent = sent[code] && Date.now() - Number(sent[code]) < 5 * 60 * 1000;
+      if (recent) continue;
+      try { await postFriendRequest({ ...f, code, friendCode: code, name: f.name || f.pseudo || "Ami" }, { silent: true }); }
+      catch (error) { setOutgoing({ ...f, code, friendCode: code }, `${f.name || "Ami"} : demande à renvoyer depuis le profil.`); }
+    }
+    try { render?.({ immediate: true }); } catch {}
+  }
+  document.addEventListener("submit", event => {
+    const form = event.target?.closest?.("[data-add-friend]");
+    if (!form) return;
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+    const input = form.querySelector("[data-friend-code-input],input[name='friendCode'],input");
+    addFriendByRawValue(input?.value || state.friendCodeDraft || "");
+  }, true);
+  document.addEventListener("click", event => {
+    const btn = event.target?.closest?.("[data-add-friend-button]");
+    if (!btn) return;
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+    const form = btn.closest("[data-add-friend]") || document.querySelector("[data-add-friend]");
+    const input = form?.querySelector("[data-friend-code-input],input[name='friendCode'],input");
+    addFriendByRawValue(input?.value || state.friendCodeDraft || "");
+  }, true);
+  document.addEventListener("input", event => {
+    const input = event.target?.closest?.("[data-friend-code-input]");
+    if (!input) return;
+    state.friendCodeDraft = input.value || "";
+    try { localStorage.setItem(DRAFT_KEY, state.friendCodeDraft); } catch {}
+  }, true);
+  try {
+    state.beta166FriendRequestsFixVersion = BETA166_VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA166_VERSION, beta166FriendRequestsFix: true };
+    setTimeout(() => convertBeta165LocalFriends().catch(() => {}), 900);
+    if (state.tab === "profile" || state.tab === "rank") setTimeout(() => { try { render?.({ immediate: true }); } catch {} }, 80);
+  } catch (error) { try { console.warn("beta166 friend request fix", error); } catch {} }
 })();
