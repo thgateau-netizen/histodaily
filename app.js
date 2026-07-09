@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.138";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.139";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.138";
+const BETA124_VERSION = "1.0.0-beta.139";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.138";
+const BETA125_VERSION = "1.0.0-beta.139";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.138";
+const BETA126_VERSION = "1.0.0-beta.139";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.138";
+const BETA127_VERSION = "1.0.0-beta.139";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.138";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.139";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.138";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.139";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.138";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.139";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.138";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.139";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.138";
+const BETA132_SAFE_VERSION = "1.0.0-beta.139";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.138";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.139";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.138";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.139";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16429,7 +16429,7 @@ try {
    Beta 135 — nettoyage de copie utilisateur
    Patch note visible, vocabulaire moins interne, accueil plus clair.
    ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.138";
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.139";
 
 releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
@@ -16467,7 +16467,7 @@ try {
    puis le même tap peut être repris par la navigation après le rendu.
    On consomme donc l'événement Indice avant tout changement d'écran.
    ========================================================= */
-const BETA136_HINT_TAP_VERSION = "1.0.0-beta.138";
+const BETA136_HINT_TAP_VERSION = "1.0.0-beta.139";
 let beta136HintTapAt = 0;
 let beta136LastHintMysteryId = "";
 
@@ -16546,8 +16546,8 @@ try {
    Histoire / Cinéma / Économie / etc. déclenche parfois le mode touché.
    On distingue maintenant un vrai tap d'un swipe/scroll horizontal.
    ========================================================= */
-const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.138";
-const beta138ModeSwipe = {
+const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.139";
+const beta139ModeSwipe = {
   active: false,
   tracking: false,
   moved: false,
@@ -16558,94 +16558,94 @@ const beta138ModeSwipe = {
   lastTarget: null
 };
 
-function beta138ModeSwitcherForTarget(target) {
+function beta139ModeSwitcherForTarget(target) {
   return target && target.closest ? target.closest(".home-mode-switcher") : null;
 }
 
-function beta138IsModeSwitchTarget(target) {
+function beta139IsModeSwitchTarget(target) {
   return Boolean(target && target.closest && target.closest("[data-home-discipline]"));
 }
 
-function beta138TouchPoint(event) {
+function beta139TouchPoint(event) {
   const t = event?.changedTouches?.[0] || event?.touches?.[0] || event;
   return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
 }
 
-function beta138StartModeGesture(event) {
+function beta139StartModeGesture(event) {
   const target = event.target;
-  const switcher = beta138ModeSwitcherForTarget(target);
-  if (!switcher || !beta138IsModeSwitchTarget(target)) return;
-  const point = beta138TouchPoint(event);
-  beta138ModeSwipe.active = true;
-  beta138ModeSwipe.tracking = true;
-  beta138ModeSwipe.moved = false;
-  beta138ModeSwipe.startX = point.x;
-  beta138ModeSwipe.startY = point.y;
-  beta138ModeSwipe.startScrollLeft = Number(switcher.scrollLeft || 0);
-  beta138ModeSwipe.lastTarget = target.closest("[data-home-discipline]");
+  const switcher = beta139ModeSwitcherForTarget(target);
+  if (!switcher || !beta139IsModeSwitchTarget(target)) return;
+  const point = beta139TouchPoint(event);
+  beta139ModeSwipe.active = true;
+  beta139ModeSwipe.tracking = true;
+  beta139ModeSwipe.moved = false;
+  beta139ModeSwipe.startX = point.x;
+  beta139ModeSwipe.startY = point.y;
+  beta139ModeSwipe.startScrollLeft = Number(switcher.scrollLeft || 0);
+  beta139ModeSwipe.lastTarget = target.closest("[data-home-discipline]");
 }
 
-function beta138MoveModeGesture(event) {
-  if (!beta138ModeSwipe.tracking) return;
+function beta139MoveModeGesture(event) {
+  if (!beta139ModeSwipe.tracking) return;
   const target = event.target;
-  const switcher = beta138ModeSwitcherForTarget(target) || beta138ModeSwitcherForTarget(beta138ModeSwipe.lastTarget);
-  const point = beta138TouchPoint(event);
-  const dx = Math.abs(point.x - beta138ModeSwipe.startX);
-  const dy = Math.abs(point.y - beta138ModeSwipe.startY);
-  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta138ModeSwipe.startScrollLeft) : 0;
+  const switcher = beta139ModeSwitcherForTarget(target) || beta139ModeSwitcherForTarget(beta139ModeSwipe.lastTarget);
+  const point = beta139TouchPoint(event);
+  const dx = Math.abs(point.x - beta139ModeSwipe.startX);
+  const dy = Math.abs(point.y - beta139ModeSwipe.startY);
+  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta139ModeSwipe.startScrollLeft) : 0;
   // Un petit tremblement reste un tap. Un vrai déplacement horizontal devient un scroll.
   if ((dx > 10 && dx > dy * 0.75) || scrollDelta > 4) {
-    beta138ModeSwipe.moved = true;
-    beta138ModeSwipe.suppressUntil = Date.now() + 520;
+    beta139ModeSwipe.moved = true;
+    beta139ModeSwipe.suppressUntil = Date.now() + 520;
   }
 }
 
-function beta138EndModeGesture(event) {
+function beta139EndModeGesture(event) {
   const target = event.target;
-  const switcher = beta138ModeSwitcherForTarget(target) || beta138ModeSwitcherForTarget(beta138ModeSwipe.lastTarget);
-  if (!switcher && !beta138ModeSwipe.active) return;
-  const point = beta138TouchPoint(event);
-  const dx = Math.abs(point.x - beta138ModeSwipe.startX);
-  const dy = Math.abs(point.y - beta138ModeSwipe.startY);
-  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta138ModeSwipe.startScrollLeft) : 0;
-  const isSwipe = beta138ModeSwipe.moved || (dx > 10 && dx > dy * 0.75) || scrollDelta > 4;
-  beta138ModeSwipe.tracking = false;
-  beta138ModeSwipe.active = false;
+  const switcher = beta139ModeSwitcherForTarget(target) || beta139ModeSwitcherForTarget(beta139ModeSwipe.lastTarget);
+  if (!switcher && !beta139ModeSwipe.active) return;
+  const point = beta139TouchPoint(event);
+  const dx = Math.abs(point.x - beta139ModeSwipe.startX);
+  const dy = Math.abs(point.y - beta139ModeSwipe.startY);
+  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta139ModeSwipe.startScrollLeft) : 0;
+  const isSwipe = beta139ModeSwipe.moved || (dx > 10 && dx > dy * 0.75) || scrollDelta > 4;
+  beta139ModeSwipe.tracking = false;
+  beta139ModeSwipe.active = false;
   if (!isSwipe) return;
-  beta138ModeSwipe.suppressUntil = Date.now() + 520;
+  beta139ModeSwipe.suppressUntil = Date.now() + 520;
   event.preventDefault?.();
   event.stopPropagation?.();
   event.stopImmediatePropagation?.();
 }
 
-function beta138BlockGhostModeClick(event) {
+function beta139BlockGhostModeClick(event) {
   const target = event.target;
-  if (!beta138IsModeSwitchTarget(target)) return;
-  if (Date.now() > beta138ModeSwipe.suppressUntil) return;
+  if (!beta139IsModeSwitchTarget(target)) return;
+  if (Date.now() > beta139ModeSwipe.suppressUntil) return;
   event.preventDefault?.();
   event.stopPropagation?.();
   event.stopImmediatePropagation?.();
 }
 
-function beta138InstallModeSwipeGuard() {
+function beta139InstallModeSwipeGuard() {
   if (window.__histodailyBeta138ModeSwipeGuard) return;
   window.__histodailyBeta138ModeSwipeGuard = true;
   // Window capture passe avant les délégations document ajoutées dans les patchs précédents.
-  window.addEventListener("touchstart", beta138StartModeGesture, { capture: true, passive: true });
-  window.addEventListener("touchmove", beta138MoveModeGesture, { capture: true, passive: true });
-  window.addEventListener("touchend", beta138EndModeGesture, { capture: true, passive: false });
-  window.addEventListener("touchcancel", beta138EndModeGesture, { capture: true, passive: false });
-  window.addEventListener("pointerdown", beta138StartModeGesture, true);
-  window.addEventListener("pointermove", beta138MoveModeGesture, true);
-  window.addEventListener("pointerup", beta138EndModeGesture, true);
-  window.addEventListener("pointercancel", beta138EndModeGesture, true);
-  window.addEventListener("click", beta138BlockGhostModeClick, true);
+  window.addEventListener("touchstart", beta139StartModeGesture, { capture: true, passive: true });
+  window.addEventListener("touchmove", beta139MoveModeGesture, { capture: true, passive: true });
+  window.addEventListener("touchend", beta139EndModeGesture, { capture: true, passive: false });
+  window.addEventListener("touchcancel", beta139EndModeGesture, { capture: true, passive: false });
+  window.addEventListener("pointerdown", beta139StartModeGesture, true);
+  window.addEventListener("pointermove", beta139MoveModeGesture, true);
+  window.addEventListener("pointerup", beta139EndModeGesture, true);
+  window.addEventListener("pointercancel", beta139EndModeGesture, true);
+  window.addEventListener("click", beta139BlockGhostModeClick, true);
 }
 
-function beta138InstallModeSwipeStyle() {
-  if (document.getElementById("beta138-mode-scroll-style")) return;
+function beta139InstallModeSwipeStyle() {
+  if (document.getElementById("beta139-mode-scroll-style")) return;
   const style = document.createElement("style");
-  style.id = "beta138-mode-scroll-style";
+  style.id = "beta139-mode-scroll-style";
   style.textContent = `
     .home-mode-switcher{
       overflow-x:auto!important;
@@ -16665,9 +16665,254 @@ function beta138InstallModeSwipeStyle() {
 }
 
 try {
-  beta138InstallModeSwipeGuard();
-  beta138InstallModeSwipeStyle();
-  state.beta138ModeScrollVersion = BETA137_MODE_SCROLL_VERSION;
+  beta139InstallModeSwipeGuard();
+  beta139InstallModeSwipeStyle();
+  state.beta139ModeScrollVersion = BETA137_MODE_SCROLL_VERSION;
   queueSaveState(50);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA137_MODE_SCROLL_VERSION, modeScrollFix: true };
+} catch {}
+
+
+/* =========================================================
+   Beta 139 — correctif contenus par discipline
+   Problème : les modes hors Histoire mélangeaient vrais contenus
+   et parcours prévus. Sur mobile, cela donnait l’impression que
+   Cinéma / Économie / etc. ne marchaient pas : on pouvait ouvrir
+   des chapitres sans cours jouables. On filtre maintenant les actions
+   principales sur les contenus réellement disponibles.
+   ========================================================= */
+const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.139";
+
+function beta139RealWorldsForDiscipline(disciplineId = activeDisciplineId()) {
+  const id = disciplineById(disciplineId || "history").id;
+  const ids = new Set(curatedLessons().map(lesson => lessonWorldId(lesson.id)));
+  return allDisciplineWorlds()
+    .filter(world => worldDisciplineId(world) === id)
+    .filter(world => ids.has(world.id) && treeLessonsForWorld(world.id).length > 0)
+    .sort((a, b) => (a.sortStart ?? 999999) - (b.sortStart ?? 999999) || String(a.id).localeCompare(String(b.id)));
+}
+
+function beta139PlannedWorldsForDiscipline(disciplineId = activeDisciplineId()) {
+  const id = disciplineById(disciplineId || "history").id;
+  const realIds = new Set(beta139RealWorldsForDiscipline(id).map(world => world.id));
+  return (PLANNED_DISCIPLINE_WORLDS[id] || [])
+    .filter(world => !realIds.has(world.id))
+    .sort((a, b) => (a.sortStart ?? 999999) - (b.sortStart ?? 999999) || String(a.id).localeCompare(String(b.id)));
+}
+
+const beta139PreviousTreeAvailableWorlds = treeAvailableWorlds;
+treeAvailableWorlds = function beta139TreeAvailableWorlds(disciplineId = activeDisciplineId()) {
+  const real = beta139RealWorldsForDiscipline(disciplineId);
+  if (real.length) return real;
+  return beta139PreviousTreeAvailableWorlds ? beta139PreviousTreeAvailableWorlds(disciplineId).filter(world => treeLessonsForWorld(world.id).length > 0) : [];
+};
+
+firstWorldForDiscipline = function beta139FirstWorldForDiscipline(disciplineId = activeDisciplineId()) {
+  return beta139RealWorldsForDiscipline(disciplineId)[0] || treeAvailableWorlds(disciplineId)[0] || null;
+};
+
+const beta139PreviousPublicMysteries = publicMysteries;
+publicMysteries = function beta139PublicMysteries(disciplineId = activeDisciplineId()) {
+  const id = disciplineById(disciplineId || "history").id;
+  const pool = (data.mysteries || []).filter(mystery => mysteryDisciplineId(mystery) === id);
+  if (id !== "history") return pool;
+  return beta139PreviousPublicMysteries ? beta139PreviousPublicMysteries("history") : pool;
+};
+
+mysteryForDisciplineDayOffset = function beta139MysteryForDisciplineDayOffset(disciplineId = activeDisciplineId(), offset = 0) {
+  const id = disciplineById(disciplineId || "history").id;
+  const pool = publicMysteries(id);
+  if (!pool.length) return id === "history" ? null : (publicMysteries("history")[0] || null);
+  const shiftMap = (typeof beta117MysteryShift === "function") ? beta117MysteryShift(id) : 0;
+  const shift = offset === 0 ? shiftMap : 0;
+  const index = ((todayIndex() - offset + shift) % pool.length + pool.length) % pool.length;
+  return pool[index] || null;
+};
+
+mysteryForDayOffset = function beta139MysteryForDayOffset(offset = 0) {
+  return mysteryForDisciplineDayOffset(activeDisciplineId(), offset);
+};
+
+dailyMystery = function beta139DailyMystery() { return mysteryForDayOffset(0); };
+isTodayMystery = function beta139IsTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); };
+
+function beta139ReadyLessonsForDiscipline(disciplineId = activeDisciplineId()) {
+  return beta139RealWorldsForDiscipline(disciplineId)
+    .flatMap(world => treeLessonsForWorld(world.id))
+    .filter(isCuratedLesson);
+}
+
+lessonsForDiscipline = function beta139LessonsForDiscipline(disciplineId = activeDisciplineId()) {
+  return beta139ReadyLessonsForDiscipline(disciplineId);
+};
+
+disciplineProgress = function beta139DisciplineProgress(disciplineId = activeDisciplineId()) {
+  const id = disciplineById(disciplineId || "history").id;
+  const lessons = beta139ReadyLessonsForDiscipline(id);
+  const done = lessons.filter(lesson => lessonDone(lesson.id)).length;
+  const groups = treeGroups(id);
+  const worlds = beta139RealWorldsForDiscipline(id);
+  return {
+    done,
+    total: lessons.length,
+    progress: percent(done, lessons.length),
+    chapters: groups.length,
+    worlds: worlds.length,
+    ready: lessons.length > 0
+  };
+};
+
+disciplineHomeStats = function beta139DisciplineHomeStats(disciplineId = activeDisciplineId()) {
+  const discipline = disciplineById(disciplineId);
+  const progress = disciplineProgress(discipline.id);
+  const groups = treeGroups(discipline.id);
+  const worlds = beta139RealWorldsForDiscipline(discipline.id);
+  const readyLessons = beta139ReadyLessonsForDiscipline(discipline.id);
+  const plannedWorlds = beta139PlannedWorldsForDiscipline(discipline.id);
+  const mysteryCount = publicMysteries(discipline.id).length;
+  return { discipline, progress, groups, worlds, readyLessons, plannedWorlds, mysteryCount };
+};
+
+modeSnapshotMarkup = function beta139ModeSnapshotMarkup(disciplineId = activeDisciplineId()) {
+  const { discipline, progress, groups, worlds, readyLessons, mysteryCount } = disciplineHomeStats(disciplineId);
+  const mode = disciplineModeCopy(discipline.id);
+  return `<section class="card home-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="home-mode-card-main"><span class="mode-badge">${discipline.emoji} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
+    <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${readyLessons.length}</b><span>cours</span></div><div><b>${mysteryCount}</b><span>mystères</span></div></div>
+  </section>`;
+};
+
+modeContinueMarkup = function beta139ModeContinueMarkup(disciplineId = activeDisciplineId()) {
+  if (disciplineId === "history") return homeContinueMarkup();
+  const { discipline, groups, worlds, readyLessons, mysteryCount } = disciplineHomeStats(disciplineId);
+  const first = worlds[0] || null;
+  const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
+  if (!first || !readyLessons.length) {
+    return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="section-title-row"><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Contenu en préparation</h2></div><small>${mysteryCount} mystère(s)</small></div>
+      <p>Cette catégorie a déjà des mystères, mais pas encore assez de cours publiés pour ouvrir un vrai parcours.</p>
+      <div class="home-card-footer"><span>Tu peux jouer le mystère du mode.</span><button type="button" data-home-mystery-button>Jouer</button></div>
+    </section>`;
+  }
+  return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first.emoji || discipline.emoji} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
+    <p>${escapeHtml(first.subtitle || group?.description || discipline.description)}</p>
+    <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
+    <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les cours</button></div>
+  </section>`;
+};
+
+modeRecommendationItems = function beta139ModeRecommendationItems(disciplineId = activeDisciplineId()) {
+  const worlds = beta139RealWorldsForDiscipline(disciplineId).filter(world => treeLessonsForWorld(world.id).length > 0);
+  if (!worlds.length) return [];
+  const groups = treeGroups(disciplineId);
+  const slot = discoverySlot();
+  const selected = [];
+  const usedGroups = new Set();
+  const ordered = worlds.sort((a, b) => (Number(a.sortStart) || 0) - (Number(b.sortStart) || 0) || String(a.id).localeCompare(String(b.id)));
+  for (let i = 0; i < ordered.length && selected.length < 3; i += 1) {
+    const world = ordered[(i + slot) % ordered.length];
+    if (usedGroups.has(world.group) && selected.length < Math.min(3, groups.length)) continue;
+    usedGroups.add(world.group);
+    selected.push(world);
+  }
+  for (const world of ordered) {
+    if (selected.length >= 3) break;
+    if (!selected.some(item => item.id === world.id)) selected.push(world);
+  }
+  return selected.slice(0, 3);
+};
+
+modeRecommendationsMarkup = function beta139ModeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
+  if (disciplineId === "history") return homeDiscoveryMarkup(homeDiscoveryLessons());
+  const discipline = disciplineById(disciplineId);
+  const mode = disciplineModeCopy(discipline.id);
+  const groups = treeGroups(discipline.id);
+  const items = modeRecommendationItems(discipline.id);
+  if (!items.length) return "";
+  return `<section class="card home-main-card home-discovery-card mode-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} piste(s)</small></div>
+    <p>${escapeHtml(mode.discoveryIntro)}</p>
+    <div class="home-discovery-grid">
+      ${items.map((world, index) => {
+        const group = groups.find(item => item.id === world.group) || {};
+        const count = treeLessonsForWorld(world.id).length;
+        return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+          <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · ${count} cours</span>
+          <h3>${world.emoji || discipline.emoji} ${escapeHtml(world.title)}</h3>
+          <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
+          <small>${escapeHtml(world.timeframe || group.range || "parcours")}</small>
+          <button type="button" data-open-mode-world="${escapeHtml(world.id)}">Ouvrir</button>
+        </article>`;
+      }).join("")}
+    </div>
+    <div class="home-card-footer"><span>Seulement les cours disponibles sont affichés ici.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout</button></div>
+  </section>`;
+};
+
+openModeLearn = function beta139OpenModeLearn(disciplineId = activeDisciplineId(), worldId = null) {
+  const discipline = disciplineById(disciplineId);
+  const worlds = beta139RealWorldsForDiscipline(discipline.id);
+  const targetWorld = (worldId && worlds.find(world => world.id === worldId)) || worlds[0] || null;
+  if (!targetWorld) {
+    return setState({ tab: "home", currentDiscipline: discipline.id, currentWorld: state.currentWorld, currentGroup: state.currentGroup }, { save: true });
+  }
+  setState({
+    tab: "learn",
+    currentDiscipline: discipline.id,
+    currentGroup: targetWorld.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
+    currentWorld: targetWorld.id,
+    learnFilter: "all",
+    learnSearch: ""
+  }, { save: true });
+};
+
+switchHomeDiscipline = function beta139SwitchHomeDiscipline(disciplineId) {
+  const discipline = disciplineById(disciplineId);
+  const firstWorld = firstWorldForDiscipline(discipline.id);
+  const nextMystery = mysteryForDisciplineDayOffset(discipline.id, 0);
+  setState({
+    tab: "home",
+    currentDiscipline: discipline.id,
+    currentGroup: firstWorld?.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
+    currentWorld: firstWorld?.id || state.currentWorld,
+    currentMysteryId: nextMystery?.id || null,
+    currentMysteryDiscipline: discipline.id,
+    learnFilter: "all",
+    learnSearch: "",
+    discoverOffset: 0
+  }, { save: true });
+};
+
+const beta139PreviousRenderLearn = renderLearn;
+renderLearn = function beta139RenderLearn() {
+  const disciplineId = activeDisciplineId();
+  const worlds = beta139RealWorldsForDiscipline(disciplineId);
+  if (!worlds.length) {
+    const discipline = disciplineById(disciplineId);
+    const mystery = dailyMystery();
+    return renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Les cours de cette discipline arrivent progressivement.</p></div></header>
+      ${disciplineSelectorMarkup(disciplineId)}
+      <section class="card discipline-empty-card" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${discipline.emoji}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours jouable ici</h2><p>Tu peux déjà jouer le mystère de cette catégorie. Les chapitres vides ne sont plus affichés comme s’ils étaient disponibles.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
+  }
+  return beta139PreviousRenderLearn ? beta139PreviousRenderLearn() : null;
+};
+
+function beta139InstallDisciplineContentStyle() {
+  if (document.getElementById("beta139-discipline-content-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta139-discipline-content-style";
+  style.textContent = `
+    .mode-world-item[data-mode-world]{cursor:pointer;}
+    .discipline-empty-card .after-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+  `;
+  document.head.appendChild(style);
+}
+
+try {
+  beta139InstallDisciplineContentStyle();
+  state.beta139DisciplineContentVersion = BETA139_DISCIPLINE_CONTENT_VERSION;
+  queueSaveState(50);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA139_DISCIPLINE_CONTENT_VERSION, disciplineContentFix: true };
+  render({ immediate: true });
 } catch {}

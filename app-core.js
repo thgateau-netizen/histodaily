@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.138",
-  assetsVersion: "1.0.0-beta.138",
+  version: "1.0.0-beta.139",
+  assetsVersion: "1.0.0-beta.139",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -18,9 +18,9 @@ window.HISTODAILY_CORE = {
     versionLabel: "mise à jour",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Le sélecteur de disciplines peut maintenant se faire défiler sans changer de mode par erreur.",
-      "Les taps sur Histoire, Cinéma, Économie et les autres modes restent réactifs quand on appuie vraiment.",
-      "Les correctifs récents du classement, des profils et des indices sont conservés."
+      "Les catégories Art, Cinéma, Sciences, Économie, Géographie et Musique ouvrent maintenant uniquement des cours réellement disponibles.",
+      "Les mystères des autres catégories restent bien liés au mode choisi.",
+      "Les chapitres encore vides ne sont plus présentés comme des contenus jouables."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
