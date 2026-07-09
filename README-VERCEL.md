@@ -1,17 +1,16 @@
-# HistoDaily beta135 — product copy clean
+# HistoDaily beta136 — hint tap fix
 
-Passe de nettoyage visible après les tests mobiles.
+Correctif ciblé après test mobile.
 
 ## Changements
-- Patch note remis sur l’accueil sous forme “Nouveautés”.
-- Retrait des formulations de chantier sur les écrans visibles.
-- Accueil et cartes de disciplines rendus plus naturels pour un utilisateur.
-- Profil et réglages simplifiés sans retirer les sécurités internes.
-- Cache PWA renouvelé en `1.0.0-beta.135`.
+- Correction du bouton Indice dans le mystère : demander un indice ne déclenche plus un changement d’onglet.
+- Le tap sur Indice est traité avant la navigation globale et bloque les doubles événements mobile.
+- Les boutons de réponse/indice du mystère sont mieux isolés de la barre de navigation.
+- Cache PWA renouvelé en `1.0.0-beta.136`.
 - Aucun changement Supabase nécessaire.
 
 ## Test rapide
-1. Ouvrir l’accueil et vérifier la carte Nouveautés.
-2. Changer de discipline.
-3. Ouvrir le classement puis un profil joueur.
-4. Revenir au profil et vérifier que les réglages restent sobres.
+1. Ouvrir un mystère non résolu.
+2. Appuyer sur Indice.
+3. Vérifier que l’indice apparaît sans quitter l’écran Mystère.
+4. Valider une réponse puis vérifier que Classement/Profil marchent toujours.

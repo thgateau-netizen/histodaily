@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.135";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.136";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -7110,7 +7110,7 @@ function renderMystery() {
       ${!solved ? `<div class="score-explain"><b>Barème clair</b><span>indice choisi : -${SCORE_PENALTY_HINT} XP potentiel · essai supplémentaire : -${SCORE_PENALTY_EXTRA_TRY} XP · aucune aide donnée automatiquement</span></div>${scoreBreakdownMarkup(mystery.id)}` : ""}
       <div class="hints">${(mystery.clues || []).slice(0, hints).map((c, index) => `<p><b>${escapeHtml(mysteryHintLabels()[index] || `Indice ${index + 1}`)}</b> · ${escapeHtml(c)}</p>`).join("")}</div>
       ${feedback && !solved ? `<p class="guess-feedback">${escapeHtml(feedback)}</p>` : ""}
-      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}${scoreSyncMarkup(mystery.id)}<div class="after-actions"><button data-go-rank>Voir le classement</button><button class="ghost" data-open-profile-after>Profil</button></div></div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" /><button type="submit" data-guess-submit>Valider</button></form><button class="ghost wide" data-hint>${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
+      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}${scoreSyncMarkup(mystery.id)}<div class="after-actions"><button data-go-rank>Voir le classement</button><button class="ghost" data-open-profile-after>Profil</button></div></div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" /><button type="submit" data-guess-submit>Valider</button></form><button type="button" class="ghost wide mystery-action-button" data-hint data-mystery-action="hint">${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
     </section>
     ${solved && lesson ? `<section class="card after-mystery">
       <div class="card-label">Après le mystère</div>
@@ -7155,7 +7155,7 @@ function renderMystery() {
     guessInput.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); guessForm?.requestSubmit ? guessForm.requestSubmit() : submitGuess({ preventDefault() {}, stopPropagation() {}, currentTarget: guessForm }); } });
     if (window.matchMedia && window.matchMedia("(pointer: fine)").matches) setTimeout(() => guessInput.focus({ preventScroll: true }), 90);
   }
-  $("[data-hint]")?.addEventListener("click", () => revealHint(mystery.id));
+  $("[data-hint]")?.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); revealHint(mystery.id); });
   document.querySelectorAll("[data-share-result]").forEach(btn => btn.addEventListener("click", () => shareMysteryResult(btn.dataset.shareResult)));
   document.querySelectorAll("[data-open-lesson]").forEach(btn => btn.addEventListener("click", () => setState({
     tab: "lesson",
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.135";
+const BETA124_VERSION = "1.0.0-beta.136";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.135";
+const BETA125_VERSION = "1.0.0-beta.136";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.135";
+const BETA126_VERSION = "1.0.0-beta.136";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.135";
+const BETA127_VERSION = "1.0.0-beta.136";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.135";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.136";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.135";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.136";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.135";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.136";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.135";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.136";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.135";
+const BETA132_SAFE_VERSION = "1.0.0-beta.136";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.135";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.136";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.135";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.136";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16429,7 +16429,7 @@ try {
    Beta 135 — nettoyage de copie utilisateur
    Patch note visible, vocabulaire moins interne, accueil plus clair.
    ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.135";
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.136";
 
 releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
@@ -16458,4 +16458,83 @@ try {
     saveState();
     render({ immediate: true });
   }
+} catch {}
+
+
+/* =========================================================
+   Beta 136 — correctif tap Indice
+   Symptôme observé : sur mobile, demander un indice l'enregistre,
+   puis le même tap peut être repris par la navigation après le rendu.
+   On consomme donc l'événement Indice avant tout changement d'écran.
+   ========================================================= */
+const BETA136_HINT_TAP_VERSION = "1.0.0-beta.136";
+let beta136HintTapAt = 0;
+let beta136LastHintMysteryId = "";
+
+function beta136CurrentHintMysteryId() {
+  const btn = document.querySelector("[data-hint]");
+  const current = currentMystery?.();
+  return current?.id || btn?.dataset?.mysteryId || state.currentMysteryId || dailyMystery?.()?.id || "";
+}
+
+function beta136ConsumeEvent(event) {
+  try { event.preventDefault?.(); } catch {}
+  try { event.stopPropagation?.(); } catch {}
+  try { event.stopImmediatePropagation?.(); } catch {}
+}
+
+function beta136HandleMysteryAction(event) {
+  const target = event.target;
+  if (!target || !target.closest) return;
+  const hintBtn = target.closest("[data-hint],[data-mystery-action='hint']");
+  if (!hintBtn || !app || !app.contains(hintBtn)) return;
+  beta136ConsumeEvent(event);
+
+  const now = Date.now();
+  const mysteryId = beta136CurrentHintMysteryId();
+  // iOS/Android peuvent envoyer touchend + pointerup + click. Un seul indice par tap.
+  if (mysteryId && beta136LastHintMysteryId === mysteryId && now - beta136HintTapAt < 450) return;
+  beta136HintTapAt = now;
+  beta136LastHintMysteryId = mysteryId;
+  if (mysteryId) revealHint(mysteryId);
+}
+
+function beta136InstallHintTapFix() {
+  if (window.__histodailyBeta136HintTapFix) return;
+  window.__histodailyBeta136HintTapFix = true;
+  document.addEventListener("touchend", beta136HandleMysteryAction, { capture: true, passive: false });
+  document.addEventListener("pointerup", beta136HandleMysteryAction, true);
+  document.addEventListener("click", beta136HandleMysteryAction, true);
+}
+
+function beta136InstallMysteryActionStyle() {
+  if (document.getElementById("beta136-hint-tap-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta136-hint-tap-style";
+  style.textContent = `
+    .mystery-card .guess,
+    .mystery-card [data-guess],
+    .mystery-card [data-guess-submit],
+    .mystery-card [data-hint],
+    .mystery-card .mystery-action-button{
+      position:relative!important;
+      z-index:2147482!important;
+      pointer-events:auto!important;
+      touch-action:manipulation!important;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .mystery-card{
+      isolation:isolate!important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+try {
+  beta136InstallHintTapFix();
+  beta136InstallMysteryActionStyle();
+  state.beta136HintTapVersion = BETA136_HINT_TAP_VERSION;
+  queueSaveState(50);
+  window.HistoDaily = { version: BETA136_HINT_TAP_VERSION, hintTapFix: true, disciplineSwitchFix: true, safeLeaderboard: true, profileTapFix: true };
+  if (state.tab === "mystery") render({ immediate: true });
 } catch {}

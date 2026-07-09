@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.135",
-  assetsVersion: "1.0.0-beta.135",
+  version: "1.0.0-beta.136",
+  assetsVersion: "1.0.0-beta.136",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -18,9 +18,9 @@ window.HISTODAILY_CORE = {
     versionLabel: "mise à jour",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Les profils du classement s’ouvrent maintenant directement depuis la liste.",
-      "Les demandes d’amis et le classement sont plus fiables après une mise à jour.",
-      "L’accueil et les textes ont été allégés pour une lecture plus claire."
+      "Le bouton Indice du mystère ne change plus d’écran par erreur.",
+      "Les profils du classement et les demandes d’amis restent disponibles.",
+      "L’accueil et les textes restent allégés pour une lecture plus claire."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
