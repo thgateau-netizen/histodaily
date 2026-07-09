@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.159",
-  assetsVersion: "1.0.0-beta.159",
+  version: "1.0.0-beta.161",
+  assetsVersion: "1.0.0-beta.161",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -18,9 +18,9 @@ window.HISTODAILY_CORE = {
     versionLabel: "mise à jour",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Hotfix stabilité : rollback des optimisations expérimentales, navigation plus sûre.",
-      "Social : correction des demandes d’amis qui restaient en attente après acceptation.",
-      "Secours : écran de réparation simplifié avec boutons fiables."
+      "Correctif social : une demande validée ne reste plus bloquée en attente.",
+      "Profil : le pseudo est restauré de façon plus fiable après redémarrage.",
+      "Stabilité : plus de patch performance agressif, priorité aux boutons et aux onglets."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

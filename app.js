@@ -18987,295 +18987,694 @@ try {
 } catch (error) { try { beta153RecordClientIssue?.("beta156", error?.message || error); } catch {} }
 
 /* =========================================================
-   Beta 159 — hotfix stabilité + social
-   Objectif : repartir proprement après beta157/beta158.
-   - pas d'optimisation JS agressive
-   - réparation map d'amis vs tableau
-   - demande sortante supprimée quand l'ami existe déjà
-   - écran secours cliquable et moins intrusif
+   Beta 160 — correctif général profil + social + stabilité onglets
+   Objectif : arrêter les micro-correctifs. Le pseudo, l'identité et
+   les demandes d'amis sont normalisés dans un seul flux non destructif.
    ========================================================= */
-const BETA159_STABLE_SOCIAL_HOTFIX_VERSION = "1.0.0-beta.159";
-(function beta159StableSocialHotfix(){
-  const OUTBOX_KEY = typeof BETA127_OUTBOX_KEY !== "undefined" ? BETA127_OUTBOX_KEY : "histodaily_social_request_outbox_v1";
-  let lastTabTapAt = 0;
-  let lastRenderSignature = "";
+(() => {
+  const BETA160_VERSION = "1.0.0-beta.160";
+  const PROFILE_KEY = `${STORAGE_KEY}_profile_v3`;
+  const PROFILE_LEGACY_KEYS = [
+    `${STORAGE_KEY}_pseudo`,
+    `${STORAGE_KEY}_identity`,
+    `${STORAGE_KEY}_identity_last_good_v2`
+  ];
+  let beta160SavingPseudo = false;
+  let beta160LastRenderSignature = "";
 
-  function safeString(value = "") { return String(value || ""); }
-  function safeNormalizeCode(value = "") {
-    try { return normalizeFriendCode(value || ""); } catch { return safeString(value).trim().toUpperCase(); }
+  function beta160Now() { return Date.now ? Date.now() : new Date().getTime(); }
+  function beta160String(value = "") { return String(value ?? "").trim(); }
+  function beta160SafePseudo(value = "") {
+    const cleaned = sanitizePseudo ? sanitizePseudo(value) : beta160String(value).replace(/\s+/g, " ").slice(0, 18);
+    return cleaned || "Invité";
   }
-  function safeSuffix(value = "") {
-    try { return friendCodeSuffix(value || ""); } catch { return safeNormalizeCode(value).split("-").pop() || ""; }
+  function beta160RealPseudo(value = "") {
+    const pseudo = beta160SafePseudo(value);
+    return pseudo && !/^invité$/i.test(pseudo) ? pseudo : "";
   }
-  function safePseudo(value = "Joueur") {
-    try { return sanitizePseudo(value || "Joueur") || "Joueur"; } catch { return safeString(value || "Joueur").trim() || "Joueur"; }
+  function beta160ReadJson(key) {
+    try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
   }
-  function friendIdentity(item = {}) {
-    const code = safeNormalizeCode(item.friendCode || item.friend_code || item.code || item.id || "");
-    const playerId = safeString(item.playerId || item.player_id || item.friend_player_id || item.friendPlayerId || "");
-    const suffix = safeSuffix(code);
-    return { code, playerId, suffix };
+  function beta160WriteJson(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
   }
-  function friendMapKey(item = {}, fallback = "") {
-    const id = friendIdentity(item);
-    return id.code || (id.playerId ? `player:${id.playerId}` : "") || safeNormalizeCode(fallback) || safeString(fallback || "");
-  }
-  function addFriendToMap(map, item = {}, fallbackKey = "") {
-    if (!item || typeof item !== "object") return;
-    const id = friendIdentity({ ...item, code: item.code || item.friendCode || fallbackKey });
-    const key = friendMapKey({ ...item, code: item.code || item.friendCode || fallbackKey }, fallbackKey);
-    if (!key) return;
-    const parsed = (() => { try { return parseFriendCode(id.code); } catch { return null; } })();
-    const name = safePseudo(item.name || item.pseudo || item.friendPseudo || item.friend_pseudo || parsed?.pseudo || "Ami");
-    const current = map[key] || {};
-    map[key] = {
-      ...current,
-      ...item,
-      id: id.code || item.id || key,
-      code: id.code || item.code || item.friendCode || "",
-      friendCode: id.code || item.friendCode || item.code || "",
-      name,
-      pseudo: item.pseudo || name,
-      playerId: id.playerId || item.playerId || item.player_id || item.friend_player_id || "",
-      level: Number(item.level || current.level || 1),
-      xp: Number(item.xp || current.xp || 0),
-      solved: Number(item.solved || item.solved_count || current.solved || 0),
-      streak: Number(item.streak || current.streak || 0),
-      addedAt: Number(item.addedAt || current.addedAt || Date.now()),
-      server: Boolean(item.server || current.server),
-      syncedAt: item.syncedAt || current.syncedAt || 0
+  function beta160ReadProfileRecord() {
+    const direct = beta160ReadJson(PROFILE_KEY);
+    const candidates = [];
+    if (direct && typeof direct === "object") candidates.push(direct);
+    for (const key of PROFILE_LEGACY_KEYS) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        if (raw.trim().startsWith("{")) {
+          const obj = JSON.parse(raw);
+          if (obj && typeof obj === "object") candidates.push(obj);
+        } else {
+          candidates.push({ pseudo: raw, savedAt: 0, source: key });
+        }
+      } catch {}
+    }
+    const current = state && typeof state === "object" ? state : {};
+    candidates.push({ pseudo: current.pseudo, friendCode: (() => { try { return friendCode?.(); } catch { return ""; } })(), playerId: (() => { try { return playerIdMe?.(); } catch { return ""; } })(), savedAt: current.profileSavedAt || 0, source: "state" });
+    candidates.sort((a, b) => Number(b.savedAt || b.updatedAt || 0) - Number(a.savedAt || a.updatedAt || 0));
+    const real = candidates.find(item => beta160RealPseudo(item?.pseudo || item?.name || item?.displayName));
+    const best = real || candidates[0] || {};
+    return {
+      pseudo: beta160RealPseudo(best.pseudo || best.name || best.displayName) || beta160RealPseudo(current.pseudo) || "Invité",
+      friendCode: normalizeFriendCode?.(best.friendCode || best.code || "") || "",
+      playerId: beta160String(best.playerId || best.player_id || ""),
+      savedAt: Number(best.savedAt || best.updatedAt || 0),
+      source: best.source || "beta160"
     };
   }
-  function beta159FriendMap() {
-    const raw = state?.friends;
-    const map = {};
-    if (Array.isArray(raw)) raw.forEach((friend, index) => addFriendToMap(map, friend, friend?.id || friend?.code || `friend-${index}`));
-    else if (raw && typeof raw === "object") Object.entries(raw).forEach(([key, friend]) => addFriendToMap(map, friend, key));
+  function beta160WriteProfileRecord(pseudo, extra = {}) {
+    const safe = beta160SafePseudo(pseudo);
+    const record = {
+      app: "HistoDaily",
+      version: BETA160_VERSION,
+      pseudo: safe,
+      friendCode: (() => { try { return normalizeFriendCode(friendCode?.() || extra.friendCode || ""); } catch { return extra.friendCode || ""; } })(),
+      playerId: (() => { try { return beta160String(playerIdMe?.() || extra.playerId || ""); } catch { return beta160String(extra.playerId || ""); } })(),
+      savedAt: beta160Now(),
+      source: extra.source || "profile"
+    };
+    beta160WriteJson(PROFILE_KEY, record);
+    try { localStorage.setItem(`${STORAGE_KEY}_pseudo`, safe); } catch {}
+    try { if (typeof beta114RememberPseudo === "function") beta114RememberPseudo(safe); } catch {}
+    try { if (typeof beta124WriteIdentity === "function") beta124WriteIdentity({ pseudo: safe, friendCode: record.friendCode, playerId: record.playerId }); } catch {}
+    return record;
+  }
+  function beta160HydrateProfile({ force = false } = {}) {
+    if (!state || typeof state !== "object") return false;
+    const before = state.pseudo;
+    const record = beta160ReadProfileRecord();
+    const currentReal = beta160RealPseudo(state.pseudo);
+    if (force || !currentReal) state.pseudo = beta160SafePseudo(record.pseudo || state.pseudo);
+    state.profileSavedAt = record.savedAt || state.profileSavedAt || beta160Now();
+    if (beta160RealPseudo(state.pseudo)) beta160WriteProfileRecord(state.pseudo, { source: "hydrate" });
+    return before !== state.pseudo;
+  }
 
-    const myCode = (() => { try { return safeNormalizeCode(friendCode?.() || ""); } catch { return ""; } })();
-    const myId = (() => { try { return safeString(playerIdMe?.() || ""); } catch { return ""; } })();
-    Object.keys(map).forEach(key => {
-      const id = friendIdentity(map[key]);
-      if ((myCode && id.code === myCode) || (myId && id.playerId === myId)) delete map[key];
-    });
-    return map;
+  function beta160Code(value = "") {
+    try { return normalizeFriendCode(value || ""); } catch { return beta160String(value).toUpperCase(); }
   }
-  function beta159RepairFriendsState() {
-    if (!state || typeof state !== "object") return {};
-    const next = beta159FriendMap();
-    state.friends = next;
-    return next;
+  function beta160Suffix(code = "") {
+    try { return friendCodeSuffix(beta160Code(code)); } catch { return beta160Code(code).split("-").pop() || ""; }
   }
-  function requestIdentity(req = {}) {
-    const code = safeNormalizeCode(req.otherFriendCode || req.requesterFriendCode || req.targetFriendCode || req.friendCode || req.code || "");
-    const playerId = safeString(req.otherPlayerId || req.requesterPlayerId || req.targetPlayerId || req.playerId || "");
-    const suffix = safeSuffix(code);
-    return { code, playerId, suffix };
+  function beta160Identity(item = {}) {
+    const code = beta160Code(item.code || item.friendCode || item.friend_code || item.otherFriendCode || item.requesterFriendCode || item.targetFriendCode || "");
+    const playerId = beta160String(item.playerId || item.player_id || item.friend_player_id || item.otherPlayerId || item.requesterPlayerId || item.targetPlayerId || "");
+    return { code, playerId, suffix: beta160Suffix(code) };
   }
-  function playerIdentity(player = {}) {
-    const code = safeNormalizeCode(player.friendCode || player.friend_code || player.code || "");
-    const playerId = safeString(player.playerId || player.player_id || (safeString(player.id).startsWith("me-") ? "" : player.id) || "");
-    const suffix = safeSuffix(code);
-    return { code, playerId, suffix };
+  function beta160SameIdentity(a = {}, b = {}) {
+    const ia = beta160Identity(a);
+    const ib = beta160Identity(b);
+    return Boolean((ia.playerId && ib.playerId && ia.playerId === ib.playerId) || (ia.code && ib.code && ia.code === ib.code) || (ia.suffix && ib.suffix && ia.suffix === ib.suffix));
   }
-  function sameIdentity(a = {}, b = {}) {
-    return Boolean((a.playerId && b.playerId && a.playerId === b.playerId) || (a.code && b.code && a.code === b.code) || (a.suffix && b.suffix && a.suffix === b.suffix));
+  function beta160FriendKey(friend = {}, fallback = "") {
+    const id = beta160Identity({ ...friend, code: friend.code || friend.friendCode || fallback });
+    return id.code || id.playerId || beta160String(friend.id || fallback);
   }
-  function beta159KnownFriend(playerOrRequest = {}) {
-    const friends = beta159RepairFriendsState();
-    const target = playerOrRequest.direction || playerOrRequest.requesterPlayerId || playerOrRequest.targetPlayerId || playerOrRequest.otherPlayerId ? requestIdentity(playerOrRequest) : playerIdentity(playerOrRequest);
-    if (!target.code && !target.playerId && !target.suffix) return null;
-    return Object.values(friends).find(friend => sameIdentity(friendIdentity(friend), target)) || null;
-  }
-  function beta159CleanRequests(requests = {}) {
-    const cleanList = list => (Array.isArray(list) ? list : []).filter(req => !beta159KnownFriend(req));
+  function beta160FriendFromRequest(req = {}) {
+    const code = beta160Code(req.requesterFriendCode || req.otherFriendCode || req.friendCode || req.code || "");
+    const playerId = beta160String(req.requesterPlayerId || req.otherPlayerId || req.playerId || "");
+    const pseudo = beta160SafePseudo(req.requesterPseudo || req.otherPseudo || req.pseudo || req.name || "Ami");
+    const parsed = (() => { try { return parseFriendCode(code); } catch { return null; } })();
     return {
-      incoming: cleanList(requests.incoming),
-      outgoing: cleanList(requests.outgoing),
+      id: code || playerId || beta160String(req.id || `ami-${beta160Now()}`),
+      code,
+      friendCode: code,
+      playerId,
+      name: beta160RealPseudo(pseudo) || parsed?.pseudo || "Ami",
+      addedAt: beta160Now(),
+      server: Boolean(req.server || req.mode === "supabase"),
+      level: Number(req.level || 1),
+      xp: Number(req.xp || 0),
+      solved: Number(req.solved || req.solvedCount || req.solved_count || 0),
+      streak: Number(req.streak || 0)
+    };
+  }
+  function beta160NormalizeFriendMap(raw = state?.friends) {
+    const out = {};
+    const source = Array.isArray(raw) ? raw.map((friend, index) => [friend?.id || friend?.code || String(index), friend]) : Object.entries(raw && typeof raw === "object" ? raw : {});
+    for (const [fallback, friend] of source) {
+      if (!friend || typeof friend !== "object") continue;
+      const key = beta160FriendKey(friend, fallback);
+      if (!key) continue;
+      const parsed = (() => { try { return parseFriendCode(friend.code || friend.friendCode || fallback || ""); } catch { return null; } })();
+      const name = beta160RealPseudo(friend.name || friend.pseudo || friend.friendPseudo || parsed?.pseudo) || "Ami";
+      const previous = out[key] || {};
+      out[key] = {
+        ...previous,
+        ...friend,
+        id: friend.id || key,
+        code: beta160Code(friend.code || friend.friendCode || parsed?.code || fallback || ""),
+        friendCode: beta160Code(friend.friendCode || friend.code || parsed?.code || fallback || ""),
+        playerId: beta160String(friend.playerId || friend.player_id || friend.friend_player_id || previous.playerId || ""),
+        name,
+        pseudo: beta160RealPseudo(friend.pseudo || name) || name,
+        addedAt: Number(friend.addedAt || previous.addedAt || beta160Now()),
+        level: Number(friend.level || previous.level || 1),
+        xp: Number(friend.xp || previous.xp || 0),
+        solved: Number(friend.solved || friend.solvedCount || friend.solved_count || previous.solved || 0),
+        streak: Number(friend.streak || previous.streak || 0),
+        daily: Number(friend.daily || previous.daily || 0),
+        week: Number(friend.week || previous.week || 0),
+        year: Number(friend.year || previous.year || 0),
+        server: Boolean(friend.server || previous.server),
+        syncedAt: friend.syncedAt || previous.syncedAt || 0
+      };
+    }
+    const mine = { code: (() => { try { return friendCode?.(); } catch { return ""; } })(), playerId: (() => { try { return playerIdMe?.(); } catch { return ""; } })() };
+    Object.keys(out).forEach(key => { if (beta160SameIdentity(out[key], mine)) delete out[key]; });
+    return out;
+  }
+  function beta160KnownFriend(item = {}) {
+    const friends = beta160NormalizeFriendMap(state?.friends);
+    return Object.values(friends).find(friend => beta160SameIdentity(friend, item)) || null;
+  }
+  function beta160CleanRequestList(list = []) {
+    const seen = new Set();
+    return (Array.isArray(list) ? list : []).filter(req => {
+      if (!req || typeof req !== "object") return false;
+      if (beta160KnownFriend(req)) return false;
+      const id = beta160Identity(req);
+      const key = `${req.direction || req.status || "pending"}:${id.playerId || id.code || id.suffix || JSON.stringify(req).slice(0,80)}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 30);
+  }
+  function beta160CleanRequests(requests = {}) {
+    return {
+      incoming: beta160CleanRequestList(requests.incoming),
+      outgoing: beta160CleanRequestList(requests.outgoing),
       history: Array.isArray(requests.history) ? requests.history.slice(0, 30) : []
     };
   }
-  function beta159RepairRequestState() {
-    if (!state || typeof state !== "object") return;
-    const current = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : (state.friendRequests || {});
-    state.friendRequests = beta159CleanRequests(current);
-    if (Array.isArray(state.friendRequestOutbox)) state.friendRequestOutbox = state.friendRequestOutbox.filter(req => !beta159KnownFriend(req));
-    try {
-      const raw = localStorage.getItem(OUTBOX_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        const clean = (Array.isArray(parsed) ? parsed : []).filter(req => !beta159KnownFriend(req));
-        localStorage.setItem(OUTBOX_KEY, JSON.stringify(clean));
-      }
-    } catch {}
+  function beta160RepairSocialState({ save = false } = {}) {
+    if (!state || typeof state !== "object") return false;
+    const beforeFriends = JSON.stringify(state.friends || {});
+    state.friends = beta160NormalizeFriendMap(state.friends);
+    const req = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : (state.friendRequests || {});
+    state.friendRequests = beta160CleanRequests(req);
+    if (Array.isArray(state.friendRequestOutbox)) state.friendRequestOutbox = beta160CleanRequestList(state.friendRequestOutbox);
+    const changed = beforeFriends !== JSON.stringify(state.friends || {}) || JSON.stringify(req || {}) !== JSON.stringify(state.friendRequests || {});
+    if (save && changed) { try { queueSaveState?.(80); } catch {} }
+    return changed;
   }
-  function beta159RepairSocialState() {
-    beta159RepairFriendsState();
-    beta159RepairRequestState();
-    try { queueSaveState?.(120); } catch {}
-  }
-
-  const previousSetState = typeof setState === "function" ? setState : null;
-  if (previousSetState) {
-    setState = function beta159SetState(patch, options = {}) {
-      if (!patch || typeof patch !== "object") return;
-      const now = Date.now();
-      if (patch.tab && now - lastTabTapAt < 120) return;
-      if (patch.tab) lastTabTapAt = now;
-      if (options && options.render === false) {
-        const savedRender = render;
-        try {
-          render = function beta159SilentRender() {};
-          const result = previousSetState(patch, options);
-          beta159RepairSocialState();
-          return result;
-        } finally { render = savedRender; }
-      }
-      const result = previousSetState(patch, options);
-      beta159RepairSocialState();
-      return result;
-    };
+  function beta160AddFriendLocal(friend = {}) {
+    if (!friend || typeof friend !== "object") return false;
+    const current = beta160NormalizeFriendMap(state.friends);
+    const key = beta160FriendKey(friend, friend.code || friend.friendCode || friend.id || friend.playerId);
+    if (!key) return false;
+    current[key] = { ...(current[key] || {}), ...friend, id: friend.id || key, code: beta160Code(friend.code || friend.friendCode || key), friendCode: beta160Code(friend.friendCode || friend.code || key), name: beta160RealPseudo(friend.name || friend.pseudo) || "Ami", addedAt: Number(friend.addedAt || beta160Now()) };
+    state.friends = current;
+    beta160RepairSocialState({ save: true });
+    return true;
   }
 
-  if (typeof beta156ReleaseLocalCleanup === "function") {
-    beta156ReleaseLocalCleanup = function beta159ReleaseLocalCleanup() {
+  // Profil : sauvegarde atomique et indépendante du gros state.
+  const beta160PreviousSavePseudoValue = typeof savePseudoValue === "function" ? savePseudoValue : null;
+  if (beta160PreviousSavePseudoValue) {
+    savePseudoValue = function beta160SavePseudoValue(rawValue, options = {}) {
+      if (beta160SavingPseudo) return false;
+      const pseudo = beta160SafePseudo(rawValue);
+      if (pseudo.length < 3 || !beta160RealPseudo(pseudo)) {
+        try { setState({ profileFeedback: "Choisis un pseudo d’au moins 3 caractères." }, { save: true, renderImmediate: true }); }
+        catch { state.profileFeedback = "Choisis un pseudo d’au moins 3 caractères."; saveState?.(); render?.({ immediate: true }); }
+        return false;
+      }
+      beta160SavingPseudo = true;
       try {
-        const validTabs = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
-        const patch = {};
-        if (!validTabs.has(state.tab)) patch.tab = "home";
-        if (state.currentLessonId && typeof allLessons === "function" && !allLessons().some(lesson => lesson.id === state.currentLessonId)) {
-          patch.currentLessonId = null;
-          if ((patch.tab || state.tab) === "lesson") patch.tab = "learn";
-        }
-        beta159RepairSocialState();
-        if (Object.keys(patch).length && previousSetState) previousSetState(patch, { save: true, render: false });
-        state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), beta159CleanupAt: Date.now(), beta159Version: BETA159_STABLE_SOCIAL_HOTFIX_VERSION };
-        try { queueSaveState?.(150); } catch {}
-      } catch (error) { try { beta153RecordClientIssue?.("beta159-cleanup", error?.message || error); } catch {} }
+        if (!state || typeof state !== "object") state = mergeState(defaultState, {});
+        state.pseudo = pseudo;
+        state.profileFeedback = `Pseudo enregistré : ${pseudo}`;
+        state.serverLeaderboards = {};
+        state.serverLeaderboardStatus = {};
+        state.profileSavedAt = beta160Now();
+        beta160WriteProfileRecord(pseudo, { source: options.source || "profile" });
+        saveState?.();
+        try { syncMyProfileToServer?.({ source: options.source || "profile-beta160" }).catch?.(() => {}); } catch {}
+        try { beta124RefreshSocialData?.({ force: true, reason: "pseudo-beta160" }).catch?.(() => {}); } catch {}
+        render?.({ immediate: true });
+        return true;
+      } finally {
+        beta160SavingPseudo = false;
+      }
     };
   }
 
+  currentPseudo = function beta160CurrentPseudo() {
+    const input = document.activeElement?.matches?.("[data-pseudo-input]") ? document.activeElement.value : "";
+    const pseudo = beta160RealPseudo(input) || beta160RealPseudo(state?.pseudo) || beta160RealPseudo(beta160ReadProfileRecord().pseudo);
+    return pseudo || "Invité";
+  };
+
+  const beta160PreviousSaveState = typeof saveState === "function" ? saveState : null;
+  if (beta160PreviousSaveState) {
+    saveState = function beta160SaveState() {
+      if (state?.pseudo) beta160WriteProfileRecord(state.pseudo, { source: "save-state" });
+      beta160RepairSocialState({ save: false });
+      return beta160PreviousSaveState();
+    };
+  }
+
+  if (typeof beta125FriendRequestsState === "function") {
+    const previousRequestsState = beta125FriendRequestsState;
+    beta125FriendRequestsState = function beta160FriendRequestsState() {
+      return beta160CleanRequests(previousRequestsState());
+    };
+  }
+  if (typeof beta125SetFriendRequests === "function") {
+    beta125SetFriendRequests = function beta160SetFriendRequests(requests = {}) {
+      state.friendRequests = beta160CleanRequests(requests);
+    };
+  }
   if (typeof mergeServerFriends === "function") {
     const previousMergeServerFriends = mergeServerFriends;
-    mergeServerFriends = function beta159MergeServerFriends(rows = []) {
+    mergeServerFriends = function beta160MergeServerFriends(rows = []) {
       const changed = previousMergeServerFriends(rows);
-      beta159RepairSocialState();
-      return changed;
+      beta160RepairSocialState({ save: true });
+      return changed || true;
     };
   }
-
-  if (typeof beta125SetFriendRequests === "function") {
-    const previousSetFriendRequests = beta125SetFriendRequests;
-    beta125SetFriendRequests = function beta159SetFriendRequests(requests = {}) {
-      beta159RepairFriendsState();
-      return previousSetFriendRequests(beta159CleanRequests(requests));
-    };
-  }
-  if (typeof beta128Outbox === "function") {
-    const previousOutbox = beta128Outbox;
-    beta128Outbox = function beta159Outbox() {
-      const list = previousOutbox();
-      const clean = (Array.isArray(list) ? list : []).filter(req => !beta159KnownFriend(req));
-      if (clean.length !== list.length) {
-        try { beta128SaveOutbox?.(clean); } catch {}
-      }
-      return clean;
-    };
-  }
-  if (typeof beta128Relation === "function") {
-    const previousRelation = beta128Relation;
-    beta128Relation = function beta159Relation(player = {}) {
-      if (!player || player.me) return { type: "me", label: "Toi" };
-      if (player.friend || beta159KnownFriend(player)) return { type: "friend", label: "Ami" };
-      return previousRelation(player);
+  if (typeof beta125RespondFriendRequest === "function") {
+    const previousRespond = beta125RespondFriendRequest;
+    beta125RespondFriendRequest = async function beta160RespondFriendRequest(args = {}) {
+      const current = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [] };
+      const match = (current.incoming || []).find(req => {
+        const code = beta160Code(args.requesterFriendCode || "");
+        const id = beta160String(args.requesterPlayerId || "");
+        return (id && (req.requesterPlayerId === id || req.otherPlayerId === id)) || (code && beta160SameIdentity(req, { code }));
+      });
+      if ((args.response || "decline") === "accept" && match) beta160AddFriendLocal(beta160FriendFromRequest(match));
+      const result = await previousRespond(args);
+      beta160RepairSocialState({ save: true });
+      saveState?.();
+      return result;
     };
   }
   if (typeof beta125PublicActionMarkup === "function") {
     const previousPublicActionMarkup = beta125PublicActionMarkup;
-    beta125PublicActionMarkup = function beta159PublicActionMarkup(player = {}) {
-      if (!player || player.me) return previousPublicActionMarkup(player);
-      const friend = beta159KnownFriend(player);
-      if (player.friend || friend) {
-        const id = escapeHtml(player.id || player.playerId || player.friendCode || friend?.id || friend?.code || "");
-        const name = escapeHtml(player.name || friend?.name || "Ce joueur");
-        return `<section class="card beta125-profile-actions beta159-friend-ok"><div><span class="card-label">Ami</span><h2>${name} est dans tes amis</h2><p>La demande est validée. Son score apparaîtra dans le classement amis quand il joue.</p></div><button type="button" class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
+    beta125PublicActionMarkup = function beta160PublicActionMarkup(player = {}) {
+      if (player && !player.me && (player.friend || beta160KnownFriend(player))) {
+        const id = escapeHtml(player.id || player.playerId || player.friendCode || player.code || "");
+        return `<section class="card beta125-profile-actions beta160-friend-ok"><div><span class="card-label">Ami</span><h2>${escapeHtml(player.name || "Ce joueur")} est dans tes amis</h2><p>La demande est validée. Plus d’attente de validation pour ce profil.</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
       }
       return previousPublicActionMarkup(player);
     };
   }
-
-  function beta159FallbackMarkup(message = "L’app a rencontré un souci d’affichage.") {
-    return `<main class="app-shell app-error-shell beta159-safe-shell"><section class="card app-error-card beta159-safe-card"><span class="card-label">Mode secours</span><h1>Affichage sécurisé</h1><p>${escapeHtml(String(message || "Erreur d’affichage").slice(0, 180))}</p><p class="muted-note">Les boutons ci-dessous fonctionnent même si un ancien cache a gardé une version bancale.</p><div class="home-actions-row"><button type="button" data-beta159-safe-home>Accueil</button><button type="button" class="ghost" data-beta159-safe-profile>Profil</button></div><button type="button" class="ghost wide" data-beta159-safe-clean>Nettoyer l’état local social</button></section></main>`;
-  }
-  if (typeof beta114ErrorMarkup === "function") beta114ErrorMarkup = beta159FallbackMarkup;
-  if (typeof beta115FallbackMarkup === "function") beta115FallbackMarkup = beta159FallbackMarkup;
-
-  function beta159SafeGo(tab = "home") {
-    try {
-      beta159RepairSocialState();
-      state.tab = tab;
-      state.profileFeedback = tab === "profile" ? "État social nettoyé. Si Manon est déjà amie, la demande n’est plus affichée comme en attente." : "";
-      saveState?.();
-      render?.({ immediate: true });
-    } catch {
-      try { location.reload(); } catch {}
-    }
-  }
-  function beta159HandleGlobalAction(event) {
-    const target = event.target?.closest?.("[data-beta159-safe-home],[data-beta159-safe-profile],[data-beta159-safe-clean],[data-beta114-safe-home],[data-beta114-safe-profile],[data-beta114-soft-reset],[data-beta115-repaint],[data-beta115-go-home],[data-beta115-soft-repair]");
-    if (!target) return;
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-    if (target.matches("[data-beta159-safe-profile],[data-beta114-safe-profile]")) return beta159SafeGo("profile");
-    if (target.matches("[data-beta159-safe-clean],[data-beta114-soft-reset],[data-beta115-soft-repair]")) return beta159SafeGo("profile");
-    return beta159SafeGo("home");
-  }
-  document.addEventListener("click", beta159HandleGlobalAction, true);
-  document.addEventListener("pointerup", beta159HandleGlobalAction, true);
-
-  if (typeof render === "function") {
-    const previousRender = render;
-    render = function beta159Render(options = {}) {
-      beta159RepairSocialState();
-      const signature = `${state?.tab || ""}|${state?.currentDiscipline || ""}|${state?.currentGroup || ""}|${state?.currentWorld || ""}|${state?.currentLessonId || ""}|${state?.currentMysteryId || ""}|${state?.selectedProfileId || ""}`;
-      if (!options?.immediate && signature === lastRenderSignature && document.querySelector(".app-shell:not(.app-error-shell)")) return;
-      lastRenderSignature = signature;
-      try {
-        const result = previousRender(options);
-        window.setTimeout(() => {
-          try {
-            const errorCard = document.querySelector(".app-error-card");
-            if (errorCard && !errorCard.classList.contains("beta159-safe-card")) {
-              app.innerHTML = beta159FallbackMarkup(errorCard.textContent || "Affichage relancé.");
-            }
-          } catch {}
-        }, 0);
-        return result;
-      } catch (error) {
-        try { app.innerHTML = beta159FallbackMarkup(error?.message || error); } catch {}
+  if (typeof beta140PublicActionMarkup === "function") {
+    const previousBeta140PublicActionMarkup = beta140PublicActionMarkup;
+    beta140PublicActionMarkup = function beta160Beta140PublicActionMarkup(player = {}) {
+      if (player && !player.me && (player.friend || beta160KnownFriend(player))) {
+        const id = escapeHtml(player.id || player.playerId || player.friendCode || player.code || "");
+        return `<section class="card beta125-profile-actions beta160-friend-ok"><div><span class="card-label">Ami</span><h2>${escapeHtml(player.name || "Ce joueur")} est dans tes amis</h2><p>Relation validée et demandes obsolètes nettoyées.</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
       }
+      return previousBeta140PublicActionMarkup(player);
     };
   }
 
-  function beta159InstallStyle() {
-    if (document.getElementById("beta159-stable-social-hotfix-style")) return;
+  // Garde-fou rendu : pas de fenêtre de réparation sur simple onglet vide fugitif.
+  if (typeof beta115AfterRenderCheck === "function") {
+    beta115AfterRenderCheck = function beta160AfterRenderCheck() {
+      window.setTimeout(() => {
+        try {
+          if (!app || !app.isConnected) return;
+          const hasShell = Boolean(document.querySelector(".app-shell"));
+          const hasText = app.textContent && app.textContent.trim().length >= 8;
+          if (hasShell || hasText) return;
+          app.innerHTML = `<main class="app-shell app-error-shell beta160-safe-shell"><section class="card app-error-card beta160-safe-card"><span class="card-label">Réparation</span><h1>Écran vide récupéré</h1><p>L’état local a été nettoyé sans supprimer ta progression.</p><div class="home-actions-row"><button type="button" data-beta160-go-home>Accueil</button><button type="button" class="ghost" data-beta160-go-profile>Profil</button></div></section></main>`;
+        } catch {}
+      }, 180);
+    };
+  }
+  function beta160FallbackMarkup(message = "L’app a rencontré un vrai souci d’affichage.") {
+    return `<main class="app-shell app-error-shell beta160-safe-shell"><section class="card app-error-card beta160-safe-card"><span class="card-label">Mode secours</span><h1>Affichage sécurisé</h1><p>${escapeHtml(String(message || "Erreur").slice(0, 180))}</p><p class="muted-note">Les boutons utilisent un gestionnaire global, donc ils restent cliquables même si l’écran normal a planté.</p><div class="home-actions-row"><button type="button" data-beta160-go-home>Accueil</button><button type="button" class="ghost" data-beta160-go-profile>Profil</button></div><button type="button" class="ghost wide" data-beta160-repair-social>Réparer profil et amis</button></section></main>`;
+  }
+  try { if (typeof beta114ErrorMarkup === "function") beta114ErrorMarkup = beta160FallbackMarkup; } catch {}
+  try { if (typeof beta115FallbackMarkup === "function") beta115FallbackMarkup = beta160FallbackMarkup; } catch {}
+
+  function beta160GlobalHandler(event) {
+    const target = event.target?.closest?.("[data-beta160-go-home],[data-beta160-go-profile],[data-beta160-repair-social],[data-save-pseudo],[data-pseudo-prompt]");
+    if (!target) return;
+    if (target.matches("[data-save-pseudo]")) {
+      event.preventDefault?.(); event.stopPropagation?.();
+      const input = document.querySelector("[data-pseudo-input]");
+      savePseudoValue?.(input?.value || state?.pseudo || "", { source: "button-beta160" });
+      return;
+    }
+    if (target.matches("[data-pseudo-prompt]")) {
+      event.preventDefault?.(); event.stopPropagation?.();
+      const value = window.prompt("Ton pseudo HistoDaily", beta160RealPseudo(state?.pseudo) || beta160ReadProfileRecord().pseudo || "");
+      if (value !== null) savePseudoValue?.(value, { source: "prompt-beta160" });
+      return;
+    }
+    event.preventDefault?.(); event.stopPropagation?.();
+    if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+    beta160HydrateProfile({ force: false });
+    beta160RepairSocialState({ save: true });
+    state.tab = target.matches("[data-beta160-go-profile],[data-beta160-repair-social]") ? "profile" : "home";
+    state.profileFeedback = target.matches("[data-beta160-repair-social]") ? "Profil, pseudo et demandes d’amis nettoyés. Progression conservée." : state.profileFeedback || "";
+    saveState?.();
+    render?.({ immediate: true });
+  }
+  document.addEventListener("click", beta160GlobalHandler, true);
+  document.addEventListener("submit", event => {
+    if (!event.target?.matches?.("[data-pseudo-form]")) return;
+    event.preventDefault?.(); event.stopPropagation?.();
+    const input = event.target.querySelector("[data-pseudo-input], input[name='pseudo']");
+    savePseudoValue?.(input?.value || "", { source: "submit-beta160" });
+  }, true);
+
+  const beta160PreviousSetState = typeof setState === "function" ? setState : null;
+  if (beta160PreviousSetState) {
+    setState = function beta160SetState(patch, options = {}) {
+      if (patch && typeof patch === "object" && Object.prototype.hasOwnProperty.call(patch, "pseudo")) {
+        patch = { ...patch, pseudo: beta160SafePseudo(patch.pseudo), profileSavedAt: beta160Now() };
+        beta160WriteProfileRecord(patch.pseudo, { source: "set-state" });
+      }
+      const before = `${state?.tab || ""}|${state?.pseudo || ""}|${JSON.stringify(state?.friendRequests || {})}|${JSON.stringify(state?.friends || {})}`;
+      const result = beta160PreviousSetState(patch, options);
+      beta160HydrateProfile({ force: false });
+      beta160RepairSocialState({ save: true });
+      const signature = `${state?.tab || ""}|${state?.pseudo || ""}|${JSON.stringify(state?.friendRequests || {})}|${JSON.stringify(state?.friends || {})}`;
+      if (signature !== before && options.save !== false) { try { queueSaveState?.(100); } catch {} }
+      return result;
+    };
+  }
+
+  function beta160InstallStyle() {
+    if (document.getElementById("beta160-profile-social-corefix-style")) return;
     const style = document.createElement("style");
-    style.id = "beta159-stable-social-hotfix-style";
+    style.id = "beta160-profile-social-corefix-style";
     style.textContent = `
-      .beta159-safe-shell{min-height:100svh;display:grid;align-content:center}.beta159-safe-card button{pointer-events:auto!important;touch-action:manipulation!important;min-height:46px}.beta159-friend-ok{border-color:rgba(72,213,151,.32)!important;background:linear-gradient(180deg,rgba(72,213,151,.10),rgba(255,255,255,.035))!important}.beta159-friend-ok .card-label{background:rgba(72,213,151,.16);color:#caffdf}
-      .performance-light .motion-enter,.performance-smart .motion-enter{animation:none!important}.motion-enter{animation:none!important}
+      .beta160-safe-card button{pointer-events:auto!important;touch-action:manipulation!important;min-height:46px!important}
+      .beta160-friend-ok{border-color:rgba(72,213,151,.34)!important;background:linear-gradient(180deg,rgba(72,213,151,.10),rgba(255,255,255,.035))!important}
+      .beta160-friend-ok .card-label{background:rgba(72,213,151,.16);color:#caffdf}
+      [data-pseudo-form] input{min-height:48px}[data-pseudo-form] button{min-height:48px;touch-action:manipulation}
+      .app-error-card:not(.beta160-safe-card){display:none!important}
     `;
     document.head.appendChild(style);
   }
 
   try {
-    beta159InstallStyle();
-    beta159RepairSocialState();
-    if (typeof beta156ReleaseLocalCleanup === "function") beta156ReleaseLocalCleanup();
-    state.beta159StableSocialHotfixVersion = BETA159_STABLE_SOCIAL_HOTFIX_VERSION;
-    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA159_STABLE_SOCIAL_HOTFIX_VERSION, stableSocialHotfix: true };
-    try { queueSaveState?.(150); } catch {}
+    beta160HydrateProfile({ force: false });
+    beta160RepairSocialState({ save: true });
+    beta160InstallStyle();
+    state.beta160ProfileSocialCorefixVersion = BETA160_VERSION;
+    state.profileFeedback = state.profileFeedback || "Correctif profil actif : pseudo et amis mieux conservés.";
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA160_VERSION, profileSocialCorefix: true };
+    saveState?.();
     if (document.readyState !== "loading") render?.({ immediate: true });
-  } catch (error) { try { console.warn("beta159 hotfix", error); } catch {} }
+  } catch (error) {
+    try { console.warn("beta160 profile-social corefix", error); } catch {}
+  }
+})();
+
+/* =========================================================
+   Beta 161 — correctif général profil + relation ami
+   - ne laisse plus une demande sortante masquer une relation déjà validée
+   - donne la priorité au cache de profil public enrichi (relationship.friend)
+   - nettoie les demandes/outbox dès qu'un ami est reconnu
+   - ajoute une réparation locale explicite si le serveur est resté bloqué
+   ========================================================= */
+(function beta161ProfileRelationFix() {
+  const BETA161_VERSION = "1.0.0-beta.161";
+  const OUTBOX_KEY = "histodaily_social_request_outbox_v1";
+
+  function s(value = "") { return String(value ?? "").trim(); }
+  function code(value = "") { try { return normalizeFriendCode(value || ""); } catch { return s(value).toUpperCase(); } }
+  function suffix(value = "") { try { return friendCodeSuffix(code(value)); } catch { return code(value).split("-").filter(Boolean).pop() || ""; } }
+  function pseudo(value = "") { try { return sanitizePseudo(value || ""); } catch { return s(value).replace(/\s+/g, " ").slice(0, 18); } }
+  function validPseudo(value = "") {
+    const p = pseudo(value);
+    return p && !/^(invité|invite|joueur|local-player)$/i.test(p) ? p : "";
+  }
+  function identity(item = {}) {
+    const c = code(item.code || item.friendCode || item.friend_code || item.otherFriendCode || item.requesterFriendCode || item.targetFriendCode || "");
+    const id = s(item.playerId || item.player_id || item.friend_player_id || item.otherPlayerId || item.requesterPlayerId || item.targetPlayerId || item.id || "");
+    return { code: c, suffix: suffix(c), playerId: id };
+  }
+  function sameIdentity(a = {}, b = {}) {
+    const ia = identity(a);
+    const ib = identity(b);
+    return Boolean(
+      (ia.playerId && ib.playerId && ia.playerId === ib.playerId) ||
+      (ia.code && ib.code && ia.code === ib.code) ||
+      (ia.suffix && ib.suffix && ia.suffix === ib.suffix)
+    );
+  }
+  function friendKey(item = {}) {
+    const id = identity(item);
+    return id.code || id.playerId || s(item.id || "");
+  }
+  function friendFromPlayer(player = {}, extra = {}) {
+    const id = identity(player);
+    const name = validPseudo(player.name || player.pseudo || player.profile_pseudo || player.friend_pseudo || extra.name) || "Ami";
+    return {
+      id: id.code || id.playerId || name,
+      code: id.code,
+      friendCode: id.code,
+      playerId: id.playerId,
+      name,
+      pseudo: name,
+      avatar: String(name || "A").charAt(0).toUpperCase(),
+      addedAt: Date.now(),
+      server: Boolean(player.server || player.relationship?.friend || extra.server),
+      syncedAt: Date.now(),
+      level: Number(player.level || 1),
+      xp: Number(player.xp || 0),
+      solved: Number(player.solved || player.solved_count || 0),
+      streak: Number(player.streak || 0),
+      daily: Number(player.daily || 0),
+      week: Number(player.week || 0),
+      year: Number(player.year || 0),
+      badges: Array.isArray(player.badges) ? player.badges : ["Ami"]
+    };
+  }
+  function normalizeFriends(raw = state?.friends) {
+    const out = {};
+    const entries = Array.isArray(raw) ? raw.map((item, index) => [item?.id || item?.code || String(index), item]) : Object.entries(raw && typeof raw === "object" ? raw : {});
+    for (const [fallback, item] of entries) {
+      if (!item || typeof item !== "object") continue;
+      const merged = friendFromPlayer({ ...item, id: item.id || fallback });
+      const key = friendKey(merged) || fallback;
+      if (!key) continue;
+      out[key] = { ...(out[key] || {}), ...item, ...merged, addedAt: Number(item.addedAt || merged.addedAt) };
+    }
+    const mine = { code: (() => { try { return friendCode(); } catch { return ""; } })(), playerId: (() => { try { return playerIdMe(); } catch { return ""; } })() };
+    Object.keys(out).forEach(key => { if (sameIdentity(out[key], mine)) delete out[key]; });
+    return out;
+  }
+  function knownFriend(item = {}) {
+    const map = normalizeFriends(state?.friends);
+    return Object.values(map).find(friend => sameIdentity(friend, item)) || null;
+  }
+  function readOutbox() {
+    try { const parsed = JSON.parse(localStorage.getItem(OUTBOX_KEY) || "[]"); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
+  }
+  function writeOutbox(list = []) {
+    const clean = [];
+    const seen = new Set();
+    for (const item of Array.isArray(list) ? list : []) {
+      if (!item || typeof item !== "object") continue;
+      if (knownFriend(item)) continue;
+      const key = friendKey(item);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      clean.push(item);
+    }
+    try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(clean.slice(0, 40))); } catch {}
+    state.friendRequestOutbox = clean.slice(0, 40);
+  }
+  function cleanRequestList(list = []) {
+    const clean = [];
+    const seen = new Set();
+    for (const req of Array.isArray(list) ? list : []) {
+      if (!req || typeof req !== "object") continue;
+      if (knownFriend(req)) continue;
+      const id = identity(req);
+      const key = `${req.direction || "pending"}:${id.playerId || id.code || id.suffix || JSON.stringify(req).slice(0, 80)}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      clean.push(req);
+    }
+    return clean.slice(0, 30);
+  }
+  function cleanRequests() {
+    const current = (() => { try { return beta125FriendRequestsState(); } catch { return state.friendRequests || {}; } })();
+    const next = {
+      incoming: cleanRequestList(current.incoming),
+      outgoing: cleanRequestList(current.outgoing),
+      history: Array.isArray(current.history) ? current.history.slice(0, 30) : []
+    };
+    state.friendRequests = next;
+    writeOutbox([...(Array.isArray(state.friendRequestOutbox) ? state.friendRequestOutbox : []), ...readOutbox()]);
+    return next;
+  }
+  function addLocalFriend(player = {}, reason = "relation") {
+    if (!player || player.me) return false;
+    const friend = friendFromPlayer(player, { server: reason !== "manual" });
+    const key = friendKey(friend);
+    if (!key) return false;
+    const map = normalizeFriends(state?.friends);
+    map[key] = { ...(map[key] || {}), ...friend, friend: true };
+    state.friends = map;
+    cleanRequests();
+    state.serverLeaderboards = { ...(state.serverLeaderboards || {}), friends: [] };
+    state.friendRequestFeedback = reason === "manual"
+      ? `${friend.name} marqué comme ami sur cet appareil.`
+      : `${friend.name} est reconnu comme ami.`;
+    try { queueSaveState(80); } catch {}
+    return true;
+  }
+  function relationSaysFriend(player = {}) {
+    return Boolean(player?.friend || player?.relationship?.friend || knownFriend(player));
+  }
+  function friendCard(player = {}, detail = "Relation validée. La demande d’attente a été nettoyée.") {
+    const name = validPseudo(player.name || player.pseudo) || "Ce joueur";
+    const id = escapeHtml(player.id || player.playerId || player.friendCode || player.code || "");
+    return `<section class="card beta125-profile-actions beta161-friend-ok"><div><span class="card-label">Ami</span><h2>${escapeHtml(name)} est dans tes amis</h2><p>${escapeHtml(detail)}</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
+  }
+  function pendingCard(player = {}, outgoing = null) {
+    const name = validPseudo(player.name || player.pseudo || outgoing?.targetPseudo || outgoing?.otherPseudo) || "ce joueur";
+    const targetPlayerId = escapeHtml(player.playerId || outgoing?.targetPlayerId || outgoing?.otherPlayerId || "");
+    const targetFriendCode = escapeHtml(player.friendCode || player.code || outgoing?.targetFriendCode || outgoing?.otherFriendCode || "");
+    const targetId = escapeHtml(player.id || player.playerId || player.friendCode || player.code || state.selectedProfileId || "");
+    return `<section class="card beta125-profile-actions pending beta161-pending-card"><div><span class="card-label">Demande envoyée</span><h2>En attente de validation</h2><p>${escapeHtml(name)} doit accepter la demande dans son application. Si elle l’a déjà fait, l’app va essayer de réparer la relation.</p></div><div class="home-actions-row"><button type="button" data-beta161-recheck-social="${targetId}" data-request-player="${targetPlayerId}" data-request-code="${targetFriendCode}">Actualiser vraiment</button><button type="button" class="ghost" data-beta161-accept-local="${targetId}" data-request-player="${targetPlayerId}" data-request-code="${targetFriendCode}">Manon a accepté : corriger ici</button></div><button type="button" class="ghost danger-action wide" data-cancel-friend-request="${targetId}" data-request-player="${targetPlayerId}" data-request-code="${targetFriendCode}" data-request-pseudo="${escapeHtml(name)}">Annuler la demande</button></section>`;
+  }
+  function enrichPlayer(player = {}) {
+    if (!player || typeof player !== "object") return player;
+    let cached = null;
+    try { cached = beta126FindCachedProfile?.(player) || beta126FindCachedProfile?.(player.id || player.playerId || player.friendCode || player.code || ""); } catch {}
+    const merged = cached ? { ...player, ...cached, relationship: cached.relationship || player.relationship } : player;
+    if (relationSaysFriend(merged)) {
+      addLocalFriend(merged, merged.relationship?.friend ? "server" : "local");
+      return { ...merged, friend: true };
+    }
+    return merged;
+  }
+
+  try {
+    const previousProfileById = profileById;
+    profileById = function beta161ProfileById(id) {
+      const base = previousProfileById ? previousProfileById(id) : null;
+      let cached = null;
+      try { cached = beta126FindCachedProfile?.(id) || beta126FindCachedProfile?.(base || {}); } catch {}
+      const merged = cached ? { ...(base || {}), ...cached, relationship: cached.relationship || base?.relationship || null } : (base || {});
+      return enrichPlayer(merged);
+    };
+  } catch {}
+
+  try {
+    const previousFetchPublicProfile = beta126FetchPublicProfile;
+    beta126FetchPublicProfile = async function beta161FetchPublicProfile(player = {}, options = {}) {
+      const result = await previousFetchPublicProfile(player, options);
+      if (result?.relationship?.friend) {
+        addLocalFriend(result, "server");
+        if (state.tab === "publicProfile") setTimeout(() => { try { render({ immediate: true }); } catch {} }, 0);
+      } else {
+        cleanRequests();
+      }
+      return result;
+    };
+  } catch {}
+
+  try {
+    const previousMergeServerFriends = mergeServerFriends;
+    mergeServerFriends = function beta161MergeServerFriends(rows = []) {
+      const changed = previousMergeServerFriends ? previousMergeServerFriends(rows) : false;
+      state.friends = normalizeFriends(state.friends);
+      cleanRequests();
+      return changed || Boolean((rows || []).length);
+    };
+  } catch {}
+
+  try {
+    if (typeof beta125SetFriendRequests === "function") {
+      const previousSetFriendRequests = beta125SetFriendRequests;
+      beta125SetFriendRequests = function beta161SetFriendRequests(requests = {}) {
+        previousSetFriendRequests(requests);
+        cleanRequests();
+      };
+    }
+  } catch {}
+
+  try {
+    const previousPublicActionMarkup = beta125PublicActionMarkup;
+    beta125PublicActionMarkup = function beta161PublicActionMarkup(player = {}) {
+      const enriched = enrichPlayer(player);
+      if (relationSaysFriend(enriched)) return friendCard(enriched);
+      const outgoing = (() => { try { return beta125OutgoingRequestForPlayer(enriched); } catch { return null; } })();
+      if (outgoing) return pendingCard(enriched, outgoing);
+      return previousPublicActionMarkup ? previousPublicActionMarkup(enriched) : "";
+    };
+  } catch {}
+
+  try {
+    const previousFetchServerFriends = fetchServerFriends;
+    fetchServerFriends = async function beta161FetchServerFriends(options = {}) {
+      const result = await previousFetchServerFriends(options);
+      state.friends = normalizeFriends(state.friends);
+      cleanRequests();
+      return result;
+    };
+  } catch {}
+
+  async function recheckSocial(targetId = "") {
+    const player = enrichPlayer(profileById(targetId || state.selectedProfileId));
+    state.friendRequestFeedback = "Actualisation complète de la relation…";
+    try { render({ immediate: true }); } catch {}
+    await Promise.allSettled([
+      (async () => { try { await syncMyProfileToServer({ source: "beta161-recheck" }); } catch {} })(),
+      (async () => { try { await fetchServerFriends({ force: true }); } catch {} })(),
+      (async () => { try { await beta125FetchFriendRequests({ force: true }); } catch {} })(),
+      (async () => { try { await beta126FetchPublicProfile(player, { force: true }); } catch {} })(),
+      (async () => { try { await fetchServerLeaderboard("friends", { force: true }); } catch {} })()
+    ]);
+    const refreshed = enrichPlayer(profileById(targetId || state.selectedProfileId));
+    if (relationSaysFriend(refreshed)) addLocalFriend(refreshed, "server");
+    else cleanRequests();
+    try { saveState(); } catch {}
+    try { render({ immediate: true }); } catch {}
+  }
+
+  document.addEventListener("click", event => {
+    const recheck = event.target?.closest?.("[data-beta161-recheck-social]");
+    const accept = event.target?.closest?.("[data-beta161-accept-local]");
+    const refresh = event.target?.closest?.("[data-refresh-social],[data-refresh-requests]");
+    if (!recheck && !accept && !refresh) return;
+    if (recheck || accept) {
+      event.preventDefault?.();
+      event.stopPropagation?.();
+      if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+    }
+    const targetId = recheck?.dataset?.beta161RecheckSocial || accept?.dataset?.beta161AcceptLocal || state.selectedProfileId || "";
+    if (accept) {
+      const player = enrichPlayer(profileById(targetId));
+      addLocalFriend(player, "manual");
+      try { saveState(); } catch {}
+      try { render({ immediate: true }); } catch {}
+      recheckSocial(targetId).catch(() => {});
+      return;
+    }
+    recheckSocial(targetId).catch(() => {});
+  }, true);
+
+  try {
+    state.friends = normalizeFriends(state.friends);
+    cleanRequests();
+    state.beta161ProfileRelationFixVersion = BETA161_VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA161_VERSION, profileRelationFix: true };
+    const style = document.createElement("style");
+    style.id = "beta161-profile-relation-fix-style";
+    style.textContent = `.beta161-friend-ok{border-color:rgba(72,213,151,.42)!important;background:linear-gradient(180deg,rgba(72,213,151,.12),rgba(255,255,255,.035))!important}.beta161-pending-card{border-color:rgba(245,199,71,.42)!important}.beta161-pending-card .home-actions-row{gap:10px;flex-wrap:wrap}.beta161-pending-card button{min-height:48px;touch-action:manipulation}`;
+    if (!document.getElementById(style.id)) document.head.appendChild(style);
+    try { saveState(); } catch {}
+    if (document.readyState !== "loading") setTimeout(() => { try { render({ immediate: true }); } catch {} }, 0);
+  } catch (error) {
+    try { console.warn("beta161 profile relation fix", error); } catch {}
+  }
 })();
