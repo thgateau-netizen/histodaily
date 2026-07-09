@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0-beta.137",
+  "focus": "mobile discipline switcher scroll guard",
+  "changes": [
+    "Home discipline switcher now separates horizontal swipe/scroll from tap activation.",
+    "Ghost clicks after touchend/pointerup are suppressed for mode pills.",
+    "PWA cache/version bumped to beta137.",
+    "No Supabase migration required."
+  ],
+  "tests": []
+}

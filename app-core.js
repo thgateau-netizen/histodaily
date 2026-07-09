@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.136",
-  assetsVersion: "1.0.0-beta.136",
+  version: "1.0.0-beta.137",
+  assetsVersion: "1.0.0-beta.137",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -18,9 +18,9 @@ window.HISTODAILY_CORE = {
     versionLabel: "mise à jour",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Le bouton Indice du mystère ne change plus d’écran par erreur.",
-      "Les profils du classement et les demandes d’amis restent disponibles.",
-      "L’accueil et les textes restent allégés pour une lecture plus claire."
+      "Le sélecteur de disciplines peut maintenant se faire défiler sans changer de mode par erreur.",
+      "Les taps sur Histoire, Cinéma, Économie et les autres modes restent réactifs quand on appuie vraiment.",
+      "Les correctifs récents du classement, des profils et des indices sont conservés."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

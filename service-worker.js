@@ -1,13 +1,13 @@
-const CACHE_NAME = "histodaily-beta136-hint-tap-fix-v1";
-const APP_VERSION = "1.0.0-beta.136";
+const CACHE_NAME = "histodaily-beta137-mode-scroll-fix-v1";
+const APP_VERSION = "1.0.0-beta.137";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.136",
-  "/app-core.js?v=1.0.0-beta.136",
-  "/app-onboarding.js?v=1.0.0-beta.136",
-  "/app.js?v=1.0.0-beta.136",
-  "/lessons-lite.js?v=1.0.0-beta.136",
+  "/styles.css?v=1.0.0-beta.137",
+  "/app-core.js?v=1.0.0-beta.137",
+  "/app-onboarding.js?v=1.0.0-beta.137",
+  "/app.js?v=1.0.0-beta.137",
+  "/lessons-lite.js?v=1.0.0-beta.137",
   "/manifest.webmanifest"
 ];
 
