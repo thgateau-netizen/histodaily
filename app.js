@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.164";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.165";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.164";
+const BETA124_VERSION = "1.0.0-beta.156";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.164";
+const BETA125_VERSION = "1.0.0-beta.156";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.164";
+const BETA126_VERSION = "1.0.0-beta.156";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.164";
+const BETA127_VERSION = "1.0.0-beta.156";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.164";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.156";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.164";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.156";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.164";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.156";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.164";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.156";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.164";
+const BETA132_SAFE_VERSION = "1.0.0-beta.156";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.164";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.156";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.164";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.156";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16429,7 +16429,7 @@ try {
    Beta 135 — nettoyage de copie utilisateur
    Patch note visible, vocabulaire moins interne, accueil plus clair.
    ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.164";
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.156";
 
 releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
@@ -16467,7 +16467,7 @@ try {
    puis le même tap peut être repris par la navigation après le rendu.
    On consomme donc l'événement Indice avant tout changement d'écran.
    ========================================================= */
-const BETA136_HINT_TAP_VERSION = "1.0.0-beta.164";
+const BETA136_HINT_TAP_VERSION = "1.0.0-beta.156";
 let beta136HintTapAt = 0;
 let beta136LastHintMysteryId = "";
 
@@ -16546,7 +16546,7 @@ try {
    Histoire / Cinéma / Économie / etc. déclenche parfois le mode touché.
    On distingue maintenant un vrai tap d'un swipe/scroll horizontal.
    ========================================================= */
-const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.164";
+const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.156";
 const beta139ModeSwipe = {
   active: false,
   tracking: false,
@@ -16681,7 +16681,7 @@ try {
    des chapitres sans cours jouables. On filtre maintenant les actions
    principales sur les contenus réellement disponibles.
    ========================================================= */
-const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.164";
+const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.156";
 
 function beta139RealWorldsForDiscipline(disciplineId = activeDisciplineId()) {
   const id = disciplineById(disciplineId || "history").id;
@@ -16924,7 +16924,7 @@ try {
    - requestId serveur conservé quand disponible
    - nettoyage local immédiat + récupération après ancien flux direct
    ========================================================= */
-const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.164";
+const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.156";
 let beta140LastCancelTapAt = 0;
 
 function beta140ParseTargetKey(key = "") {
@@ -17085,7 +17085,7 @@ try {
    - le bouton Actualiser remplace la liste locale par l'état Supabase
    - l'annulation nettoie demandes + ancien hd_friends puis force le rechargement
    ========================================================= */
-const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.164";
+const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.156";
 let beta141RefreshInFlight = false;
 let beta141LastRefreshTapAt = 0;
 
@@ -17262,7 +17262,7 @@ try {
    - diagnostic discret pour comprendre les états online
    - refresh social = vérité serveur + files locales
    ========================================================= */
-const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.164";
+const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.156";
 let beta142RepairInFlight = false;
 let beta142LastRepairTapAt = 0;
 
@@ -17502,7 +17502,7 @@ try {
 
 
 /* Beta 143 — online stability polish */
-const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.164";
+const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.156";
 function beta143IdentityWarningMarkup() {
   const identity = state.onlineDiagnostic?.identity || {};
   const matches = Number(identity.possibleCodeMatches || 0);
@@ -17535,7 +17535,7 @@ try {
 
 
 /* Beta 144 — online consistency preflight */
-const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.164";
+const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.156";
 function beta145OnlinePreflightSnapshot() {
   const req = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [] };
   const scoreOutbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : [];
@@ -17566,7 +17566,7 @@ try {
    - diagnostic de réparation plus clair
    - aucune nouvelle interaction obligatoire
    ========================================================= */
-const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.164";
+const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.156";
 function beta145FriendStableKey(friend = {}, fallback = "") {
   const code = normalizeFriendCode(friend.code || friend.friendCode || friend.friend_code || fallback || "");
   const suffix = typeof friendCodeSuffix === "function" ? friendCodeSuffix(code) : code;
@@ -17664,7 +17664,7 @@ try {
    - supprime les demandes locales vers soi-même
    - rend le diagnostic plus exploitable sans nouvel écran
    ========================================================= */
-const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.164";
+const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.156";
 function beta146IsSelfTarget(target = {}) {
   const targetId = String(target.targetPlayerId || target.playerId || target.player_id || target.otherPlayerId || target.id || "");
   const targetCode = normalizeFriendCode(target.targetFriendCode || target.friendCode || target.friend_code || target.otherFriendCode || target.code || "");
@@ -17790,7 +17790,7 @@ try {
    - évite les réparations en boucle et conserve un diagnostic discret
    - ne crée pas de nouvelle fonctionnalité visible
    ========================================================= */
-const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.164";
+const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.156";
 let beta147SilentRepairInFlight = false;
 function beta147SilentRepairKey() {
   const day = typeof localDayKey === "function" ? localDayKey() : String(new Date().toISOString().slice(0, 10));
@@ -17887,7 +17887,7 @@ try {
    - diagnostic profil moins "bêta"
    - bouton de pré-vérification online sans modification des données
    ========================================================= */
-const BETA148_PREFLIGHT_CLEAN_VERSION = "1.0.0-beta.164";
+const BETA148_PREFLIGHT_CLEAN_VERSION = "1.0.0-beta.156";
 function beta148PlainObject(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
@@ -18051,7 +18051,7 @@ try {
    - diagnostic discret dans le profil
    - pré-vérification serveur étendue avec /system/selftest
    ========================================================= */
-const BETA149_REGRESSION_GUARD_VERSION = "1.0.0-beta.164";
+const BETA149_REGRESSION_GUARD_VERSION = "1.0.0-beta.156";
 function beta149CountByDiscipline() {
   const rows = [];
   try {
@@ -18198,7 +18198,7 @@ try {
    Beta 150 — design boost performant
    CSS-only polish: cartes, navigation, modes, mystère, classement.
    ========================================================= */
-const BETA150_DESIGN_VERSION = "1.0.0-beta.164";
+const BETA150_DESIGN_VERSION = "1.0.0-beta.156";
 try {
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA150_DESIGN_VERSION, designBoost: true, lightweightVisuals: true };
 } catch {}
@@ -18207,7 +18207,7 @@ try {
 /* =========================================================
    Beta 151 — polish visuel et garde-fous performance
    ========================================================= */
-const BETA151_POLISH_PERF_VERSION = "1.0.0-beta.164";
+const BETA151_POLISH_PERF_VERSION = "1.0.0-beta.156";
 try {
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA151_POLISH_PERF_VERSION, designPolish: true, mobilePerfGuard: true };
 } catch {}
@@ -18217,7 +18217,7 @@ try {
    Objectif : rendre les écrans incomplets plus assumés côté utilisateur,
    sans exposer le vocabulaire interne de build/contenu.
    ========================================================= */
-const BETA152_PRODUCT_POLISH_VERSION = "1.0.0-beta.164";
+const BETA152_PRODUCT_POLISH_VERSION = "1.0.0-beta.156";
 
 function beta152PlayableCourseCount(disciplineId = activeDisciplineId()) {
   try {
@@ -18352,7 +18352,7 @@ try {
    - actions globales simples pour boutons rendus dynamiquement
    - diagnostic discret des erreurs client/cache
    ========================================================= */
-const BETA153_RELEASE_CANDIDATE_VERSION = "1.0.0-beta.164";
+const BETA153_RELEASE_CANDIDATE_VERSION = "1.0.0-beta.156";
 
 function beta153SafeShort(value, max = 90) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
@@ -18492,7 +18492,7 @@ try {
    - bouton utilisateur pour recharger proprement sans perdre la progression
    - nettoyage local plus strict mais non destructif
    ========================================================= */
-const BETA154_CACHE_RECOVERY_VERSION = "1.0.0-beta.164";
+const BETA154_CACHE_RECOVERY_VERSION = "1.0.0-beta.156";
 
 function beta154NowLabel(ts = Date.now()) {
   try { return new Date(ts).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); } catch { return "—"; }
@@ -18684,7 +18684,7 @@ try {
    - récupération douce si un ancien cache perd le code ami
    - diagnostic stockage/cache plus lisible avant test élargi
    ========================================================= */
-const BETA155_FINAL_GUARD_VERSION = "1.0.0-beta.164";
+const BETA155_FINAL_GUARD_VERSION = "1.0.0-beta.156";
 const BETA155_IDENTITY_SNAPSHOT_KEY = `${STORAGE_KEY}_identity_last_good_v2`;
 
 function beta155SafeJsonRead(key) {
@@ -18835,7 +18835,7 @@ try {
    - nettoyage local léger avant test privé
    - détection plus claire des vieux caches PWA
    ========================================================= */
-const BETA156_RELEASE_READINESS_VERSION = "1.0.0-beta.164";
+const BETA156_RELEASE_READINESS_VERSION = "1.0.0-beta.165";
 
 function beta156UniqueBy(items, keyFn) {
   const out = [];
@@ -18857,7 +18857,7 @@ function beta156ReleaseLocalCleanup() {
     if (!validTabs.has(state.tab)) patch.tab = "home";
     if (!validDisciplines.has(state.currentDiscipline)) patch.currentDiscipline = "history";
     const lessons = allLessons?.() || [];
-    if (state.currentLessonId && !lessons.some(lesson => lesson.id === state.currentLessonId)) {
+    if (state.currentLessonId && !lessons.some(lesson => String(lesson.id) === String(state.currentLessonId))) {
       patch.currentLessonId = null;
       if ((patch.tab || state.tab) === "lesson") patch.tab = "learn";
     }
@@ -18866,21 +18866,13 @@ function beta156ReleaseLocalCleanup() {
 
     const myCode = normalizeFriendCode(friendCode?.() || "");
     const myId = String(playerIdMe?.() || "");
-    const rawFriendEntries = Array.isArray(state.friends)
-      ? (state.friends || []).map((friend, index) => [friend?.id || friend?.code || String(index), friend])
-      : Object.entries(state.friends && typeof state.friends === "object" ? state.friends : {});
-    const friendMap = {};
-    rawFriendEntries.forEach(([fallbackKey, friend]) => {
-      if (!friend || typeof friend !== "object") return;
-      const code = normalizeFriendCode(friend.friendCode || friend.code || friend.id || fallbackKey || "");
-      const pid = String(friend.playerId || friend.friendPlayerId || friend.friend_player_id || "");
-      if ((code && code === myCode) || (pid && pid === myId)) return;
-      const key = code || pid || String(fallbackKey || "");
-      if (!key || friendMap[key]) return;
-      friendMap[key] = { ...friend, id: friend.id || key, code: friend.code || code, friendCode: friend.friendCode || friend.code || code };
-    });
-    const friends = Object.values(friendMap);
-    if (JSON.stringify(friendMap) !== JSON.stringify(state.friends || {})) patch.friends = friendMap;
+    const friends = beta156UniqueBy(state.friends || [], friend => normalizeFriendCode(friend.friendCode || friend.code || friend.id || "") || String(friend.playerId || friend.friendPlayerId || ""))
+      .filter(friend => {
+        const code = normalizeFriendCode(friend.friendCode || friend.code || friend.id || "");
+        const pid = String(friend.playerId || friend.friendPlayerId || "");
+        return code !== myCode && pid !== myId;
+      });
+    if (Array.isArray(state.friends) && JSON.stringify(friends) !== JSON.stringify(state.friends || [])) patch.friends = friends;
 
     const outgoing = beta156UniqueBy(state.friendRequestOutbox || [], req => normalizeFriendCode(req.targetFriendCode || req.friendCode || req.code || "") || String(req.targetPlayerId || ""))
       .filter(req => normalizeFriendCode(req.targetFriendCode || req.friendCode || req.code || "") !== myCode && String(req.targetPlayerId || "") !== myId);
@@ -18996,634 +18988,127 @@ try {
 
 
 /* =========================================================
-   Beta 163 — vrai correctif général stabilité
-   - rollback logique sur base 156 + patch unique non agressif
-   - saisie code ami protégée contre les rerenders
-   - amis conservés en map, demandes obsolètes nettoyées
-   - classement basé sur XP total (cours + mystères), pas seulement score mystère
-   - retours et déblocage mystère robustes sans interception des champs texte
+   BETA165 — stabilisation fonctionnelle générale
+   Base beta156 stable : pas de perf JS agressive, seulement des
+   handlers globaux sobres et des rendus allégés pour le quiz.
    ========================================================= */
-(function beta164StabilityGeneralFix(){
-  const BETA164_VERSION = "1.0.0-beta.164";
-  const PROFILE_KEY = `${STORAGE_KEY}_profile_stable_v1`;
-  const FRIEND_DRAFT_KEY = `${STORAGE_KEY}_friend_code_draft`;
-  let syncingXpProfile = false;
-
-  function str(value){ return String(value == null ? "" : value).trim(); }
-  function now(){ return Date.now ? Date.now() : new Date().getTime(); }
-  function esc(value){ try { return escapeHtml(String(value == null ? "" : value)); } catch { return String(value == null ? "" : value).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); } }
-  function code(value){ try { return normalizeFriendCode(value || ""); } catch { return str(value).toUpperCase(); } }
-  function suffix(value){ try { return friendCodeSuffix(code(value)); } catch { return code(value).split("-").pop() || ""; } }
-  function pseudo(value){ try { return sanitizePseudo(value || ""); } catch { return str(value).replace(/\s+/g," ").slice(0,18); } }
-  function goodPseudo(value){ const p = pseudo(value); return p && !/^invité$/i.test(p) && !/^joueur$/i.test(p) ? p : ""; }
-  function myCode(){ try { return code(friendCode()); } catch { return ""; } }
-  function myId(){ try { return str(playerIdMe()); } catch { return ""; } }
-  function readJson(key, fallback = null){ try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; } }
-  function writeJson(key, value){ try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } }
-  function queueSave(ms = 120){ try { queueSaveState?.(ms); } catch { try { saveState?.(); } catch {} } }
-  function renderSoon(){ window.setTimeout(() => { try { render?.({ immediate:true }); } catch { try { render?.(); } catch {} } }, 0); }
-
-  function identityOf(item = {}){
-    const c = code(item.friendCode || item.code || item.friend_code || item.otherFriendCode || item.requesterFriendCode || item.targetFriendCode || item.id || "");
-    const pid = str(item.playerId || item.player_id || item.friend_player_id || item.friendPlayerId || item.otherPlayerId || item.requesterPlayerId || item.targetPlayerId || "");
-    return { code:c, playerId:pid, suffix:suffix(c) };
-  }
-  function sameIdentity(a = {}, b = {}){
-    const ia = identityOf(a), ib = identityOf(b);
-    return Boolean((ia.playerId && ib.playerId && ia.playerId === ib.playerId) || (ia.code && ib.code && ia.code === ib.code) || (ia.suffix && ib.suffix && ia.suffix === ib.suffix));
-  }
-  function friendKey(friend = {}, fallback = ""){
-    const id = identityOf({ ...friend, code: friend.code || friend.friendCode || fallback });
-    return id.code || id.playerId || str(friend.id || fallback);
-  }
-  function normalizeFriendMap(raw = state.friends){
-    const entries = Array.isArray(raw) ? raw.map((friend, index) => [friend?.id || friend?.code || String(index), friend]) : Object.entries(raw && typeof raw === "object" ? raw : {});
+(() => {
+  const BETA165_VERSION = "1.0.0-beta.165";
+  const FRIEND_DRAFT_KEY = `${STORAGE_KEY}_friend_code_draft_beta165`;
+  const PROFILE_KEY = `${STORAGE_KEY}_profile_beta165`;
+  const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
+  const esc = v => (typeof escapeHtml === "function" ? escapeHtml(v) : String(v ?? "").replace(/[&<>'\"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;","\"":"&quot;"}[c])));
+  const str = v => String(v ?? "").trim();
+  const key = v => String(v ?? "");
+  const xpTotal = () => Math.max(0, Number(state?.xp || 0));
+  const safeLevel = () => { try { return typeof level === "function" ? level() : Math.floor(xpTotal()/250)+1; } catch { return 1; } };
+  const myId = () => { try { return typeof playerIdMe === "function" ? playerIdMe() : "me-local"; } catch { return "me-local"; } };
+  const myCode = () => { try { return typeof friendCode === "function" ? friendCode() : ""; } catch { return ""; } };
+  const normCode = v => { try { return typeof normalizeFriendCode === "function" ? normalizeFriendCode(v || "") : str(v).toUpperCase(); } catch { return str(v).toUpperCase(); } };
+  const codeSuffix = v => { try { return typeof friendCodeSuffix === "function" ? friendCodeSuffix(v || "") : normCode(v).split("-").pop(); } catch { return normCode(v).split("-").pop(); } };
+  const sameIdentity = (a={}, b={}) => {
+    const ac = normCode(a.code || a.friendCode || a.id || ""), bc = normCode(b.code || b.friendCode || b.id || "");
+    const ap = str(a.playerId || a.player_id || ""), bp = str(b.playerId || b.player_id || "");
+    const as = codeSuffix(ac), bs = codeSuffix(bc);
+    return Boolean((ac && bc && ac === bc) || (ap && bp && ap === bp) || (as && bs && as === bs));
+  };
+  function setSafe(patch={}, options={}) { try { setState(patch, { save:true, ...options }); } catch { Object.assign(state, patch); try { saveState(); } catch {} try { render(); } catch {} } }
+  function renderSoon(){ window.setTimeout(() => { try { render(); } catch(e){ try { console.warn("beta165 render", e); } catch {} } }, 0); }
+  function topSoon(){ window.setTimeout(() => { try { window.scrollTo({top:0,behavior:"smooth"}); } catch { try { window.scrollTo(0,0); } catch {} } }, 40); }
+  function readJson(k,f){ try { const r=localStorage.getItem(k); return r?JSON.parse(r):f; } catch { return f; } }
+  function writeJson(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  function normalizeFriends(raw=state.friends){
+    const entries = Array.isArray(raw) ? raw.map((f,i)=>[f?.id||f?.code||String(i),f]) : Object.entries(raw && typeof raw === "object" ? raw : {});
     const out = {};
-    for (const [fallback, friend] of entries) {
-      if (!friend || typeof friend !== "object") continue;
-      const parsed = (() => { try { return parseFriendCode(friend.code || friend.friendCode || fallback || ""); } catch { return null; } })();
-      const k = friendKey(friend, fallback || parsed?.code || "");
-      if (!k) continue;
-      const c = code(friend.code || friend.friendCode || parsed?.code || k);
-      const pid = str(friend.playerId || friend.player_id || friend.friend_player_id || friend.friendPlayerId || "");
-      if (sameIdentity({ code:c, playerId:pid }, { code:myCode(), playerId:myId() })) continue;
-      const name = goodPseudo(friend.name || friend.pseudo || friend.friendPseudo || parsed?.pseudo) || "Ami";
-      const previous = out[k] || {};
-      out[k] = {
-        ...previous,
-        ...friend,
-        id: friend.id || k,
-        code: c,
-        friendCode: code(friend.friendCode || friend.code || c),
-        playerId: pid || previous.playerId || "",
-        name,
-        pseudo: goodPseudo(friend.pseudo || name) || name,
-        addedAt: Number(friend.addedAt || previous.addedAt || now()),
-        level: Number(friend.level || previous.level || 1),
-        xp: Number(friend.xp || previous.xp || 0),
-        solved: Number(friend.solved || friend.solvedCount || friend.solved_count || previous.solved || 0),
-        streak: Number(friend.streak || previous.streak || 0),
-        daily: Math.max(Number(friend.daily || 0), Number(friend.score || 0), Number(friend.xp || 0), Number(previous.daily || 0)),
-        week: Math.max(Number(friend.week || 0), Number(friend.xp || 0), Number(previous.week || 0)),
-        year: Math.max(Number(friend.year || 0), Number(friend.xp || 0), Number(previous.year || 0)),
-        server: Boolean(friend.server || previous.server),
-        syncedAt: friend.syncedAt || previous.syncedAt || 0
-      };
+    for (const [fallback, f] of entries) {
+      if (!f || typeof f !== "object") continue;
+      const c = normCode(f.code || f.friendCode || fallback || "");
+      const pid = str(f.playerId || f.player_id || f.friend_player_id || "");
+      if (sameIdentity({code:c, playerId:pid}, {code:myCode(), playerId:myId()})) continue;
+      let parsed=null; try { parsed = typeof parseFriendCode === "function" ? parseFriendCode(c) : null; } catch {}
+      const id = c || pid || str(f.id || fallback); if (!id) continue;
+      const name = str(f.name || f.pseudo || f.friendPseudo || parsed?.pseudo || "Ami").slice(0,24) || "Ami";
+      const score = Math.max(Number(f.xp||0), Number(f.score||0), Number(f.daily||0), Number(f.week||0), Number(f.year||0));
+      out[id] = { ...f, id, code:c, friendCode:c, playerId:pid, name, pseudo:str(f.pseudo||name)||name, avatar:str(f.avatar||name[0]||"A").toUpperCase(), xp:score, daily:Math.max(score,Number(f.daily||0)), week:Math.max(score,Number(f.week||0)), year:Math.max(score,Number(f.year||0)), level:Number(f.level||1), solved:Number(f.solved||f.solved_count||0), streak:Number(f.streak||0), addedAt:Number(f.addedAt||Date.now()) };
     }
     return out;
   }
-  function knownFriend(item = {}){
-    const map = normalizeFriendMap(state.friends);
-    return Object.values(map).find(friend => sameIdentity(friend, item)) || null;
-  }
-  function cleanRequestList(list = []){
-    const seen = new Set();
-    return (Array.isArray(list) ? list : []).filter(req => {
-      if (!req || typeof req !== "object") return false;
-      if (knownFriend(req)) return false;
-      const id = identityOf(req);
-      const key = `${req.direction || req.status || "pending"}:${id.playerId || id.code || id.suffix || JSON.stringify(req).slice(0,80)}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
+  function knownFriend(item={}) { return Object.values(normalizeFriends(state.friends)).find(f => sameIdentity(f,item)) || null; }
+  function cleanRequests(list=[]){
+    const seen=new Set();
+    return (Array.isArray(list)?list:[]).filter(r=>{
+      if (!r || typeof r !== "object") return false;
+      if (knownFriend(r)) return false;
+      const marker = `${r.status||r.direction||"pending"}:${str(r.playerId||r.targetPlayerId||r.requesterPlayerId||"") || normCode(r.code||r.friendCode||r.targetFriendCode||r.requesterFriendCode||"") || JSON.stringify(r).slice(0,60)}`;
+      if (seen.has(marker)) return false; seen.add(marker); return true;
     }).slice(0,40);
   }
-  function cleanRequestsObject(requests = {}){
-    return {
-      incoming: cleanRequestList(requests.incoming || []),
-      outgoing: cleanRequestList(requests.outgoing || []),
-      history: Array.isArray(requests.history) ? requests.history.slice(0,40) : []
-    };
+  function repairSocial(){
+    let changed=false;
+    try { const b=JSON.stringify(state.friends||{}); state.friends=normalizeFriends(state.friends); changed ||= b!==JSON.stringify(state.friends||{}); } catch {}
+    try { if (state.friendRequests && typeof state.friendRequests === "object") state.friendRequests={...state.friendRequests,incoming:cleanRequests(state.friendRequests.incoming),outgoing:cleanRequests(state.friendRequests.outgoing)}; } catch {}
+    try { if (Array.isArray(state.friendRequestOutbox)) state.friendRequestOutbox=cleanRequests(state.friendRequestOutbox); } catch {}
+    return changed;
   }
-  function repairSocialState(){
-    const beforeFriends = JSON.stringify(state.friends || {});
-    const beforeRequests = JSON.stringify(state.friendRequests || {});
-    state.friends = normalizeFriendMap(state.friends);
-    if (state.friendRequests && typeof state.friendRequests === "object") state.friendRequests = cleanRequestsObject(state.friendRequests);
-    if (Array.isArray(state.friendRequestOutbox)) state.friendRequestOutbox = cleanRequestList(state.friendRequestOutbox);
-    const afterFriends = JSON.stringify(state.friends || {});
-    const afterRequests = JSON.stringify(state.friendRequests || {});
-    return beforeFriends !== afterFriends || beforeRequests !== afterRequests;
+  function saveProfile(source="auto"){
+    const pseudo=str(state.pseudo||"Invité").slice(0,18)||"Invité";
+    writeJson(PROFILE_KEY,{pseudo,xp:xpTotal(),level:safeLevel(),friendCode:myCode(),playerId:myId(),savedAt:Date.now(),source,version:BETA165_VERSION});
+    try { localStorage.setItem(`${STORAGE_KEY}_pseudo`, pseudo); } catch {}
   }
-  function addFriendLocal(friend = {}, message = "Ami ajouté."){
-    if (!friend || typeof friend !== "object") return false;
-    const map = normalizeFriendMap(state.friends);
-    const k = friendKey(friend, friend.code || friend.friendCode || friend.playerId || friend.id);
-    if (!k) return false;
-    const c = code(friend.code || friend.friendCode || k);
-    const name = goodPseudo(friend.name || friend.pseudo) || (() => { try { return parseFriendCode(c)?.pseudo || "Ami"; } catch { return "Ami"; } })();
-    map[k] = { ...(map[k] || {}), ...friend, id: friend.id || k, code:c, friendCode:c, name, pseudo:name, addedAt:Number(friend.addedAt || now()) };
-    state.friends = map;
-    repairSocialState();
-    state.friendFeedback = message;
-    queueSave();
-    return true;
-  }
+  const snap=readJson(PROFILE_KEY,null); if (snap?.pseudo && (!state.pseudo || /^invité$/i.test(state.pseudo))) state.pseudo=str(snap.pseudo).slice(0,18);
 
-  function saveProfileRecord(source = "auto"){
-    const p = goodPseudo(state.pseudo) || goodPseudo(currentPseudo?.()) || "Invité";
-    writeJson(PROFILE_KEY, { pseudo:p, friendCode:myCode(), playerId:myId(), xp:Number(state.xp || 0), level: typeof level === "function" ? level() : 1, savedAt:now(), version:BETA164_VERSION, source });
-    try { localStorage.setItem(`${STORAGE_KEY}_pseudo`, p); } catch {}
-  }
-  function hydrateProfile(){
-    const rec = readJson(PROFILE_KEY, {});
-    if ((!goodPseudo(state.pseudo) || /^invité$/i.test(state.pseudo || "")) && goodPseudo(rec.pseudo)) state.pseudo = goodPseudo(rec.pseudo);
-    saveProfileRecord("hydrate");
-  }
-  function syncXpProfile(reason = "xp"){
-    if (syncingXpProfile) return;
-    syncingXpProfile = true;
-    window.setTimeout(() => {
-      syncingXpProfile = false;
-      try { saveProfileRecord(reason); } catch {}
-      try { syncMyProfileToServer?.({ source:`beta164-${reason}` }).catch?.(() => {}); } catch {}
-      try { ["daily","week","year","friends"].forEach(scope => { state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loadedAt:0, loading:false, mode:"local", message:"XP total recalculé." } }; }); } catch {}
-    }, 250);
-  }
-
-  // Classement : afficher l'XP total, pas seulement le score du mystère du jour.
-  const previousScoreForScope = typeof scoreForScope === "function" ? scoreForScope : null;
-  // On ne modifie pas scoreForScope global : il reste le score mystère par période.
-  // Le classement, lui, utilise l'XP totale via leaderboardRows/scoreOfPlayer ci-dessous.
-  const previousScoreOfPlayer = typeof scoreOfPlayer === "function" ? scoreOfPlayer : null;
-  scoreOfPlayer = function beta164ScoreOfPlayer(player = {}, scope = "daily"){
-    if (player.me) return Math.max(0, Number(state.xp || 0));
-    return Math.max(0, Number(player.xp || 0), Number(player.score || 0), Number(player.daily || 0), Number(player.week || 0), Number(player.year || 0));
+  const prevMyProfile = typeof myPlayerProfile === "function" ? myPlayerProfile : null;
+  if (prevMyProfile) myPlayerProfile = function beta165MyPlayerProfile(){ const p=prevMyProfile(); const x=xpTotal(); return {...p,xp:x,score:x,daily:x,week:x,year:x,level:safeLevel(),me:true,friend:true}; };
+  if (typeof scoreOfPlayer === "function") scoreOfPlayer = function beta165ScoreOfPlayer(player={}){ if (player.me) return xpTotal(); return Math.max(0,Number(player.xp||0),Number(player.totalXp||0),Number(player.score||0),Number(player.daily||0),Number(player.week||0),Number(player.year||0)); };
+  const prevRows = typeof leaderboardRows === "function" ? leaderboardRows : null;
+  if (prevRows) leaderboardRows = function beta165LeaderboardRows(scope=state.rankScope||"daily"){
+    scope = VALID_SCOPES.has(scope) ? scope : "daily";
+    let rows=[]; try { rows=prevRows(scope)||[]; } catch {}
+    const id=myId(), c=normCode(myCode());
+    rows = rows.map(r=>{ const me=Boolean(r.me || r.id===id || r.playerId===id || r.player_id===id || (c && normCode(r.friendCode||r.friend_code||r.code||r.id)===c)); const score=me?xpTotal():Math.max(0,Number(r.xp||0),Number(r.totalXp||0),Number(r.score||0),Number(r.daily||0),Number(r.week||0),Number(r.year||0)); return {...r,me,score,xp:Math.max(Number(r.xp||0),score),daily:score,week:score,year:score,name:r.name||r.pseudo||"Joueur"}; });
+    if (!rows.some(r=>r.me)) { const p=prevMyProfile?myPlayerProfile():{id,playerId:id,name:state.pseudo||"Moi",me:true}; rows.push({...p,score:xpTotal(),xp:xpTotal(),daily:xpTotal(),week:xpTotal(),year:xpTotal(),friendCode:c}); }
+    const map=new Map(); rows.forEach(r=>{ const k=normCode(r.friendCode||r.friend_code||r.code||"") || str(r.playerId||r.player_id||r.id||r.name); if (!k) return; const old=map.get(k); if (!old || r.me || Number(r.score||0)>Number(old.score||0)) map.set(k,r); });
+    return Array.from(map.values()).filter(r=>Number(r.score||0)>0 || r.me).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||String(a.name||"").localeCompare(String(b.name||""),"fr")).map((r,i)=>({...r,rank:i+1}));
   };
-  if (typeof remoteLeaderboardRows === "function") {
-    const previousRemoteLeaderboardRows = remoteLeaderboardRows;
-    remoteLeaderboardRows = function beta164RemoteLeaderboardRows(scope = state.rankScope || "daily"){
-      return previousRemoteLeaderboardRows(scope).map(row => {
-        const total = Math.max(Number(row.xp || 0), Number(row.score || 0), Number(row.daily || 0), Number(row.week || 0), Number(row.year || 0));
-        return { ...row, score: total, daily: total, week: total, year: total };
-      }).filter(row => Number(row.score || 0) > 0);
-    };
-  }
-  if (typeof leaderboardRows === "function") {
-    const previousLeaderboardRows = leaderboardRows;
-    leaderboardRows = function beta164LeaderboardRows(scope = state.rankScope || "daily"){
-      const myProfile = (() => { try { return myPlayerProfile(); } catch { return { id:myId(), playerId:myId(), friendCode:myCode(), name:state.pseudo || "Moi", me:true }; } })();
-      const myCodeValue = myCode();
-      let rows = [];
-      try { rows = previousLeaderboardRows(scope) || []; } catch { rows = []; }
-      rows = rows.map(row => {
-        const isMe = Boolean(row.me || row.id === myProfile.id || row.playerId === myProfile.id || code(row.friendCode) === myCodeValue);
-        const total = isMe ? Math.max(Number(state.xp || 0), Number(row.xp || 0), Number(row.score || 0)) : Math.max(Number(row.xp || 0), Number(row.score || 0), Number(row.daily || 0), Number(row.week || 0), Number(row.year || 0));
-        return { ...row, score: total, xp: Math.max(Number(row.xp || 0), total), daily: total, week: total, year: total, me: isMe };
-      });
-      const hasMe = rows.some(row => row.me);
-      if (!hasMe && Number(state.xp || 0) > 0) rows.push({ ...myProfile, id:myProfile.id || myId(), playerId:myProfile.playerId || myProfile.id || myId(), friendCode:myCodeValue, me:true, score:Number(state.xp || 0), xp:Number(state.xp || 0), daily:Number(state.xp || 0), week:Number(state.xp || 0), year:Number(state.xp || 0) });
-      const byId = new Map();
-      rows.forEach(row => {
-        const key = code(row.friendCode) || row.playerId || row.id || row.name;
-        const prev = byId.get(key);
-        if (!prev || Number(row.score || 0) > Number(prev.score || 0) || row.me) byId.set(key, row);
-      });
-      return Array.from(byId.values())
-        .filter(row => Number(row.score || 0) > 0)
-        .sort((a,b) => Number(b.score || 0) - Number(a.score || 0) || String(a.name || "").localeCompare(String(b.name || ""), "fr"))
-        .map((row, index) => ({ ...row, rank:index+1 }));
-    };
-  }
-  if (typeof scorePayloadForMystery === "function") {
-    const previousScorePayloadForMystery = scorePayloadForMystery;
-    scorePayloadForMystery = function beta164ScorePayloadForMystery(mysteryId){
-      const payload = previousScorePayloadForMystery(mysteryId) || {};
-      const total = Math.max(Number(state.xp || 0), Number(payload.xp || 0), Number(payload.score || 0));
-      return { ...payload, xp:total, totalXp:total, score:total, scoreMode:"total_xp" };
-    };
-  }
+  const prevPayload = typeof scorePayloadForMystery === "function" ? scorePayloadForMystery : null;
+  if (prevPayload) scorePayloadForMystery = function beta165ScorePayloadForMystery(id){ const p=prevPayload(id)||{}; const x=xpTotal(); return {...p,xp:x,totalXp:x,score:Math.max(Number(p.score||0),x),scoreMode:"total_xp"}; };
 
-  // Profil / code ami : formulaire stable, valeur conservée même si l'écran rerender.
-  if (typeof addFriendMarkup === "function") {
-    addFriendMarkup = function beta164AddFriendMarkup(){
-      const draft = str(state.friendCodeDraft || (() => { try { return localStorage.getItem(FRIEND_DRAFT_KEY) || ""; } catch { return ""; } })());
-      return `<section class="card add-friend-card beta164-add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Colle le code complet, par exemple MANON-ABC123. Le champ garde ce que tu tapes même si l'app actualise l'écran.</p></div><form data-add-friend class="friend-add-form beta164-friend-add-form" autocomplete="off"><input data-friend-code-input name="friendCode" type="text" value="${esc(draft)}" placeholder="PSEUDO-ABC123" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Code ami"/><button type="submit" data-add-friend-button>Ajouter</button></form><div class="friend-code"><strong>${esc(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${esc(state.friendFeedback)}</p>` : ""}</section>`;
-    };
-  }
-  function parsedFriendFromRaw(raw){
-    try { return parseFriendCode(raw || ""); } catch { return null; }
-  }
-  function addFriendByRaw(raw){
-    const value = str(raw);
-    const parsed = parsedFriendFromRaw(value);
-    if (!parsed) { try { setState({ friendFeedback:"Code ami invalide. Format attendu : PSEUDO-ABC123.", friendCodeDraft:value }, { save:true, render:true }); } catch { state.friendFeedback = "Code ami invalide. Format attendu : PSEUDO-ABC123."; renderSoon(); } return false; }
-    if (code(parsed.id) === myCode() || code(parsed.code) === myCode()) { setState({ friendFeedback:"C’est ton propre code. Partage-le, mais ne l’ajoute pas à tes amis.", friendCodeDraft:value }, { save:true, render:true }); return false; }
-    const already = knownFriend({ code:parsed.code, friendCode:parsed.code });
-    if (already) { setState({ friendFeedback:`${already.name || parsed.pseudo} est déjà dans tes amis.`, friendCodeDraft:"" }, { save:true, render:true }); try { localStorage.removeItem(FRIEND_DRAFT_KEY); } catch {} return true; }
-    const friend = { id:parsed.id, code:parsed.code, friendCode:parsed.code, name:parsed.pseudo, pseudo:parsed.pseudo, addedAt:now(), local:true };
-    addFriendLocal(friend, `${parsed.pseudo} ajouté. Synchronisation en cours…`);
-    state.friendCodeDraft = "";
-    try { localStorage.removeItem(FRIEND_DRAFT_KEY); } catch {}
-    try { syncMyProfileToServer?.({ source:"friend-add-beta164" }).catch?.(() => {}); } catch {}
-    try { syncFriendToServer?.(friend).catch?.(error => { state.friendFeedback = `${parsed.pseudo} ajouté sur cet appareil, mais pas partagé en ligne : ${error?.message || "connexion indisponible"}.`; queueSave(); renderSoon(); }); } catch {}
-    renderSoon();
-    return true;
-  }
-  addFriend = function beta164AddFriend(event){
-    try { event?.preventDefault?.(); event?.stopPropagation?.(); } catch {}
-    const form = event?.target?.closest?.("[data-add-friend]") || document.querySelector("[data-add-friend]");
-    const input = form?.querySelector?.("[data-friend-code-input], input[name='friendCode'], input");
-    return addFriendByRaw(input?.value || state.friendCodeDraft || "");
+  if (typeof renderRank === "function") renderRank = function beta165RenderRank(){
+    const scope = VALID_SCOPES.has(state.rankScope) ? state.rankScope : "daily"; state.rankScope=scope;
+    try { ensureServerLeaderboard?.(scope); } catch {} if (scope==="friends") { try { ensureServerFriends?.(); } catch {} }
+    const rows = leaderboardRows(scope); const me=rows.find(r=>r.me); const friends=scope==="friends"; const x=xpTotal();
+    renderShell(`<header class="topbar"><button type="button" data-home>←</button><div><p class="eyebrow">Classements</p><h1>${esc(typeof scopeLabel==="function"?scopeLabel(scope):"Classement")}</h1></div></header>
+      <section class="tabs-clean rank-tabs"><button type="button" data-rank-scope="daily" class="${scope==="daily"?"active":""}">Aujourd’hui</button><button type="button" data-rank-scope="week" class="${scope==="week"?"active":""}">Semaine</button><button type="button" data-rank-scope="year" class="${scope==="year"?"active":""}">Année</button><button type="button" data-rank-scope="friends" class="${scope==="friends"?"active":""}">Amis</button></section>
+      <section class="card social-rank-hero"><div><span class="card-label">Classement</span><h2>${friends?"Tes amis":"Classement général"}</h2><p>Score affiché = XP totale : cours + mystères.</p></div><button type="button" data-open-profile>${esc(state.pseudo||"Profil")}</button></section>${typeof socialBackendMarkup==="function"?socialBackendMarkup():""}
+      <section class="card rank-summary beta165-rank-summary"><div><span>Ton XP total</span><strong>${x} XP</strong></div><div><span>Cours validés</span><strong>${Object.keys(state.completedLessons||{}).length}</strong></div><div><span>Mystères</span><strong>${Object.keys(state.solvedMysteries||{}).length}</strong></div><div><span>Ta place</span><strong>#${me?.rank||"—"}</strong></div></section>
+      <section class="card leaderboard leaderboard-modern beta165-leaderboard">${rows.length?rows.map(r=>`<button type="button" class="rank-row ${r.me?"me":""}" data-view-profile="${esc(r.id||r.playerId||r.friendCode||"")}"><span>${r.rank}</span><strong>${esc(r.name||r.pseudo||"Joueur")}</strong><em>${Number(r.score||0)} XP</em></button>`).join(""):(typeof emptyRankMarkup==="function"?emptyRankMarkup(scope):"<div>Aucun score</div>")}</section><p class="rank-note muted-note">Les onglets restent utilisables, mais le score compare bien l’XP totale.</p>${friends?`${typeof addFriendMarkup==="function"?addFriendMarkup():""}${typeof friendListMarkup==="function"?friendListMarkup():""}`:""}`);
+    bindStableActions();
   };
 
-  document.addEventListener("input", event => {
-    const input = event.target?.closest?.("[data-friend-code-input]");
-    if (!input) return;
-    state.friendCodeDraft = input.value || "";
-    try { localStorage.setItem(FRIEND_DRAFT_KEY, state.friendCodeDraft); } catch {}
-  }, true);
-  document.addEventListener("click", event => {
-    const input = event.target?.closest?.("[data-friend-code-input]");
-    if (!input) return;
-    // Important : ne jamais preventDefault ici, sinon le clavier iPhone ne s'ouvre pas.
-    try { input.focus({ preventScroll:false }); } catch { try { input.focus(); } catch {} }
-  }, true);
-  document.addEventListener("submit", event => {
-    const form = event.target?.closest?.("[data-add-friend]");
-    if (!form) return;
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    addFriendByRaw(form.querySelector("[data-friend-code-input], input[name='friendCode'], input")?.value || "");
-  }, true);
-  document.addEventListener("click", event => {
-    const btn = event.target?.closest?.("[data-add-friend-button]");
-    if (!btn) return;
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    const form = btn.closest("[data-add-friend]");
-    addFriendByRaw(form?.querySelector("[data-friend-code-input], input[name='friendCode'], input")?.value || "");
-  }, true);
+  if (typeof addFriendMarkup === "function") addFriendMarkup = function beta165AddFriendMarkup(){ const draft=str(state.friendCodeDraft || (()=>{try{return localStorage.getItem(FRIEND_DRAFT_KEY)||"";}catch{return "";}})()); return `<section class="card add-friend-card beta165-add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Colle le code complet. Le champ reste saisissable et garde la valeur si l’écran se rafraîchit.</p></div><form data-add-friend class="friend-add-form beta165-friend-add-form" autocomplete="off"><input data-friend-code-input name="friendCode" type="text" value="${esc(draft)}" placeholder="PSEUDO-ABC123" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Code ami"/><button type="submit" data-add-friend-button>Ajouter</button></form><div class="friend-code"><strong>${esc(myCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback?`<p class="profile-feedback">${esc(state.friendFeedback)}</p>`:""}</section>`; };
+  function parseFriend(raw){ try { return typeof parseFriendCode === "function" ? parseFriendCode(raw||"") : null; } catch { return null; } }
+  function addFriendValue(raw){ const value=str(raw).toUpperCase(); state.friendCodeDraft=value; try{localStorage.setItem(FRIEND_DRAFT_KEY,value)}catch{}; const parsed=parseFriend(value); if(!parsed) return setSafe({friendFeedback:"Code ami invalide. Format attendu : PSEUDO-ABC123.",friendCodeDraft:value}); const c=normCode(parsed.code||parsed.id||value); if(sameIdentity({code:c},{code:myCode(),playerId:myId()})) return setSafe({friendFeedback:"C’est ton propre code. Partage-le, mais ne l’ajoute pas à tes amis.",friendCodeDraft:value}); const already=knownFriend({code:c,id:parsed.id}); if(already){try{localStorage.removeItem(FRIEND_DRAFT_KEY)}catch{}; return setSafe({friendFeedback:`${already.name||parsed.pseudo||"Cet ami"} est déjà dans tes amis.`,friendCodeDraft:""});} const friend={id:parsed.id||c,code:c,friendCode:c,name:parsed.pseudo||"Ami",pseudo:parsed.pseudo||"Ami",addedAt:Date.now(),local:true}; const friends=normalizeFriends({...state.friends,[friend.id]:friend}); try{localStorage.removeItem(FRIEND_DRAFT_KEY)}catch{}; setSafe({friends,friendFeedback:`${friend.name} ajouté. Synchronisation en cours…`,friendCodeDraft:""}); try{syncMyProfileToServer?.({source:"beta165-friend-add"}).catch?.(()=>{})}catch{}; try{syncFriendToServer?.(friend).catch?.(e=>setSafe({friendFeedback:`${friend.name} ajouté sur cet appareil, mais pas partagé en ligne : ${e?.message||"connexion indisponible"}.`}))}catch{}; return true; }
+  addFriend = function beta165AddFriend(event){ event?.preventDefault?.(); event?.stopPropagation?.(); const form=event?.target?.closest?.("[data-add-friend]")||document.querySelector("[data-add-friend]"); const input=form?.querySelector?.("[data-friend-code-input],input[name='friendCode'],input"); return addFriendValue(input?.value || state.friendCodeDraft || ""); };
 
-  // Demandes d'amis : si quelqu'un est déjà ami, aucune carte "en attente" ne doit survivre.
-  if (typeof beta125FriendRequestsState === "function") {
-    const previousRequestsState = beta125FriendRequestsState;
-    beta125FriendRequestsState = function beta164FriendRequestsState(){ return cleanRequestsObject(previousRequestsState()); };
-  }
-  if (typeof beta125SetFriendRequests === "function") {
-    beta125SetFriendRequests = function beta164SetFriendRequests(requests = {}){ state.friendRequests = cleanRequestsObject(requests); queueSave(); };
-  }
-  if (typeof mergeServerFriends === "function") {
-    const previousMergeServerFriends = mergeServerFriends;
-    mergeServerFriends = function beta164MergeServerFriends(rows = []){
-      const changed = previousMergeServerFriends(rows);
-      repairSocialState();
-      queueSave();
-      return changed || Boolean((rows || []).length);
-    };
-  }
-  function friendCard(player = {}){
-    const id = esc(player.id || player.playerId || player.friendCode || player.code || "");
-    return `<section class="card beta125-profile-actions beta164-friend-ok"><div><span class="card-label">Ami</span><h2>${esc(player.name || "Ce joueur")} est dans tes amis</h2><p>La relation est validée. Le bloc “en attente” est supprimé localement.</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
-  }
-  if (typeof beta125PublicActionMarkup === "function") {
-    const previousPublicActionMarkup = beta125PublicActionMarkup;
-    beta125PublicActionMarkup = function beta164PublicActionMarkup(player = {}){
-      const isFriend = Boolean(player?.friend || knownFriend(player));
-      if (player && !player.me && isFriend) return friendCard(player);
-      const html = previousPublicActionMarkup(player);
-      if (/En attente de validation/i.test(String(html || ""))) {
-        const target = esc(player.id || player.playerId || player.friendCode || player.code || "");
-        return String(html).replace("</section>", `<div class="home-actions-row beta164-pending-actions"><button type="button" class="ghost" data-beta164-refresh-social="${target}">Actualiser relation</button><button type="button" class="ghost" data-beta164-accept-local="${target}">Déjà accepté : corriger ici</button></div></section>`);
-      }
-      return html;
-    };
-  }
-  document.addEventListener("click", event => {
-    const accept = event.target?.closest?.("[data-beta164-accept-local]");
-    const refresh = event.target?.closest?.("[data-beta164-refresh-social]");
-    if (!accept && !refresh) return;
-    event.preventDefault?.(); event.stopPropagation?.();
-    const targetId = accept?.dataset?.beta164AcceptLocal || refresh?.dataset?.beta164RefreshSocial || state.selectedProfileId || "";
-    const player = (() => { try { return profileById(targetId); } catch { return null; } })() || {};
-    if (accept) addFriendLocal({ id:player.id || targetId, code:player.friendCode || player.code || targetId, friendCode:player.friendCode || player.code || targetId, playerId:player.playerId || "", name:player.name || "Ami", server:false }, `${player.name || "Ami"} ajouté localement.`);
-    try { fetchServerFriends?.({ force:true }).catch?.(() => {}); } catch {}
-    try { beta125FetchFriendRequests?.({ force:true }).catch?.(() => {}); } catch {}
-    try { beta126FetchPublicProfile?.(player, { force:true }).catch?.(() => {}); } catch {}
-    renderSoon();
-  }, true);
+  const qmap = k => (state && typeof state[k] === "object" && state[k]) ? state[k] : {};
+  const firstOpen = (p,total) => { const a=p?.answers||{}; for(let i=0;i<total;i++) if(!Number.isInteger(a[i])&&!Number.isInteger(a[String(i)])) return i; return Math.max(0,total-1); };
+  function quizRuntime(lessonId,total){ const k=key(lessonId), p=lessonQuizState(k), answered=Object.keys(p.answers||{}).length, correct=Object.values(p.correct||{}).filter(Boolean).length, threshold=lessonQuizPassThreshold(total), finished=total>0&&answered>=total, passed=Boolean(p.passed||(finished&&correct>=threshold)); let step=Number(qmap("quizStep")[k]); if(!Number.isInteger(step)||step<0||step>=total) step=firstOpen(p,total); return {k,p,answered,correct,threshold,finished,passed,step:Math.max(0,Math.min(step,Math.max(0,total-1)))}; }
+  function advanceQuiz(lessonId){ const lesson=allLessons().find(l=>key(l.id)===key(lessonId)); if(!lesson) return; const content=buildLessonContent(lesson), items=normalizeQuizPack(content.quiz,lesson,content), p=lessonQuizState(key(lesson.id)); setSafe({quizStep:{...qmap("quizStep"),[key(lesson.id)]:firstOpen(p,items.length)},lessonView:"quiz",lessonFocus:null}); window.setTimeout(()=>{try{document.querySelector("[data-beta165-current-question]")?.scrollIntoView({behavior:"smooth",block:"start"})}catch{}},40); }
+  handleQuizChoice = function beta165HandleQuizChoice(lessonId, qi, ci){ const lesson=allLessons().find(l=>key(l.id)===key(lessonId)); if(!lesson) return false; const content=buildLessonContent(lesson), items=normalizeQuizPack(content.quiz,lesson,content), item=items[qi]; if(!item) return false; const k=key(lesson.id), p=lessonQuizState(k); if(Number.isInteger(p.answers?.[qi])||Number.isInteger(p.answers?.[String(qi)])||p.passed) return false; const choices=quizChoicesFor(item,items,lesson,content,qi), choice=choices[ci]; if(!choice) return false; const answers={...(p.answers||{}),[qi]:ci}, correct={...(p.correct||{}),[qi]:Boolean(choice.correct)}; const ccount=Object.values(correct).filter(Boolean).length, acount=Object.keys(answers).length, threshold=lessonQuizPassThreshold(items.length), passed=acount>=items.length&&ccount>=threshold, failed=acount>=items.length&&!passed; const quizProgress={...(state.quizProgress||{}),[k]:{...p,answers,correct,attempts:Number(p.attempts||0)+1,passed}}; const newly=passed&&!lessonDone(lesson.id), completedLessons=newly?{...(state.completedLessons||{}),[lesson.id]:true}:state.completedLessons, achievements=newly?{...(state.achievements||{}),firstLesson:true}:state.achievements, gain=newly?Number(lesson.xp||55):0; const quizFeedback={...(state.quizFeedback||{}),[k]:passed?`Quiz réussi : ${ccount}/${items.length}. Cours validé automatiquement.`:failed?`Score : ${ccount}/${items.length}. Il faut au moins ${threshold}/${items.length}.`:choice.correct?`Correct. ${ccount}/${items.length} bonne(s).`:`Réponse fausse. Continue : validation à ${threshold}/${items.length}.`}; setSafe({quizProgress,quizFeedback,quizStep:{...qmap("quizStep"),[k]:qi},completedLessons,achievements,xp:xpTotal()+gain,lessonView:"quiz",lessonFocus:null}); if(gain) try{showXPToast?.(gain,"leçon validée")}catch{}; return true; };
+  resetLessonQuiz = function beta165ResetLessonQuiz(lessonId){ const k=key(lessonId), qp={...(state.quizProgress||{})}, qf={...(state.quizFeedback||{})}, qs={...qmap("quizStep")}; delete qp[k]; delete qf[k]; delete qs[k]; setSafe({quizProgress:qp,quizFeedback:qf,quizStep:qs,lessonView:"quiz",lessonFocus:null}); };
+  const prevLessonText = typeof renderLessonText === "function" ? renderLessonText : null;
+  if (prevLessonText) renderLessonText = function beta165RenderLessonText(lesson,content){ if(typeof lessonView==="function"&&lessonView()!=="quiz") return prevLessonText(lesson,content); const items=normalizeQuizPack(content.quiz,lesson,content), rt=quizRuntime(lesson.id,items.length), facts=(typeof lessonKeyFacts==="function"?lessonKeyFacts(lesson,content):[]), feedback=state.quizFeedback?.[key(lesson.id)]||""; const intro=`<section class="lesson-hook beta165-lesson-hook"><span class="card-label">Quiz final</span><p>${esc(content.hook||lesson.title||"Réponds aux questions.")}</p></section>`, tabs=`<section class="lesson-choice-panel quiz-flow-panel beta165-quiz-tabs"><div><span class="card-label">Étape finale</span><h2>Quiz en ${items.length} étapes</h2><p>Une question à la fois : moins lourd, plus lisible.</p></div><div class="lesson-view-tabs">${lessonTabButton("express","⚡ Relire express","court")}${lessonTabButton("complete","📚 Relire complet","5 min")}</div><small>${rt.correct}/${items.length} bonnes · seuil ${rt.threshold}/${items.length}</small></section>`, factsHtml=facts.length?`<div class="key-facts beta165-quiz-facts"><b>Repères utiles</b>${facts.slice(0,4).map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:""; if(rt.finished||rt.passed) return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${rt.correct}/${items.length}</small></div><div class="beta165-score-panel ${rt.passed?"good":"bad"}"><b>${rt.passed?"✅ Cours validé":"Score insuffisant"}</b><span>${rt.passed?"L’XP du cours est prise en compte dans le classement total.":`Il faut ${rt.threshold}/${items.length}. Recommence pour valider.`}</span></div>${feedback?`<p class="quiz-global-feedback ${rt.passed?"good":""}">${esc(feedback)}</p>`:""}<div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="express">Relire le cours</button></div></section>`; const i=rt.step,item=items[i],choices=quizChoicesFor(item,items,lesson,content,i), selectedRaw=rt.p.answers?.[i]??rt.p.answers?.[String(i)], selected=Number.isInteger(selectedRaw)?selectedRaw:null, answered=Number.isInteger(selected), ok=Boolean(rt.p.correct?.[i]||rt.p.correct?.[String(i)]), selectedChoice=answered?choices[selected]:null; return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${i+1}/${items.length}</h2></div><small>${rt.correct}/${items.length} bonnes</small></div><div class="beta165-quiz-progress" aria-hidden="true">${items.map((_,n)=>`<i class="${Number.isInteger(rt.p.answers?.[n])||Number.isInteger(rt.p.answers?.[String(n)])?(rt.p.correct?.[n]||rt.p.correct?.[String(n)]?"ok":"ko"):n===i?"current":""}"></i>`).join("")}</div>${feedback?`<p class="quiz-global-feedback">${esc(feedback)}</p>`:""}<article class="quiz-card beta165-single-question ${answered?(ok?"correct":"wrong"):"open"}"><div class="quiz-question-head"><b>${i+1}</b><div>${item.kind?`<em>${esc(item.kind)}</em>`:""}<h3>${esc(item.q)}</h3></div></div><div class="quiz-choices" role="group" aria-label="Question ${i+1}">${choices.map((ch,n)=>`<button type="button" class="quiz-choice ${selected===n?(ch.correct?"selected correct":"selected wrong"):""}" data-quiz-choice="${i}" data-choice-index="${n}" ${answered?"disabled":""}><span>${String.fromCharCode(65+n)}</span>${esc(ch.text)}</button>`).join("")}</div>${answered?(ok?`<p class="quiz-result good"><b>Correct.</b> ${esc(item.why||"")}</p>`:`<p class="quiz-result bad"><b>Raté.</b> ${esc(selectedChoice?.trap||item.trap||"La réponse ne colle pas assez au cours.")}</p>`):`<p class="quiz-result neutral">Choisis une réponse pour continuer.</p>`}</article><div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Recommencer</button>${answered?`<button type="button" data-quiz-next="${esc(lesson.id)}">${rt.answered>=items.length?"Voir le bilan":"Continuer"}</button>`:`<span>Réponds pour continuer.</span>`}</div></section>`; };
 
-  // Navigation : gérer les retours et déblocages sans bloquer les champs texte.
-  function setPatch(patch, top = true){
-    try { setState(patch, { save:true, renderImmediate:true }); } catch { Object.assign(state, patch); try { saveState?.(); } catch {}; renderSoon(); }
-    if (top) window.setTimeout(() => { try { window.scrollTo({ top:0, behavior:"smooth" }); } catch { window.scrollTo(0,0); } }, 40);
-  }
-  function findMystery(id){
-    try { return mysteryById?.(id) || null; } catch {}
-    try { return (data.mysteries || []).find(m => m.id === id) || null; } catch {}
-    return null;
-  }
-  function openMysteryById(id, feedback = ""){
-    const m = findMystery(id);
-    if (!m) return setPatch({ tab:"mystery", archiveFeedback:"Mystère introuvable." });
-    const disc = (() => { try { return mysteryDisciplineId?.(m) || activeDisciplineId?.() || "history"; } catch { return "history"; } })();
-    setPatch({ tab:"mystery", currentMysteryId:m.id, currentMysteryDiscipline:disc, currentDiscipline:disc, archiveFeedback:feedback });
-  }
-  function unlockAndOpen(id){
-    const m = findMystery(id);
-    if (!m) return openMysteryById(id, "Mystère introuvable.");
-    let accessible = false;
-    try { accessible = Boolean(isAccessibleMystery?.(m.id)); } catch {}
-    if (!accessible) {
-      const cost = Number(typeof ARCHIVE_UNLOCK_COST !== "undefined" ? ARCHIVE_UNLOCK_COST : 2) || 2;
-      if (Number(state.gems || 0) < cost) return setPatch({ tab:"mystery", archiveFeedback:`Il te faut ${cost} gemmes pour ouvrir cette archive.` }, false);
-      state.gems = Math.max(0, Number(state.gems || 0) - cost);
-      state.unlockedMysteries = { ...(state.unlockedMysteries || {}), [m.id]: { at:now(), cost } };
-      state.achievements = { ...(state.achievements || {}), firstArchive:true };
-    }
-    openMysteryById(m.id, accessible ? "" : "Archive débloquée : elle est ouverte ci-dessus.");
-  }
-  try { unlockPastMystery = function beta164UnlockPastMystery(id){ unlockAndOpen(id); }; } catch {}
-  document.addEventListener("click", event => {
-    if (event.target?.closest?.("input,textarea,select,[contenteditable='true']")) return;
-    const target = event.target?.closest?.("[data-unlock-mystery],[data-open-mystery-id],[data-open-linked-mystery],[data-open-daily-mystery],[data-back-learn],[data-back-chapters],[data-back-social],[data-home],[data-back-home],[data-go-home],[data-tab]");
-    if (!target) return;
-    const tag = target.tagName ? target.tagName.toLowerCase() : "";
-    if (tag !== "button" && !target.hasAttribute("role") && !target.matches("[data-tab]")) return;
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    if (target.matches("[data-unlock-mystery]")) return unlockAndOpen(target.dataset.unlockMystery);
-    if (target.matches("[data-open-mystery-id]")) return openMysteryById(target.dataset.openMysteryId);
-    if (target.matches("[data-open-linked-mystery]")) return openMysteryById(target.dataset.openLinkedMystery);
-    if (target.matches("[data-open-daily-mystery]")) { const d = (() => { try { return dailyMystery(); } catch { return null; } })(); return d?.id ? openMysteryById(d.id) : setPatch({ tab:"mystery" }); }
-    if (target.matches("[data-back-learn]")) return setPatch({ tab:"learn", lessonFocus:null, lessonView:"express" });
-    if (target.matches("[data-back-chapters]")) return setPatch({ tab:"learn", learnDrill:"chapters", learnSearch:"", learnFilter:"all" });
-    if (target.matches("[data-back-social]")) return setPatch({ tab:"rank", rankScope:state.rankScope || "daily" });
-    if (target.matches("[data-home],[data-back-home],[data-go-home]")) return setPatch({ tab:"home" });
-    if (target.matches("[data-tab]")) {
-      const tab = str(target.dataset.tab);
-      if (!tab) return;
-      return setPatch({ tab });
-    }
-  }, true);
+  function findMystery(id){ try { return mysteryById?.(id) || null; } catch { return null; } }
+  function openMystery(id, feedback=""){ const m=findMystery(id); if(!m) return setSafe({tab:"mystery",archiveFeedback:"Mystère introuvable."}); let d="history"; try{d=mysteryDisciplineId?.(m)||activeDisciplineId?.()||"history"}catch{} setSafe({tab:"mystery",currentMysteryId:m.id,currentMysteryDiscipline:d,currentDiscipline:d,archiveFeedback:feedback}); topSoon(); }
+  unlockPastMystery = function beta165UnlockPastMystery(id){ const m=findMystery(id); if(!m) return openMystery(id,"Mystère introuvable."); let accessible=false; try{accessible=Boolean(isAccessibleMystery(m.id))}catch{} if(!accessible){ const cost=Number(typeof ARCHIVE_UNLOCK_COST!=="undefined"?ARCHIVE_UNLOCK_COST:2)||2; if(Number(state.gems||0)<cost) return setSafe({tab:"mystery",archiveFeedback:`Il te faut ${cost} gemmes pour ouvrir cette archive. Tu en as ${Number(state.gems||0)}.`}); state.gems=Math.max(0,Number(state.gems||0)-cost); state.unlockedMysteries={...(state.unlockedMysteries||{}),[m.id]:{at:Date.now(),cost}}; state.achievements={...(state.achievements||{}),firstArchive:true}; try{saveState()}catch{} } openMystery(m.id,accessible?"":"Archive débloquée : dossier ouvert."); };
 
-  // Sauvegarde : ne plus casser friends, conserver pseudo, synchroniser quand l'XP change.
-  if (typeof saveState === "function") {
-    const previousSaveState = saveState;
-    saveState = function beta164SaveState(){ repairSocialState(); saveProfileRecord("save"); return previousSaveState(); };
-  }
-  if (typeof setState === "function") {
-    const previousSetState = setState;
-    setState = function beta164SetState(patch = {}, options = {}){
-      const xpBefore = Number(state.xp || 0);
-      if (patch && typeof patch === "object" && Object.prototype.hasOwnProperty.call(patch, "friends")) patch = { ...patch, friends: normalizeFriendMap(patch.friends) };
-      if (patch && typeof patch === "object" && Object.prototype.hasOwnProperty.call(patch, "pseudo")) {
-        const p = goodPseudo(patch.pseudo) || pseudo(patch.pseudo) || state.pseudo || "Invité";
-        patch = { ...patch, pseudo:p };
-        writeJson(PROFILE_KEY, { pseudo:p, friendCode:myCode(), playerId:myId(), xp:Number(state.xp || 0), savedAt:now(), version:BETA164_VERSION, source:"setState" });
-      }
-      const result = previousSetState(patch, options);
-      if (repairSocialState()) queueSave();
-      if (Number(state.xp || 0) !== xpBefore) syncXpProfile("xp-change");
-      return result;
-    };
-  }
-
-  try {
-    hydrateProfile();
-    repairSocialState();
-    syncXpProfile("startup");
-    const style = document.createElement("style");
-    style.id = "beta164-stability-general-style";
-    style.textContent = `
-      .beta164-add-friend-card input,[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase;}
-      .beta164-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
-      .beta164-friend-add-form button{min-height:52px!important;touch-action:manipulation!important;}
-      .beta164-friend-ok{border-color:rgba(72,213,151,.42)!important;background:linear-gradient(180deg,rgba(72,213,151,.12),rgba(255,255,255,.035))!important;}
-      .beta164-pending-actions{margin-top:10px;display:grid;grid-template-columns:1fr;gap:8px;}
-      .skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important;}
-      @media(max-width:430px){.beta164-friend-add-form{grid-template-columns:1fr}.beta164-friend-add-form button{width:100%;}}
-    `;
-    if (!document.getElementById(style.id)) document.head.appendChild(style);
-    state.beta164StabilityGeneralFixVersion = BETA164_VERSION;
-    window.HistoDaily = { ...(window.HistoDaily || {}), version:BETA164_VERSION, stabilityGeneralFix:true, leaderboardTotalXp:true };
-    queueSave();
-    if (["profile","rank","publicProfile"].includes(state.tab)) renderSoon();
-  } catch (error) {
-    try { console.warn("beta164 stability general fix", error); } catch {}
-  }
-})();
-
-/* BETA164 — quiz en flux une-question, clics robustes et rendu allégé */
-(() => {
-  const BETA164_VERSION = "1.0.0-beta.164";
-  const html = value => (typeof escapeHtml === "function" ? escapeHtml(value) : String(value ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;","\"":"&quot;"}[c])));
-  const toKey = value => String(value ?? "");
-  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-  const readQuizMap = key => (state && typeof state[key] === "object" && state[key]) ? state[key] : {};
-  const firstUnansweredIndex = (progress, total) => {
-    const answers = progress?.answers || {};
-    for (let i = 0; i < total; i += 1) {
-      if (!Number.isInteger(answers[i]) && !Number.isInteger(answers[String(i)])) return i;
-    }
-    return Math.max(0, total - 1);
-  };
-  const quizRuntimeForLesson = (lessonId, total) => {
-    const key = toKey(lessonId);
-    const progress = lessonQuizState(key);
-    const answeredCount = Object.keys(progress.answers || {}).length;
-    const correctCount = Object.values(progress.correct || {}).filter(Boolean).length;
-    const threshold = lessonQuizPassThreshold(total);
-    const finished = total > 0 && answeredCount >= total;
-    const passed = Boolean(progress.passed || (finished && correctCount >= threshold));
-    let step = Number(readQuizMap("quizStep")[key]);
-    if (!Number.isInteger(step) || step < 0 || step >= total) step = firstUnansweredIndex(progress, total);
-    if (!readQuizMap("quizAwaitContinue")[key] && !finished && Number.isInteger(progress.answers?.[step])) step = firstUnansweredIndex(progress, total);
-    return { key, progress, step: clamp(step, 0, Math.max(0, total - 1)), answeredCount, correctCount, threshold, finished, passed };
-  };
-  function setQuizRuntime(lessonId, patch = {}) {
-    const key = toKey(lessonId);
-    const quizStep = { ...readQuizMap("quizStep") };
-    const quizAwaitContinue = { ...readQuizMap("quizAwaitContinue") };
-    if (Object.prototype.hasOwnProperty.call(patch, "step")) quizStep[key] = patch.step;
-    if (Object.prototype.hasOwnProperty.call(patch, "awaitContinue")) quizAwaitContinue[key] = Boolean(patch.awaitContinue);
-    setState({ quizStep, quizAwaitContinue, lessonView: "quiz", lessonFocus: null });
-  }
-  function advanceQuizStep(lessonId) {
-    const lesson = allLessons().find(l => toKey(l.id) === toKey(lessonId));
-    if (!lesson) return;
-    const content = buildLessonContent(lesson);
-    const quizItems = normalizeQuizPack(content.quiz, lesson, content);
-    const progress = lessonQuizState(lesson.id);
-    const next = firstUnansweredIndex(progress, quizItems.length);
-    setQuizRuntime(lesson.id, { step: next, awaitContinue: false });
-    window.setTimeout(() => { try { document.querySelector("[data-beta164-current-question]")?.scrollIntoView({ behavior:"smooth", block:"start" }); } catch {} }, 40);
-  }
-
-  handleQuizChoice = function beta164HandleQuizChoice(lessonId, questionIndex, choiceIndex) {
-    const lesson = allLessons().find(l => toKey(l.id) === toKey(lessonId));
-    if (!lesson) return false;
-    const content = buildLessonContent(lesson);
-    const quizItems = normalizeQuizPack(content.quiz, lesson, content);
-    const item = quizItems[questionIndex];
-    if (!item) return false;
-    const key = toKey(lesson.id);
-    const progress = lessonQuizState(key);
-    if (Number.isInteger(progress.answers?.[questionIndex]) || Number.isInteger(progress.answers?.[String(questionIndex)]) || progress.passed) return false;
-    const choices = quizChoicesFor(item, quizItems, lesson, content, questionIndex);
-    const choice = choices[choiceIndex];
-    if (!choice) return false;
-
-    const answers = { ...(progress.answers || {}), [questionIndex]: choiceIndex };
-    const correct = { ...(progress.correct || {}) };
-    correct[questionIndex] = Boolean(choice.correct);
-    const correctCount = Object.values(correct).filter(Boolean).length;
-    const answeredCount = Object.keys(answers).length;
-    const threshold = lessonQuizPassThreshold(quizItems.length);
-    const passed = answeredCount >= quizItems.length && correctCount >= threshold;
-    const failed = answeredCount >= quizItems.length && !passed;
-    const nextQuizState = { ...progress, answers, correct, attempts: (progress.attempts || 0) + 1, passed };
-    const quizProgress = { ...(state.quizProgress || {}), [key]: nextQuizState };
-    const newlyCompleted = passed && !lessonDone(lesson.id);
-    const completedLessons = newlyCompleted ? { ...(state.completedLessons || {}), [lesson.id]: true } : state.completedLessons;
-    const achievements = newlyCompleted ? { ...(state.achievements || {}), firstLesson: true } : state.achievements;
-    const xpGain = newlyCompleted ? (lesson?.xp || 55) : 0;
-    const quizFeedback = {
-      ...(state.quizFeedback || {}),
-      [key]: passed
-        ? `Quiz réussi : ${correctCount}/${quizItems.length}. Cours validé automatiquement.`
-        : failed
-          ? `Score : ${correctCount}/${quizItems.length}. Il faut au moins ${threshold}/${quizItems.length} pour valider.`
-          : choice.correct
-            ? `Bonne réponse. ${correctCount}/${quizItems.length} pour l’instant.`
-            : `Réponse fausse. Continue : validation à ${threshold}/${quizItems.length}.`
-    };
-    const quizStep = { ...readQuizMap("quizStep"), [key]: questionIndex };
-    const quizAwaitContinue = { ...readQuizMap("quizAwaitContinue"), [key]: true };
-    setState({ quizProgress, quizFeedback, completedLessons, achievements, xp: Number(state.xp || 0) + xpGain, quizStep, quizAwaitContinue, lessonView: "quiz", lessonFocus: null });
-    if (xpGain) showXPToast(xpGain, "leçon validée");
-    return true;
-  };
-
-  resetLessonQuiz = function beta164ResetLessonQuiz(lessonId) {
-    const key = toKey(lessonId);
-    const quizProgress = { ...(state.quizProgress || {}) };
-    const quizFeedback = { ...(state.quizFeedback || {}) };
-    const quizStep = { ...readQuizMap("quizStep") };
-    const quizAwaitContinue = { ...readQuizMap("quizAwaitContinue") };
-    delete quizProgress[key];
-    delete quizFeedback[key];
-    delete quizStep[key];
-    delete quizAwaitContinue[key];
-    setState({ quizProgress, quizFeedback, quizStep, quizAwaitContinue, lessonView: "quiz", lessonFocus: null });
-  };
-
-  function beta164QuizQuestionMarkup(lesson, content, quizItems) {
-    const total = quizItems.length;
-    const runtime = quizRuntimeForLesson(lesson.id, total);
-    const progress = runtime.progress;
-    const feedback = state.quizFeedback?.[lesson.id] || state.quizFeedback?.[toKey(lesson.id)] || "";
-    if (!total) {
-      return `<section class="quiz-section isolated-quiz final-quiz beta164-quiz-runner"><div class="section-title-row"><h2>Quiz indisponible</h2><small>0 question</small></div><p>Ce cours n’a pas encore de quiz utilisable.</p></section>`;
-    }
-    if (runtime.finished || runtime.passed) {
-      return `<section class="quiz-section isolated-quiz final-quiz beta164-quiz-runner" data-beta164-current-question>
-        <div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${runtime.correctCount}/${total} bonnes</small></div>
-        <div class="beta164-score-panel ${runtime.passed ? "good" : "bad"}"><b>${runtime.passed ? "✅ Cours validé" : "Score insuffisant"}</b><span>${runtime.passed ? "L’XP du cours est prise en compte dans le total et le classement." : `Il faut ${runtime.threshold}/${total}. Recommence pour valider le cours.`}</span></div>
-        ${feedback ? `<p class="quiz-global-feedback ${runtime.passed ? "good" : ""}">${html(feedback)}</p>` : ""}
-        <div class="quiz-footer beta164-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="express">Relire le cours</button></div>
-      </section>`;
-    }
-    const index = runtime.step;
-    const item = quizItems[index];
-    const choices = quizChoicesFor(item, quizItems, lesson, content, index);
-    const selectedRaw = progress.answers?.[index] ?? progress.answers?.[String(index)];
-    const selected = Number.isInteger(selectedRaw) ? selectedRaw : null;
-    const hasAnswered = Number.isInteger(selected);
-    const selectedChoice = hasAnswered ? choices[selected] : null;
-    const isCorrect = Boolean(progress.correct?.[index] || progress.correct?.[String(index)]);
-    const remaining = Math.max(0, total - runtime.answeredCount);
-    return `<section class="quiz-section isolated-quiz final-quiz beta164-quiz-runner" data-beta164-current-question>
-      <div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${index + 1}/${total}</h2></div><small>${runtime.correctCount}/${total} bonnes · seuil ${runtime.threshold}/${total}</small></div>
-      <div class="beta164-quiz-progress" aria-hidden="true">${quizItems.map((_, i) => `<i class="${Number.isInteger(progress.answers?.[i]) || Number.isInteger(progress.answers?.[String(i)]) ? (progress.correct?.[i] || progress.correct?.[String(i)] ? "ok" : "ko") : i === index ? "current" : ""}"></i>`).join("")}</div>
-      ${feedback ? `<p class="quiz-global-feedback">${html(feedback)}</p>` : ""}
-      <article class="quiz-card beta164-single-question ${hasAnswered ? (isCorrect ? "correct" : "wrong") : "open"}">
-        <div class="quiz-question-head"><b>${index + 1}</b><div>${item.kind ? `<em>${html(item.kind)}</em>` : ""}<h3>${html(item.q)}</h3></div></div>
-        <div class="quiz-choices" role="group" aria-label="Question ${index + 1}">
-          ${choices.map((choice, choiceIndex) => {
-            const chosen = selected === choiceIndex;
-            const cls = chosen ? (choice.correct ? "selected correct" : "selected wrong") : "";
-            return `<button type="button" class="quiz-choice ${cls}" data-quiz-choice="${index}" data-choice-index="${choiceIndex}" ${hasAnswered ? "disabled" : ""}><span>${String.fromCharCode(65 + choiceIndex)}</span>${html(choice.text)}</button>`;
-          }).join("")}
-        </div>
-        ${hasAnswered ? (isCorrect
-          ? `<p class="quiz-result good"><b>Correct.</b> ${html(item.why || "Tu as retrouvé l’idée importante du cours.")}</p>${item.evidence ? `<p class="quiz-evidence"><strong>À retrouver :</strong> ${html(item.evidence)}</p>` : ""}`
-          : `<p class="quiz-result bad"><b>Raté.</b> ${html(selectedChoice?.trap || item.trap || "La réponse ne colle pas assez au cours.")}</p>`)
-          : `<p class="quiz-result neutral">Choisis une réponse. Une seule question est affichée à la fois pour éviter les listes lourdes.</p>`}
-      </article>
-      <div class="quiz-footer beta164-quiz-footer">
-        <button type="button" class="ghost" data-reset-quiz>Recommencer</button>
-        ${hasAnswered ? `<button type="button" data-quiz-next="${html(lesson.id)}">${remaining <= 0 ? "Voir le bilan" : "Continuer"}</button>` : `<span>Réponds pour passer à la suite.</span>`}
-      </div>
-    </section>`;
-  }
-
-  const previousRenderLessonText = renderLessonText;
-  renderLessonText = function beta164RenderLessonText(lesson, content) {
-    const view = lessonView();
-    if (view !== "quiz") return previousRenderLessonText(lesson, content);
-    const quizItems = normalizeQuizPack(content.quiz, lesson, content);
-    const progressForHeader = quizProgressForLesson(lesson.id, quizItems.length);
-    const fastLabel = content.mystery ? "Après le mystère" : "Lecture rapide";
-    const keyFacts = lessonKeyFacts(lesson, content);
-    const keyFactsMarkup = keyFacts.length ? `<div class="key-facts beta164-quiz-facts"><b>Repères utiles</b>${keyFacts.slice(0, 4).map(fact => `<span>${html(fact)}</span>`).join("")}</div>` : "";
-    const intro = `<section class="lesson-hook beta164-lesson-hook"><span class="card-label">${content.ready ? "⭐ Sélection" : fastLabel}</span><p>${html(content.hook)}</p></section>`;
-    const tabs = `<section class="lesson-choice-panel quiz-flow-panel beta164-quiz-tabs" aria-label="Quiz final">
-      <div><span class="card-label">Étape finale</span><h2>Quiz en 5 étapes</h2><p>Une question s’ouvre, tu réponds, puis tu passes à la suivante. C’est plus lisible et beaucoup plus léger que l’ancienne liste complète.</p></div>
-      <div class="lesson-view-tabs">${lessonTabButton("express", "⚡ Relire express", "court")}${lessonTabButton("complete", "📚 Relire complet", "5 min")}</div>
-      <small>${progressForHeader.correctCount}/${quizItems.length} bonnes · seuil ${progressForHeader.threshold}/${quizItems.length}</small>
-    </section>`;
-    return `${intro}${tabs}${keyFactsMarkup}${beta164QuizQuestionMarkup(lesson, content, quizItems)}`;
-  };
-
-  document.addEventListener("click", event => {
-    const choice = event.target?.closest?.("[data-quiz-choice]");
-    const next = event.target?.closest?.("[data-quiz-next]");
-    const reset = event.target?.closest?.("[data-reset-quiz]");
-    if (!choice && !next && !reset) return;
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    event.stopImmediatePropagation?.();
-    if (choice) {
-      if (choice.disabled) return;
-      const lessonId = state.currentLessonId;
-      handleQuizChoice(lessonId, Number(choice.dataset.quizChoice), Number(choice.dataset.choiceIndex));
-      return;
-    }
-    if (next) {
-      advanceQuizStep(next.dataset.quizNext || state.currentLessonId);
-      return;
-    }
-    if (reset) resetLessonQuiz(state.currentLessonId);
-  }, true);
-
-  try {
-    const style = document.createElement("style");
-    style.id = "beta164-quiz-flow-style";
-    style.textContent = `
-      .beta164-quiz-runner{content-visibility:auto;contain-intrinsic-size:640px;overflow:clip;}
-      .beta164-quiz-tabs{margin-bottom:12px;}
-      .beta164-quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 16px;}
-      .beta164-quiz-progress i{height:8px;border-radius:999px;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
-      .beta164-quiz-progress i.current{background:rgba(246,196,83,.82);}
-      .beta164-quiz-progress i.ok{background:rgba(72,213,151,.85);}
-      .beta164-quiz-progress i.ko{background:rgba(251,113,133,.82);}
-      .beta164-single-question{margin-top:10px;}
-      .beta164-single-question .quiz-choice{touch-action:manipulation;pointer-events:auto;min-height:54px;}
-      .beta164-single-question .quiz-choice:not(:disabled){cursor:pointer;}
-      .beta164-quiz-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px;}
-      .beta164-quiz-footer button{min-height:48px;}
-      .beta164-score-panel{display:grid;gap:4px;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055);}
-      .beta164-score-panel.good{border-color:rgba(72,213,151,.45);background:rgba(72,213,151,.12);}
-      .beta164-score-panel.bad{border-color:rgba(251,113,133,.45);background:rgba(251,113,133,.10);}
-      .beta164-quiz-facts{margin:10px 0 14px;}
-      @media(max-width:520px){.beta164-quiz-footer{display:grid;grid-template-columns:1fr}.beta164-quiz-footer button{width:100%;}.beta164-quiz-tabs .lesson-view-tabs{grid-template-columns:1fr;}}
-    `;
-    if (!document.getElementById(style.id)) document.head.appendChild(style);
-    window.HistoDaily = { ...(window.HistoDaily || {}), version:BETA164_VERSION, quizFlow:true, oneQuestionQuiz:true };
-    state.beta164QuizFlowVersion = BETA164_VERSION;
-    queueSaveState?.();
-  } catch (error) {
-    try { console.warn("beta164 quiz flow", error); } catch {}
-  }
+  function bindStableActions(){ try{document.querySelectorAll("[data-rank-scope]").forEach(b=>b.onclick=()=>setSafe({tab:"rank",rankScope:b.dataset.rankScope||"daily"}))}catch{} try{document.querySelectorAll("[data-view-profile]").forEach(b=>b.onclick=()=>viewProfile?.(b.dataset.viewProfile))}catch{} try{document.querySelectorAll("[data-open-profile]").forEach(b=>b.onclick=()=>setSafe({tab:"profile"}))}catch{} try{document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>setSafe({tab:"home"}))}catch{} }
+  document.addEventListener("input",e=>{ const input=e.target?.closest?.("[data-friend-code-input]"); if(!input) return; state.friendCodeDraft=input.value||""; try{localStorage.setItem(FRIEND_DRAFT_KEY,state.friendCodeDraft)}catch{} },true);
+  document.addEventListener("submit",e=>{ const form=e.target?.closest?.("[data-add-friend]"); if(!form) return; e.preventDefault?.(); e.stopPropagation?.(); addFriendValue(form.querySelector("[data-friend-code-input],input[name='friendCode'],input")?.value||""); },true);
+  document.addEventListener("click",e=>{ const choice=e.target?.closest?.("[data-quiz-choice]"), next=e.target?.closest?.("[data-quiz-next]"), reset=e.target?.closest?.("[data-reset-quiz]"); if(!choice&&!next&&!reset) return; e.preventDefault?.(); e.stopPropagation?.(); e.stopImmediatePropagation?.(); if(choice) return handleQuizChoice(state.currentLessonId,Number(choice.dataset.quizChoice),Number(choice.dataset.choiceIndex)); if(next) return advanceQuiz(next.dataset.quizNext||state.currentLessonId); if(reset) return resetLessonQuiz(state.currentLessonId); },true);
+  document.addEventListener("click",e=>{ if(e.target?.closest?.("input,textarea,select,[contenteditable='true']")) return; const add=e.target?.closest?.("[data-add-friend-button]"); if(add){ e.preventDefault?.(); e.stopPropagation?.(); const form=add.closest("[data-add-friend]"); return addFriendValue(form?.querySelector("[data-friend-code-input],input[name='friendCode'],input")?.value||""); } const rank=e.target?.closest?.("[data-rank-scope]"); if(rank){ const scope=VALID_SCOPES.has(rank.dataset.rankScope)?rank.dataset.rankScope:"daily"; e.preventDefault?.(); e.stopPropagation?.(); e.stopImmediatePropagation?.(); setSafe({tab:"rank",rankScope:scope}); topSoon(); return; } const nav=e.target?.closest?.("[data-home],[data-back-home],[data-go-home],[data-back-learn],[data-back-chapters],[data-back-social],[data-profile-rank],[data-open-rank],[data-unlock-mystery],[data-open-mystery-id],[data-open-daily-mystery]"); if(!nav) return; e.preventDefault?.(); e.stopPropagation?.(); if(nav.matches("[data-unlock-mystery]")) return unlockPastMystery(nav.dataset.unlockMystery); if(nav.matches("[data-open-mystery-id]")) return openMystery(nav.dataset.openMysteryId); if(nav.matches("[data-open-daily-mystery]")){let d=null;try{d=dailyMystery?.()}catch{} return d?.id?openMystery(d.id):setSafe({tab:"mystery"});} if(nav.matches("[data-back-learn]")) return setSafe({tab:"learn",lessonFocus:null,lessonView:"express"}); if(nav.matches("[data-back-chapters]")) return setSafe({tab:"learn",learnDrill:"chapters",learnSearch:"",learnFilter:"all"}); if(nav.matches("[data-back-social]")) return setSafe({tab:"rank",rankScope:state.rankScope||"daily"}); if(nav.matches("[data-profile-rank]")) return setSafe({tab:"rank",rankScope:nav.dataset.profileRank||"daily"}); if(nav.matches("[data-open-rank]")) return setSafe({tab:"rank",rankScope:nav.dataset.openRank||"daily"}); return setSafe({tab:"home"}); },true);
+  const oldSave = typeof saveState === "function" ? saveState : null; if(oldSave) saveState=function beta165SaveState(){ repairSocial(); saveProfile("save"); return oldSave(); };
+  const oldSet = typeof setState === "function" ? setState : null; if(oldSet) setState=function beta165SetState(patch={},options={}){ if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"rankScope")) patch={...patch,rankScope:VALID_SCOPES.has(patch.rankScope)?patch.rankScope:"daily"}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"friends")) patch={...patch,friends:normalizeFriends(patch.friends)}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"pseudo")) patch={...patch,pseudo:str(patch.pseudo).slice(0,18)||state.pseudo||"Invité"}; const r=oldSet(patch,options); try{if(repairSocial()) queueSaveState?.(120)}catch{} try{saveProfile("setState")}catch{} return r; };
+  try { repairSocial(); saveProfile("startup"); const style=document.createElement("style"); style.id="beta165-stabilisation-style"; style.textContent=`[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase}.beta165-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px}.beta165-friend-add-form button{min-height:52px}.rank-tabs [data-rank-scope]{pointer-events:auto!important;touch-action:manipulation!important;position:relative;z-index:3}.beta165-rank-summary{grid-template-columns:repeat(4,minmax(0,1fr))}.beta165-leaderboard .rank-row{touch-action:manipulation;pointer-events:auto}.beta165-quiz-runner{content-visibility:auto;contain-intrinsic-size:620px;overflow:clip}.beta165-quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 16px}.beta165-quiz-progress i{height:8px;border-radius:999px;background:rgba(255,255,255,.14)}.beta165-quiz-progress i.current{background:rgba(246,196,83,.82)}.beta165-quiz-progress i.ok{background:rgba(72,213,151,.85)}.beta165-quiz-progress i.ko{background:rgba(251,113,133,.82)}.beta165-single-question .quiz-choice{touch-action:manipulation;pointer-events:auto;min-height:54px}.beta165-quiz-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px}.beta165-quiz-footer button{min-height:48px}.beta165-score-panel{display:grid;gap:4px;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055)}.beta165-score-panel.good{border-color:rgba(72,213,151,.45);background:rgba(72,213,151,.12)}.complete-course-panel,.leaderboard-modern,.friends-list-card{content-visibility:auto;contain-intrinsic-size:900px}.skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important}@media(max-width:520px){.beta165-rank-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.beta165-friend-add-form,.beta165-quiz-footer{grid-template-columns:1fr;display:grid}.beta165-friend-add-form button,.beta165-quiz-footer button{width:100%}}`; if(!document.getElementById(style.id)) document.head.appendChild(style); state.beta165StabilisationVersion=BETA165_VERSION; window.HistoDaily={...(window.HistoDaily||{}),version:BETA165_VERSION,beta165Stabilisation:true,quizFlow:true,leaderboardTotalXp:true}; queueSaveState?.(150); if(["rank","profile","lesson","mystery","publicProfile"].includes(state.tab)) renderSoon(); } catch(e){ try{console.warn("beta165",e)}catch{} }
 })();
