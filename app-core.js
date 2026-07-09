@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.158-stability",
-  assetsVersion: "1.0.0-beta.158-stability",
+  version: "1.0.0-beta.159",
+  assetsVersion: "1.0.0-beta.159",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -18,9 +18,9 @@ window.HISTODAILY_CORE = {
     versionLabel: "mise à jour",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Hotfix stabilité : retrait de la couche JS beta157 qui pouvait planter certains onglets.",
-      "Optimisation prudente : CSS plus léger, sans modifier les listes de cours ni les rendus JS.",
-      "Cache PWA renouvelé pour forcer le chargement de la version saine."
+      "Hotfix stabilité : rollback des optimisations expérimentales, navigation plus sûre.",
+      "Social : correction des demandes d’amis qui restaient en attente après acceptation.",
+      "Secours : écran de réparation simplifié avec boutons fiables."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

@@ -1,14 +1,13 @@
-const CACHE_NAME = "histodaily-beta158-stability-hotfix-v1";
-const APP_VERSION = "1.0.0-beta.158-stability";
+const CACHE_NAME = "histodaily-beta159-stable-social-hotfix-v1";
+const APP_VERSION = "1.0.0-beta.159";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.158-stability",
-  "/styles-perf-safe.css?v=1.0.0-beta.158-stability",
-  "/app-core.js?v=1.0.0-beta.158-stability",
-  "/app-onboarding.js?v=1.0.0-beta.158-stability",
-  "/app.js?v=1.0.0-beta.158-stability",
-  "/lessons-lite.js?v=1.0.0-beta.158-stability",
+  "/styles.css?v=1.0.0-beta.159",
+  "/app-core.js?v=1.0.0-beta.159",
+  "/app-onboarding.js?v=1.0.0-beta.159",
+  "/app.js?v=1.0.0-beta.159",
+  "/lessons-lite.js?v=1.0.0-beta.159",
   "/manifest.webmanifest"
 ];
 

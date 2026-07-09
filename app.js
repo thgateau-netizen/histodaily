@@ -18985,3 +18985,297 @@ try {
   queueSaveState?.(150);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA156_RELEASE_READINESS_VERSION, releaseReadiness: true, privateBetaGuard: true };
 } catch (error) { try { beta153RecordClientIssue?.("beta156", error?.message || error); } catch {} }
+
+/* =========================================================
+   Beta 159 — hotfix stabilité + social
+   Objectif : repartir proprement après beta157/beta158.
+   - pas d'optimisation JS agressive
+   - réparation map d'amis vs tableau
+   - demande sortante supprimée quand l'ami existe déjà
+   - écran secours cliquable et moins intrusif
+   ========================================================= */
+const BETA159_STABLE_SOCIAL_HOTFIX_VERSION = "1.0.0-beta.159";
+(function beta159StableSocialHotfix(){
+  const OUTBOX_KEY = typeof BETA127_OUTBOX_KEY !== "undefined" ? BETA127_OUTBOX_KEY : "histodaily_social_request_outbox_v1";
+  let lastTabTapAt = 0;
+  let lastRenderSignature = "";
+
+  function safeString(value = "") { return String(value || ""); }
+  function safeNormalizeCode(value = "") {
+    try { return normalizeFriendCode(value || ""); } catch { return safeString(value).trim().toUpperCase(); }
+  }
+  function safeSuffix(value = "") {
+    try { return friendCodeSuffix(value || ""); } catch { return safeNormalizeCode(value).split("-").pop() || ""; }
+  }
+  function safePseudo(value = "Joueur") {
+    try { return sanitizePseudo(value || "Joueur") || "Joueur"; } catch { return safeString(value || "Joueur").trim() || "Joueur"; }
+  }
+  function friendIdentity(item = {}) {
+    const code = safeNormalizeCode(item.friendCode || item.friend_code || item.code || item.id || "");
+    const playerId = safeString(item.playerId || item.player_id || item.friend_player_id || item.friendPlayerId || "");
+    const suffix = safeSuffix(code);
+    return { code, playerId, suffix };
+  }
+  function friendMapKey(item = {}, fallback = "") {
+    const id = friendIdentity(item);
+    return id.code || (id.playerId ? `player:${id.playerId}` : "") || safeNormalizeCode(fallback) || safeString(fallback || "");
+  }
+  function addFriendToMap(map, item = {}, fallbackKey = "") {
+    if (!item || typeof item !== "object") return;
+    const id = friendIdentity({ ...item, code: item.code || item.friendCode || fallbackKey });
+    const key = friendMapKey({ ...item, code: item.code || item.friendCode || fallbackKey }, fallbackKey);
+    if (!key) return;
+    const parsed = (() => { try { return parseFriendCode(id.code); } catch { return null; } })();
+    const name = safePseudo(item.name || item.pseudo || item.friendPseudo || item.friend_pseudo || parsed?.pseudo || "Ami");
+    const current = map[key] || {};
+    map[key] = {
+      ...current,
+      ...item,
+      id: id.code || item.id || key,
+      code: id.code || item.code || item.friendCode || "",
+      friendCode: id.code || item.friendCode || item.code || "",
+      name,
+      pseudo: item.pseudo || name,
+      playerId: id.playerId || item.playerId || item.player_id || item.friend_player_id || "",
+      level: Number(item.level || current.level || 1),
+      xp: Number(item.xp || current.xp || 0),
+      solved: Number(item.solved || item.solved_count || current.solved || 0),
+      streak: Number(item.streak || current.streak || 0),
+      addedAt: Number(item.addedAt || current.addedAt || Date.now()),
+      server: Boolean(item.server || current.server),
+      syncedAt: item.syncedAt || current.syncedAt || 0
+    };
+  }
+  function beta159FriendMap() {
+    const raw = state?.friends;
+    const map = {};
+    if (Array.isArray(raw)) raw.forEach((friend, index) => addFriendToMap(map, friend, friend?.id || friend?.code || `friend-${index}`));
+    else if (raw && typeof raw === "object") Object.entries(raw).forEach(([key, friend]) => addFriendToMap(map, friend, key));
+
+    const myCode = (() => { try { return safeNormalizeCode(friendCode?.() || ""); } catch { return ""; } })();
+    const myId = (() => { try { return safeString(playerIdMe?.() || ""); } catch { return ""; } })();
+    Object.keys(map).forEach(key => {
+      const id = friendIdentity(map[key]);
+      if ((myCode && id.code === myCode) || (myId && id.playerId === myId)) delete map[key];
+    });
+    return map;
+  }
+  function beta159RepairFriendsState() {
+    if (!state || typeof state !== "object") return {};
+    const next = beta159FriendMap();
+    state.friends = next;
+    return next;
+  }
+  function requestIdentity(req = {}) {
+    const code = safeNormalizeCode(req.otherFriendCode || req.requesterFriendCode || req.targetFriendCode || req.friendCode || req.code || "");
+    const playerId = safeString(req.otherPlayerId || req.requesterPlayerId || req.targetPlayerId || req.playerId || "");
+    const suffix = safeSuffix(code);
+    return { code, playerId, suffix };
+  }
+  function playerIdentity(player = {}) {
+    const code = safeNormalizeCode(player.friendCode || player.friend_code || player.code || "");
+    const playerId = safeString(player.playerId || player.player_id || (safeString(player.id).startsWith("me-") ? "" : player.id) || "");
+    const suffix = safeSuffix(code);
+    return { code, playerId, suffix };
+  }
+  function sameIdentity(a = {}, b = {}) {
+    return Boolean((a.playerId && b.playerId && a.playerId === b.playerId) || (a.code && b.code && a.code === b.code) || (a.suffix && b.suffix && a.suffix === b.suffix));
+  }
+  function beta159KnownFriend(playerOrRequest = {}) {
+    const friends = beta159RepairFriendsState();
+    const target = playerOrRequest.direction || playerOrRequest.requesterPlayerId || playerOrRequest.targetPlayerId || playerOrRequest.otherPlayerId ? requestIdentity(playerOrRequest) : playerIdentity(playerOrRequest);
+    if (!target.code && !target.playerId && !target.suffix) return null;
+    return Object.values(friends).find(friend => sameIdentity(friendIdentity(friend), target)) || null;
+  }
+  function beta159CleanRequests(requests = {}) {
+    const cleanList = list => (Array.isArray(list) ? list : []).filter(req => !beta159KnownFriend(req));
+    return {
+      incoming: cleanList(requests.incoming),
+      outgoing: cleanList(requests.outgoing),
+      history: Array.isArray(requests.history) ? requests.history.slice(0, 30) : []
+    };
+  }
+  function beta159RepairRequestState() {
+    if (!state || typeof state !== "object") return;
+    const current = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : (state.friendRequests || {});
+    state.friendRequests = beta159CleanRequests(current);
+    if (Array.isArray(state.friendRequestOutbox)) state.friendRequestOutbox = state.friendRequestOutbox.filter(req => !beta159KnownFriend(req));
+    try {
+      const raw = localStorage.getItem(OUTBOX_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const clean = (Array.isArray(parsed) ? parsed : []).filter(req => !beta159KnownFriend(req));
+        localStorage.setItem(OUTBOX_KEY, JSON.stringify(clean));
+      }
+    } catch {}
+  }
+  function beta159RepairSocialState() {
+    beta159RepairFriendsState();
+    beta159RepairRequestState();
+    try { queueSaveState?.(120); } catch {}
+  }
+
+  const previousSetState = typeof setState === "function" ? setState : null;
+  if (previousSetState) {
+    setState = function beta159SetState(patch, options = {}) {
+      if (!patch || typeof patch !== "object") return;
+      const now = Date.now();
+      if (patch.tab && now - lastTabTapAt < 120) return;
+      if (patch.tab) lastTabTapAt = now;
+      if (options && options.render === false) {
+        const savedRender = render;
+        try {
+          render = function beta159SilentRender() {};
+          const result = previousSetState(patch, options);
+          beta159RepairSocialState();
+          return result;
+        } finally { render = savedRender; }
+      }
+      const result = previousSetState(patch, options);
+      beta159RepairSocialState();
+      return result;
+    };
+  }
+
+  if (typeof beta156ReleaseLocalCleanup === "function") {
+    beta156ReleaseLocalCleanup = function beta159ReleaseLocalCleanup() {
+      try {
+        const validTabs = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
+        const patch = {};
+        if (!validTabs.has(state.tab)) patch.tab = "home";
+        if (state.currentLessonId && typeof allLessons === "function" && !allLessons().some(lesson => lesson.id === state.currentLessonId)) {
+          patch.currentLessonId = null;
+          if ((patch.tab || state.tab) === "lesson") patch.tab = "learn";
+        }
+        beta159RepairSocialState();
+        if (Object.keys(patch).length && previousSetState) previousSetState(patch, { save: true, render: false });
+        state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), beta159CleanupAt: Date.now(), beta159Version: BETA159_STABLE_SOCIAL_HOTFIX_VERSION };
+        try { queueSaveState?.(150); } catch {}
+      } catch (error) { try { beta153RecordClientIssue?.("beta159-cleanup", error?.message || error); } catch {} }
+    };
+  }
+
+  if (typeof mergeServerFriends === "function") {
+    const previousMergeServerFriends = mergeServerFriends;
+    mergeServerFriends = function beta159MergeServerFriends(rows = []) {
+      const changed = previousMergeServerFriends(rows);
+      beta159RepairSocialState();
+      return changed;
+    };
+  }
+
+  if (typeof beta125SetFriendRequests === "function") {
+    const previousSetFriendRequests = beta125SetFriendRequests;
+    beta125SetFriendRequests = function beta159SetFriendRequests(requests = {}) {
+      beta159RepairFriendsState();
+      return previousSetFriendRequests(beta159CleanRequests(requests));
+    };
+  }
+  if (typeof beta128Outbox === "function") {
+    const previousOutbox = beta128Outbox;
+    beta128Outbox = function beta159Outbox() {
+      const list = previousOutbox();
+      const clean = (Array.isArray(list) ? list : []).filter(req => !beta159KnownFriend(req));
+      if (clean.length !== list.length) {
+        try { beta128SaveOutbox?.(clean); } catch {}
+      }
+      return clean;
+    };
+  }
+  if (typeof beta128Relation === "function") {
+    const previousRelation = beta128Relation;
+    beta128Relation = function beta159Relation(player = {}) {
+      if (!player || player.me) return { type: "me", label: "Toi" };
+      if (player.friend || beta159KnownFriend(player)) return { type: "friend", label: "Ami" };
+      return previousRelation(player);
+    };
+  }
+  if (typeof beta125PublicActionMarkup === "function") {
+    const previousPublicActionMarkup = beta125PublicActionMarkup;
+    beta125PublicActionMarkup = function beta159PublicActionMarkup(player = {}) {
+      if (!player || player.me) return previousPublicActionMarkup(player);
+      const friend = beta159KnownFriend(player);
+      if (player.friend || friend) {
+        const id = escapeHtml(player.id || player.playerId || player.friendCode || friend?.id || friend?.code || "");
+        const name = escapeHtml(player.name || friend?.name || "Ce joueur");
+        return `<section class="card beta125-profile-actions beta159-friend-ok"><div><span class="card-label">Ami</span><h2>${name} est dans tes amis</h2><p>La demande est validée. Son score apparaîtra dans le classement amis quand il joue.</p></div><button type="button" class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
+      }
+      return previousPublicActionMarkup(player);
+    };
+  }
+
+  function beta159FallbackMarkup(message = "L’app a rencontré un souci d’affichage.") {
+    return `<main class="app-shell app-error-shell beta159-safe-shell"><section class="card app-error-card beta159-safe-card"><span class="card-label">Mode secours</span><h1>Affichage sécurisé</h1><p>${escapeHtml(String(message || "Erreur d’affichage").slice(0, 180))}</p><p class="muted-note">Les boutons ci-dessous fonctionnent même si un ancien cache a gardé une version bancale.</p><div class="home-actions-row"><button type="button" data-beta159-safe-home>Accueil</button><button type="button" class="ghost" data-beta159-safe-profile>Profil</button></div><button type="button" class="ghost wide" data-beta159-safe-clean>Nettoyer l’état local social</button></section></main>`;
+  }
+  if (typeof beta114ErrorMarkup === "function") beta114ErrorMarkup = beta159FallbackMarkup;
+  if (typeof beta115FallbackMarkup === "function") beta115FallbackMarkup = beta159FallbackMarkup;
+
+  function beta159SafeGo(tab = "home") {
+    try {
+      beta159RepairSocialState();
+      state.tab = tab;
+      state.profileFeedback = tab === "profile" ? "État social nettoyé. Si Manon est déjà amie, la demande n’est plus affichée comme en attente." : "";
+      saveState?.();
+      render?.({ immediate: true });
+    } catch {
+      try { location.reload(); } catch {}
+    }
+  }
+  function beta159HandleGlobalAction(event) {
+    const target = event.target?.closest?.("[data-beta159-safe-home],[data-beta159-safe-profile],[data-beta159-safe-clean],[data-beta114-safe-home],[data-beta114-safe-profile],[data-beta114-soft-reset],[data-beta115-repaint],[data-beta115-go-home],[data-beta115-soft-repair]");
+    if (!target) return;
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+    if (target.matches("[data-beta159-safe-profile],[data-beta114-safe-profile]")) return beta159SafeGo("profile");
+    if (target.matches("[data-beta159-safe-clean],[data-beta114-soft-reset],[data-beta115-soft-repair]")) return beta159SafeGo("profile");
+    return beta159SafeGo("home");
+  }
+  document.addEventListener("click", beta159HandleGlobalAction, true);
+  document.addEventListener("pointerup", beta159HandleGlobalAction, true);
+
+  if (typeof render === "function") {
+    const previousRender = render;
+    render = function beta159Render(options = {}) {
+      beta159RepairSocialState();
+      const signature = `${state?.tab || ""}|${state?.currentDiscipline || ""}|${state?.currentGroup || ""}|${state?.currentWorld || ""}|${state?.currentLessonId || ""}|${state?.currentMysteryId || ""}|${state?.selectedProfileId || ""}`;
+      if (!options?.immediate && signature === lastRenderSignature && document.querySelector(".app-shell:not(.app-error-shell)")) return;
+      lastRenderSignature = signature;
+      try {
+        const result = previousRender(options);
+        window.setTimeout(() => {
+          try {
+            const errorCard = document.querySelector(".app-error-card");
+            if (errorCard && !errorCard.classList.contains("beta159-safe-card")) {
+              app.innerHTML = beta159FallbackMarkup(errorCard.textContent || "Affichage relancé.");
+            }
+          } catch {}
+        }, 0);
+        return result;
+      } catch (error) {
+        try { app.innerHTML = beta159FallbackMarkup(error?.message || error); } catch {}
+      }
+    };
+  }
+
+  function beta159InstallStyle() {
+    if (document.getElementById("beta159-stable-social-hotfix-style")) return;
+    const style = document.createElement("style");
+    style.id = "beta159-stable-social-hotfix-style";
+    style.textContent = `
+      .beta159-safe-shell{min-height:100svh;display:grid;align-content:center}.beta159-safe-card button{pointer-events:auto!important;touch-action:manipulation!important;min-height:46px}.beta159-friend-ok{border-color:rgba(72,213,151,.32)!important;background:linear-gradient(180deg,rgba(72,213,151,.10),rgba(255,255,255,.035))!important}.beta159-friend-ok .card-label{background:rgba(72,213,151,.16);color:#caffdf}
+      .performance-light .motion-enter,.performance-smart .motion-enter{animation:none!important}.motion-enter{animation:none!important}
+    `;
+    document.head.appendChild(style);
+  }
+
+  try {
+    beta159InstallStyle();
+    beta159RepairSocialState();
+    if (typeof beta156ReleaseLocalCleanup === "function") beta156ReleaseLocalCleanup();
+    state.beta159StableSocialHotfixVersion = BETA159_STABLE_SOCIAL_HOTFIX_VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA159_STABLE_SOCIAL_HOTFIX_VERSION, stableSocialHotfix: true };
+    try { queueSaveState?.(150); } catch {}
+    if (document.readyState !== "loading") render?.({ immediate: true });
+  } catch (error) { try { console.warn("beta159 hotfix", error); } catch {} }
+})();
