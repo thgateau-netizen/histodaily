@@ -1,6 +1,6 @@
-# HistoDaily — paquet de déploiement beta111
+# HistoDaily — paquet de déploiement beta113
 
-Version : `1.0.0-beta.111`
+Version : `1.0.0-beta.113`
 
 Build public resserré pour test privé. Ajout du journal de version sur l’accueil.
 
@@ -59,3 +59,16 @@ SUPABASE_SERVICE_ROLE_KEY=...
 - Ajout d’une carte “Journal de version” sur l’accueil.
 - Affichage visible de la version courante sur l’accueil.
 - Préparation d’un suivi propre des nouveautés à chaque push de mise à jour.
+
+## Beta 112
+- Correctif performance mobile : mode fluide activé par défaut.
+- Navigation entre onglets allégée : les simples changements d’écran ne déclenchent plus de grosse sauvegarde locale.
+- Suppression des flous, animations et ombres lourdes en mode fluide.
+- Le garde-fou de cohérence ne tourne plus à chaque rendu : il reste au démarrage, pas sur chaque tap.
+
+
+## Beta 113
+
+- Animations intelligentes réactivées sans flous lourds.
+- Rendu cadencé avec requestAnimationFrame pour éviter plusieurs rendus lors de taps rapides.
+- Trois modes : Fluide animé, Statique, Visuel.

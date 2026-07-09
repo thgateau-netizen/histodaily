@@ -1,13 +1,13 @@
-const CACHE_NAME = "histodaily-beta111-release-log";
-const APP_VERSION = "1.0.0-beta.111";
+const CACHE_NAME = "histodaily-beta113-smart-motion";
+const APP_VERSION = "1.0.0-beta.113";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.111",
-  "/app-core.js?v=1.0.0-beta.111",
-  "/app-onboarding.js?v=1.0.0-beta.111",
-  "/app.js?v=1.0.0-beta.111",
-  "/lessons-lite.js?v=1.0.0-beta.111",
+  "/styles.css?v=1.0.0-beta.113",
+  "/app-core.js?v=1.0.0-beta.113",
+  "/app-onboarding.js?v=1.0.0-beta.113",
+  "/app.js?v=1.0.0-beta.113",
+  "/lessons-lite.js?v=1.0.0-beta.113",
   "/manifest.webmanifest"
 ];
 

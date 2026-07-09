@@ -24,7 +24,7 @@
 
 /* design moderne, animations légères, performance mobile */
 :root{--ink:#eef7ff;--panel:rgba(14,27,46,.72);--panel-strong:rgba(18,35,58,.88);--gold:#f7c75a;--cyan:#56d6ff;--violet:#9f7aea;--green:#4ade80;--shadow-soft:0 14px 42px rgba(0,0,0,.24);--shadow-lift:0 22px 54px rgba(0,0,0,.34)}
-html{background:#050914;-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}body{overflow-x:hidden;font-synthesis-weight:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}body:before,body:after{content:"";position:fixed;inset:auto;z-index:-2;pointer-events:none;border-radius:999px;filter:blur(2px);opacity:.72}body:before{width:260px;height:260px;left:-116px;top:-74px;background:radial-gradient(circle,rgba(86,214,255,.22),rgba(86,214,255,0) 67%)}body:after{width:310px;height:310px;right:-150px;top:28vh;background:radial-gradient(circle,rgba(247,199,90,.19),rgba(247,199,90,0) 68%)}
+html{background:#050914;-webkit-tap-highlight-color:transparent;scroll-behavior:auto}body{overflow-x:hidden;font-synthesis-weight:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}body:before,body:after{content:"";position:fixed;inset:auto;z-index:-2;pointer-events:none;border-radius:999px;filter:blur(2px);opacity:.72}body:before{width:260px;height:260px;left:-116px;top:-74px;background:radial-gradient(circle,rgba(86,214,255,.22),rgba(86,214,255,0) 67%)}body:after{width:310px;height:310px;right:-150px;top:28vh;background:radial-gradient(circle,rgba(247,199,90,.19),rgba(247,199,90,0) 68%)}
 .app-shell{position:relative;isolation:isolate}.app-shell>header,.app-shell>section,.app-shell>.mini-grid{animation:fadeUp .34s cubic-bezier(.2,.75,.25,1) both}.app-shell>section:nth-of-type(2){animation-delay:.03s}.app-shell>section:nth-of-type(3){animation-delay:.06s}.app-shell>section:nth-of-type(4){animation-delay:.09s}.app-shell>section:nth-of-type(n+5){animation-delay:.12s}.card{background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.035));box-shadow:var(--shadow-soft),inset 0 1px 0 rgba(255,255,255,.08);transition:transform .16s ease,border-color .16s ease,background-color .16s ease,box-shadow .16s ease}.glass-prime,.spotlight-card{box-shadow:var(--shadow-lift),inset 0 1px 0 rgba(255,255,255,.12)}.soft-panel{background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.03))}.spotlight-card{min-height:206px;border-color:rgba(247,199,90,.34);background:radial-gradient(circle at 88% 8%,rgba(247,199,90,.26),transparent 38%),linear-gradient(145deg,rgba(247,199,90,.2),rgba(17,31,51,.92) 54%,rgba(9,17,31,.95))}.spotlight-card:before{content:"?";position:absolute;right:18px;top:14px;width:56px;height:56px;display:grid;place-items:center;border-radius:21px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.86);font-size:1.55rem;font-weight:1000}.spotlight-card:after{right:-34px;top:auto;bottom:-50px;width:170px;height:170px;background:radial-gradient(circle,rgba(86,214,255,.14),rgba(86,214,255,0) 66%)}
 .hero.compact{align-items:flex-start;padding-top:4px}.hero.compact h1{max-width:12ch;background:linear-gradient(120deg,#fff,#ffe8ad 42%,#aeeaff);-webkit-background-clip:text;background-clip:text;color:transparent}.hero-metrics{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.hero-metrics span{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);border-radius:999px;padding:7px 9px;color:#dbe8f6;font-size:.72rem;font-weight:900}.avatar{position:relative}.avatar:after{content:"";position:absolute;inset:-4px;border-radius:inherit;border:1px solid rgba(247,199,90,.32);opacity:.9}.player-card{border-color:rgba(86,214,255,.16)}.stats-row span{padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.045);white-space:nowrap}.card-label,.difficulty-pill{box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
 button,.chip,.nav-item,.lesson-card,.mystery-mini,[role="button"],summary{touch-action:manipulation}button,.chip,.nav-item,.wide,.guess button,.archive-mini button,.topbar button{transition:transform .13s ease,background-color .16s ease,border-color .16s ease,box-shadow .16s ease}button:active,.chip:active,.nav-item:active,.wide:active,.lesson-card:active,.mystery-mini:active,[role="button"]:active{transform:scale(.985)}.wide,.guess button,.card-footer button,.archive-mini button{box-shadow:0 10px 24px rgba(247,199,90,.18)}.wide.success{box-shadow:0 10px 24px rgba(72,213,151,.16)}
@@ -566,3 +566,74 @@ html[data-discipline="music"] .home-clean-hero h1{ text-shadow:0 16px 44px color
 .home-release-card .section-title-row small{border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:4px 8px;color:var(--muted,#b8c0d8);font-weight:800}
 .home-release-card p{margin:8px 0 0;color:var(--muted,#b8c0d8)}
 .home-release-card .home-card-footer{margin-top:12px}
+
+
+/* Beta 112 — performance mobile d'abord */
+@media(max-width:680px){
+  .card,.bottom-nav,.mode-switch{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .card{box-shadow:0 8px 22px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.06)!important}
+  .bottom-nav{box-shadow:0 -8px 26px rgba(0,0,0,.22)!important}
+  body:before,body:after{opacity:.35;filter:none!important}
+  .app-shell>header,.app-shell>section,.app-shell>.mini-grid{animation:none!important}
+  .home-discovery-item,.lesson-card,.rank-row,.nav-item{transition:none!important}
+}
+.performance-light{--shadow:0 7px 18px rgba(0,0,0,.18);--shadow-soft:0 7px 18px rgba(0,0,0,.16);--shadow-lift:0 9px 24px rgba(0,0,0,.20)}
+.performance-light .card,.performance-light .bottom-nav,.performance-light .mode-switch,.performance-light .system-status{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.performance-light .card{box-shadow:0 7px 18px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.06)!important}
+.performance-light .home-discovery-item:before,.performance-light .spotlight-card:after,.performance-light .featured:after{display:none!important}
+.performance-light body:before,.performance-light body:after{display:none!important}
+.performance-light .hero.compact h1{background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;color:var(--text)!important}
+.performance-light .home-discovery-item:hover,.performance-light .home-discovery-item:focus-visible{transform:none!important}
+@supports(content-visibility:auto){
+  .performance-light .app-shell>section.card{content-visibility:auto;contain-intrinsic-size:170px}
+  .performance-light .bottom-nav,.performance-light .topbar,.performance-light .hero{content-visibility:visible}
+}
+
+
+/* Beta 113 — smart motion : vivant, mais GPU-friendly */
+@keyframes hdScreenEnter{
+  from{opacity:.001;transform:translate3d(0,8px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes hdTapPulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(.985)}
+  100%{transform:scale(1)}
+}
+.performance-smart{--shadow:0 8px 20px rgba(0,0,0,.18);--shadow-soft:0 8px 20px rgba(0,0,0,.16);--shadow-lift:0 10px 26px rgba(0,0,0,.20)}
+.performance-smart .card,.performance-smart .bottom-nav,.performance-smart .mode-switch,.performance-smart .system-status{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.performance-smart .card{box-shadow:0 8px 20px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.06)!important}
+.performance-smart .app-shell.motion-enter>header,
+.performance-smart .app-shell.motion-enter>section,
+.performance-smart .app-shell.motion-enter>.mini-grid{
+  animation:hdScreenEnter .20s cubic-bezier(.2,.75,.25,1) both!important;
+  will-change:opacity,transform;
+}
+.performance-smart .app-shell.motion-enter>section:nth-of-type(n){animation-delay:0s!important}
+.performance-smart .nav-item,.performance-smart .mode-pill,.performance-smart .home-discovery-item,.performance-smart .lesson-card{
+  transition:background-color .14s ease,border-color .14s ease,color .14s ease,opacity .14s ease!important;
+}
+.performance-smart button:active,.performance-smart [role="button"]:active{animation:hdTapPulse .16s ease-out both}
+.performance-smart .home-discovery-item:hover,.performance-smart .home-discovery-item:focus-visible{transform:none!important}
+.performance-static *, .performance-static *::before, .performance-static *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+.performance-static .card,.performance-static .bottom-nav,.performance-static .mode-switch,.performance-static .system-status{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.performance-static .card{box-shadow:0 7px 18px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.06)!important}
+.performance-static body:before,.performance-static body:after{display:none!important}
+.performance-actions.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.performance-actions.three button{padding-inline:8px;font-size:.82rem;white-space:nowrap}
+@supports(content-visibility:auto){
+  .app-shell>section.card{content-visibility:auto;contain-intrinsic-size:180px}
+  .app-shell>.hero,.app-shell>.topbar,.app-shell>.bottom-nav,.course-fullscreen-shell>section.card{content-visibility:visible}
+}
+@media(max-width:680px){
+  .performance-smart body:before,.performance-smart body:after{display:none!important}
+  .performance-smart .app-shell.motion-enter>header,
+  .performance-smart .app-shell.motion-enter>section,
+  .performance-smart .app-shell.motion-enter>.mini-grid{animation:hdScreenEnter .18s cubic-bezier(.2,.75,.25,1) both!important}
+  .performance-balanced .app-shell>header,.performance-balanced .app-shell>section,.performance-balanced .app-shell>.mini-grid{animation:fadeUp .26s cubic-bezier(.2,.75,.25,1) both!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .performance-smart .app-shell.motion-enter>header,
+  .performance-smart .app-shell.motion-enter>section,
+  .performance-smart .app-shell.motion-enter>.mini-grid{animation:none!important}
+}

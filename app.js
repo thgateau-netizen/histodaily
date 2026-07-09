@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.111";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.113";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -219,7 +219,8 @@ const defaultState = {
   serverFriendsStatus: {},
   friends: {},
   selectedProfileId: null,
-  performanceMode: "balanced",
+  performanceMode: "light",
+  performanceMigrationVersion: "",
   learnFilter: "all",
   learnSearch: "",
   dismissedReleaseVersion: "",
@@ -243,6 +244,11 @@ function applyStartupMaintenanceActions() {
 }
 applyStartupMaintenanceActions();
 let state = loadState();
+if (state.performanceMigrationVersion !== APP_VERSION) {
+  state.performanceMode = "light";
+  state.performanceMigrationVersion = APP_VERSION;
+  try { saveState(); } catch {}
+}
 const leaderboardFetchInFlight = new Set();
 let friendsFetchInFlight = false;
 applyStartupSocialLinks();
@@ -304,6 +310,14 @@ function loadState() {
     catch { return mergeState(defaultState, {}); }
   }
 }
+let saveStateTimer = null;
+const NAVIGATION_ONLY_STATE_KEYS = new Set([
+  "tab", "currentLessonId", "currentMysteryId", "currentMysteryDiscipline",
+  "currentWorld", "currentGroup", "lessonFocus", "lessonView",
+  "learnFilter", "learnSearch", "rankScope", "selectedProfileId",
+  "profileFeedback", "archiveFeedback", "installFeedback", "backupFeedback",
+  "inviteFeedback", "friendFeedback", "socialSubmitFeedback"
+]);
 function saveState() {
   try {
     const serialized = JSON.stringify(state);
@@ -314,7 +328,21 @@ function saveState() {
     }
   } catch {}
 }
-function setState(patch) { state = mergeState(defaultState, { ...state, ...patch }); saveState(); render(); }
+function queueSaveState(delay = 180) {
+  try { window.clearTimeout(saveStateTimer); } catch {}
+  saveStateTimer = window.setTimeout(() => { saveStateTimer = null; saveState(); }, delay);
+}
+function patchNeedsPersistentSave(patch = {}) {
+  const keys = Object.keys(patch || {});
+  if (!keys.length) return false;
+  return keys.some(key => !NAVIGATION_ONLY_STATE_KEYS.has(key));
+}
+function setState(patch, options = {}) {
+  if (!patch || typeof patch !== "object") return;
+  state = { ...state, ...patch };
+  if (options.save !== false && patchNeedsPersistentSave(patch)) queueSaveState();
+  render();
+}
 function escapeHtml(value = "") { return String(value).replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;","\"":"&quot;"}[c])); }
 function normalize(value = "") { return String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
 function percent(done, total) { return total ? Math.round((done / total) * 100) : 0; }
@@ -1137,19 +1165,20 @@ function homeVersionPillMarkup() {
   const versionLabel = HISTODAILY_CORE.ui?.versionLabel || APP_VERSION;
   return `<span class="version-pill">${escapeHtml(versionLabel)}</span>`;
 }
-function performanceMode() { return state.performanceMode === "light" ? "light" : "balanced"; }
+function performanceMode() { return state.performanceMode === "balanced" ? "balanced" : "light"; }
 function applyPerformanceMode() {
   if (typeof document === "undefined") return;
-  document.body.classList.toggle("performance-light", performanceMode() === "light");
-  document.body.dataset.performanceMode = performanceMode();
+  const mode = performanceMode();
+  document.body.classList.toggle("performance-light", mode === "light");
+  document.body.dataset.performanceMode = mode;
 }
 function setPerformanceMode(mode) {
-  setState({ performanceMode: mode === "light" ? "light" : "balanced" });
+  setState({ performanceMode: mode === "balanced" ? "balanced" : "light" });
 }
 function performanceSettingsMarkup() {
   const mode = performanceMode();
-  const label = mode === "light" ? "Mode fluide" : "Animations légères";
-  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(label)}</h2><p>${mode === "light" ? "Animations coupées au maximum : idéal si un téléphone rame ou si tu veux une app ultra sèche." : "Animations courtes et légères : jolie sensation d’app sans effet permanent."}</p></div><div class="performance-actions"><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">✨ Normal</button><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">⚡ Fluide</button></div></section>`;
+  const label = mode === "light" ? "Mode fluide" : "Animations visuelles";
+  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(label)}</h2><p>${mode === "light" ? "Mode recommandé : navigation plus rapide, flous coupés, animations désactivées et sauvegarde moins bloquante." : "Mode plus joli mais plus lourd : à garder seulement si le téléphone reste parfaitement fluide."}</p></div><div class="performance-actions"><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">⚡ Fluide</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">✨ Visuel</button></div></section>`;
 }
 async function installApp() {
   if (!installPromptEvent) {
@@ -1199,11 +1228,12 @@ function renderShell(content) {
       ${content}
       ${navMarkup}
     </main>`;
-  document.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
+  app.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
+    if (!tab || tab === state.tab) return;
     const patch = { tab };
     if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
-    setState(patch);
+    setState(patch, { save: false });
   }));
   activateTextControls(app);
 }
@@ -7208,7 +7238,7 @@ async function fetchServerLeaderboard(scope = "daily", { force = false } = {}) {
   if (leaderboardFetchInFlight.has(scope)) return;
   leaderboardFetchInFlight.add(scope);
   state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { ...status, loading: true } };
-  saveState();
+  queueSaveState(250);
   try {
     const friends = Object.values(state.friends || {});
     const friendCodes = friends.map(friend => friend.code || friend.id).filter(Boolean).join(",");
@@ -7222,11 +7252,11 @@ async function fetchServerLeaderboard(scope = "daily", { force = false } = {}) {
       state.serverLeaderboards = { ...(state.serverLeaderboards || {}), [scope]: rows };
     }
     state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: softFailure ? "error" : mode, note: softFailure ? "Classement en ligne indisponible : dernier score connu conservé." : (json?.note || "") } };
-    saveState();
+    queueSaveState(250);
     if (state.tab === "rank" && (state.rankScope || "daily") === scope) render();
   } catch (error) {
     state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: "error", note: "Classement en ligne indisponible : dernier score connu conservé." } };
-    saveState();
+    queueSaveState(250);
   } finally {
     leaderboardFetchInFlight.delete(scope);
   }
@@ -7290,7 +7320,7 @@ async function fetchServerFriends({ force = false } = {}) {
   if (!force && status.loadedAt && now - status.loadedAt < 45000) return;
   friendsFetchInFlight = true;
   state.serverFriendsStatus = { ...status, loading: true };
-  saveState();
+  queueSaveState(250);
   try {
     const response = await fetch(`/api/v1/friends/sync?playerId=${encodeURIComponent(playerIdMe())}&_=${Date.now()}`, { cache: "no-store" });
     const json = await response.json();
@@ -7301,11 +7331,11 @@ async function fetchServerFriends({ force = false } = {}) {
       state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), friends: { loadedAt: 0, mode: "refresh", note: "Liste d’amis actualisée." } };
       fetchServerLeaderboard("friends", { force: true }).catch(() => {});
     }
-    saveState();
+    queueSaveState(250);
     if (state.tab === "profile" || state.tab === "rank") render();
   } catch {
     state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: "error", message: "Amis en ligne indisponibles." };
-    saveState();
+    queueSaveState(250);
   } finally {
     friendsFetchInFlight = false;
   }
@@ -7559,7 +7589,7 @@ function removeFriend(id) {
     fetchServerLeaderboard("friends", { force: true }).catch(() => {});
   }).catch(() => {
     state.friendFeedback = `${name} retiré sur cet appareil. La liste en ligne se mettra à jour au prochain rafraîchissement.`;
-    saveState();
+    queueSaveState(250);
     if (state.tab === "profile" || state.tab === "rank") render();
   });
 }
@@ -8257,7 +8287,6 @@ function renderLearn() {
 }
 
 function render() {
-  applyVisibleStateGuard({ save: true });
   if (state.tab === "learn") return renderLearn();
   if (state.tab === "lesson") return renderLesson();
   if (state.tab === "mystery") return renderMystery();
@@ -9700,11 +9729,12 @@ function renderShell(content) {
       ${content}
       ${navMarkup}
     </main>`;
-  document.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
+  app.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
+    if (!tab || tab === state.tab) return;
     const patch = { tab };
     if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
-    setState(patch);
+    setState(patch, { save: false });
   }));
   activateTextControls(app);
 }
@@ -11565,5 +11595,117 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
   </section>`;
 }
 
-applyVisibleStateGuard();
+
+/* =========================================================
+   Beta 113 — animations intelligentes sans lag
+   - Le mode "light" historique devient "smart" : fluide mais vivant.
+   - Les gros effets coûteux restent coupés sur mobile.
+   - Les rendus successifs sont regroupés sur une frame.
+   ========================================================= */
+let beta113PendingScreenMotion = true;
+let beta113RenderFrame = 0;
+function beta113ReducedMotion() {
+  try { return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
+  catch { return false; }
+}
+function performanceMode() {
+  if (state.performanceMode === "balanced") return "balanced";
+  if (state.performanceMode === "static") return "static";
+  return "smart";
+}
+function applyPerformanceMode() {
+  if (typeof document === "undefined") return;
+  const mode = performanceMode();
+  document.body.classList.toggle("performance-light", false);
+  document.body.classList.toggle("performance-smart", mode === "smart");
+  document.body.classList.toggle("performance-static", mode === "static");
+  document.body.classList.toggle("performance-balanced", mode === "balanced");
+  document.body.dataset.performanceMode = mode;
+}
+function setPerformanceMode(mode) {
+  const next = mode === "balanced" ? "balanced" : (mode === "static" ? "static" : "smart");
+  setState({ performanceMode: next });
+}
+function performanceSettingsMarkup() {
+  const mode = performanceMode();
+  const copy = {
+    smart: {
+      label: "Fluide animé",
+      text: "Recommandé : petites transitions transform/opacity, pas de gros flous, rendu cadencé pour garder l’app nerveuse sur mobile."
+    },
+    static: {
+      label: "Statique",
+      text: "Zéro animation décorative. À utiliser si un téléphone ancien rame encore ou si tu veux tester la stabilité brute."
+    },
+    balanced: {
+      label: "Visuel",
+      text: "Plus joli, mais plus lourd : à garder seulement si les onglets restent parfaitement fluides."
+    }
+  }[mode] || { label: "Fluide animé", text: "Mode recommandé." };
+  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(copy.label)}</h2><p>${escapeHtml(copy.text)}</p></div><div class="performance-actions three"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">⚡ Animé</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">🧊 Statique</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">✨ Visuel</button></div></section>`;
+}
+function beta113ScreenChanged(previous, next, patch = {}) {
+  if (!previous || !next) return true;
+  return previous.tab !== next.tab || previous.currentDiscipline !== next.currentDiscipline || previous.currentWorld !== next.currentWorld || previous.currentGroup !== next.currentGroup || Boolean(patch.currentLessonId && patch.currentLessonId !== previous.currentLessonId) || Boolean(patch.currentMysteryId && patch.currentMysteryId !== previous.currentMysteryId);
+}
+function beta113MarkMotion(previous, next, patch) {
+  if (performanceMode() === "static" || beta113ReducedMotion()) return;
+  if (beta113ScreenChanged(previous, next, patch)) beta113PendingScreenMotion = true;
+}
+function beta113ConsumeMotionClass() {
+  if (performanceMode() === "static" || beta113ReducedMotion()) {
+    beta113PendingScreenMotion = false;
+    return "";
+  }
+  if (!beta113PendingScreenMotion) return "";
+  beta113PendingScreenMotion = false;
+  return "motion-enter";
+}
+function setState(patch, options = {}) {
+  if (!patch || typeof patch !== "object") return;
+  const previous = state;
+  state = { ...state, ...patch };
+  beta113MarkMotion(previous, state, patch);
+  if (options.save !== false && patchNeedsPersistentSave(patch)) queueSaveState();
+  render();
+}
+function renderShell(content) {
+  applyPerformanceMode();
+  applyDisciplineTheme();
+  const immersiveLesson = state.tab === "lesson";
+  const motionClass = beta113ConsumeMotionClass();
+  const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav" aria-label="Navigation principale">
+        ${navButton("home", "⌂", "Accueil")}
+        ${navButton("learn", "📖", "Cours")}
+        ${navButton("mystery", "🕵️", "Mystère")}
+        ${navButton("rank", "🏆", "Classement")}
+        ${navButton("profile", "👤", "Profil")}
+      </nav>`;
+  app.innerHTML = `
+    <main class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${motionClass} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
+      ${systemStatusMarkup()}
+      ${content}
+      ${navMarkup}
+    </main>`;
+  app.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
+    const tab = btn.dataset.tab;
+    if (!tab || tab === state.tab) return;
+    const patch = { tab };
+    if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
+    setState(patch, { save: false });
+  }));
+  activateTextControls(app);
+}
+const beta113DirectRender = render;
+render = function beta113ScheduledRender(options = {}) {
+  if (options && options.immediate) return beta113DirectRender();
+  if (typeof requestAnimationFrame !== "function") return beta113DirectRender();
+  if (beta113RenderFrame) return;
+  beta113RenderFrame = requestAnimationFrame(() => {
+    beta113RenderFrame = 0;
+    beta113DirectRender();
+  });
+};
+
+applyVisibleStateGuard({ save: false });
 window.addEventListener("DOMContentLoaded", render);

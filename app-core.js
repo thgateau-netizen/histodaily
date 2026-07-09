@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.111",
-  assetsVersion: "1.0.0-beta.111",
+  version: "1.0.0-beta.113",
+  assetsVersion: "1.0.0-beta.113",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 111",
+    versionLabel: "beta 113",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Accueil enrichi avec un journal de version visible à chaque nouvelle mise à jour.",
-      "La version actuelle apparaît directement sur l’écran d’accueil pour mieux suivre les builds.",
-      "Préparation d’un vrai suivi des nouveautés avant les prochaines vagues de contenu."
+      "Animations intelligentes : transitions légères au changement d’écran, sans retour aux gros effets qui faisaient ramer.",
+      "Rendu mieux cadencé : les changements rapides d’onglet sont regroupés dans une seule frame au lieu de relancer l’interface plusieurs fois.",
+      "Mode performance clarifié : Fluide animé par défaut, Statique si le téléphone fatigue, Visuel seulement si tout reste parfaitement fluide."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
