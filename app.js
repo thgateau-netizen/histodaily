@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.130";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.131";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.130";
+const BETA124_VERSION = "1.0.0-beta.131";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.130";
+const BETA125_VERSION = "1.0.0-beta.131";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.130";
+const BETA126_VERSION = "1.0.0-beta.131";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.130";
+const BETA127_VERSION = "1.0.0-beta.131";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.130";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.131";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.130";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.131";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.130";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.131";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15789,3 +15789,135 @@ try {
 } catch {}
 
 try { render({ immediate: true }); } catch {}
+
+
+/* =========================================================
+   Beta 131 — correctif navigation mobile
+   Symptôme observé : sur téléphone, l'app peut rouvrir sur
+   Classement et laisser défiler la page sans accepter les taps
+   sur les onglets. On renforce donc la navigation par délégation
+   globale + couche CSS prioritaire + réparation du dernier onglet.
+   ========================================================= */
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.131";
+const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
+let beta131LastNavigationTap = 0;
+
+function beta131NavigateTo(tab) {
+  if (!BETA131_ALLOWED_TABS.has(tab)) return false;
+  if (tab === state.tab && tab !== "rank") return true;
+  const patch = { tab };
+  if (tab === "mystery") {
+    patch.currentMysteryId = dailyMystery()?.id || null;
+    patch.currentMysteryDiscipline = activeDisciplineId();
+  }
+  if (tab === "learn") {
+    patch.lessonFocus = null;
+    patch.lessonView = state.lessonView || "express";
+  }
+  if (tab === "home") {
+    patch.selectedProfileId = null;
+  }
+  setState(patch, { save: true });
+  return true;
+}
+
+function beta131NavigationHandler(event) {
+  const target = event.target;
+  const button = target && target.closest ? target.closest("[data-tab]") : null;
+  if (!button || !app || !app.contains(button)) return;
+  const tab = button.dataset.tab;
+  if (!tab) return;
+  const now = Date.now();
+  if (now - beta131LastNavigationTap < 280) {
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    return;
+  }
+  beta131LastNavigationTap = now;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+  beta131NavigateTo(tab);
+}
+
+function beta131InstallNavigationDelegation() {
+  if (window.__histodailyBeta131NavDelegation) return;
+  window.__histodailyBeta131NavDelegation = true;
+  document.addEventListener("click", beta131NavigationHandler, true);
+  document.addEventListener("touchend", beta131NavigationHandler, { capture: true, passive: false });
+  document.addEventListener("pointerup", beta131NavigationHandler, true);
+}
+
+function beta131RepairStartupTab() {
+  let changed = false;
+  if (state.beta131NavFixVersion !== BETA131_NAV_FIX_VERSION) {
+    state.beta131NavFixVersion = BETA131_NAV_FIX_VERSION;
+    // Pour une app quotidienne, on évite de rouvrir sur un écran social lourd après mise à jour.
+    if (["rank", "publicProfile"].includes(state.tab)) {
+      state.tab = "home";
+      state.selectedProfileId = null;
+      changed = true;
+    }
+    if (!["daily", "week", "year", "friends"].includes(state.rankScope)) {
+      state.rankScope = "daily";
+      changed = true;
+    }
+    changed = true;
+  }
+  if (!BETA131_ALLOWED_TABS.has(state.tab)) {
+    state.tab = "home";
+    changed = true;
+  }
+  if (changed) queueSaveState(50);
+  return changed;
+}
+
+function beta131InstallNavLayerFix() {
+  if (document.getElementById("beta131-nav-fix-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta131-nav-fix-style";
+  style.textContent = `
+    .bottom-nav{
+      z-index:2147483000!important;
+      pointer-events:auto!important;
+      touch-action:manipulation!important;
+      transform:translate3d(-50%,0,0)!important;
+      -webkit-transform:translate3d(-50%,0,0)!important;
+      isolation:isolate!important;
+    }
+    .bottom-nav *, .nav-item{
+      pointer-events:auto!important;
+      touch-action:manipulation!important;
+    }
+    .tabs-clean button, [data-rank-scope], [data-home], [data-open-profile], [data-refresh-social]{
+      position:relative!important;
+      z-index:5!important;
+      pointer-events:auto!important;
+      touch-action:manipulation!important;
+    }
+    .tab-rank .bottom-nav{z-index:2147483000!important;}
+    .tab-rank .leaderboard-modern{position:relative;z-index:1;}
+  `;
+  document.head.appendChild(style);
+}
+
+const beta131PreviousRenderShell = renderShell;
+renderShell = function beta131RenderShell(content) {
+  const output = beta131PreviousRenderShell(content);
+  beta131InstallNavigationDelegation();
+  beta131InstallNavLayerFix();
+  return output;
+};
+
+// Correction d'un libellé introduit dans la passe nettoyage : les valeurs réelles sont light/balanced.
+performanceSettingsMarkup = function beta131PerformanceSettingsMarkup() {
+  const mode = performanceMode();
+  return `<section class="card performance-card compact"><div><span class="card-label">Affichage</span><h2>${mode === "light" ? "Mode fluide" : "Mode visuel"}</h2><p>Garde le mode fluide sauf si tu veux tester les animations.</p></div><div class="performance-actions"><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">Fluide</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">Visuel</button></div></section>`;
+};
+
+try {
+  beta131InstallNavigationDelegation();
+  beta131InstallNavLayerFix();
+  beta131RepairStartupTab();
+  window.HistoDaily = { version: BETA131_NAV_FIX_VERSION, navFix: true };
+  render({ immediate: true });
+} catch {}
