@@ -1,19 +1,25 @@
-# HistoDaily — paquet de déploiement beta115
+# HistoDaily beta 122 — mystery density
 
-Version : `1.0.0-beta.115`
+Passe centrée sur la densification des mystères par discipline.
 
-Build public resserré pour test privé. Ajout du journal de version sur l’accueil.
+# HistoDaily — paquet de déploiement beta123
+
+Version : `1.0.0-beta.123`
+
+Build public resserré pour test privé. Ajout des outils bêta mystères et navigation cours allégée.
 
 ## Contenu public
 
 - 42 cours d’histoire prêts
-- grands chapitres préparés pour Art, Cinéma, Sciences & inventions, Économie et Géographie
+- grands chapitres préparés pour Art, Cinéma, Sciences & inventions, Économie, Géographie et Musique
 - accueil piloté par le mode actif : mystère et propositions changent selon la discipline
 - profil culturel avec jeton de progression par discipline
 - PWA installable
 - scores locaux disponibles hors ligne
 - classements et amis activables avec les variables Supabase
 - validation des réponses de mystère renforcée sur mobile
+- outil bêta pour actualiser le mystère du jour et tester plusieurs dossiers
+- navigation des cours allégée : chapitre ouvert = liste des cours + retour
 
 ## Déploiement Vercel
 
@@ -80,3 +86,42 @@ SUPABASE_SERVICE_ROLE_KEY=...
 - Ajout d’un diagnostic de stabilité dans le profil.
 - Réparation douce de l’affichage sans effacer la progression lisible.
 - Garde-fous contre écran vide, ancien cache et taps multiples.
+
+
+## Beta 116
+
+- Polissage de l’affichage : accueil plus hiérarchisé, cartes plus lisibles, sélecteur de disciplines mieux tenu.
+- Barre de navigation flottante plus propre sur mobile.
+- Cours et mystères plus confortables à lire et à utiliser sans réactiver les flous lourds.
+
+
+## beta119 — mystères
+
+- Énigmes de base durcies sans redevenir floues.
+- Type recherché affiché avant les indices.
+- Indices progressifs : contexte, piste, confirmation.
+
+
+## beta120 — mystères des autres disciplines
+
+- Passe faite sur les mystères hors histoire pure : Art, Cinéma, Sciences, Économie, Géographie et Musique.
+- Base des énigmes durcie : le joueur sait ce qu’il cherche, mais les mots-clés évidents sont repoussés dans les indices.
+- Ajout ou harmonisation des champs `subjectType`, `periodHint` et `lessonId` pour mieux afficher le type recherché et débloquer le cours lié quand il existe.
+- Indices progressifs conservés : situer l’époque, trouver la piste, confirmer la réponse.
+
+
+## beta123 — profondeur des mystères disciplinaires
+
+Objectif : continuer la passe mystères au-delà de l’histoire pure.
+
+- Art : ajout d’un mystère sur la perspective linéaire, lié au cours Renaissance.
+- Économie : ajout d’un mystère sur l’offre et la demande, lié au cours marchés/prix.
+- Géographie : ajout d’un mystère sur l’échelle cartographique, lié au cours lecture de cartes.
+- Sciences : ajout d’un mystère sur la preuve expérimentale, lié au cours méthode scientifique.
+- Les modes Art, Économie et Géographie passent à au moins deux mystères jouables.
+- Les énigmes restent cadrées par type + repère, mais évitent les mots-clés trop donnés avant les indices.
+
+
+## beta123 — colonne vertébrale historique
+
+Ajout d'une passe de cours-pivots pour éviter un contenu trop centré sur le mode de vie : Uruk, Hammurabi, dynasties égyptiennes, Alexandre et les royaumes hellénistiques, César et les guerres civiles, rois nordiques, Normandie/Angleterre/Kiev, Clovis/Mérovingiens, Charlemagne/Carolingiens, Capétiens.

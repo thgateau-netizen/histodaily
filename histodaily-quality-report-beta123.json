@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0-beta.123",
+  "focus": "historical spine: dynasties, reigns and milestone events",
+  "added_worlds": [
+    "medieval-west"
+  ],
+  "added_lessons": 10,
+  "added_lesson_ids": [
+    "civilizations-uruk-writing-state",
+    "civilizations-hammurabi-babylon-law",
+    "egypt-kingdoms-dynasties",
+    "greece-alexander-hellenistic-kingdoms",
+    "rome-caesar-civil-wars",
+    "northern-viking-worlds-kings-kingdoms",
+    "northern-viking-worlds-normandy-england-kiev",
+    "medieval-west-clovis-merovingians",
+    "medieval-west-charlemagne-carolingians",
+    "medieval-west-capetians-monarchy"
+  ],
+  "checks": []
+}

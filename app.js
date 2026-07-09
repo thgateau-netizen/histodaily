@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.115";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.123";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -1669,7 +1669,34 @@ function mysteryContextNudge(mystery = {}) {
   return signal ? short(signal, 120) : "Cherche le mot qui relie la période, le lieu et la trace principale.";
 }
 
-function mysteryHintLabels() { return ["Nature", "Cadre", "Déclic"]; }
+function mysterySubjectTypeLabel(mystery = {}, lesson = {}) {
+  if (mystery.subjectType) return mystery.subjectType;
+  return mysteryKindLabel(mystery, lesson)
+    .replace(/\s+à identifier$/i, "")
+    .replace(/^Technique, support ou système de signes$/i, "technique ou support")
+    .replace(/^Institution, régime ou organisation politique$/i, "régime ou institution")
+    .replace(/^Événement ou rupture historique$/i, "événement ou rupture")
+    .replace(/^Peuple, civilisation ou groupe historique$/i, "peuple ou civilisation")
+    .replace(/^Lieu, cité ou espace de pouvoir$/i, "lieu ou espace")
+    .replace(/^Pratique, idée ou transformation durable$/i, "notion ou transformation")
+    .toLocaleLowerCase("fr-FR");
+}
+
+function mysteryPeriodLabel(mystery = {}, lesson = {}) {
+  const explicit = cleanMysteryReperePart(mystery.periodHint || "", mystery);
+  if (explicit) return explicit;
+  const period = cleanMysteryReperePart(lesson?.period || "", mystery);
+  const location = cleanMysteryReperePart(lesson?.location || "", mystery);
+  return [period, location].filter(Boolean).join(" · ") || mysteryRepereLine(mystery, lesson);
+}
+
+function mysteryBriefMarkup(mystery = {}, lesson = {}) {
+  const type = mysterySubjectTypeLabel(mystery, lesson);
+  const period = mysteryPeriodLabel(mystery, lesson);
+  return `<div class="mystery-brief"><span><b>Type recherché</b>${escapeHtml(type)}</span><span><b>Repère</b>${escapeHtml(period)}</span><span><b>Objectif</b>réponse précise</span></div>`;
+}
+
+function mysteryHintLabels() { return ["Situer l’époque", "Trouver la piste", "Confirmer la réponse"]; }
 
 function maskMysteryAnswerOnly(text = "", mystery = {}) {
   let out = String(text || "");
@@ -7076,6 +7103,7 @@ function renderMystery() {
     <header class="topbar"><button data-home>←</button><div><p class="eyebrow">Mystère ${today ? "du jour" : "d’archive"} · ${stats.solved}/${stats.total} résolus</p><h1>${escapeHtml(mysteryDisplayTitle(mystery))}</h1></div></header>
     <section class="card mystery-card big quick-mystery case-file-card">
       <div class="card-label">${difficultyStars(mystery.difficulty)} · ${difficultyLabel(mystery.difficulty)} · ${today ? (solved ? "quotidien terminé" : `quotidien · +${reward.gems} 💎`) : "archive débloquée"}</div>
+      ${mysteryBriefMarkup(mystery, lesson)}
       <p class="case-title-hidden">${escapeHtml(mystery.caseTitle || "Sujet à identifier")}</p>
       <p class="prompt">${escapeHtml(mysteryPublicPrompt(mystery))}</p>
       <div class="mystery-meter"><span>🧠 réponse précise</span><span>💡 ${hints}/${Math.min(3, (mystery.clues || []).length)} indices choisis</span><span>🎯 ${tries} essai${tries > 1 ? "s" : ""}</span><span>⭐ ${mysteryScore(mystery.id)} XP possible</span></div>
@@ -7147,7 +7175,7 @@ function archiveCard({ mystery, offset }) {
   const accessible = isAccessibleMystery(mystery.id);
   const label = solved ? "résolu" : unlocked ? "débloqué" : `J-${offset}`;
   return `<article class="card mystery-mini archive-mini tap-card ${solved ? "solved" : ""} ${!accessible ? "locked" : ""}">
-    <div><span class="difficulty-pill">${difficultyStars(mystery.difficulty)} ${difficultyLabel(mystery.difficulty)} · ${label}</span><h3>${escapeHtml(accessible ? mysteryDisplayTitle(mystery) : (mystery.caseTitle || "Dossier verrouillé"))}</h3><p>${escapeHtml(short(mysteryTeaser(mystery), 118))}</p></div>
+    <div><span class="difficulty-pill">${difficultyStars(mystery.difficulty)} ${difficultyLabel(mystery.difficulty)} · ${label}</span><h3>${escapeHtml(accessible ? mysteryDisplayTitle(mystery) : (mystery.caseTitle || "Dossier verrouillé"))}</h3><small class="archive-type-line">${escapeHtml(mysterySubjectTypeLabel(mystery, relatedLessonForMystery(mystery) || {}))}</small><p>${escapeHtml(short(mysteryTeaser(mystery), 118))}</p></div>
     ${accessible ? `<button data-open-mystery-id="${escapeHtml(mystery.id)}">${solved ? "Revoir" : "Ouvrir"}</button>` : `<button data-unlock-mystery="${escapeHtml(mystery.id)}">Débloquer · ${ARCHIVE_UNLOCK_COST} 💎</button>`}
   </article>`;
 }
@@ -9296,106 +9324,223 @@ const DISCIPLINE_MODE_COPY = {
 
 const DISCIPLINE_MODE_MYSTERIES = [
   {
-    id: "art-mystery-impressionism-mode",
-    discipline: "art",
-    difficulty: "moyen",
-    title: "Une peinture qui garde la trace de la lumière",
-    caseTitle: "Mouvement artistique à identifier",
-    prompt: "Des peintres sortent de l’atelier, travaillent par touches visibles et s’intéressent moins au contour parfait qu’à la lumière changeante, aux reflets et à l’instant perçu.",
-    answer: "L’impressionnisme",
-    aliases: ["impressionnisme", "les impressionnistes", "mouvement impressionniste"],
-    clues: [
-      "Mouvement artistique lié à la lumière, aux touches visibles et aux scènes modernes.",
-      "France · seconde moitié du XIXe siècle · Monet, Renoir, Degas ou Pissarro.",
-      "Le nom vient d’un tableau de Monet et d’une critique moqueuse devenue étiquette."
+    "id": "art-mystery-impressionism-mode",
+    "discipline": "art",
+    "difficulty": "difficile",
+    "title": "La lumière avant le contour",
+    "caseTitle": "Mouvement artistique à identifier",
+    "subjectType": "mouvement artistique",
+    "periodHint": "France · seconde moitié du XIXe siècle",
+    "lessonId": "art-impressionism-modern-life",
+    "prompt": "On cherche un mouvement artistique. Il déplace l’attention du grand sujet parfaitement fini vers la sensation visuelle : air, lumière, reflets, loisirs modernes et instant qui passe.",
+    "answer": "L’impressionnisme",
+    "aliases": [
+      "impressionnisme",
+      "l impressionnisme",
+      "l’impressionnisme",
+      "les impressionnistes",
+      "mouvement impressionniste"
     ],
-    explanation: "L’impressionnisme rompt avec la peinture académique en privilégiant la sensation visuelle, la lumière et la modernité des sujets.",
-    blockedGuesses: ["monet", "peinture", "art moderne", "lumiere"]
+    "clues": [
+      "Le cadre est la France de la seconde moitié du XIXe siècle, au moment où la ville, les loisirs et les expositions changent la vie artistique.",
+      "Les touches visibles, les couleurs claires, les ombres colorées et le plein air comptent plus que le dessin académique lissé.",
+      "Monet, Renoir, Degas ou Pissarro y sont associés ; le nom vient d’une critique autour d’Impression, soleil levant."
+    ],
+    "explanation": "L’impressionnisme rompt avec une partie de la peinture académique : il cherche moins à raconter une grande scène qu’à saisir la perception, la lumière et la modernité d’un instant.",
+    "blockedGuesses": [
+      "monet",
+      "renoir",
+      "degas",
+      "pissarro",
+      "peinture",
+      "lumiere",
+      "lumière",
+      "art moderne"
+    ],
+    "modeMystery": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   },
   {
-    id: "cinema-mystery-melies-mode",
-    discipline: "cinema",
-    difficulty: "moyen",
-    title: "Le magicien qui envoie le cinéma dans la Lune",
-    caseTitle: "Pionnier du cinéma à identifier",
-    prompt: "Ancien illusionniste, il comprend très vite que la caméra peut créer des disparitions, des décors impossibles et des voyages imaginaires. Son nom reste lié au cinéma de trucage et au Voyage dans la Lune.",
-    answer: "Georges Méliès",
-    aliases: ["georges melies", "georges méliès", "melies", "méliès"],
-    clues: [
-      "Pionnier français du cinéma, venu de la magie et du spectacle.",
-      "Il utilise décors, arrêts de caméra et trucages pour inventer des mondes.",
-      "Son film le plus célèbre montre une fusée plantée dans l’œil de la Lune."
+    "id": "cinema-mystery-melies-mode",
+    "discipline": "cinema",
+    "difficulty": "difficile",
+    "title": "Quand filmer devient inventer",
+    "caseTitle": "Pionnier du cinéma à identifier",
+    "subjectType": "pionnier du cinéma",
+    "periodHint": "France · débuts du cinéma",
+    "lessonId": "cinema-early-lumiere-melies",
+    "prompt": "On cherche un homme de cinéma. Il comprend très tôt que la caméra ne sert pas seulement à enregistrer le réel : elle peut fabriquer des apparitions, des mondes impossibles et une illusion organisée.",
+    "answer": "Georges Méliès",
+    "aliases": [
+      "georges melies",
+      "georges méliès",
+      "melies",
+      "méliès"
     ],
-    explanation: "Georges Méliès montre que le cinéma peut inventer l’impossible, pas seulement enregistrer le réel. Il ouvre une voie majeure vers la fiction, les effets spéciaux et le spectacle filmé.",
-    blockedGuesses: ["cinema", "lune", "trucage", "voyage dans la lune"]
+    "clues": [
+      "Le cadre est celui des débuts du cinéma, quand l’attraction foraine, la scène et la technique se mélangent encore.",
+      "Son expérience de magicien nourrit les décors peints, les arrêts de caméra, les substitutions et les trucages.",
+      "Son film le plus célèbre envoie des savants vers la Lune, avec une image devenue iconique."
+    ],
+    "explanation": "Georges Méliès montre que le cinéma peut créer l’impossible, pas seulement capter le réel. Il ouvre une voie décisive vers la fiction, les effets spéciaux et le spectacle filmé.",
+    "blockedGuesses": [
+      "cinema",
+      "cinéma",
+      "lune",
+      "trucage",
+      "voyage dans la lune",
+      "magicien"
+    ],
+    "modeMystery": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   },
   {
-    id: "science-mystery-galileo-mode",
-    discipline: "science-inventions",
-    difficulty: "moyen",
-    title: "Un ciel qui ne tourne plus simplement autour de nous",
-    caseTitle: "Savant à identifier",
-    prompt: "Avec une lunette, il observe des reliefs sur la Lune, des satellites autour de Jupiter et des phénomènes qui fragilisent l’idée d’un ciel parfait organisé autour de la Terre.",
-    answer: "Galilée",
-    aliases: ["galilee", "galilée", "galileo", "galileo galilei", "galilée galilei"],
-    clues: [
-      "Savant associé à la lunette astronomique et aux débats autour de l’héliocentrisme.",
-      "Italie · début du XVIIe siècle · observations de la Lune et de Jupiter.",
-      "Son conflit avec l’Église devient l’un des épisodes célèbres de l’histoire des sciences."
+    "id": "science-mystery-galileo-mode",
+    "discipline": "science-inventions",
+    "difficulty": "difficile",
+    "title": "Le ciel devient une preuve",
+    "caseTitle": "Savant à identifier",
+    "subjectType": "savant et observateur",
+    "periodHint": "Italie · début du XVIIe siècle",
+    "lessonId": "sci-galileo-revolution",
+    "prompt": "On cherche un savant. Son importance ne tient pas seulement à une théorie, mais à une manière nouvelle de faire parler le ciel grâce à un instrument, des observations et une argumentation publique.",
+    "answer": "Galilée",
+    "aliases": [
+      "galilee",
+      "galilée",
+      "galileo",
+      "galileo galilei",
+      "galilée galilei"
     ],
-    explanation: "Galilée utilise l’observation instrumentée pour défendre une nouvelle manière de comprendre le ciel. Son importance vient autant des observations que de la méthode et du conflit intellectuel qu’elles déclenchent.",
-    blockedGuesses: ["lunette", "jupiter", "heliocentrisme", "copernic"]
+    "clues": [
+      "Le cadre est l’Europe savante du début du XVIIe siècle, dans les débats autour de la place de la Terre dans l’univers.",
+      "Il utilise une lunette pour observer la Lune, Jupiter et des phénomènes qui fragilisent l’idée d’un ciel parfait et immuable.",
+      "Son soutien à l’héliocentrisme et son conflit avec l’Église en font une figure célèbre de l’histoire des sciences."
+    ],
+    "explanation": "Galilée incarne le moment où l’observation instrumentée devient un argument fort. Il ne résume pas à lui seul la révolution scientifique, mais il en est une figure majeure.",
+    "blockedGuesses": [
+      "lunette",
+      "jupiter",
+      "heliocentrisme",
+      "héliocentrisme",
+      "copernic",
+      "astronomie"
+    ],
+    "modeMystery": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   },
   {
-    id: "economy-mystery-inflation-mode",
-    discipline: "economy",
-    difficulty: "facile",
-    title: "Quand la monnaie achète moins qu’avant",
-    caseTitle: "Notion économique à identifier",
-    prompt: "Les prix augmentent de manière générale. Le problème n’est pas seulement qu’un produit coûte plus cher, mais que le pouvoir d’achat de la monnaie diminue dans l’ensemble de l’économie.",
-    answer: "L’inflation",
-    aliases: ["inflation", "l inflation", "hausse generale des prix", "hausse générale des prix"],
-    clues: [
-      "Notion économique liée à une hausse générale et durable des prix.",
-      "Elle touche le pouvoir d’achat, les salaires, l’épargne, les taux et les choix des banques centrales.",
-      "Il ne faut pas la confondre avec la hausse isolée du prix d’un seul bien."
+    "id": "economy-mystery-inflation-mode",
+    "discipline": "economy",
+    "difficulty": "moyen",
+    "title": "La monnaie perd du terrain",
+    "caseTitle": "Notion économique à identifier",
+    "subjectType": "notion économique",
+    "periodHint": "Économie contemporaine",
+    "lessonId": "eco-inflation-money-value",
+    "prompt": "On cherche une notion économique. Elle se voit dans le quotidien, mais elle ne se réduit pas au prix d’un seul produit : elle modifie la valeur réelle de la monnaie dans l’ensemble de l’économie.",
+    "answer": "L’inflation",
+    "aliases": [
+      "inflation",
+      "l inflation",
+      "l’inflation",
+      "hausse generale des prix",
+      "hausse générale des prix"
     ],
-    explanation: "L’inflation désigne une augmentation générale des prix qui réduit le pouvoir d’achat de la monnaie. Elle se mesure, s’explique et se combat avec des outils économiques différents selon les causes.",
-    blockedGuesses: ["prix", "argent", "euro", "crise"]
+    "clues": [
+      "Le cadre est celui des prix, des revenus, de l’épargne, du crédit et du pouvoir d’achat.",
+      "Quand elle progresse, le même nombre d’euros permet d’acheter moins de biens et de services qu’avant.",
+      "Elle correspond à une hausse générale et durable des prix, à ne pas confondre avec une hausse isolée."
+    ],
+    "explanation": "L’inflation désigne une hausse générale des prix qui réduit le pouvoir d’achat de la monnaie. Ses causes et ses effets varient selon les périodes, les biens et les ménages.",
+    "blockedGuesses": [
+      "prix",
+      "argent",
+      "euro",
+      "crise",
+      "pouvoir d achat",
+      "pouvoir d’achat"
+    ],
+    "modeMystery": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   },
   {
-    id: "geography-mystery-mercator-mode",
-    discipline: "geography",
-    difficulty: "moyen",
-    title: "Une carte utile aux marins, mais trompeuse pour les tailles",
-    caseTitle: "Projection cartographique à identifier",
-    prompt: "Elle conserve les angles et facilite la navigation, mais agrandit fortement les régions proches des pôles. Le Groenland paraît alors beaucoup plus comparable à l’Afrique qu’il ne l’est réellement.",
-    answer: "La projection de Mercator",
-    aliases: ["projection de mercator", "mercator", "carte de mercator", "projection mercator"],
-    clues: [
-      "Notion de cartographie : représenter une sphère sur une surface plane impose des déformations.",
-      "Cette projection est très utile pour les routes maritimes car elle conserve les angles.",
-      "Elle grossit les hautes latitudes : Groenland, Europe du Nord ou Russie paraissent très grands."
+    "id": "geography-mystery-mercator-mode",
+    "discipline": "geography",
+    "difficulty": "difficile",
+    "title": "Une carte vraie pour naviguer, fausse pour comparer",
+    "caseTitle": "Projection cartographique à identifier",
+    "subjectType": "projection cartographique",
+    "periodHint": "Géographie · représentation du monde",
+    "lessonId": "geo-mercator-projection",
+    "prompt": "On cherche une projection cartographique. Elle rappelle qu’une carte n’est jamais une copie neutre du monde : elle peut être très utile pour un usage précis tout en déformant fortement une autre information.",
+    "answer": "La projection de Mercator",
+    "aliases": [
+      "projection de mercator",
+      "mercator",
+      "carte de mercator",
+      "projection mercator"
     ],
-    explanation: "La projection de Mercator est pratique pour la navigation, mais elle déforme fortement les surfaces près des pôles. Elle montre qu’une carte est toujours un choix, jamais une copie neutre du monde.",
-    blockedGuesses: ["carte", "projection", "groenland", "planisphere"]
-  }
-  ,{
-    id: "music-mystery-jazz-mode",
-    discipline: "music",
-    difficulty: "moyen",
-    title: "Une musique née du blues, du rythme et de l’improvisation",
-    caseTitle: "Genre musical à identifier",
-    prompt: "Née aux États-Unis au tournant du XXe siècle, cette musique mêle héritages afro-américains, improvisation, swing, clubs, orchestres, solos et transformations constantes.",
-    answer: "Le jazz",
-    aliases: ["jazz", "le jazz"],
-    clues: [
-      "Genre majeur de l’histoire de la musique du XXe siècle.",
-      "Improvisation, swing, blues et clubs sont des indices importants.",
+    "clues": [
+      "Le cadre est la cartographie : représenter une sphère sur une surface plane impose toujours des choix et des déformations.",
+      "Cette projection conserve les angles, ce qui la rend précieuse pour tracer des routes de navigation.",
+      "Elle grossit les hautes latitudes : Groenland, Europe du Nord ou Russie paraissent beaucoup plus vastes qu’ils ne le sont proportionnellement."
+    ],
+    "explanation": "La projection de Mercator est efficace pour la navigation, mais elle déforme fortement les surfaces près des pôles. Elle montre qu’une carte sert toujours un usage.",
+    "blockedGuesses": [
+      "carte",
+      "projection",
+      "groenland",
+      "planisphere",
+      "planisphère",
+      "navigation"
+    ],
+    "modeMystery": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
+  },
+  {
+    "id": "music-mystery-jazz-mode",
+    "discipline": "music",
+    "difficulty": "difficile",
+    "title": "Une règle qui laisse inventer",
+    "caseTitle": "Genre musical à identifier",
+    "subjectType": "genre musical",
+    "periodHint": "États-Unis · XXe siècle",
+    "lessonId": "music-jazz-birth",
+    "prompt": "On cherche un genre musical. Il transforme l’idée même d’interprétation : le musicien ne se contente pas d’exécuter, il invente dans un cadre partagé, avec un rapport très fort au rythme et au son.",
+    "answer": "Le jazz",
+    "aliases": [
+      "jazz",
+      "le jazz"
+    ],
+    "clues": [
+      "Le cadre est afro-américain, aux États-Unis, au tournant du XXe siècle puis dans les grandes villes et les clubs.",
+      "Improvisation, swing, blues, timbres expressifs, orchestres et solos sont des marqueurs essentiels.",
       "Louis Armstrong, Duke Ellington ou Miles Davis appartiennent à son histoire."
     ],
-    explanation: "Le jazz naît dans un contexte afro-américain et devient une révolution musicale mondiale : improvisation, rythme, timbre, enregistrement et liberté d’interprétation transforment l’écoute.",
-    blockedGuesses: ["blues", "swing", "musique", "improvisation"]
+    "explanation": "Le jazz place l’invention dans le moment, le rythme et la personnalité sonore au centre de la musique. Il devient l’un des grands langages musicaux du XXe siècle.",
+    "blockedGuesses": [
+      "blues",
+      "swing",
+      "musique",
+      "improvisation",
+      "armstrong",
+      "miles davis"
+    ],
+    "modeMystery": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   }
 ];
 
@@ -11358,37 +11503,52 @@ const BETA109_MODE_MYSTERIES = [
   {
     "id": "art-mystery-impressionism-mode",
     "discipline": "art",
-    "difficulty": "facile",
-    "title": "Des touches visibles et une lumière qui change",
+    "difficulty": "difficile",
+    "title": "La lumière avant le contour",
     "caseTitle": "Mouvement artistique à identifier",
-    "prompt": "Ces peintres français du XIXe siècle choquent d’abord parce que leurs tableaux semblent inachevés. Ils veulent saisir les effets de lumière, les loisirs modernes et la sensation d’un instant.",
+    "subjectType": "mouvement artistique",
+    "periodHint": "France · seconde moitié du XIXe siècle",
+    "lessonId": "art-impressionism-modern-life",
+    "prompt": "On cherche un mouvement artistique. Il déplace l’attention du grand sujet parfaitement fini vers la sensation visuelle : air, lumière, reflets, loisirs modernes et instant qui passe.",
     "answer": "L’impressionnisme",
     "aliases": [
       "impressionnisme",
       "l impressionnisme",
       "l’impressionnisme",
-      "impressionnistes"
+      "les impressionnistes",
+      "mouvement impressionniste"
     ],
     "clues": [
-      "Monet, Renoir, Degas ou Pissarro y sont associés.",
-      "Touches visibles, couleurs claires, ombres colorées.",
-      "Le nom vient d’abord d’une moquerie autour d’Impression, soleil levant."
+      "Le cadre est la France de la seconde moitié du XIXe siècle, au moment où la ville, les loisirs et les expositions changent la vie artistique.",
+      "Les touches visibles, les couleurs claires, les ombres colorées et le plein air comptent plus que le dessin académique lissé.",
+      "Monet, Renoir, Degas ou Pissarro y sont associés ; le nom vient d’une critique autour d’Impression, soleil levant."
     ],
-    "explanation": "L’impressionnisme marque une rupture vers l’art moderne : peindre la perception, la lumière et l’instant plutôt qu’un sujet parfaitement lissé.",
+    "explanation": "L’impressionnisme rompt avec une partie de la peinture académique : il cherche moins à raconter une grande scène qu’à saisir la perception, la lumière et la modernité d’un instant.",
     "blockedGuesses": [
       "monet",
+      "renoir",
+      "degas",
+      "pissarro",
       "peinture",
       "lumiere",
-      "renoir"
-    ]
+      "lumière",
+      "art moderne"
+    ],
+    "modeMystery": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   },
   {
     "id": "cinema-mystery-hollywood-studios",
     "discipline": "cinema",
-    "difficulty": "moyen",
-    "title": "La grande machine à rêves des studios",
+    "difficulty": "difficile",
+    "title": "Une usine à récits parfaitement lisibles",
     "caseTitle": "Période du cinéma à identifier",
-    "prompt": "Entre les années 1930 et 1950, grands studios, stars sous contrat, genres codifiés et récits très lisibles structurent une industrie du film devenue mondiale.",
+    "subjectType": "période et système de production cinématographique",
+    "periodHint": "États-Unis · années 1930-1950",
+    "lessonId": "cinema-hollywood-studio-system",
+    "prompt": "On cherche une période du cinéma. Elle associe organisation industrielle, récit très lisible, genres reconnaissables et fabrication contrôlée des vedettes, jusqu’à devenir une grammaire mondiale du film populaire.",
     "answer": "Hollywood classique",
     "aliases": [
       "hollywood classique",
@@ -11398,67 +11558,101 @@ const BETA109_MODE_MYSTERIES = [
       "cinéma classique hollywoodien"
     ],
     "clues": [
-      "Studios, stars, westerns, comédies musicales et films noirs.",
-      "Un cinéma très industriel, mais aussi très efficace narrativement.",
-      "Beaucoup de blockbusters actuels héritent encore de ses règles."
+      "Le cadre est l’industrie américaine du film, surtout entre les années 1930 et 1950.",
+      "Studios puissants, stars sous contrat, westerns, comédies musicales, mélodrames et films noirs structurent la production.",
+      "Ce modèle hollywoodien impose montage invisible, narration claire et efficacité spectaculaire."
     ],
-    "explanation": "Hollywood classique construit une grammaire populaire du cinéma : genres, stars, montage fluide, récits lisibles et production industrielle.",
+    "explanation": "Hollywood classique n’est pas seulement un lieu : c’est un système de production, de stars, de genres et de narration qui influence encore le cinéma populaire.",
     "blockedGuesses": [
       "hollywood",
       "studio",
+      "studios",
       "western",
-      "star"
-    ]
+      "star",
+      "cinema",
+      "cinéma"
+    ],
+    "modeMystery": true,
+    "beta109": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   },
   {
     "id": "science-mystery-pasteur-microbes",
     "discipline": "science-inventions",
-    "difficulty": "facile",
-    "title": "L’invisible qui change la médecine",
+    "difficulty": "difficile",
+    "title": "L’invisible entre au laboratoire",
     "caseTitle": "Savant à identifier",
-    "prompt": "Ses travaux sur les fermentations, les microbes, la pasteurisation et certains vaccins incarnent la révolution microbienne du XIXe siècle.",
+    "subjectType": "savant et expérimentateur",
+    "periodHint": "France · XIXe siècle",
+    "lessonId": "sci-pasteur-microbes-vaccines",
+    "prompt": "On cherche un savant. Son importance vient du lien entre expérience de laboratoire et applications concrètes : alimentation, hygiène, maladies, prévention et transformation des pratiques médicales.",
     "answer": "Louis Pasteur",
     "aliases": [
       "pasteur",
       "louis pasteur"
     ],
     "clues": [
-      "Figure française du XIXe siècle.",
-      "Son nom est associé à un procédé de chauffage de liquides pour limiter certains micro-organismes.",
-      "Il est aussi lié à l’histoire des vaccins et de la rage."
+      "Le cadre est le XIXe siècle, quand la compréhension des micro-organismes transforme médecine, agriculture et alimentation.",
+      "Son nom est associé aux fermentations, à un procédé de chauffage contrôlé et à l’histoire de certains vaccins.",
+      "Pasteurisation, rage, laboratoire expérimental et révolution microbienne pointent vers lui."
     ],
-    "explanation": "Pasteur représente la révolution microbienne : comprendre, contrôler et prévenir l’action des micro-organismes dans la médecine et la vie quotidienne.",
+    "explanation": "Louis Pasteur représente la révolution microbienne : identifier l’action de micro-organismes, contrôler certains risques et faire passer des découvertes du laboratoire vers la société.",
     "blockedGuesses": [
       "microbe",
+      "microbes",
       "vaccin",
+      "vaccins",
       "rage",
-      "pasteurisation"
-    ]
+      "pasteurisation",
+      "laboratoire"
+    ],
+    "modeMystery": true,
+    "beta109": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   },
   {
-    "id": "music-mystery-jazz-birth-109",
+    "id": "music-mystery-gregorian-polyphony-120",
     "discipline": "music",
-    "difficulty": "facile",
-    "title": "Improviser sans jouer au hasard",
-    "caseTitle": "Genre musical à identifier",
-    "prompt": "Né aux États-Unis au tournant du XXe siècle, il mêle blues, swing, timbres expressifs, clubs et improvisation dans un cadre partagé.",
-    "answer": "Le jazz",
+    "difficulty": "moyen",
+    "title": "Quand une voix ne suffit plus",
+    "caseTitle": "Transformation musicale à identifier",
+    "subjectType": "transformation musicale",
+    "periodHint": "Europe chrétienne · Moyen Âge",
+    "lessonId": "music-gregorian-polyphony",
+    "prompt": "On cherche une transformation musicale. Elle part d’un chant religieux à l’unisson, puis fait apparaître plusieurs lignes vocales coordonnées : la musique gagne en verticalité et en complexité.",
+    "answer": "La polyphonie médiévale",
     "aliases": [
-      "jazz",
-      "le jazz"
+      "polyphonie",
+      "polyphonie medievale",
+      "polyphonie médiévale",
+      "naissance de la polyphonie",
+      "premieres polyphonies",
+      "premières polyphonies"
     ],
     "clues": [
-      "Nouvelle-Orléans est souvent associée à ses débuts.",
-      "Louis Armstrong et Duke Ellington sont des figures majeures.",
-      "L’improvisation, le swing et l’interaction y sont essentiels."
+      "Le cadre est celui de l’Europe chrétienne médiévale, autour des pratiques liturgiques et des écoles musicales.",
+      "Le chant grégorien sert souvent de point de départ : une ligne commune, stable, mémorisable.",
+      "L’ajout de plusieurs voix superposées mène aux premières polyphonies, notamment autour de Notre-Dame de Paris."
     ],
-    "explanation": "Le jazz est une révolution musicale afro-américaine qui place l’invention dans le moment, le rythme et la personnalité sonore au centre.",
+    "explanation": "La polyphonie médiévale transforme l’écoute : plusieurs voix peuvent avancer ensemble, créant une architecture musicale plus complexe que le simple chant à l’unisson.",
     "blockedGuesses": [
-      "blues",
-      "swing",
-      "improvisation",
-      "nouvelle orleans"
-    ]
+      "chant",
+      "chant gregorien",
+      "chant grégorien",
+      "eglise",
+      "église",
+      "musique medievale",
+      "musique médiévale"
+    ],
+    "modeMystery": true,
+    "beta109": true,
+    "manualCluesB97": true,
+    "cluesCleaned": true,
+    "balancedMysteryB120": true
   }
 ];
 (function registerBeta109Content() {
@@ -11472,6 +11666,1481 @@ const BETA109_MODE_MYSTERIES = [
   if (!Array.isArray(data.mysteries)) data.mysteries = [];
   const knownMysteries = new Set(data.mysteries.map(item => item.id));
   BETA109_MODE_MYSTERIES.forEach(item => { if (!knownMysteries.has(item.id)) data.mysteries.push({ ...item, modeMystery: true, beta109: true, manualCluesB97: true, cluesCleaned: true }); });
+})();
+
+
+
+/*
+   Beta 121 — profondeur des mystères disciplinaires
+   Objectif : chaque mode non historique dispose d'au moins deux mystères jouables,
+   avec énigme de base moins donnée, type clair et indices progressifs.
+*/
+const BETA121_MODE_MYSTERIES = [
+  {
+    "id": "art-mystery-linear-perspective-121",
+    "discipline": "art",
+    "difficulty": "difficile",
+    "title": "La profondeur devient calculable",
+    "caseTitle": "Technique de représentation à identifier",
+    "subjectType": "technique de représentation artistique",
+    "periodHint": "Renaissance italienne · XVe siècle",
+    "lessonId": "art-renaissance-perspective",
+    "prompt": "On cherche une technique de représentation. Elle ne consiste pas seulement à dessiner plus précisément : elle organise l’espace de l’image comme si le regard suivait des règles mesurables.",
+    "answer": "La perspective linéaire",
+    "aliases": [
+      "perspective lineaire",
+      "perspective linéaire",
+      "perspective centrale",
+      "perspective a point de fuite",
+      "perspective à point de fuite",
+      "la perspective"
+    ],
+    "clues": [
+      "Le cadre est celui de la Renaissance, quand artistes, architectes et mathématiciens réfléchissent ensemble à l’espace visible.",
+      "L’image se construit autour de lignes qui convergent vers un ou plusieurs points de fuite.",
+      "Brunelleschi, Alberti et la peinture italienne du Quattrocento sont liés à cette manière d’organiser la profondeur."
+    ],
+    "explanation": "La perspective linéaire donne à la peinture de la Renaissance un espace construit et crédible. Elle ne copie pas simplement le réel : elle fabrique une méthode pour représenter la profondeur.",
+    "blockedGuesses": [
+      "renaissance",
+      "italie",
+      "peinture",
+      "profondeur",
+      "point de fuite",
+      "brunelleschi",
+      "alberti"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB121": true
+  },
+  {
+    "id": "economy-mystery-supply-demand-121",
+    "discipline": "economy",
+    "difficulty": "moyen",
+    "title": "Le prix cherche son équilibre",
+    "caseTitle": "Mécanisme économique à identifier",
+    "subjectType": "mécanisme économique",
+    "periodHint": "Économie · marchés et prix",
+    "lessonId": "eco-supply-demand-basics",
+    "prompt": "On cherche un mécanisme économique. Il explique pourquoi un prix ne sort pas de nulle part : il dépend à la fois de ce que certains veulent acheter et de ce que d’autres acceptent de vendre.",
+    "answer": "L’offre et la demande",
+    "aliases": [
+      "offre et demande",
+      "l offre et la demande",
+      "l’offre et la demande",
+      "loi de l offre et de la demande",
+      "loi de l’offre et de la demande"
+    ],
+    "clues": [
+      "Le cadre est celui d’un marché, avec des acheteurs, des vendeurs, des quantités et des prix.",
+      "Si un bien devient rare ou très recherché, son prix peut monter ; si l’offre augmente fortement, il peut baisser.",
+      "On représente souvent ce mécanisme par deux courbes qui se croisent autour d’un prix d’équilibre."
+    ],
+    "explanation": "L’offre et la demande est un mécanisme de base pour comprendre la formation des prix. Il ne suffit pas à expliquer toute l’économie, mais il donne un premier modèle utile.",
+    "blockedGuesses": [
+      "prix",
+      "marche",
+      "marché",
+      "equilibre",
+      "équilibre",
+      "courbe",
+      "argent"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB121": true
+  },
+  {
+    "id": "geography-mystery-map-scale-121",
+    "discipline": "geography",
+    "difficulty": "moyen",
+    "title": "Un centimètre pour changer de monde",
+    "caseTitle": "Notion cartographique à identifier",
+    "subjectType": "notion cartographique",
+    "periodHint": "Géographie · lecture de cartes",
+    "lessonId": "geo-maps-scale-basics",
+    "prompt": "On cherche une notion cartographique. Elle paraît discrète sur une carte, mais elle décide de ce qu’on peut voir, comparer ou mesurer sans se tromper d’ordre de grandeur.",
+    "answer": "L’échelle cartographique",
+    "aliases": [
+      "echelle cartographique",
+      "échelle cartographique",
+      "echelle d une carte",
+      "échelle d’une carte",
+      "l echelle",
+      "l’échelle",
+      "echelle",
+      "échelle"
+    ],
+    "clues": [
+      "Le cadre est celui de la lecture de cartes : une distance dessinée doit correspondre à une distance réelle.",
+      "Une grande échelle montre un petit espace avec beaucoup de détails ; une petite échelle montre un vaste espace avec moins de détails.",
+      "Elle peut s’écrire sous forme graphique ou numérique, par exemple 1:25 000."
+    ],
+    "explanation": "L’échelle cartographique permet de relier la carte au terrain. Elle conditionne le niveau de détail, les mesures possibles et la bonne interprétation d’un espace.",
+    "blockedGuesses": [
+      "carte",
+      "distance",
+      "plan",
+      "planisphere",
+      "planisphère",
+      "geographie",
+      "géographie"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB121": true
+  },
+  {
+    "id": "science-mystery-experimental-proof-121",
+    "discipline": "science-inventions",
+    "difficulty": "moyen",
+    "title": "Une idée ne suffit pas",
+    "caseTitle": "Méthode scientifique à identifier",
+    "subjectType": "méthode de preuve scientifique",
+    "periodHint": "Sciences · méthode et expérimentation",
+    "lessonId": "sci-method-proof-basics",
+    "prompt": "On cherche une méthode. Elle oblige à transformer une intuition en test contrôlé, pour distinguer ce qu’on croit, ce qu’on observe et ce qu’on peut vraiment conclure.",
+    "answer": "La preuve expérimentale",
+    "aliases": [
+      "preuve experimentale",
+      "preuve expérimentale",
+      "experience controlee",
+      "expérience contrôlée",
+      "methode experimentale",
+      "méthode expérimentale",
+      "demarche experimentale",
+      "démarche expérimentale"
+    ],
+    "clues": [
+      "Le cadre est celui des sciences : on formule une hypothèse, puis on cherche à la confronter au réel.",
+      "La comparaison, le témoin, la répétition et le contrôle des variables permettent d’éviter les conclusions trop rapides.",
+      "Une expérience bien construite ne prouve pas tout, mais elle rend une affirmation plus solide qu’une simple opinion."
+    ],
+    "explanation": "La preuve expérimentale est centrale dans les sciences modernes : elle organise le passage de l’idée au test, puis du résultat à la conclusion prudente.",
+    "blockedGuesses": [
+      "science",
+      "hypothese",
+      "hypothèse",
+      "experience",
+      "expérience",
+      "laboratoire",
+      "observation"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB121": true
+  }
+];
+(function registerBeta121Mysteries() {
+  if (!Array.isArray(data.mysteries)) data.mysteries = [];
+  ["art-renaissance-perspective", "eco-supply-demand-basics", "geo-maps-scale-basics", "sci-method-proof-basics"].forEach(id => PUBLISHED_LESSON_IDS.add(id));
+  const knownMysteries = new Set(data.mysteries.map(item => item.id));
+  BETA121_MODE_MYSTERIES.forEach(item => {
+    if (!knownMysteries.has(item.id)) data.mysteries.push({ ...item, modeMystery: true, manualCluesB97: true, cluesCleaned: true });
+  });
+})();
+// Beta 123 — densification des mystères par discipline, sans rendre les énigmes trop données.
+const BETA122_MODE_MYSTERIES = [
+  {
+    "id": "art-mystery-composition-122",
+    "discipline": "art",
+    "difficulty": "moyen",
+    "title": "L’ordre invisible du regard",
+    "caseTitle": "Notion d’analyse d’image à identifier",
+    "subjectType": "notion d’analyse d’image",
+    "periodHint": "Art · méthode de lecture d’œuvre",
+    "lessonId": "art-read-image-basics",
+    "prompt": "On cherche une notion d’analyse d’image. Elle ne désigne ni le sujet ni le style : elle organise le trajet du regard, les masses, les lignes et l’équilibre général d’une œuvre.",
+    "answer": "La composition",
+    "aliases": [
+      "composition",
+      "la composition",
+      "composition picturale",
+      "composition d image",
+      "composition d’image",
+      "composition de l image",
+      "composition de l’image"
+    ],
+    "clues": [
+      "Le cadre est la lecture d’une œuvre : avant d’interpréter, il faut observer comment l’image est construite.",
+      "Elle peut guider l’œil par des lignes de force, des contrastes, des centres d’attention, des vides et des pleins.",
+      "Dans un tableau, une photographie ou une affiche, elle explique pourquoi certains éléments semblent dominer ou attirer le regard."
+    ],
+    "explanation": "La composition est l’organisation visuelle d’une image. Elle aide à comprendre comment une œuvre dirige le regard, crée un équilibre ou produit une tension.",
+    "blockedGuesses": [
+      "image",
+      "tableau",
+      "peinture",
+      "cadre",
+      "ligne",
+      "couleur",
+      "regard"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB122": true
+  },
+  {
+    "id": "cinema-mystery-cadrage-122",
+    "discipline": "cinema",
+    "difficulty": "moyen",
+    "title": "Ce que la caméra accepte de montrer",
+    "caseTitle": "Notion de langage cinématographique à identifier",
+    "subjectType": "notion de langage cinématographique",
+    "periodHint": "Cinéma · langage de l’image",
+    "lessonId": "cinema-shot-frame-basics",
+    "prompt": "On cherche une notion de cinéma. Elle n’est pas le décor lui-même, mais le choix qui décide ce qui entre dans l’image, ce qui reste hors champ et quelle distance le spectateur garde avec la scène.",
+    "answer": "Le cadrage",
+    "aliases": [
+      "cadrage",
+      "le cadrage",
+      "cadre",
+      "mise en cadre",
+      "composition du plan"
+    ],
+    "clues": [
+      "Le cadre est le langage du plan : la caméra ne montre jamais tout, elle sélectionne.",
+      "Un gros plan, un plan large ou un personnage placé au bord de l’image ne produisent pas le même effet.",
+      "Cette notion se combine avec le hors-champ : ce qu’on ne voit pas peut parfois compter autant que ce qu’on voit."
+    ],
+    "explanation": "Le cadrage est le choix de ce que l’image contient et exclut. Il influence l’attention, la tension, l’émotion et la compréhension d’une scène.",
+    "blockedGuesses": [
+      "cinema",
+      "cinéma",
+      "camera",
+      "caméra",
+      "plan",
+      "image",
+      "hors champ",
+      "hors-champ"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB122": true
+  },
+  {
+    "id": "economy-mystery-scarcity-122",
+    "discipline": "economy",
+    "difficulty": "moyen",
+    "title": "Quand tout ne peut pas être illimité",
+    "caseTitle": "Notion économique à identifier",
+    "subjectType": "notion économique",
+    "periodHint": "Économie · bases des choix",
+    "lessonId": "eco-supply-demand-basics",
+    "prompt": "On cherche une notion économique. Elle part d’une idée simple mais redoutable : les besoins et les envies peuvent être nombreux, alors que le temps, les biens, l’argent ou les ressources disponibles ne le sont pas.",
+    "answer": "La rareté",
+    "aliases": [
+      "rarete",
+      "rareté",
+      "la rareté",
+      "la rarete",
+      "rareté économique",
+      "rarete economique"
+    ],
+    "clues": [
+      "Le cadre est celui des choix : consommer, produire, économiser ou arbitrer suppose de ne pas pouvoir tout faire à la fois.",
+      "Elle aide à comprendre pourquoi certains biens ont un prix et pourquoi une ressource très demandée devient stratégique.",
+      "Dans l’analyse de l’offre et de la demande, elle pèse souvent sur les prix quand la quantité disponible est limitée."
+    ],
+    "explanation": "La rareté désigne l’écart entre des besoins ou usages possibles et des ressources limitées. Elle oblige à faire des choix et structure une grande partie du raisonnement économique.",
+    "blockedGuesses": [
+      "prix",
+      "argent",
+      "marche",
+      "marché",
+      "ressource",
+      "besoin",
+      "demande",
+      "offre"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB122": true
+  },
+  {
+    "id": "geography-mystery-coordinates-122",
+    "discipline": "geography",
+    "difficulty": "moyen",
+    "title": "Trouver un point sans raconter le paysage",
+    "caseTitle": "Outil de localisation à identifier",
+    "subjectType": "outil de localisation géographique",
+    "periodHint": "Géographie · lecture de cartes",
+    "lessonId": "geo-maps-scale-basics",
+    "prompt": "On cherche un outil de localisation. Il ne décrit pas le climat, le relief ou la population d’un lieu : il sert d’abord à le situer précisément sur la Terre grâce à deux mesures complémentaires.",
+    "answer": "Les coordonnées géographiques",
+    "aliases": [
+      "coordonnees geographiques",
+      "coordonnées géographiques",
+      "les coordonnées géographiques",
+      "coordonnees",
+      "coordonnées",
+      "latitude et longitude",
+      "longitude et latitude"
+    ],
+    "clues": [
+      "Le cadre est la cartographie : pour retrouver un lieu, une carte doit permettre de passer d’un espace dessiné à un point réel.",
+      "La latitude situe un point au nord ou au sud de l’équateur ; la longitude le situe à l’est ou à l’ouest d’un méridien de référence.",
+      "GPS, cartes marines, atlas et systèmes d’information géographique utilisent ce principe de localisation."
+    ],
+    "explanation": "Les coordonnées géographiques localisent un point par latitude et longitude. Elles permettent de passer d’une carte ou d’un système numérique à une position précise sur la Terre.",
+    "blockedGuesses": [
+      "carte",
+      "gps",
+      "latitude",
+      "longitude",
+      "equateur",
+      "équateur",
+      "meridien",
+      "méridien"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB122": true
+  },
+  {
+    "id": "music-mystery-gregorian-chant-122",
+    "discipline": "music",
+    "difficulty": "moyen",
+    "title": "Une seule ligne pour tenir le rite",
+    "caseTitle": "Forme musicale à identifier",
+    "subjectType": "forme musicale religieuse",
+    "periodHint": "Europe médiévale · musique religieuse",
+    "lessonId": "music-gregorian-polyphony",
+    "prompt": "On cherche une forme musicale. Elle appartient à un monde où la musique sert d’abord le rite, la mémoire et la voix collective, avant la logique de concert moderne ou d’orchestre spectaculaire.",
+    "answer": "Le chant grégorien",
+    "aliases": [
+      "chant grégorien",
+      "chant gregorien",
+      "le chant grégorien",
+      "le chant gregorien",
+      "gregorien",
+      "grégorien"
+    ],
+    "clues": [
+      "Le cadre est celui de l’Église médiévale et de la transmission liturgique.",
+      "Il est généralement monodique : plusieurs voix peuvent chanter ensemble, mais autour d’une seule ligne mélodique.",
+      "Il sert de repère avant le développement progressif de la polyphonie en Europe."
+    ],
+    "explanation": "Le chant grégorien est un chant religieux médiéval, généralement monodique, lié au rite. Il est essentiel pour comprendre la transmission écrite et vocale de la musique européenne.",
+    "blockedGuesses": [
+      "musique",
+      "eglise",
+      "église",
+      "moyen age",
+      "moyen âge",
+      "polyphonie",
+      "chant"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB122": true
+  },
+  {
+    "id": "science-mystery-hypothesis-122",
+    "discipline": "science-inventions",
+    "difficulty": "facile",
+    "title": "Une réponse provisoire à mettre en danger",
+    "caseTitle": "Étape de méthode scientifique à identifier",
+    "subjectType": "étape de méthode scientifique",
+    "periodHint": "Sciences · démarche expérimentale",
+    "lessonId": "sci-method-proof-basics",
+    "prompt": "On cherche une étape de la méthode scientifique. Elle ressemble à une explication possible, mais elle n’a de valeur que si elle accepte d’être testée, discutée et éventuellement corrigée.",
+    "answer": "L’hypothèse",
+    "aliases": [
+      "hypothese",
+      "hypothèse",
+      "l hypothese",
+      "l’hypothèse",
+      "une hypothese",
+      "une hypothèse"
+    ],
+    "clues": [
+      "Le cadre est celui d’une enquête scientifique : on part d’une question ou d’une observation à expliquer.",
+      "Elle doit être formulée assez clairement pour qu’une expérience ou une observation puisse la confronter au réel.",
+      "Si les résultats ne la soutiennent pas, on doit la modifier ou l’abandonner plutôt que forcer les faits."
+    ],
+    "explanation": "Une hypothèse est une explication provisoire que l’on peut tester. Elle structure la recherche, mais doit rester corrigible face aux résultats.",
+    "blockedGuesses": [
+      "science",
+      "preuve",
+      "experience",
+      "expérience",
+      "observation",
+      "idee",
+      "idée"
+    ],
+    "modeMystery": true,
+    "balancedMysteryB122": true
+  }
+];
+(function registerBeta122Mysteries() {
+  if (!Array.isArray(data.mysteries)) data.mysteries = [];
+  const knownMysteries = new Set(data.mysteries.map(item => item.id));
+  BETA122_MODE_MYSTERIES.forEach(item => {
+    if (!knownMysteries.has(item.id)) data.mysteries.push({ ...item, modeMystery: true, manualCluesB97: true, cluesCleaned: true });
+  });
+})();
+
+
+
+
+
+// Beta 123 — colonne vertébrale historique : dynasties, règnes et étapes marquantes.
+const BETA123_WORLDS = [
+  {
+    "id": "medieval-west",
+    "title": "Francs et royaumes médiévaux",
+    "emoji": "👑",
+    "subtitle": "Clovis, Carolingiens, Capétiens",
+    "timeframe": "481 → 1328",
+    "accent": "#c084fc",
+    "theme": "castle",
+    "unlockedByDefault": false,
+    "group": "late-medieval",
+    "sortStart": 481,
+    "sortEnd": 1328
+  }
+];
+const BETA123_HISTORY_SPINE_LESSONS = {
+  "civilizations": [
+    {
+      "id": "civilizations-uruk-writing-state",
+      "title": "Uruk, temples et écriture : la ville devient État",
+      "period": "vers -3500 → -3000",
+      "location": "Mésopotamie",
+      "emoji": "🏙️",
+      "xp": 70,
+      "order": 2
+    },
+    {
+      "id": "civilizations-hammurabi-babylon-law",
+      "title": "Hammurabi et Babylone : roi, loi et empire",
+      "period": "XVIIIe siècle av. J.-C.",
+      "location": "Mésopotamie",
+      "emoji": "⚖️",
+      "xp": 70,
+      "order": 3
+    }
+  ],
+  "egypt": [
+    {
+      "id": "egypt-kingdoms-dynasties",
+      "title": "Ancien, Moyen, Nouvel Empire : lire les dynasties égyptiennes",
+      "period": "vers -2700 → -1070",
+      "location": "Égypte",
+      "emoji": "👑",
+      "xp": 70,
+      "order": 7
+    }
+  ],
+  "greece": [
+    {
+      "id": "greece-alexander-hellenistic-kingdoms",
+      "title": "Alexandre et les royaumes hellénistiques",
+      "period": "-336 → -30",
+      "location": "Macédoine, Orient, Méditerranée",
+      "emoji": "⚔️",
+      "xp": 70,
+      "order": 4
+    }
+  ],
+  "rome": [
+    {
+      "id": "rome-caesar-civil-wars",
+      "title": "César, Pompée et les guerres civiles",
+      "period": "-60 → -44",
+      "location": "République romaine",
+      "emoji": "🗡️",
+      "xp": 70,
+      "order": 7
+    }
+  ],
+  "northern-viking-worlds": [
+    {
+      "id": "northern-viking-worlds-kings-kingdoms",
+      "title": "Des chefs vikings aux royaumes nordiques",
+      "period": "IXe → XIe siècle",
+      "location": "Danemark, Norvège, Suède",
+      "emoji": "👑",
+      "xp": 70,
+      "order": 10
+    },
+    {
+      "id": "northern-viking-worlds-normandy-england-kiev",
+      "title": "Normandie, Angleterre, Kiev : quand les Vikings deviennent des princes",
+      "period": "IXe → XIe siècle",
+      "location": "Europe du Nord et de l’Est",
+      "emoji": "🛡️",
+      "xp": 70,
+      "order": 11
+    }
+  ],
+  "medieval-west": [
+    {
+      "id": "medieval-west-clovis-merovingians",
+      "title": "Clovis et les Mérovingiens : un royaume franc s’installe",
+      "period": "481 → 751",
+      "location": "Gaule franque",
+      "emoji": "⚜️",
+      "xp": 70,
+      "order": 1
+    },
+    {
+      "id": "medieval-west-charlemagne-carolingians",
+      "title": "Charlemagne et les Carolingiens : refaire un empire en Occident",
+      "period": "751 → 843",
+      "location": "Europe occidentale",
+      "emoji": "🦅",
+      "xp": 70,
+      "order": 2
+    },
+    {
+      "id": "medieval-west-capetians-monarchy",
+      "title": "Capétiens : d’un petit domaine royal à une monarchie plus solide",
+      "period": "987 → XIVe siècle",
+      "location": "Royaume de France",
+      "emoji": "🏰",
+      "xp": 70,
+      "order": 3
+    }
+  ]
+};
+const BETA123_HISTORY_SPINE_PACKS = {
+  "civilizations-uruk-writing-state": {
+    "hook": "Uruk aide à comprendre une bascule essentielle : quand les villages, les temples, les stocks, les scribes et les chefs se combinent, on n’est plus seulement devant un habitat dense, mais devant une première forme d’État urbain.",
+    "keyFacts": [
+      "Repère : Mésopotamie du IVe millénaire av. J.-C.",
+      "Acteurs : temples, administrateurs, artisans, paysans, scribes",
+      "Rupture : ville, surplus, écriture comptable, hiérarchie sociale",
+      "Piège : croire que l’écriture naît d’abord pour raconter des romans ou des mythes"
+    ],
+    "express": [
+      "Uruk n’est pas seulement une grande ville ancienne. Elle représente une étape où la taille de l’habitat, la gestion des ressources et l’organisation du travail changent d’échelle. Des temples concentrent des biens, des responsables suivent les stocks, des artisans produisent pour un espace plus vaste que le village.",
+      "L’écriture apparaît dans ce contexte très concret. Avant d’être un outil littéraire, elle sert surtout à compter, enregistrer, contrôler des quantités, identifier des biens et suivre des échanges. C’est moins romantique qu’un poème, mais historiquement décisif : administrer devient possible autrement.",
+      "À retenir : Uruk montre que la civilisation ne se résume pas à des monuments impressionnants. Les étapes marquantes sont aussi administratives : stocker, mesurer, classer, gouverner. La ville devient un lieu de pouvoir parce qu’elle organise des hommes, des biens et des signes."
+    ],
+    "complete": [
+      {
+        "title": "1. Une ville plus complexe qu’un village",
+        "text": "Une ville comme Uruk rassemble davantage d’habitants, de métiers et de fonctions qu’un simple village agricole. On y trouve des espaces religieux, des ateliers, des lieux de stockage et des formes d’administration. Cette concentration transforme la société : il faut nourrir la population, organiser le travail, gérer les produits et coordonner des activités variées."
+      },
+      {
+        "title": "2. Le temple comme centre économique",
+        "text": "Le temple n’est pas seulement un lieu religieux. Dans les premières cités mésopotamiennes, il peut concentrer des terres, recevoir des produits, redistribuer des rations et employer des travailleurs. Religion, économie et pouvoir ne sont pas séparés comme dans nos catégories modernes."
+      },
+      {
+        "title": "3. L’écriture naît d’un besoin de gestion",
+        "text": "Les premiers signes écrits sont liés à la comptabilité : céréales, bétail, rations, objets, personnes. Cela ne veut pas dire que les habitants ne racontaient rien, mais les traces conservées montrent d’abord un usage administratif. L’État a besoin de mémoire stable."
+      },
+      {
+        "title": "4. Une hiérarchie plus visible",
+        "text": "Quand des surplus circulent et que des spécialistes apparaissent, les différences sociales deviennent plus nettes. Certains commandent, comptent, stockent ou protègent ; d’autres produisent. Uruk permet donc de voir une société qui s’organise par fonctions et par statuts."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Uruk est un bon cours-pivot parce qu’elle relie plusieurs étapes : ville, temples, surplus, écriture et pouvoir. Elle donne une ossature chronologique aux premières civilisations, au lieu de présenter seulement un mode de vie ou des objets isolés."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Rupture",
+        "text": "La ville change l’échelle de l’organisation sociale."
+      },
+      {
+        "label": "Écriture",
+        "text": "Les premiers usages sont très liés à l’administration."
+      },
+      {
+        "label": "Pouvoir",
+        "text": "Temple, stockage et hiérarchie forment une première structure d’État."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Où se situe Uruk ?",
+        "a": "En Mésopotamie, dans le sud de l’Irak actuel.",
+        "why": "Cela situe la naissance de grandes cités dans un espace fluvial ancien.",
+        "trap": "La placer en Égypte ou en Grèce classique.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "notion",
+        "q": "Pourquoi Uruk est-elle plus qu’un village ?",
+        "a": "Parce qu’elle concentre habitants, temples, ateliers, stocks, administration et hiérarchies.",
+        "why": "La ville implique un changement d’échelle.",
+        "trap": "Réduire Uruk à un simple groupe de maisons.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "événement",
+        "q": "À quoi sert d’abord l’écriture dans ce contexte ?",
+        "a": "À enregistrer, compter et administrer des biens, des rations ou des échanges.",
+        "why": "L’écriture naît ici d’un besoin de gestion.",
+        "trap": "Dire qu’elle sert d’abord à écrire des romans.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "pouvoir",
+        "q": "Pourquoi le temple est-il central ?",
+        "a": "Il peut concentrer des ressources, organiser le travail et redistribuer des produits.",
+        "why": "Le religieux et l’économique sont liés.",
+        "trap": "En faire seulement un lieu de prière isolé.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi ce cours sert-il de repère ?",
+        "a": "Il relie ville, écriture, stockage, hiérarchie et pouvoir dans une première forme d’État urbain.",
+        "why": "C’est la colonne vertébrale des premières civilisations.",
+        "trap": "Ne retenir qu’un monument ou une date.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "civilizations-hammurabi-babylon-law": {
+    "hook": "Hammurabi permet de sortir d’une histoire vague des premières civilisations : on voit un roi, une dynastie, une capitale, des conquêtes et une manière d’afficher l’ordre par la loi.",
+    "keyFacts": [
+      "Repère : Babylone, XVIIIe siècle av. J.-C.",
+      "Acteur : Hammurabi, roi amorrite de Babylone",
+      "Trace célèbre : stèle du Code de Hammurabi",
+      "Piège : croire que le code prouve une justice égalitaire au sens moderne"
+    ],
+    "express": [
+      "Hammurabi règne sur Babylone au XVIIIe siècle av. J.-C. Il n’est pas seulement un nom associé à un code juridique : il appartient à une dynastie qui transforme Babylone en puissance politique majeure de Mésopotamie. Son règne mêle guerre, diplomatie, administration et mise en scène de la justice.",
+      "La stèle du Code de Hammurabi est célèbre parce qu’elle présente des décisions et des principes juridiques sous l’autorité du roi. Elle ne décrit pas forcément toute la pratique quotidienne de la justice, mais elle montre comment le pouvoir veut apparaître : protéger l’ordre, punir, arbitrer et gouverner.",
+      "À retenir : Hammurabi donne un vrai repère dynastique. Il permet de comprendre que les premières civilisations ne sont pas seulement des villes et des fleuves, mais aussi des royaumes, des souverains, des conquêtes et une idéologie royale."
+    ],
+    "complete": [
+      {
+        "title": "1. Babylone devient une puissance",
+        "text": "Au début, Babylone n’est pas automatiquement la grande capitale mythique que l’on imagine. Sous Hammurabi, elle s’impose progressivement dans le jeu politique mésopotamien. Le roi mène des guerres, noue des alliances et profite des rivalités entre cités et royaumes voisins pour étendre son autorité."
+      },
+      {
+        "title": "2. Un roi conquérant et administrateur",
+        "text": "Hammurabi ne se résume pas à un législateur. Comme beaucoup de souverains anciens, il doit vaincre, négocier, percevoir, organiser l’irrigation, contrôler des villes et faire reconnaître son autorité. La loi fait partie d’un ensemble plus large de gouvernement."
+      },
+      {
+        "title": "3. Le code comme monument politique",
+        "text": "La stèle ne sert pas seulement à conserver des règles. Elle montre le roi recevant une légitimité divine et affirme qu’il rend la justice. Le texte construit donc une image : celle d’un souverain protecteur de l’ordre, même si la société reste très hiérarchisée."
+      },
+      {
+        "title": "4. Une justice inégale",
+        "text": "Le code distingue les statuts sociaux : homme libre, dépendant, esclave. Les peines peuvent varier selon la position de la victime et de l’auteur. C’est un document précieux, mais il ne faut pas lui attribuer nos principes contemporains d’égalité devant la loi."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Hammurabi est utile comme cours-pivot : il donne un nom, une dynastie, une capitale, une trace écrite et une idée politique. Il transforme un chapitre sur la Mésopotamie en récit structuré autour d’un règne."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Dynastie",
+        "text": "Babylone devient une puissance sous un roi identifiable."
+      },
+      {
+        "label": "Loi",
+        "text": "Le code est aussi un monument de légitimation royale."
+      },
+      {
+        "label": "Nuance",
+        "text": "La justice ancienne reste liée aux statuts sociaux."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Quand Hammurabi règne-t-il ?",
+        "a": "Au XVIIIe siècle av. J.-C., en Mésopotamie.",
+        "why": "C’est le repère chronologique du cours.",
+        "trap": "Le placer au Moyen Âge.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "acteur",
+        "q": "Pourquoi Hammurabi est-il important ?",
+        "a": "Il fait de Babylone une puissance et associe son règne à une forte image de justice royale.",
+        "why": "Il combine conquête, administration et idéologie.",
+        "trap": "Ne retenir que son nom sans rôle politique.",
+        "evidence": "Blocs 1-2."
+      },
+      {
+        "kind": "trace",
+        "q": "Que montre la stèle du code ?",
+        "a": "Elle affiche une justice royale placée sous autorité divine et politique.",
+        "why": "Le monument construit une image du souverain.",
+        "trap": "La lire comme un simple manuel neutre.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "nuance",
+        "q": "Pourquoi ne faut-il pas parler d’égalité moderne ?",
+        "a": "Parce que les peines et droits varient selon les statuts sociaux.",
+        "why": "La société est hiérarchisée.",
+        "trap": "Croire que tous sont égaux devant la loi.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi ce cours ajoute une colonne vertébrale ?",
+        "a": "Il donne un règne, une dynastie, une capitale, une conquête et une trace majeure.",
+        "why": "Il structure la Mésopotamie autour d’un jalon.",
+        "trap": "Rester au niveau vague des fleuves et des villes.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "egypt-kingdoms-dynasties": {
+    "hook": "L’Égypte ne doit pas être un décor éternel avec des pyramides et des pharaons interchangeables. Les dynasties et les grands empires permettent de voir des phases : construction, crise, restauration, expansion et domination étrangère.",
+    "keyFacts": [
+      "Repères : Ancien Empire, Moyen Empire, Nouvel Empire",
+      "Ancien Empire : pyramides et pouvoir royal très centralisé",
+      "Nouvel Empire : expansion, grands pharaons, diplomatie et guerre",
+      "Piège : parler de 3000 ans d’Égypte comme si rien ne changeait"
+    ],
+    "express": [
+      "Pour comprendre l’Égypte ancienne, il faut éviter l’image d’une civilisation figée. Elle dure très longtemps, avec des périodes de puissance, de crise, de réunification et d’ouverture internationale. Les noms Ancien Empire, Moyen Empire et Nouvel Empire servent de grandes balises.",
+      "L’Ancien Empire est associé aux pyramides et à une monarchie très centralisée. Le Moyen Empire marque une restauration après des troubles. Le Nouvel Empire voit une Égypte plus conquérante et diplomatique, avec des figures comme Hatchepsout, Akhenaton, Toutânkhamon ou Ramsès II.",
+      "À retenir : les dynasties ne sont pas des listes de noms à apprendre par cœur. Elles servent à comprendre les rythmes du pouvoir : quand l’État se renforce, quand il se fragilise, quand il s’étend et quand il doit composer avec d’autres puissances."
+    ],
+    "complete": [
+      {
+        "title": "1. Des dynasties pour se repérer",
+        "text": "Les historiens classent l’Égypte en dynasties et en grandes périodes. Ce découpage n’est pas parfait, mais il évite de mélanger des moments séparés par des siècles. Un pharaon de l’Ancien Empire ne vit pas dans le même contexte qu’un pharaon du Nouvel Empire."
+      },
+      {
+        "title": "2. L’Ancien Empire et les pyramides",
+        "text": "L’Ancien Empire est souvent associé aux grandes pyramides. Ces monuments montrent une forte capacité d’organisation : travailleurs, ressources, administration, idéologie funéraire et pouvoir royal. Ce n’est pas seulement de l’architecture spectaculaire, c’est un indice d’État puissant."
+      },
+      {
+        "title": "3. Crises et restaurations",
+        "text": "Entre les grands empires, l’Égypte connaît des périodes plus instables. Le pouvoir central peut se fragmenter, les gouverneurs locaux gagner en autonomie, les ressources se tendre. Ces ruptures sont importantes car elles montrent que l’ordre pharaonique n’est pas automatique."
+      },
+      {
+        "title": "4. Le Nouvel Empire, puissance internationale",
+        "text": "Au Nouvel Empire, l’Égypte est davantage insérée dans un monde de grandes puissances. Elle combat, négocie, échange, construit des temples, met en scène ses rois. Ramsès II et Qadesh illustrent ce mélange de guerre, propagande et diplomatie."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "La chronologie dynastique donne de la profondeur. Elle transforme l’Égypte en histoire politique : des règnes, des crises, des reconstructions et des choix. Sans cette ossature, le chapitre risque de devenir seulement un catalogue de pyramides, de dieux et de momies."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Repères",
+        "text": "Ancien, Moyen et Nouvel Empire évitent de tout mélanger."
+      },
+      {
+        "label": "Pouvoir",
+        "text": "Les pyramides indiquent une forte organisation royale."
+      },
+      {
+        "label": "Évolution",
+        "text": "L’Égypte change selon les périodes de crise et d’expansion."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Quels grands blocs faut-il retenir ?",
+        "a": "Ancien Empire, Moyen Empire et Nouvel Empire.",
+        "why": "Ce sont des balises utiles pour lire la longue durée égyptienne.",
+        "trap": "Dire que toute l’Égypte ancienne forme une seule époque immobile.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "notion",
+        "q": "Pourquoi les dynasties sont-elles utiles ?",
+        "a": "Elles donnent des repères de pouvoir, de succession et de contexte.",
+        "why": "Elles ne sont pas qu’une liste de noms.",
+        "trap": "Apprendre des noms sans comprendre les périodes.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "pouvoir",
+        "q": "Que montrent les pyramides de l’Ancien Empire ?",
+        "a": "Une forte capacité d’organisation politique, religieuse et administrative.",
+        "why": "Le monument révèle une structure d’État.",
+        "trap": "Les réduire à une prouesse décorative.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "rupture",
+        "q": "Pourquoi les périodes intermédiaires comptent-elles ?",
+        "a": "Elles montrent des crises, fragmentations ou fragilités du pouvoir central.",
+        "why": "L’ordre pharaonique peut se briser.",
+        "trap": "Les effacer parce qu’elles sont moins célèbres.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quel est le risque sans chronologie dynastique ?",
+        "a": "Transformer l’Égypte en décor éternel sans étapes politiques.",
+        "why": "La chronologie donne une ossature.",
+        "trap": "Mélanger Ramsès II, Khéops et Cléopâtre sans contexte.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "greece-alexander-hellenistic-kingdoms": {
+    "hook": "Après Athènes et Sparte, l’histoire grecque ne s’arrête pas. Alexandre transforme l’échelle du monde grec, puis ses généraux fondent des royaumes où culture grecque, monarchies et traditions orientales se mélangent.",
+    "keyFacts": [
+      "Repère : Alexandre règne de -336 à -323",
+      "Rupture : conquête de l’empire perse",
+      "Après Alexandre : royaumes hellénistiques des Diadoques",
+      "Piège : croire que la Grèce se résume aux cités classiques"
+    ],
+    "express": [
+      "Alexandre de Macédoine hérite d’un royaume déjà renforcé par Philippe II. En quelques années, il conquiert l’empire perse et pousse l’horizon grec jusqu’à l’Égypte, la Mésopotamie, l’Iran et l’Indus. L’événement change l’échelle politique du monde méditerranéen.",
+      "À sa mort en -323, l’empire ne reste pas uni. Ses généraux, les Diadoques, se disputent l’héritage et fondent des royaumes : Lagides en Égypte, Séleucides en Asie, Antigonides en Macédoine. La dynastie devient alors un outil essentiel pour comprendre la suite.",
+      "À retenir : l’époque hellénistique n’est pas un simple épilogue. Elle crée des monarchies puissantes, des villes nouvelles comme Alexandrie, des échanges culturels intenses et un monde que Rome rencontrera ensuite."
+    ],
+    "complete": [
+      {
+        "title": "1. La Macédoine change le jeu grec",
+        "text": "Avant Alexandre, Philippe II a déjà transformé la Macédoine en puissance militaire. Les cités grecques, longtemps centrales dans le récit, doivent composer avec une monarchie capable d’imposer son autorité. La Grèce classique bascule vers une autre forme de pouvoir."
+      },
+      {
+        "title": "2. La conquête de l’empire perse",
+        "text": "Alexandre affronte et renverse l’empire achéménide. Les batailles sont importantes, mais l’enjeu est plus large : administration d’un immense territoire, fondation de villes, intégration de soldats et recherche d’une légitimité auprès de populations très diverses."
+      },
+      {
+        "title": "3. La mort d’Alexandre et les Diadoques",
+        "text": "Alexandre meurt jeune, sans succession stable. Ses généraux se partagent et se disputent l’empire. Cette étape est décisive : elle explique pourquoi l’héritage d’Alexandre devient une carte de royaumes plutôt qu’un empire unique."
+      },
+      {
+        "title": "4. Des dynasties hellénistiques",
+        "text": "Les Lagides, Séleucides et Antigonides gouvernent des espaces différents. Ils utilisent la langue et les formes grecques, mais s’adaptent aussi aux traditions locales. L’époque hellénistique est donc un mélange politique et culturel, pas une simple exportation de la Grèce."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Ce cours-pivot ajoute une étape marquante entre la Grèce des cités et Rome. Il donne des événements, des dynasties et une transition : conquête d’Alexandre, partage de l’empire, royaumes hellénistiques, puis intégration progressive dans la domination romaine."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Rupture",
+        "text": "Alexandre change l’échelle du monde grec."
+      },
+      {
+        "label": "Dynasties",
+        "text": "Les royaumes hellénistiques structurent l’après-Alexandre."
+      },
+      {
+        "label": "Transition",
+        "text": "Cette période relie cités grecques, Orient et Rome."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Quand Alexandre règne-t-il ?",
+        "a": "De -336 à -323.",
+        "why": "Ce repère situe la conquête après la Grèce classique.",
+        "trap": "Le placer avant les guerres médiques.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "acteur",
+        "q": "Qui sont les Diadoques ?",
+        "a": "Les généraux et successeurs d’Alexandre qui se disputent son empire.",
+        "why": "Ils fondent les royaumes hellénistiques.",
+        "trap": "Les confondre avec des citoyens d’Athènes.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "dynastie",
+        "q": "Quelle dynastie gouverne l’Égypte hellénistique ?",
+        "a": "Les Lagides, aussi appelés Ptolémées.",
+        "why": "C’est un repère majeur jusqu’à Cléopâtre.",
+        "trap": "Dire les Mérovingiens.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "rupture",
+        "q": "Pourquoi l’empire d’Alexandre ne reste-t-il pas uni ?",
+        "a": "Sa mort laisse une succession instable et ses généraux se disputent l’héritage.",
+        "why": "La succession est une clé politique.",
+        "trap": "Croire qu’il avait préparé un État stable.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi ajouter ce cours ?",
+        "a": "Il relie la Grèce classique à un monde de royaumes, d’échanges et de conquêtes avant Rome.",
+        "why": "Il donne une étape marquante et dynastique.",
+        "trap": "Arrêter l’histoire grecque à Athènes et Sparte.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "rome-caesar-civil-wars": {
+    "hook": "Entre la République et l’Empire, il manque un nœud dramatique : les guerres civiles. César permet de comprendre comment une République conquérante peut être détruite de l’intérieur par ses propres succès.",
+    "keyFacts": [
+      "Repère : Ier siècle av. J.-C.",
+      "Acteurs : César, Pompée, Sénat, armées, peuple romain",
+      "Rupture : la République ne parvient plus à contrôler ses généraux",
+      "Piège : croire qu’Auguste arrive sans crise préalable"
+    ],
+    "express": [
+      "Rome domine déjà une grande partie de la Méditerranée quand la République entre en crise. Les conquêtes enrichissent certains, fragilisent d’autres, donnent un poids énorme aux généraux et multiplient les tensions politiques. César n’apparaît pas dans un vide : il est le produit d’un système déséquilibré.",
+      "Le conflit entre César et Pompée illustre la rupture. Quand César franchit le Rubicon en -49, il défie l’autorité du Sénat et déclenche une guerre civile. Sa victoire le place au sommet, mais son pouvoir personnel inquiète ceux qui pensent défendre la République.",
+      "À retenir : l’assassinat de César en -44 ne restaure pas vraiment l’ancien ordre. Il ouvre une nouvelle phase de conflits qui aboutira au pouvoir d’Auguste. César est donc un cours-pivot indispensable entre République et Empire."
+    ],
+    "complete": [
+      {
+        "title": "1. Une République saturée par les conquêtes",
+        "text": "Rome a conquis des territoires immenses, mais ses institutions restent celles d’une cité aristocratique. Les richesses, les esclaves, les provinces et les armées changent l’équilibre. Les magistratures traditionnelles peinent à contrôler des chefs militaires très populaires."
+      },
+      {
+        "title": "2. César et Pompée, deux ambitions opposées",
+        "text": "César construit son prestige par ses victoires, notamment en Gaule. Pompée incarne une autre figure de grand général et d’homme politique. Leur rivalité devient plus qu’une compétition personnelle : elle révèle l’incapacité de la République à arbitrer ses propres puissants."
+      },
+      {
+        "title": "3. Le Rubicon, une rupture symbolique",
+        "text": "Franchir le Rubicon avec une armée signifie entrer en Italie contre les règles politiques. La formule est célèbre parce qu’elle condense une décision irréversible : un chef militaire met son autorité personnelle au-dessus de l’ordre républicain."
+      },
+      {
+        "title": "4. Assassiner César ne suffit pas",
+        "text": "Les conjurés tuent César en pensant sauver la République. Mais les tensions profondes restent là : armées fidèles à des chefs, rivalités, violence politique, besoin de stabilité. La mort de César prépare donc plutôt une nouvelle guerre qu’un retour durable à l’ancien régime."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Ce cours installe la charnière : République conquérante, généraux puissants, guerre civile, pouvoir personnel, assassinat, puis Auguste. Sans cette étape, l’Empire romain paraît surgir trop vite et l’on ne comprend pas pourquoi les Romains acceptent un nouveau compromis politique."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Charnière",
+        "text": "César explique le passage violent de la République à l’Empire."
+      },
+      {
+        "label": "Événement",
+        "text": "Le Rubicon symbolise la rupture entre armée et autorité civile."
+      },
+      {
+        "label": "Conséquence",
+        "text": "L’assassinat ne règle pas la crise institutionnelle."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "À quel siècle se situe la crise de César ?",
+        "a": "Au Ier siècle av. J.-C.",
+        "why": "C’est la fin de la République romaine.",
+        "trap": "Le placer au IIIe siècle ap. J.-C.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "acteur",
+        "q": "Pourquoi César devient-il si puissant ?",
+        "a": "Ses victoires, son armée, son prestige et les déséquilibres de la République renforcent son autorité.",
+        "why": "Il profite d’une crise structurelle.",
+        "trap": "Dire qu’il devient empereur officiellement comme Auguste.",
+        "evidence": "Blocs 1-2."
+      },
+      {
+        "kind": "événement",
+        "q": "Que signifie le franchissement du Rubicon ?",
+        "a": "César entre en Italie avec son armée et défie l’autorité politique.",
+        "why": "C’est une rupture symbolique majeure.",
+        "trap": "Le réduire à un simple trajet géographique.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "conséquence",
+        "q": "Pourquoi l’assassinat de César ne restaure-t-il pas la République ?",
+        "a": "Parce que les tensions militaires et politiques restent ouvertes.",
+        "why": "La crise dépasse une personne.",
+        "trap": "Croire qu’un meurtre règle les institutions.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi ce cours est-il nécessaire avant Auguste ?",
+        "a": "Il montre la guerre civile et la faillite des équilibres républicains.",
+        "why": "Auguste répond à une crise déjà profonde.",
+        "trap": "Passer directement de la République à l’Empire.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "northern-viking-worlds-kings-kingdoms": {
+    "hook": "Les Vikings ne sont pas seulement des équipages en raid. Entre le IXe et le XIe siècle, le Nord voit aussi se renforcer des rois, des territoires, des conversions et des dynasties qui transforment durablement la Scandinavie.",
+    "keyFacts": [
+      "Repère : IXe → XIe siècle",
+      "Espaces : Danemark, Norvège, Suède",
+      "Rupture : passage progressif de pouvoirs locaux à des royaumes plus structurés",
+      "Piège : imaginer des Vikings sans rois, sans lois et sans politique"
+    ],
+    "express": [
+      "Le monde viking est souvent raconté par les raids, les navires et les sagas. C’est utile, mais incomplet. En Scandinavie, des chefs locaux, des rois et des familles puissantes cherchent aussi à contrôler des régions, lever des hommes, imposer des alliances et transmettre leur pouvoir.",
+      "La christianisation joue un rôle politique. Adopter le christianisme peut rapprocher les rois du reste de l’Europe, renforcer leur légitimité et fournir des formes d’organisation écrite et ecclésiastique. Le changement religieux accompagne donc la construction de royaumes.",
+      "À retenir : les sociétés vikings ne disparaissent pas simplement après les raids. Elles se transforment en royaumes médiévaux nordiques. Cette étape donne une vraie colonne dynastique au chapitre."
+    ],
+    "complete": [
+      {
+        "title": "1. Des pouvoirs locaux nombreux",
+        "text": "Au départ, le Nord n’est pas un bloc politique unique. Des chefs, jarls, familles et assemblées exercent des pouvoirs locaux. L’autorité dépend de la richesse, des alliances, de la réputation guerrière, des dons et de la capacité à rassembler des hommes."
+      },
+      {
+        "title": "2. La montée des rois",
+        "text": "Progressivement, certains pouvoirs deviennent plus larges. Des rois cherchent à contrôler des territoires, des ports, des routes et des lieux de culte. Cette construction est lente, conflictuelle et différente selon le Danemark, la Norvège ou la Suède."
+      },
+      {
+        "title": "3. Christianisation et légitimité",
+        "text": "La conversion n’est pas seulement une affaire intime. Elle permet de rejoindre les réseaux diplomatiques chrétiens, de s’appuyer sur l’Église, de produire plus d’écrit et de présenter le roi comme un souverain légitime dans un langage européen."
+      },
+      {
+        "title": "4. Dynasties et mémoire",
+        "text": "Les sagas et les traditions royales reconstruisent parfois les origines des dynasties. Il faut les utiliser avec prudence, mais elles montrent que les Scandinaves médiévaux veulent donner une profondeur ancienne à leurs royaumes."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Ce cours complète le mode de vie viking par une évolution politique. Le fil à garder est : chefs locaux, raids, enrichissement, christianisation, rois plus solides, royaumes médiévaux. Le monde viking devient une partie de l’Europe des monarchies."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Politique",
+        "text": "Le monde viking possède des chefs, assemblées et rois."
+      },
+      {
+        "label": "Dynasties",
+        "text": "Les royaumes nordiques se structurent progressivement."
+      },
+      {
+        "label": "Religion",
+        "text": "La christianisation aide aussi à légitimer le pouvoir."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Quelle période voit la structuration des royaumes nordiques ?",
+        "a": "Surtout entre le IXe et le XIe siècle.",
+        "why": "C’est la transition du monde viking vers des monarchies médiévales.",
+        "trap": "La placer uniquement à la Renaissance.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "notion",
+        "q": "Pourquoi ne faut-il pas réduire les Vikings aux raids ?",
+        "a": "Parce qu’ils ont aussi des pouvoirs locaux, assemblées, rois, alliances et constructions politiques.",
+        "why": "La société ne se limite pas à la violence maritime.",
+        "trap": "Oublier la politique interne.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "religion",
+        "q": "Pourquoi la christianisation compte-t-elle politiquement ?",
+        "a": "Elle renforce la légitimité des rois et les relie à l’Europe chrétienne.",
+        "why": "Religion et pouvoir se combinent.",
+        "trap": "La voir comme un détail privé.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "source",
+        "q": "Pourquoi les sagas doivent-elles être utilisées avec prudence ?",
+        "a": "Elles reconstruisent parfois la mémoire des dynasties après les faits.",
+        "why": "Elles sont précieuses mais pas neutres.",
+        "trap": "Les lire comme des archives exactes.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quel fil chronologique retenir ?",
+        "a": "Chefs locaux, raids, enrichissement, christianisation, rois, royaumes médiévaux.",
+        "why": "C’est la colonne vertébrale politique du chapitre viking.",
+        "trap": "Ne garder que les bateaux et les pillages.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "northern-viking-worlds-normandy-england-kiev": {
+    "hook": "Une autre étape marquante est essentielle : des groupes vikings ne se contentent pas de partir en raid, ils s’installent, négocient, gouvernent et fondent des principautés qui entrent dans l’histoire politique de l’Europe.",
+    "keyFacts": [
+      "Repères : Normandie en 911, Angleterre danoise, Rus’ de Kiev",
+      "Processus : raids, installation, conversion, gouvernement",
+      "Acteurs : Rollon, rois anglo-saxons et danois, princes de la Rus’",
+      "Piège : croire que l’installation viking reste extérieure aux États médiévaux"
+    ],
+    "express": [
+      "Les raids vikings peuvent déboucher sur autre chose que du pillage. Certains groupes s’installent, obtiennent des terres, contrôlent des villes, se convertissent et deviennent des acteurs politiques locaux. La violence initiale peut donc se transformer en principauté reconnue.",
+      "La Normandie est un exemple fort : au début du Xe siècle, Rollon et ses hommes reçoivent un territoire dans le royaume franc. En quelques générations, les descendants de Vikings deviennent des princes chrétiens parlant une langue romane et jouant un rôle majeur en Occident.",
+      "À retenir : Normandie, Angleterre danoise et Rus’ de Kiev donnent des événements et des étapes. Le monde viking devient dynastique, territorial et diplomatique."
+    ],
+    "complete": [
+      {
+        "title": "1. De la razzia à l’installation",
+        "text": "Un raid cherche un butin rapide. Une installation suppose autre chose : négocier, contrôler une terre, lever des ressources, gérer des populations et transmettre un pouvoir. C’est un changement majeur de logique historique."
+      },
+      {
+        "title": "2. La Normandie, un compromis politique",
+        "text": "Le traité traditionnellement associé à 911 montre un arrangement : le pouvoir franc cherche à stabiliser une zone menacée, tandis que Rollon obtient une base territoriale. L’ancien adversaire devient un prince intégré au jeu politique."
+      },
+      {
+        "title": "3. L’Angleterre, entre royaumes et conquêtes",
+        "text": "L’Angleterre subit des attaques, mais aussi des installations scandinaves. Des zones de droit et de peuplement danois apparaissent, puis des rois d’origine danoise peuvent gouverner l’ensemble du royaume. Là encore, les Vikings entrent dans la politique dynastique."
+      },
+      {
+        "title": "4. La Rus’ de Kiev",
+        "text": "À l’est, des Scandinaves participent aux routes commerciales et aux pouvoirs de la Rus’. Le cas est complexe, mêlé aux populations slaves et aux échanges byzantins, mais il rappelle que le monde viking regarde aussi vers les fleuves, l’argent et Constantinople."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Ce cours donne des étapes marquantes : raids, installation, traité, conversion, dynasties, principautés. Il évite de figer les Vikings en guerriers extérieurs et montre comment ils deviennent des bâtisseurs d’États médiévaux."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Événement",
+        "text": "La Normandie donne un repère politique autour de 911."
+      },
+      {
+        "label": "Transformation",
+        "text": "Des pillards peuvent devenir princes et gouvernants."
+      },
+      {
+        "label": "Espace",
+        "text": "L’impact viking va de l’Atlantique aux routes vers Byzance."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Quel exemple montre l’intégration de Vikings dans le royaume franc ?",
+        "a": "La Normandie, associée à Rollon au début du Xe siècle.",
+        "why": "C’est un jalon politique fort.",
+        "trap": "Répondre Athènes.",
+        "evidence": "Express et bloc 2."
+      },
+      {
+        "kind": "processus",
+        "q": "Que change l’installation par rapport au raid ?",
+        "a": "Elle suppose contrôle d’un territoire, ressources, population et transmission du pouvoir.",
+        "why": "Ce n’est plus une attaque ponctuelle.",
+        "trap": "Confondre installation et simple pillage.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "Angleterre",
+        "q": "Pourquoi l’Angleterre est-elle importante ?",
+        "a": "Elle connaît des installations scandinaves et même des rois d’origine danoise.",
+        "why": "Le phénomène devient dynastique.",
+        "trap": "Limiter l’Angleterre à une seule attaque.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "est",
+        "q": "Que rappelle la Rus’ de Kiev ?",
+        "a": "Que les Scandinaves sont aussi liés aux fleuves, au commerce et aux routes vers Byzance.",
+        "why": "Le monde viking n’est pas seulement atlantique.",
+        "trap": "Oublier l’Europe de l’Est.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Pourquoi ce cours est-il un vrai pivot ?",
+        "a": "Il montre le passage de raids à des principautés et dynasties intégrées aux États médiévaux.",
+        "why": "Il ajoute des événements et des trajectoires politiques.",
+        "trap": "Garder seulement le mode de vie.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "medieval-west-clovis-merovingians": {
+    "hook": "Pour le Moyen Âge occidental, il faut un premier jalon dynastique : Clovis et les Mérovingiens. Sans eux, on passe trop vite de Rome à Charlemagne sans comprendre l’installation des royaumes francs.",
+    "keyFacts": [
+      "Repère : Clovis règne vers 481-511",
+      "Dynastie : Mérovingiens",
+      "Rupture : royaumes germaniques dans l’ancien espace romain",
+      "Événement clé : conversion de Clovis au christianisme catholique"
+    ],
+    "express": [
+      "Après la fin de l’Empire romain d’Occident, la Gaule n’est pas vide. Des royaumes germaniques s’y installent et héritent en partie du monde romain. Les Francs, avec Clovis, deviennent l’un des acteurs majeurs de cette recomposition.",
+      "Clovis remporte des victoires, étend son autorité et fonde une dynastie mérovingienne. Son baptême est essentiel car il rapproche le pouvoir franc de l’Église catholique et des élites gallo-romaines. La religion devient un outil de légitimité politique.",
+      "À retenir : Clovis n’est pas encore roi de France au sens moderne. Mais il est un pivot : il relie la Gaule romaine, les royaumes barbares, l’Église et la naissance progressive d’un royaume franc durable."
+    ],
+    "complete": [
+      {
+        "title": "1. Après Rome, des royaumes",
+        "text": "La chute de l’Empire romain d’Occident ne fait pas disparaître toutes les structures. Les villes, les évêques, les lois, les élites locales et la mémoire romaine continuent. Les nouveaux rois doivent donc gouverner dans un monde mélangé."
+      },
+      {
+        "title": "2. Les Francs s’imposent",
+        "text": "Clovis appartient aux Francs saliens. Par la guerre et les alliances, il étend son pouvoir sur une partie importante de la Gaule. Cette expansion donne une base territoriale à une dynastie qui dominera plusieurs générations."
+      },
+      {
+        "title": "3. Le baptême comme choix politique",
+        "text": "La conversion de Clovis au catholicisme n’est pas seulement une scène religieuse. Elle facilite les relations avec les évêques et avec une population gallo-romaine largement catholique. Le roi devient plus acceptable pour des élites déjà installées."
+      },
+      {
+        "title": "4. Les Mérovingiens, une dynastie",
+        "text": "Après Clovis, les Mérovingiens règnent sur des royaumes francs souvent partagés entre héritiers. Cela crée des rivalités, mais aussi une continuité dynastique. Comprendre ces partages évite d’imaginer un État français déjà unifié."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Clovis est un jalon indispensable : après Rome, avant Charlemagne. Il montre comment un pouvoir germanique s’installe dans l’ancien monde romain, s’allie à l’Église et fonde une dynastie durable."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Dynastie",
+        "text": "Les Mérovingiens structurent les premiers royaumes francs."
+      },
+      {
+        "label": "Religion",
+        "text": "Le baptême de Clovis renforce sa légitimité."
+      },
+      {
+        "label": "Transition",
+        "text": "Clovis relie Antiquité tardive et Moyen Âge occidental."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "À quelle dynastie appartient Clovis ?",
+        "a": "Aux Mérovingiens.",
+        "why": "C’est le premier grand jalon dynastique franc.",
+        "trap": "Dire les Capétiens.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "contexte",
+        "q": "Pourquoi l’après-Rome n’est-il pas un vide ?",
+        "a": "Parce que villes, évêques, élites et traditions romaines continuent.",
+        "why": "Les royaumes germaniques gouvernent un monde hérité de Rome.",
+        "trap": "Imaginer une rupture totale.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "religion",
+        "q": "Pourquoi le baptême de Clovis est-il important ?",
+        "a": "Il rapproche le pouvoir franc de l’Église catholique et des élites gallo-romaines.",
+        "why": "La conversion a une portée politique.",
+        "trap": "La réduire à une anecdote privée.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "nuance",
+        "q": "Pourquoi Clovis n’est-il pas roi de France au sens moderne ?",
+        "a": "Parce que l’État français n’existe pas encore sous cette forme.",
+        "why": "Il faut éviter l’anachronisme.",
+        "trap": "Projeter la France moderne au Ve siècle.",
+        "evidence": "Conclusion."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quel rôle joue Clovis dans la chronologie ?",
+        "a": "Il sert de pivot entre Gaule romaine, royaumes germaniques, Église et royaume franc.",
+        "why": "Il donne une ossature à l’entrée dans le Moyen Âge.",
+        "trap": "Passer directement de Rome à Charlemagne.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "medieval-west-charlemagne-carolingians": {
+    "hook": "Charlemagne donne le deuxième grand repère : après les Mérovingiens, les Carolingiens construisent un empire occidental qui tente de réorganiser pouvoir, Église, guerre et culture.",
+    "keyFacts": [
+      "Repère : Charlemagne, roi des Francs puis empereur en 800",
+      "Dynastie : Carolingiens",
+      "Événement : couronnement impérial à Rome le 25 décembre 800",
+      "Suite : partage de Verdun en 843"
+    ],
+    "express": [
+      "Les Carolingiens arrivent au pouvoir après les Mérovingiens. Pépin le Bref, puis Charlemagne, renforcent le lien entre royauté franque et papauté. La dynastie ne se contente pas de régner : elle cherche à restaurer une forme d’ordre impérial en Occident.",
+      "Charlemagne conquiert, administre et réforme. Son couronnement impérial en 800 donne une portée symbolique immense à son règne : l’idée d’empire renaît en Occident, même si cet empire n’est pas l’Empire romain reconstitué à l’identique.",
+      "À retenir : le cours ne doit pas seulement dire que Charlemagne a inventé l’école. Le vrai fil est dynastique et politique : Carolingiens, expansion, sacre impérial, réforme, puis fragilité de l’héritage avec Verdun."
+    ],
+    "complete": [
+      {
+        "title": "1. Des Mérovingiens aux Carolingiens",
+        "text": "Les Carolingiens ne sortent pas de nulle part. Ils sont d’abord des aristocrates puissants, maires du palais, qui finissent par remplacer les Mérovingiens. Cette transition montre que le pouvoir réel peut précéder le titre royal."
+      },
+      {
+        "title": "2. Conquérir et convertir",
+        "text": "Charlemagne mène de nombreuses campagnes. La conquête des Saxons, notamment, mêle guerre, intégration politique et christianisation forcée. L’empire carolingien est donc aussi une construction militaire et religieuse."
+      },
+      {
+        "title": "3. Le couronnement de 800",
+        "text": "Le 25 décembre 800, Charlemagne est couronné empereur à Rome. L’événement est central : il affirme une alliance avec la papauté et donne à l’Occident latin un empereur concurrent symbolique de Byzance."
+      },
+      {
+        "title": "4. Administrer un vaste empire",
+        "text": "Missi dominici, capitulaires, comtes, monastères, écoles et écriture caroline participent à l’organisation du pouvoir. L’empire reste difficile à contrôler, mais il produit un effort de gouvernement et de culture."
+      },
+      {
+        "title": "5. Verdun et la fragilité de l’héritage",
+        "text": "Après Charlemagne, l’unité se fragilise. En 843, le traité de Verdun partage l’empire entre ses petits-fils. Ce n’est pas la naissance immédiate de la France et de l’Allemagne, mais un jalon majeur dans la structuration de l’Europe occidentale."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Dynastie",
+        "text": "Les Carolingiens remplacent les Mérovingiens."
+      },
+      {
+        "label": "Événement",
+        "text": "Le couronnement de 800 marque le retour de l’idée impériale."
+      },
+      {
+        "label": "Rupture",
+        "text": "Verdun montre la fragilité de l’empire carolingien."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Quelle dynastie est celle de Charlemagne ?",
+        "a": "Les Carolingiens.",
+        "why": "C’est le deuxième grand jalon franc.",
+        "trap": "Répondre les Mérovingiens pour Charlemagne.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "événement",
+        "q": "Quand Charlemagne est-il couronné empereur ?",
+        "a": "Le 25 décembre 800.",
+        "why": "C’est un repère majeur de l’Occident médiéval.",
+        "trap": "Le placer en 1789.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "pouvoir",
+        "q": "À quoi servent les missi dominici ?",
+        "a": "À contrôler et relayer l’autorité impériale dans les régions.",
+        "why": "Ils illustrent l’effort administratif.",
+        "trap": "Les confondre avec des chevaliers de croisade.",
+        "evidence": "Bloc 4."
+      },
+      {
+        "kind": "suite",
+        "q": "Que se passe-t-il à Verdun en 843 ?",
+        "a": "L’empire carolingien est partagé entre les petits-fils de Charlemagne.",
+        "why": "C’est un jalon de l’Europe médiévale.",
+        "trap": "Dire que Rome est fondée.",
+        "evidence": "Bloc 5."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quel fil retenir sur Charlemagne ?",
+        "a": "Carolingiens, expansion, alliance avec l’Église, couronnement impérial, administration, partage de l’héritage.",
+        "why": "Cela donne une vraie chronologie.",
+        "trap": "Réduire le cours à l’école.",
+        "evidence": "Conclusion."
+      }
+    ]
+  },
+  "medieval-west-capetians-monarchy": {
+    "hook": "Les Capétiens donnent le troisième jalon : on ne passe pas directement de Charlemagne à un État français puissant. Le pouvoir royal commence faible, puis se renforce par la dynastie, le domaine, l’administration et les conflits.",
+    "keyFacts": [
+      "Repère : Hugues Capet élu roi en 987",
+      "Dynastie : Capétiens directs puis branches cadettes",
+      "Processus : renforcement lent du domaine royal",
+      "Piège : croire que le roi de France contrôle tout le royaume dès 987"
+    ],
+    "express": [
+      "En 987, Hugues Capet devient roi. Le titre est prestigieux, mais son pouvoir réel reste limité par les grands seigneurs. La force des Capétiens vient d’abord de leur continuité dynastique : ils réussissent à transmettre la couronne de père en fils pendant plusieurs siècles.",
+      "Peu à peu, les rois agrandissent le domaine royal, imposent davantage leur justice, s’appuient sur des agents, des villes, l’Église et des conflits contre de grands princes. Philippe Auguste, Louis IX et Philippe le Bel marquent des étapes différentes du renforcement monarchique.",
+      "À retenir : les Capétiens sont indispensables pour comprendre la construction de la monarchie française. Ce n’est pas un événement unique, mais une montée lente du pouvoir royal."
+    ],
+    "complete": [
+      {
+        "title": "1. Un roi prestigieux mais faible",
+        "text": "Hugues Capet reçoit un titre qui compte symboliquement, mais il ne contrôle pas directement tout le royaume. De nombreux seigneurs disposent de terres, châteaux, droits et armées locales. La monarchie capétienne commence donc avec un pouvoir limité."
+      },
+      {
+        "title": "2. La continuité dynastique",
+        "text": "La grande réussite des premiers Capétiens est la transmission. En associant souvent le fils au trône du vivant du père, ils évitent des crises de succession. La dynastie construit peu à peu une habitude d’obéissance au même lignage."
+      },
+      {
+        "title": "3. Le domaine royal s’agrandit",
+        "text": "La puissance concrète du roi dépend de son domaine : terres, revenus, villes, routes, châteaux. Par héritages, mariages, confiscations ou conquêtes, les Capétiens agrandissent leur base matérielle et peuvent mieux financer leur autorité."
+      },
+      {
+        "title": "4. Philippe Auguste, Louis IX, Philippe le Bel",
+        "text": "Ces rois incarnent des étapes : victoire contre les Plantagenêts, prestige de la justice royale, affirmation face aux grands pouvoirs. Il ne faut pas les confondre, mais ils montrent tous un même mouvement : la monarchie devient plus présente."
+      },
+      {
+        "title": "5. Ce qu’il faut retenir",
+        "text": "Les Capétiens ajoutent une vraie colonne dynastique : 987, continuité, domaine royal, grands règnes, administration, justice. C’est le fil qui mène progressivement du morcellement féodal à une monarchie plus structurée."
+      }
+    ],
+    "deeper": [],
+    "takeaways": [
+      {
+        "label": "Dynastie",
+        "text": "Les Capétiens stabilisent la transmission du pouvoir royal."
+      },
+      {
+        "label": "Processus",
+        "text": "Le domaine royal s’agrandit lentement."
+      },
+      {
+        "label": "État",
+        "text": "Justice et administration renforcent la monarchie."
+      }
+    ],
+    "quiz": [
+      {
+        "kind": "repère",
+        "q": "Quelle date marque l’arrivée d’Hugues Capet ?",
+        "a": "987.",
+        "why": "C’est le repère de départ de la dynastie capétienne.",
+        "trap": "Répondre 800.",
+        "evidence": "Express."
+      },
+      {
+        "kind": "nuance",
+        "q": "Pourquoi le roi est-il faible au départ ?",
+        "a": "Parce que de grands seigneurs contrôlent largement leurs terres et leurs pouvoirs locaux.",
+        "why": "Le titre ne donne pas immédiatement un État fort.",
+        "trap": "Imaginer une France déjà centralisée.",
+        "evidence": "Bloc 1."
+      },
+      {
+        "kind": "dynastie",
+        "q": "Quelle est la grande force des premiers Capétiens ?",
+        "a": "La continuité de la transmission de père en fils.",
+        "why": "Elle stabilise progressivement la royauté.",
+        "trap": "Croire qu’ils changent de dynastie à chaque règne.",
+        "evidence": "Bloc 2."
+      },
+      {
+        "kind": "pouvoir",
+        "q": "Pourquoi le domaine royal est-il important ?",
+        "a": "Il fournit terres, revenus et bases concrètes à l’autorité du roi.",
+        "why": "Le pouvoir dépend aussi de ressources matérielles.",
+        "trap": "Le réduire à un symbole.",
+        "evidence": "Bloc 3."
+      },
+      {
+        "kind": "synthèse",
+        "q": "Quel fil retenir sur les Capétiens ?",
+        "a": "987, continuité dynastique, agrandissement du domaine, justice et administration royale.",
+        "why": "C’est la progression de la monarchie.",
+        "trap": "Mémoriser seulement une liste de rois.",
+        "evidence": "Conclusion."
+      }
+    ]
+  }
+};
+(function registerBeta123HistorySpine() {
+  if (!Array.isArray(data.worlds)) data.worlds = [];
+  BETA123_WORLDS.forEach(world => {
+    if (!data.worlds.some(item => item.id === world.id)) data.worlds.push(world);
+  });
+  Object.entries(BETA123_HISTORY_SPINE_LESSONS).forEach(([worldId, items]) => {
+    if (!Array.isArray(data.lessons[worldId])) data.lessons[worldId] = [];
+    const known = new Set(data.lessons[worldId].map(item => item.id));
+    items.forEach(item => { if (!known.has(item.id)) data.lessons[worldId].push(item); });
+  });
+  Object.keys(BETA123_HISTORY_SPINE_PACKS).forEach(id => PUBLISHED_LESSON_IDS.add(id));
+  Object.assign(READY_LESSON_PACKS, BETA123_HISTORY_SPINE_PACKS);
 })();
 
 function allDisciplineWorlds() {
@@ -11910,7 +13579,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - diagnostic simple dans le profil
    - réparation douce sans perdre la progression lisible
    ========================================================= */
-const BETA115_VERSION = "1.0.0-beta.115";
+const BETA115_VERSION = "1.0.0-beta.121";
 const BETA115_SESSION_KEY = `${STORAGE_KEY}_session_health`;
 const BETA115_ALLOWED_LESSON_VIEWS = new Set(["express", "complete", "quiz"]);
 const BETA115_ALLOWED_PERFORMANCE = new Set(["smart", "static", "balanced", "light"]);
@@ -12135,4 +13804,434 @@ try {
   beta115NormalizeDeepState();
   beta115WriteHealth({ bootAt: Date.now(), lastBootVersion: BETA115_VERSION });
 } catch {}
+if (document.readyState !== "loading") render({ immediate: true });
+
+/* =========================================================
+   Beta 117 — outils de bêta + navigation cours allégée
+   - actualiser le mystère du jour pour tester plusieurs dossiers
+   - une fois un chapitre ouvert : liste des cours + retour, plus de grosse liste de chapitres
+   ========================================================= */
+const BETA117_VERSION = "1.0.0-beta.121";
+try { NAVIGATION_ONLY_STATE_KEYS.add("learnDrill"); } catch {}
+
+function beta117PlainObject(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+}
+function beta117MysteryShiftMap() {
+  state.betaMysteryShift = beta117PlainObject(state.betaMysteryShift);
+  return state.betaMysteryShift;
+}
+function beta117MysteryShift(disciplineId = activeDisciplineId()) {
+  const map = beta117MysteryShiftMap();
+  const n = Number(map[disciplineById(disciplineId).id] || 0);
+  return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+}
+const beta117BaseMysteryForDisciplineDayOffset = mysteryForDisciplineDayOffset;
+mysteryForDisciplineDayOffset = function beta117MysteryForDisciplineDayOffset(disciplineId = activeDisciplineId(), offset = 0) {
+  const id = disciplineById(disciplineId || "history").id;
+  const shift = offset === 0 ? beta117MysteryShift(id) : 0;
+  return beta117BaseMysteryForDisciplineDayOffset(id, offset - shift);
+};
+mysteryForDayOffset = function beta117MysteryForDayOffset(offset = 0) {
+  return mysteryForDisciplineDayOffset(activeDisciplineId(), offset);
+};
+dailyMystery = function beta117DailyMystery() {
+  return mysteryForDayOffset(0);
+};
+isTodayMystery = function beta117IsTodayMystery(id) {
+  return Boolean(id && dailyMystery()?.id === id);
+};
+function beta117RefreshMystery(disciplineId = activeDisciplineId()) {
+  const id = disciplineById(disciplineId || "history").id;
+  const pool = publicMysteries(id);
+  if (!pool.length) return;
+  const nextShift = beta117MysteryShift(id) + 1;
+  const nextMystery = beta117BaseMysteryForDisciplineDayOffset(id, -nextShift) || pool[nextShift % pool.length];
+  const nextMap = { ...beta117MysteryShiftMap(), [id]: nextShift };
+  setState({
+    betaMysteryShift: nextMap,
+    currentMysteryId: nextMystery?.id || null,
+    currentMysteryDiscipline: id,
+    currentDiscipline: id,
+    mysteryFeedback: { ...(state.mysteryFeedback || {}) },
+    rewardFeedback: { ...(state.rewardFeedback || {}) }
+  });
+}
+function beta117MysteryToolMarkup(disciplineId = activeDisciplineId()) {
+  const pool = publicMysteries(disciplineId);
+  if (pool.length <= 1) return "";
+  const tested = beta117MysteryShift(disciplineId);
+  return `<button type="button" class="ghost beta-mystery-refresh" data-beta-refresh-mystery title="Outil de bêta : changer le mystère affiché aujourd’hui">↻ Autre mystère</button>${tested ? `<small class="beta-mystery-count">test ${tested + 1}/${pool.length}</small>` : ""}`;
+}
+
+function beta117GroupLessonItems(groupId, disciplineId = activeDisciplineId()) {
+  return treeWorldsForGroup(groupId, disciplineId).flatMap(world =>
+    treeLessonsForWorld(world.id).map(lesson => ({ lesson, world }))
+  );
+}
+function beta117FilteredLessonItems(items) {
+  const filteredIds = new Set(filterLessons(items.map(item => item.lesson)).map(lesson => lesson.id));
+  return items.filter(item => filteredIds.has(item.lesson.id));
+}
+function beta117GroupProgressMarkup(groupId, disciplineId = activeDisciplineId()) {
+  const done = treeDoneCountForGroup(groupId, disciplineId);
+  const total = treeLessonCountForGroup(groupId, disciplineId);
+  const progress = percent(done, total);
+  return `<div class="beta117-course-progress"><span>${done}/${total || 0} cours validés</span><b>${progress}%</b></div><div class="progress"><i style="width:${progress}%"></i></div>`;
+}
+function beta117ChapterHero(group, discipline, groupId, disciplineId) {
+  const worlds = treeWorldsForGroup(groupId, disciplineId);
+  return `<section class="card beta117-chapter-hero" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="section-title-row"><div><span class="card-label">${escapeHtml(discipline.title)} · chapitre ouvert</span><h2>${escapeHtml(group.title || "Chapitre")}</h2><p>${escapeHtml(group.description || "Les cours de ce chapitre sont rangés ici, sans réafficher toute la carte du parcours.")}</p></div><small>${worlds.length} thème${worlds.length > 1 ? "s" : ""}</small></div>
+    ${beta117GroupProgressMarkup(groupId, disciplineId)}
+  </section>`;
+}
+function beta117PlannedWorldsMarkup(worlds) {
+  if (!worlds.length) return "";
+  return `<section class="card beta117-planned-topics"><span class="card-label">Thèmes préparés</span><h2>Le chapitre est rangé, les cours arrivent ensuite.</h2><div class="beta117-topic-list">${worlds.map(world => `<span>${world.emoji || "📚"} ${escapeHtml(world.title)}</span>`).join("")}</div></section>`;
+}
+function beta117RenderLearnChapters(disciplineId, discipline, groups) {
+  renderShell(`
+    <header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Choisis un grand chapitre. Ensuite, la page se concentre sur les cours.</p></div></header>
+    ${disciplineSelectorMarkup(disciplineId)}
+    <section class="tree-section beta117-chapter-list"><div class="section-title-row"><div><span class="card-label">Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === treeActiveGroupId(disciplineId), disciplineId)).join("")}</div></section>
+  `);
+  $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
+  document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => {
+    selectDiscipline(btn.dataset.discipline);
+    setState({ learnDrill: "chapters" }, { save: false });
+  }));
+  document.querySelectorAll("[data-tree-group]").forEach(card => {
+    const open = () => {
+      const nextGroup = card.dataset.treeGroup;
+      const firstWorld = treeWorldsForGroup(nextGroup, disciplineId)[0];
+      setState({ currentDiscipline: disciplineId, currentGroup: nextGroup, currentWorld: firstWorld?.id || state.currentWorld, learnDrill: "courses", learnFilter: "all", learnSearch: "" });
+    };
+    card.addEventListener("click", open);
+    card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
+  });
+}
+function beta117RenderLearnCourses(disciplineId, discipline, groupId, group) {
+  const worlds = treeWorldsForGroup(groupId, disciplineId);
+  const items = beta117GroupLessonItems(groupId, disciplineId);
+  const shownItems = beta117FilteredLessonItems(items);
+  const plannedWorlds = worlds.filter(world => treeLessonsForWorld(world.id).length === 0);
+  renderShell(`
+    <header class="topbar tree-topbar beta117-course-topbar"><button data-back-chapters>←</button><div><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(group.title || "Chapitre")}</h1><p class="tree-subtitle">Liste des cours du chapitre. Le reste du parcours est masqué pour garder la page légère.</p></div></header>
+    ${beta117ChapterHero(group, discipline, groupId, disciplineId)}
+    ${learnFilterMarkup(items.map(item => item.lesson), shownItems.map(item => item.lesson))}
+    <section class="tree-section beta117-course-list"><div class="section-title-row"><div><span class="card-label">Cours du chapitre</span><h2>${shownItems.length}/${items.length} cours visible${shownItems.length > 1 ? "s" : ""}</h2></div><button type="button" class="ghost beta117-back-inline" data-back-chapters>← Chapitres</button></div><div class="tree-lesson-list">${shownItems.map((item, index) => treeLessonCard(item.lesson, index, item.world)).join("") || `<div class="card empty-filter-card"><h2>${items.length ? "Aucun cours trouvé." : "Cours à écrire."}</h2><p>${items.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Aucun cours ne correspond au filtre actuel.") : "Le chapitre est prêt dans le parcours. On ajoutera ensuite de vrais cours complets, pas du remplissage."}</p>${items.length ? `<button data-learn-filter="all">Voir tous les cours du chapitre</button>` : ""}</div>`}</div></section>
+    ${!items.length ? beta117PlannedWorldsMarkup(plannedWorlds) : ""}
+  `);
+  document.querySelectorAll("[data-back-chapters]").forEach(btn => btn.addEventListener("click", () => setState({ learnDrill: "chapters", learnSearch: "", learnFilter: "all" }, { save: false })));
+  document.querySelectorAll("[data-learn-filter]").forEach(btn => btn.addEventListener("click", () => setState({ learnFilter: btn.dataset.learnFilter })));
+  $(`[data-learn-search-form]`)?.addEventListener("submit", event => {
+    event.preventDefault();
+    const input = event.currentTarget.querySelector("input[name='learnSearch']");
+    setState({ learnSearch: String(input?.value || "").trim() });
+  });
+  $(`[data-clear-learn-search]`)?.addEventListener("click", () => setState({ learnSearch: "" }));
+  document.querySelectorAll("[data-lesson]").forEach(card => card.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: card.dataset.lesson, lessonFocus: "express", lessonView: "express" })));
+  document.querySelectorAll("[data-locked-lesson]").forEach(card => card.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() })));
+}
+
+const beta117PreviousSelectDiscipline = selectDiscipline;
+selectDiscipline = function beta117SelectDiscipline(disciplineId) {
+  beta117PreviousSelectDiscipline(disciplineId);
+  setState({ learnDrill: "chapters" }, { save: false });
+};
+openModeLearn = function beta117OpenModeLearn(disciplineId = activeDisciplineId(), worldId = null) {
+  const discipline = disciplineById(disciplineId);
+  const targetWorld = (worldId && treeAvailableWorlds(discipline.id).find(world => world.id === worldId)) || firstWorldForDiscipline(discipline.id);
+  setState({
+    tab: "learn",
+    currentDiscipline: discipline.id,
+    currentGroup: targetWorld?.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
+    currentWorld: targetWorld?.id || state.currentWorld,
+    learnDrill: worldId ? "courses" : "chapters",
+    learnFilter: "all",
+    learnSearch: ""
+  });
+};
+renderLearn = function beta117RenderLearn() {
+  const disciplineId = activeDisciplineId();
+  const discipline = disciplineById(disciplineId);
+  const groups = treeGroups(disciplineId);
+  if (!groups.length) {
+    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">La discipline est prête, les cours arrivent ensuite.</p></div></header>${disciplineSelectorMarkup(disciplineId)}${disciplineEmptyMarkup(discipline)}`);
+    $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
+    document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
+    return;
+  }
+  const groupId = treeActiveGroupId(disciplineId);
+  const group = groups.find(item => item.id === groupId) || groups[0] || {};
+  if (state.learnDrill === "courses") return beta117RenderLearnCourses(disciplineId, discipline, groupId, group);
+  return beta117RenderLearnChapters(disciplineId, discipline, groups);
+};
+
+const beta117PreviousRenderHome = renderHome;
+renderHome = function beta117RenderHome() {
+  const disciplineId = activeDisciplineId();
+  const discipline = disciplineById(disciplineId);
+  const mode = disciplineModeCopy(disciplineId);
+  const mystery = dailyMystery();
+  const reward = dailyRewardPreview();
+  const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
+  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} 💎 si tu résous aujourd’hui`;
+  renderShell(`
+    <header class="hero compact home-clean-hero home-mode-hero" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div>
+        <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
+        <h1>${escapeHtml(mode.headline)}</h1>
+        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
+      </div>
+    </header>
+    ${modeSwitcherMarkup()}
+    ${modeSnapshotMarkup(disciplineId)}
+    ${mystery ? `<section class="card home-main-card home-mystery-card mode-mystery-card beta117-home-mystery-card" data-home-mystery role="button" tabindex="0" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="section-title-row">
+        <div><span class="card-label">🕵️ Mystère ${escapeHtml(mode.noun)} du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
+        <small>${solvedToday ? "résolu" : difficultyStars(mystery.difficulty)}</small>
+      </div>
+      <p>${escapeHtml(short(mysteryTeaser(mystery), 205))}</p>
+      <div class="home-card-footer beta117-mystery-footer"><span>${escapeHtml(nextLabel)}</span><div class="beta117-mystery-actions"><button type="button" data-home-mystery-button>${solvedToday ? "Revoir" : "Jouer"}</button>${beta117MysteryToolMarkup(disciplineId)}</div></div>
+    </section>` : `<section class="card home-main-card"><h2>Aucun mystère chargé</h2><p>La donnée mystère est vide ou inaccessible.</p></section>`}
+    ${modeContinueMarkup(disciplineId)}
+    ${modeRecommendationsMarkup(disciplineId)}
+    ${releaseNotesMarkup({ home: true })}
+    <section class="home-secondary-actions">
+      <button class="ghost" data-open-mode-learn="${escapeHtml(disciplineId)}">Parcours ${escapeHtml(mode.shortLabel)}</button>
+      <button class="ghost" data-home-rank>Classement</button>
+      <button class="ghost" data-home-profile>Profil</button>
+    </section>`);
+
+  document.querySelectorAll("[data-home-discipline]").forEach(btn => btn.addEventListener("click", () => switchHomeDiscipline(btn.dataset.homeDiscipline)));
+  const openMystery = () => mystery && setState({ tab: "mystery", currentMysteryId: mystery.id, currentMysteryDiscipline: disciplineId, currentDiscipline: disciplineId });
+  const mysteryCard = $(`[data-home-mystery]`);
+  mysteryCard?.addEventListener("click", openMystery);
+  mysteryCard?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openMystery(); } });
+  document.querySelectorAll("[data-home-mystery-button]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); openMystery(); }));
+  document.querySelectorAll("[data-beta-refresh-mystery]").forEach(btn => btn.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); beta117RefreshMystery(disciplineId); }));
+  document.querySelectorAll("[data-home-continue]").forEach(btn => btn.addEventListener("click", event => {
+    event.preventDefault(); event.stopPropagation(); openLessonFromHome(btn.dataset.homeContinue, btn.dataset.homeContinueView || "express");
+  }));
+  document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("click", event => { event.stopPropagation(); openDiscoveredLesson(card.dataset.homeDiscovery); }));
+  document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDiscoveredLesson(card.dataset.homeDiscovery); } }));
+  document.querySelectorAll("[data-home-discovery-open]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); openDiscoveredLesson(btn.dataset.homeDiscoveryOpen); }));
+  $(`[data-refresh-discovery]`)?.addEventListener("click", event => { event.preventDefault(); setState({ discoverOffset: (Number(state.discoverOffset) || 0) + 1 }); });
+  document.querySelectorAll("[data-open-mode-learn]").forEach(btn => btn.addEventListener("click", () => openModeLearn(btn.dataset.openModeLearn || disciplineId)));
+  document.querySelectorAll("[data-mode-world]").forEach(card => {
+    const open = () => openModeLearn(disciplineId, card.dataset.modeWorld);
+    card.addEventListener("click", event => { event.stopPropagation(); open(); });
+    card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
+  });
+  document.querySelectorAll("[data-open-mode-world]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); openModeLearn(disciplineId, btn.dataset.openModeWorld); }));
+  $(`[data-home-rank]`)?.addEventListener("click", () => setState({ tab: "rank" }));
+  $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
+  $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
+};
+
+const beta117PreviousNormalizeState = beta114NormalizeState;
+beta114NormalizeState = function beta117NormalizeState() {
+  try { beta117PreviousNormalizeState(); } catch {}
+  state.betaMysteryShift = beta117PlainObject(state.betaMysteryShift);
+  if (state.learnDrill !== "courses" && state.learnDrill !== "chapters") state.learnDrill = "chapters";
+};
+
+window.HistoDailyBeta117 = {
+  version: BETA117_VERSION,
+  refreshMystery: beta117RefreshMystery,
+  mysteryShift: beta117MysteryShift
+};
+
+try { beta114NormalizeState(); } catch {}
+if (document.readyState !== "loading") render({ immediate: true });
+
+
+/* =========================================================
+   Beta 118 — débuggage navigation cours
+   Objectif : les chapitres et cours doivent toujours répondre,
+   même si un ancien listener, un rendu différé ou un tap mobile part de travers.
+   ========================================================= */
+const BETA118_VERSION = "1.0.0-beta.121";
+
+function beta118LessonById(id) {
+  const lessonId = String(id || "").trim();
+  if (!lessonId) return null;
+  try { return allLessons().find(lesson => lesson.id === lessonId) || curatedLessonById(lessonId) || null; }
+  catch { return null; }
+}
+function beta118WorldForLesson(lesson) {
+  try { return lesson ? lessonWorld(lesson) : {}; }
+  catch { return {}; }
+}
+function beta118DisciplineForWorld(world = {}) {
+  try { return beta114ValidDisciplineId(worldDisciplineId(world)); }
+  catch { return "history"; }
+}
+function beta118GroupForWorld(world = {}, disciplineId = activeDisciplineId()) {
+  try { return world?.group || treeGroups(disciplineId)[0]?.id || state.currentGroup || "other"; }
+  catch { return state.currentGroup || "other"; }
+}
+function beta118OpenLessonById(lessonId, { source = "course-card" } = {}) {
+  const lesson = beta118LessonById(lessonId);
+  if (!lesson) {
+    setState({ profileFeedback: "Cours introuvable. Relance l’affichage depuis le profil si ça persiste." }, { renderImmediate: true });
+    return false;
+  }
+  if (lessonLockedByDailyMystery(lesson)) {
+    const mystery = dailyMystery();
+    setState({
+      tab: "mystery",
+      currentMysteryId: mystery?.id || null,
+      currentMysteryDiscipline: activeDisciplineId(),
+      currentDiscipline: activeDisciplineId(),
+      mysteryFeedback: { ...(state.mysteryFeedback || {}) }
+    }, { renderImmediate: true });
+    return true;
+  }
+  const world = beta118WorldForLesson(lesson);
+  const disciplineId = beta118DisciplineForWorld(world);
+  const groupId = beta118GroupForWorld(world, disciplineId);
+  setState({
+    tab: "lesson",
+    currentDiscipline: disciplineId,
+    currentGroup: groupId,
+    currentWorld: world?.id || state.currentWorld,
+    currentLessonId: lesson.id,
+    lessonFocus: "express",
+    lessonView: "express",
+    learnDrill: "courses",
+    betaLastCourseOpen: { id: lesson.id, source, at: Date.now() }
+  }, { renderImmediate: true });
+  return true;
+}
+function beta118OpenGroupById(groupId, disciplineId = activeDisciplineId()) {
+  const id = String(groupId || "").trim();
+  if (!id) return false;
+  const firstWorld = treeWorldsForGroup(id, disciplineId)[0];
+  setState({
+    tab: "learn",
+    currentDiscipline: disciplineId,
+    currentGroup: id,
+    currentWorld: firstWorld?.id || state.currentWorld,
+    learnDrill: "courses",
+    learnFilter: "all",
+    learnSearch: ""
+  }, { renderImmediate: true });
+  return true;
+}
+function beta118BackToChapters() {
+  setState({ tab: "learn", learnDrill: "chapters", learnSearch: "", learnFilter: "all" }, { renderImmediate: true, save: false });
+}
+function beta118NormalizeLearnState() {
+  try {
+    if (state.tab !== "learn") return;
+    state.learnDrill = state.learnDrill === "courses" ? "courses" : "chapters";
+    const disciplineId = beta114ValidDisciplineId(state.currentDiscipline || "history");
+    state.currentDiscipline = disciplineId;
+    const groups = treeGroups(disciplineId);
+    if (!groups.length) return;
+    if (!groups.some(group => group.id === state.currentGroup)) state.currentGroup = groups[0].id;
+    const worlds = treeWorldsForGroup(state.currentGroup, disciplineId);
+    if (worlds.length && !worlds.some(world => world.id === state.currentWorld)) state.currentWorld = worlds[0].id;
+  } catch {}
+}
+
+const beta118PreviousTreeLessonCard = treeLessonCard;
+treeLessonCard = function beta118TreeLessonCard(lesson, index, world) {
+  const html = beta118PreviousTreeLessonCard(lesson, index, world);
+  if (!html || !lesson?.id || html.includes("beta118-open-course")) return html;
+  if (html.includes("data-locked-lesson")) {
+    return html.replace("<strong>bloqué</strong>", "<button type=\"button\" class=\"mini-open-btn locked\" data-locked-lesson-open=\"" + escapeHtml(lesson.id) + "\">Mystère</button>");
+  }
+  return html.replace(/<strong>([\s\S]*?)<\/strong>\s*<\/article>/, "<div class=\"beta118-lesson-actions\"><strong>$1</strong><button type=\"button\" class=\"mini-open-btn beta118-open-course\" data-lesson-open=\"" + escapeHtml(lesson.id) + "\">Ouvrir</button></div></article>");
+};
+
+const beta118PreviousRenderLearn = renderLearn;
+renderLearn = function beta118RenderLearn() {
+  beta118NormalizeLearnState();
+  return beta118PreviousRenderLearn();
+};
+
+function beta118LearnDelegatedClick(event) {
+  const target = event.target;
+  if (!target?.closest) return;
+  const lessonOpen = target.closest("[data-lesson-open]");
+  if (lessonOpen) {
+    event.preventDefault();
+    event.stopPropagation();
+    beta118OpenLessonById(lessonOpen.dataset.lessonOpen, { source: "open-button" });
+    return;
+  }
+  const lessonCard = target.closest("[data-lesson]");
+  if (lessonCard && state.tab === "learn") {
+    event.preventDefault();
+    event.stopPropagation();
+    beta118OpenLessonById(lessonCard.dataset.lesson, { source: "lesson-card" });
+    return;
+  }
+  const lockedOpen = target.closest("[data-locked-lesson-open]");
+  if (lockedOpen) {
+    event.preventDefault();
+    event.stopPropagation();
+    const mystery = dailyMystery();
+    setState({ tab: "mystery", currentMysteryId: mystery?.id || null, currentMysteryDiscipline: activeDisciplineId(), currentDiscipline: activeDisciplineId() }, { renderImmediate: true });
+    return;
+  }
+  const lockedCard = target.closest("[data-locked-lesson]");
+  if (lockedCard && state.tab === "learn") {
+    event.preventDefault();
+    event.stopPropagation();
+    const mystery = dailyMystery();
+    setState({ tab: "mystery", currentMysteryId: mystery?.id || null, currentMysteryDiscipline: activeDisciplineId(), currentDiscipline: activeDisciplineId() }, { renderImmediate: true });
+    return;
+  }
+  const groupCard = target.closest("[data-tree-group]");
+  if (groupCard && state.tab === "learn") {
+    event.preventDefault();
+    event.stopPropagation();
+    beta118OpenGroupById(groupCard.dataset.treeGroup, activeDisciplineId());
+    return;
+  }
+  const backChapters = target.closest("[data-back-chapters]");
+  if (backChapters && state.tab === "learn") {
+    event.preventDefault();
+    event.stopPropagation();
+    beta118BackToChapters();
+  }
+}
+function beta118LearnDelegatedKeydown(event) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const target = event.target;
+  if (!target?.closest) return;
+  const interactive = target.closest("input,textarea,select,button,a");
+  if (interactive && !target.closest("[data-lesson],[data-tree-group],[data-locked-lesson]")) return;
+  const actionable = target.closest("[data-lesson],[data-tree-group],[data-locked-lesson]");
+  if (!actionable || state.tab !== "learn") return;
+  event.preventDefault();
+  actionable.click();
+}
+document.addEventListener("click", beta118LearnDelegatedClick, true);
+document.addEventListener("keydown", beta118LearnDelegatedKeydown, true);
+
+const beta118PreviousNormalizeState = beta114NormalizeState;
+beta114NormalizeState = function beta118NormalizeState() {
+  try { beta118PreviousNormalizeState(); } catch {}
+  try {
+    state.betaMysteryShift = beta117PlainObject(state.betaMysteryShift);
+    if (state.learnDrill !== "courses" && state.learnDrill !== "chapters") state.learnDrill = "chapters";
+    beta118NormalizeLearnState();
+  } catch {}
+};
+
+window.HistoDailyBeta118 = {
+  version: BETA118_VERSION,
+  openLesson: beta118OpenLessonById,
+  openGroup: beta118OpenGroupById,
+  normalizeLearn: beta118NormalizeLearnState,
+  state: () => ({ ...state })
+};
+
+try { beta114NormalizeState(); } catch {}
 if (document.readyState !== "loading") render({ immediate: true });

@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.115",
-  assetsVersion: "1.0.0-beta.115",
+  version: "1.0.0-beta.123",
+  assetsVersion: "1.0.0-beta.123",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 115",
+    versionLabel: "beta 122",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Robustesse : nettoyage plus strict de l’état local au lancement pour éviter les écrans incohérents.",
-      "Profil : ajout d’un mini diagnostic et d’un bouton de réparation d’affichage sans supprimer la progression.",
-      "Mobile : garde-fou contre l’écran vide, les taps multiples et les anciennes données qui bloquent un onglet."
+      "Mystères de discipline densifiés : art, cinéma, économie, géographie, musique et sciences gagnent de nouveaux dossiers.",
+      "Les énigmes gardent le type recherché clair, mais déplacent les mots-clés évidents dans les indices.",
+      "Chaque mode hors histoire possède maintenant au moins trois mystères jouables."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
