@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.133";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.134";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -7397,7 +7397,7 @@ function renderRank() {
     </section>
     ${scope === "week" ? weeklyScoreMarkup() : ""}
     ${scope === "daily" ? recentDailyCalendarMarkup({ compact: true }) : ""}
-    <section class="card leaderboard leaderboard-modern">${rows.length ? rows.map(row => `<button class="rank-row ${row.me ? "me" : ""}" data-view-profile="${escapeHtml(row.id)}"><span>${row.rank}</span><strong>${escapeHtml(row.name)}</strong><em>${row.score} XP</em></button>`).join("") : emptyRankMarkup(scope)}</section>
+    <section class="card leaderboard leaderboard-modern">${rows.length ? rows.map(row => `<button type="button" class="rank-row ${row.me ? "me" : ""}" data-view-profile="${escapeHtml(row.id)}"><span>${row.rank}</span><strong>${escapeHtml(row.name)}</strong><em>${row.score} XP</em></button>`).join("") : emptyRankMarkup(scope)}</section>
     ${scope === "daily" ? `<p class="rank-note">Le score du jour récompense surtout : résoudre sans indice, avec peu d’essais.</p>` : ""}
     ${scope === "week" ? `<p class="rank-note">La semaine additionne les mystères résolus depuis lundi.</p>` : ""}
     ${scope === "year" ? `<p class="rank-note">L’année cumulera les scores réels enregistrés. Aucun profil fictif n’est ajouté.</p>` : ""}
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.133";
+const BETA124_VERSION = "1.0.0-beta.134";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.133";
+const BETA125_VERSION = "1.0.0-beta.134";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.133";
+const BETA126_VERSION = "1.0.0-beta.134";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.133";
+const BETA127_VERSION = "1.0.0-beta.134";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.133";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.134";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.133";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.134";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.133";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.134";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.133";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.134";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.133";
+const BETA132_SAFE_VERSION = "1.0.0-beta.134";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.133";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.134";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16236,4 +16236,190 @@ try {
   queueSaveState(50);
   window.HistoDaily = { version: BETA133_DISCIPLINE_VERSION, disciplineSwitchFix: true, safeLeaderboard: true };
   render({ immediate: true });
+} catch {}
+
+
+/* =========================================================
+   Beta 134 — correctif tap profil depuis classement
+   Symptôme observé : le classement et les disciplines fonctionnent,
+   mais toucher un autre joueur n'ouvre pas toujours sa fiche sur mobile.
+   On ajoute une délégation globale sociale, indépendante du rendu, et
+   on rend la résolution de profil tolérante aux id string/number.
+   ========================================================= */
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.134";
+let beta134SocialTapAt = 0;
+
+function beta134SameToken(a, b) {
+  if (a === undefined || a === null || b === undefined || b === null) return false;
+  return String(a).trim() !== "" && String(a).trim() === String(b).trim();
+}
+
+function beta134SameCode(a, b) {
+  const ca = normalizeFriendCode(a || "");
+  const cb = normalizeFriendCode(b || "");
+  if (!ca || !cb) return false;
+  return ca === cb || friendCodeSuffix(ca) === friendCodeSuffix(cb);
+}
+
+function beta134PlayerMatchesId(player = {}, id = "") {
+  if (!player || !id) return false;
+  return beta134SameToken(player.id, id)
+    || beta134SameToken(player.playerId, id)
+    || beta134SameToken(player.player_id, id)
+    || beta134SameCode(player.code, id)
+    || beta134SameCode(player.friendCode, id)
+    || beta134SameCode(player.friend_code, id);
+}
+
+function beta134RemoteProfileFromAnyLeaderboard(id = "") {
+  const rows = Object.values(state.serverLeaderboards || {}).flatMap(bucket => Array.isArray(bucket) ? bucket : []);
+  for (const row of rows) {
+    const profile = remoteLeaderboardRowsForSingle(row);
+    if (beta134PlayerMatchesId(profile, id) || beta134PlayerMatchesId(row, id)) return profile;
+  }
+  return null;
+}
+
+const beta134PreviousProfileById = profileById;
+profileById = function beta134ProfileById(id) {
+  const key = String(id || "").trim();
+  if (!key) return myPlayerProfile();
+  const known = allKnownPlayers().find(player => beta134PlayerMatchesId(player, key));
+  if (known) return typeof beta125IncomingRequestForPlayer === "function" ? {
+    ...known,
+    requestIncoming: beta125IncomingRequestForPlayer(known) || null,
+    requestOutgoing: beta125OutgoingRequestForPlayer(known) || null
+  } : known;
+  const remote = beta134RemoteProfileFromAnyLeaderboard(key);
+  if (remote) return typeof beta125IncomingRequestForPlayer === "function" ? {
+    ...remote,
+    requestIncoming: beta125IncomingRequestForPlayer(remote) || null,
+    requestOutgoing: beta125OutgoingRequestForPlayer(remote) || null
+  } : remote;
+  return beta134PreviousProfileById ? beta134PreviousProfileById(id) : myPlayerProfile();
+};
+
+function beta134OpenPublicProfile(id = "") {
+  const key = String(id || "").trim();
+  if (!key) return false;
+  const player = profileById(key);
+  const selected = String(player?.id || player?.playerId || key);
+  setState({ tab: "publicProfile", selectedProfileId: selected }, { save: true });
+  if (typeof beta126FetchPublicProfile === "function") {
+    setTimeout(() => beta126FetchPublicProfile(profileById(selected), { force: false }).catch(() => {}), 0);
+  }
+  return true;
+}
+
+function beta134HandleSocialTap(event) {
+  const target = event.target;
+  if (!target || !target.closest) return;
+  const viewBtn = target.closest("[data-view-profile]");
+  const sendBtn = target.closest("[data-send-friend-request]");
+  const backBtn = target.closest("[data-back-social]");
+  const openRankBtn = target.closest("[data-open-rank]");
+  const relevant = viewBtn || sendBtn || backBtn || openRankBtn;
+  if (!relevant || !app || !app.contains(relevant)) return;
+
+  const now = Date.now();
+  if (now - beta134SocialTapAt < 180) {
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    return;
+  }
+  beta134SocialTapAt = now;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+
+  if (viewBtn) {
+    beta134OpenPublicProfile(viewBtn.dataset.viewProfile || "");
+    return;
+  }
+  if (sendBtn) {
+    const player = profileById(sendBtn.dataset.sendFriendRequest || state.selectedProfileId || "");
+    if (typeof beta125SendFriendRequest === "function") beta125SendFriendRequest(player).catch(() => {});
+    return;
+  }
+  if (backBtn) {
+    setState({ tab: "rank" }, { save: true });
+    return;
+  }
+  if (openRankBtn) {
+    setState({ tab: "rank", rankScope: openRankBtn.dataset.openRank || "daily" }, { save: true });
+  }
+}
+
+function beta134InstallSocialDelegation() {
+  if (window.__histodailyBeta134SocialDelegation) return;
+  window.__histodailyBeta134SocialDelegation = true;
+  document.addEventListener("touchend", beta134HandleSocialTap, { capture: true, passive: false });
+  document.addEventListener("pointerup", beta134HandleSocialTap, true);
+  document.addEventListener("click", beta134HandleSocialTap, true);
+}
+
+function beta134DecorateClickableLeaderboard() {
+  try {
+    document.querySelectorAll(".leaderboard-modern .rank-row[data-view-profile]").forEach(row => {
+      row.setAttribute("type", "button");
+      row.setAttribute("role", "button");
+      row.setAttribute("aria-label", `Ouvrir le profil de ${row.querySelector("strong")?.textContent || "ce joueur"}`);
+      row.classList.add("profile-clickable");
+    });
+  } catch {}
+}
+
+const beta134PreviousRenderRank = renderRank;
+renderRank = function beta134RenderRank() {
+  const out = beta134PreviousRenderRank();
+  beta134DecorateClickableLeaderboard();
+  return out;
+};
+
+const beta134PreviousViewProfile = viewProfile;
+viewProfile = function beta134ViewProfile(id) {
+  return beta134OpenPublicProfile(id) || (beta134PreviousViewProfile ? beta134PreviousViewProfile(id) : null);
+};
+
+function beta134InstallProfileTapStyle() {
+  if (document.getElementById("beta134-profile-tap-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta134-profile-tap-style";
+  style.textContent = `
+    .leaderboard-modern,
+    .leaderboard-modern *,
+    .rank-row,
+    .rank-row *,
+    [data-view-profile],
+    [data-send-friend-request],
+    [data-back-social],
+    [data-open-rank]{
+      pointer-events:auto!important;
+      touch-action:manipulation!important;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .leaderboard-modern .rank-row.profile-clickable,
+    .leaderboard-modern .rank-row[data-view-profile]{
+      cursor:pointer!important;
+      position:relative!important;
+      z-index:25!important;
+      user-select:none!important;
+      -webkit-user-select:none!important;
+    }
+    .public-profile-card,
+    .beta125-profile-actions,
+    .profile-score-card{
+      position:relative!important;
+      z-index:10!important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+try {
+  beta134InstallSocialDelegation();
+  beta134InstallProfileTapStyle();
+  state.beta134ProfileTapVersion = BETA134_PROFILE_TAP_VERSION;
+  queueSaveState(50);
+  window.HistoDaily = { version: BETA134_PROFILE_TAP_VERSION, disciplineSwitchFix: true, safeLeaderboard: true, profileTapFix: true };
+  if (state.tab === "rank") beta134DecorateClickableLeaderboard();
 } catch {}

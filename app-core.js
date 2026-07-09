@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.133",
-  assetsVersion: "1.0.0-beta.133",
+  version: "1.0.0-beta.134",
+  assetsVersion: "1.0.0-beta.134",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,7 +15,7 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 133",
+    versionLabel: "beta 134",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: []
   },
