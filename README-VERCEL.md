@@ -1,6 +1,6 @@
-# HistoDaily — beta156 release readiness
+# HistoDaily — beta158 stability hotfix
 
-Version `1.0.0-beta.156`.
+Version `1.0.0-beta.158-stability`.
 
 Cette version continue le durcissement pré-test public sans ajouter de contenu ni fonctionnalité lourde.
 

@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.157-perf",
-  assetsVersion: "1.0.0-beta.157-perf",
+  version: "1.0.0-beta.158-stability",
+  assetsVersion: "1.0.0-beta.158-stability",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -18,9 +18,9 @@ window.HISTODAILY_CORE = {
     versionLabel: "mise à jour",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Performance mobile : rendus regroupés, caches de cours et animations plus légères.",
-      "Style conservé : l’app reste animée, mais les effets coûteux sont coupés par défaut sur mobile.",
-      "Stabilité : les anciens caches sont invalidés pour charger la version fluide."
+      "Hotfix stabilité : retrait de la couche JS beta157 qui pouvait planter certains onglets.",
+      "Optimisation prudente : CSS plus léger, sans modifier les listes de cours ni les rendus JS.",
+      "Cache PWA renouvelé pour forcer le chargement de la version saine."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

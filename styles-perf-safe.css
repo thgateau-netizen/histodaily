@@ -1,0 +1,42 @@
+/* HistoDaily beta158 — optimisations CSS sûres.
+   Aucun patch JS, aucun cache de données : stabilité d'abord. */
+:root{--hd-fast-shadow:0 8px 20px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.055)}
+body.performance-smart::before,
+body.performance-smart::after{filter:none!important;opacity:.14!important}
+body.performance-smart .card,
+body.performance-smart .home-main-card,
+body.performance-smart .mystery-card,
+body.performance-smart .lesson-card,
+body.performance-smart .tree-lesson,
+body.performance-smart .rank-row{box-shadow:var(--hd-fast-shadow)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;will-change:auto!important}
+body.performance-smart .app-shell>header,
+body.performance-smart .app-shell>section,
+body.performance-smart .app-shell>.mini-grid{animation:none!important;animation-delay:0s!important}
+body.performance-smart .app-shell.motion-enter{animation:hdSafeScreenEnter .16s cubic-bezier(.2,.75,.25,1) both!important;will-change:opacity,transform}
+body.performance-smart .lesson-card,
+body.performance-smart .tree-lesson,
+body.performance-smart .home-discovery-item,
+body.performance-smart .rank-row,
+body.performance-smart .nav-item{transition:background-color .12s ease,border-color .12s ease,color .12s ease,opacity .12s ease!important}
+body.performance-smart .lesson-card:hover,
+body.performance-smart .tree-lesson:hover,
+body.performance-smart .home-discovery-item:hover,
+body.performance-smart .rank-row:hover{transform:none!important}
+body.performance-smart button:active,
+body.performance-smart [role="button"]:active{transform:translateY(1px)!important;filter:brightness(1.06)}
+@supports (content-visibility:auto){
+  body.performance-smart .tree-section,
+  body.performance-smart .tree-lesson,
+  body.performance-smart .deep-reading-block,
+  body.performance-smart .quiz-card,
+  body.performance-smart .rank-row,
+  body.performance-smart .archive-mini{content-visibility:auto;contain-intrinsic-size:auto 180px}
+}
+@keyframes hdSafeScreenEnter{from{opacity:.001;transform:translate3d(0,6px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@media(max-width:560px){
+  body.performance-smart .card{border-radius:22px}
+  body.performance-smart .bottom-nav{box-shadow:0 -8px 20px rgba(0,0,0,.24)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body.performance-smart .app-shell.motion-enter{animation:none!important;will-change:auto!important}
+}
