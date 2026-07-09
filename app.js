@@ -19678,3 +19678,187 @@ try {
     try { console.warn("beta161 profile relation fix", error); } catch {}
   }
 })();
+
+/* =========================================================
+   Beta 162 — correctif général navigation + flux mystères
+   Objectif : rendre les retours, onglets et déblocages robustes
+   avec une délégation globale, sans nouvelle optimisation risquée.
+   ========================================================= */
+(function beta162NavigationFlowHotfix(){
+  const BETA162_VERSION = "1.0.0-beta.162";
+  let lastActionKey = "";
+  let lastActionAt = 0;
+
+  function now(){ return Date.now ? Date.now() : new Date().getTime(); }
+  function safeString(value){ return String(value == null ? "" : value).trim(); }
+  function once(key, delay = 420){
+    const t = now();
+    if (key && key === lastActionKey && t - lastActionAt < delay) return false;
+    lastActionKey = key || "action";
+    lastActionAt = t;
+    return true;
+  }
+  function consume(event){
+    try { event.preventDefault?.(); } catch {}
+    try { event.stopPropagation?.(); } catch {}
+    try { event.stopImmediatePropagation?.(); } catch {}
+  }
+  function renderNow(){
+    try { render?.({ immediate: true }); }
+    catch { try { render?.(); } catch {} }
+  }
+  function scrollTopSoon(){
+    window.setTimeout(() => {
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); }
+      catch { try { window.scrollTo(0, 0); } catch {} }
+      try { document.querySelector(".topbar h1,.hero h1,.app-shell")?.focus?.({ preventScroll: true }); } catch {}
+    }, 40);
+  }
+  function setPatch(patch, { save = false, top = false } = {}){
+    if (!patch || typeof patch !== "object") return;
+    try { setState?.(patch, { save, renderImmediate: true }); }
+    catch {
+      try { state = { ...state, ...patch }; if (save) saveState?.(); renderNow(); } catch {}
+    }
+    if (top) scrollTopSoon();
+  }
+  function mysteryByAnyId(id){
+    const key = safeString(id);
+    if (!key) return null;
+    try { return mysteryById?.(key) || null; } catch {}
+    try { return (data?.mysteries || []).find(m => m?.id === key) || null; } catch {}
+    return null;
+  }
+  function mysteryDiscipline(mystery){
+    try { return mysteryDisciplineId?.(mystery) || activeDisciplineId?.() || "history"; }
+    catch { return "history"; }
+  }
+  function openMystery(id, feedback = ""){
+    const mystery = mysteryByAnyId(id);
+    if (!mystery?.id) {
+      setPatch({ tab: "mystery", archiveFeedback: "Mystère introuvable. Reviens au dossier du jour." }, { save: false, top: true });
+      return false;
+    }
+    const disc = mysteryDiscipline(mystery);
+    const patch = {
+      tab: "mystery",
+      currentMysteryId: mystery.id,
+      currentMysteryDiscipline: disc,
+      currentDiscipline: disc,
+      archiveFeedback: feedback || ""
+    };
+    setPatch(patch, { save: true, top: true });
+    return true;
+  }
+  function unlockAndOpenMystery(id){
+    const mystery = mysteryByAnyId(id);
+    if (!mystery?.id) return openMystery(id, "Mystère introuvable.");
+    let accessible = false;
+    try { accessible = Boolean(isAccessibleMystery?.(mystery.id)); } catch {}
+    if (accessible) return openMystery(mystery.id, "");
+    const cost = Number(typeof ARCHIVE_UNLOCK_COST !== "undefined" ? ARCHIVE_UNLOCK_COST : 2) || 2;
+    const gems = Number(state?.gems || 0);
+    if (gems < cost) {
+      const msg = `Il te faut ${cost} gemmes pour ouvrir cette archive. Tu en as ${gems}.`;
+      setPatch({ tab: "mystery", archiveFeedback: msg }, { save: false, top: false });
+      window.setTimeout(() => { try { document.querySelector("[data-archive-shelf]")?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch {} }, 60);
+      return false;
+    }
+    try {
+      state.gems = Math.max(0, gems - cost);
+      state.unlockedMysteries = { ...(state.unlockedMysteries || {}), [mystery.id]: { at: now(), cost } };
+      state.achievements = { ...(state.achievements || {}), firstArchive: true };
+      saveState?.();
+    } catch {}
+    return openMystery(mystery.id, "Archive débloquée : elle est ouverte ci-dessus.");
+  }
+
+  try { unlockPastMystery = function beta162UnlockPastMystery(id){ return unlockAndOpenMystery(id); }; } catch {}
+
+  function backToLearn(){
+    const patch = { tab: "learn", lessonFocus: null, lessonView: "express" };
+    try {
+      const lesson = state?.currentLessonId ? curatedLessonById?.(state.currentLessonId) : null;
+      if (lesson) {
+        const worldId = lessonWorldId?.(lesson.id) || lessonWorld?.(lesson)?.id || "";
+        const disc = worldId ? worldDisciplineId?.(lessonWorld?.(lesson) || {}) : "";
+        if (worldId) patch.currentWorld = worldId;
+        if (disc) patch.currentDiscipline = disc;
+      }
+    } catch {}
+    setPatch(patch, { save: false, top: true });
+  }
+  function openDailyMystery(){
+    let mystery = null;
+    try { mystery = dailyMystery?.(); } catch {}
+    if (!mystery && typeof mysteryForDisciplineDayOffset === "function") {
+      try { mystery = mysteryForDisciplineDayOffset(activeDisciplineId?.() || "history", 0); } catch {}
+    }
+    if (mystery?.id) openMystery(mystery.id);
+    else setPatch({ tab: "mystery" }, { save: false, top: true });
+  }
+  function openRank(scope){
+    setPatch({ tab: "rank", rankScope: safeString(scope) || "daily" }, { save: false, top: true });
+  }
+  function handleNavigationTarget(target){
+    if (!target?.matches) return false;
+    if (target.matches("[data-unlock-mystery]")) return unlockAndOpenMystery(target.dataset.unlockMystery), true;
+    if (target.matches("[data-open-mystery-id]")) return openMystery(target.dataset.openMysteryId), true;
+    if (target.matches("[data-open-linked-mystery]")) return openMystery(target.dataset.openLinkedMystery), true;
+    if (target.matches("[data-open-daily-mystery]")) return openDailyMystery(), true;
+    if (target.matches("[data-back-learn]")) return backToLearn(), true;
+    if (target.matches("[data-back-chapters]")) return setPatch({ tab: "learn", learnDrill: "chapters", learnSearch: "", learnFilter: "all" }, { save: false, top: true }), true;
+    if (target.matches("[data-back-social]")) return openRank(state?.rankScope || "daily"), true;
+    if (target.matches("[data-home],[data-back-home],[data-go-home]")) return setPatch({ tab: "home" }, { save: false, top: true }), true;
+    if (target.matches("[data-go-learn]")) return setPatch({ tab: "learn" }, { save: false, top: true }), true;
+    if (target.matches("[data-home-rank],[data-go-rank]")) return openRank("daily"), true;
+    if (target.matches("[data-open-rank]")) return openRank(target.dataset.openRank || "daily"), true;
+    if (target.matches("[data-profile-rank]")) return openRank(target.dataset.profileRank || "daily"), true;
+    if (target.matches("[data-home-profile],[data-open-profile],[data-open-profile-after]")) return setPatch({ tab: "profile" }, { save: false, top: true }), true;
+    if (target.matches("[data-tab]")) {
+      const tab = safeString(target.dataset.tab);
+      if (!tab || tab === state?.tab) return true;
+      const patch = { tab };
+      if (tab === "mystery") {
+        try {
+          const mystery = dailyMystery?.();
+          patch.currentMysteryId = mystery?.id || null;
+          patch.currentMysteryDiscipline = mystery ? mysteryDiscipline(mystery) : (activeDisciplineId?.() || "history");
+        } catch {}
+      }
+      setPatch(patch, { save: false, top: true });
+      return true;
+    }
+    return false;
+  }
+  function delegatedNavigation(event){
+    const rawTarget = event.target;
+    if (!rawTarget?.closest) return;
+    const target = rawTarget.closest([
+      "[data-unlock-mystery]", "[data-open-mystery-id]", "[data-open-linked-mystery]", "[data-open-daily-mystery]",
+      "[data-back-learn]", "[data-back-chapters]", "[data-back-social]", "[data-home]", "[data-back-home]", "[data-go-home]",
+      "[data-go-learn]", "[data-home-rank]", "[data-go-rank]", "[data-open-rank]", "[data-profile-rank]",
+      "[data-home-profile]", "[data-open-profile]", "[data-open-profile-after]", "[data-tab]"
+    ].join(","));
+    if (!target) return;
+    const key = `${event.type}:${target.getAttribute("data-unlock-mystery") || target.getAttribute("data-open-mystery-id") || target.getAttribute("data-open-linked-mystery") || target.getAttribute("data-tab") || target.textContent || target.tagName}`;
+    if (!once(key)) { consume(event); return; }
+    const handled = handleNavigationTarget(target);
+    if (handled) consume(event);
+  }
+
+  document.addEventListener("pointerup", delegatedNavigation, { capture: true, passive: false });
+  document.addEventListener("click", delegatedNavigation, true);
+
+  try {
+    state.beta162NavigationFlowFixVersion = BETA162_VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA162_VERSION, navigationFlowFix: true };
+    const style = document.createElement("style");
+    style.id = "beta162-navigation-flow-style";
+    style.textContent = `.topbar button,[data-back-home],[data-back-learn],[data-home],[data-unlock-mystery],[data-open-mystery-id],.bottom-nav button{touch-action:manipulation!important;pointer-events:auto!important}.archive-feedback{font-weight:800}.skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important}.skip-link:focus-visible{transform:translateY(0)!important;opacity:1!important;pointer-events:auto!important}`;
+    if (!document.getElementById(style.id)) document.head.appendChild(style);
+    try { queueSaveState?.(120); } catch {}
+  } catch (error) {
+    try { console.warn("beta162 navigation flow fix", error); } catch {}
+  }
+})();
