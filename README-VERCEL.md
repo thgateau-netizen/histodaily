@@ -1,7 +1,17 @@
-# HistoDaily beta132 — leaderboard safe mode
+# HistoDaily beta133 — discipline switch fix
 
-Version : `1.0.0-beta.132`
+Correctif ciblé après test téléphone : l'API/Supabase et le classement sont OK, mais le sélecteur Histoire / Cinéma / Économie / etc. pouvait ne plus réagir sur mobile.
 
-Correctif bloquant mobile : navigation utilisable même si le classement/API rame, timeout réseau côté app, fallback local propre, migration Supabase complète pour `hd_scores`, et health plus honnête.
+## Corrections
+- Délégation globale dédiée aux taps sur `[data-home-discipline]` et `[data-discipline]`.
+- Chemin unique sécurisé pour changer de discipline depuis l'accueil ou depuis Cours.
+- Z-index/pointer-events renforcés uniquement sur les sélecteurs de disciplines.
+- Cache PWA renouvelé en `1.0.0-beta.133`.
+- Aucun changement Supabase nécessaire.
 
-Déploie le contenu du zip sur Vercel. Puis ouvre `/api/v1/health` et `/api/v1/leaderboard/daily` pour vérifier.
+## Test rapide
+1. Ouvrir l'app sur téléphone.
+2. Depuis Accueil, toucher Cinéma, Économie, Sciences, Musique.
+3. Vérifier que le titre, le mystère et les cours proposés changent.
+4. Aller dans Cours et changer aussi de discipline.
+5. Vérifier que Classement reste fonctionnel.

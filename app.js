@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.132";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.133";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.132";
+const BETA124_VERSION = "1.0.0-beta.133";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.132";
+const BETA125_VERSION = "1.0.0-beta.133";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.132";
+const BETA126_VERSION = "1.0.0-beta.133";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.132";
+const BETA127_VERSION = "1.0.0-beta.133";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.132";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.133";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.132";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.133";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.132";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.133";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.132";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.133";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15872,9 +15872,9 @@ function beta131RepairStartupTab() {
 }
 
 function beta131InstallNavLayerFix() {
-  if (document.getElementById("beta132-leaderboard-safe-style")) return;
+  if (document.getElementById("beta133-discipline-switch-fix-style")) return;
   const style = document.createElement("style");
-  style.id = "beta132-leaderboard-safe-style";
+  style.id = "beta133-discipline-switch-fix-style";
   style.textContent = `
     .bottom-nav{
       z-index:2147483000!important;
@@ -15924,27 +15924,27 @@ try {
 
 
 /* =========================================================
-   Beta 132 — safe mode classement / navigation
+   Beta 133 — safe mode classement / navigation
    Le bug observé : /leaderboard/daily peut ramer ou être en erreur
    et laisser l'app bloquée visuellement sur Classement. On rend la
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.132";
-let beta132RankFetchTimer = 0;
-let beta132CriticalTapAt = 0;
+const BETA132_SAFE_VERSION = "1.0.0-beta.133";
+let beta133RankFetchTimer = 0;
+let beta133CriticalTapAt = 0;
 
-function beta132AbortableFetch(url, options = {}, timeoutMs = 5500) {
+function beta133AbortableFetch(url, options = {}, timeoutMs = 5500) {
   if (typeof AbortController !== "function") return fetch(url, options);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
 }
 
-function beta132NormalizeStartup() {
+function beta133NormalizeStartup() {
   let changed = false;
-  if (state.beta132SafeVersion !== BETA132_SAFE_VERSION) {
-    state.beta132SafeVersion = BETA132_SAFE_VERSION;
+  if (state.beta133SafeVersion !== BETA132_SAFE_VERSION) {
+    state.beta133SafeVersion = BETA132_SAFE_VERSION;
     // Après un bug de classement, on force une reprise saine sur Accueil.
     state.tab = "home";
     state.rankScope = "daily";
@@ -15965,7 +15965,7 @@ function beta132NormalizeStartup() {
   }
 }
 
-function beta132CriticalTap(event) {
+function beta133CriticalTap(event) {
   const target = event.target;
   if (!target || !target.closest) return;
   const tabBtn = target.closest("[data-tab]");
@@ -15979,12 +15979,12 @@ function beta132CriticalTap(event) {
   const now = Date.now();
   // iOS déclenche parfois touchend + pointerup + click. On bloque les doublons trop rapprochés,
   // mais jamais le premier événement utile.
-  if (now - beta132CriticalTapAt < 180) {
+  if (now - beta133CriticalTapAt < 180) {
     event.preventDefault?.();
     event.stopPropagation?.();
     return;
   }
-  beta132CriticalTapAt = now;
+  beta133CriticalTapAt = now;
   event.preventDefault?.();
   event.stopPropagation?.();
 
@@ -16003,28 +16003,28 @@ function beta132CriticalTap(event) {
   if (refreshBtn) {
     state.serverLeaderboardStatus = {};
     queueSaveState(50);
-    beta132FetchLeaderboard(state.rankScope || "daily", { force: true }).catch(() => {});
+    beta133FetchLeaderboard(state.rankScope || "daily", { force: true }).catch(() => {});
     if (typeof fetchServerFriends === "function") fetchServerFriends({ force: true }).catch(() => {});
     if (typeof beta125FetchFriendRequests === "function") beta125FetchFriendRequests({ force: true }).catch(() => {});
     return;
   }
 }
 
-function beta132InstallGlobalCriticalNavigation() {
+function beta133InstallGlobalCriticalNavigation() {
   if (window.__histodailyBeta132CriticalNav) return;
   window.__histodailyBeta132CriticalNav = true;
-  document.addEventListener("touchend", beta132CriticalTap, { capture: true, passive: false });
-  document.addEventListener("pointerup", beta132CriticalTap, true);
-  document.addEventListener("click", beta132CriticalTap, true);
+  document.addEventListener("touchend", beta133CriticalTap, { capture: true, passive: false });
+  document.addEventListener("pointerup", beta133CriticalTap, true);
+  document.addEventListener("click", beta133CriticalTap, true);
 }
 
-async function beta132FetchLeaderboard(scope = "daily", { force = false } = {}) {
+async function beta133FetchLeaderboard(scope = "daily", { force = false } = {}) {
   if (!isOnline) return;
   const now = Date.now();
   const status = state.serverLeaderboardStatus?.[scope] || {};
   if (!force && status.loadedAt && now - status.loadedAt < 45000) return;
-  if (leaderboardFetchInFlight.has(`beta132:${scope}`)) return;
-  leaderboardFetchInFlight.add(`beta132:${scope}`);
+  if (leaderboardFetchInFlight.has(`beta133:${scope}`)) return;
+  leaderboardFetchInFlight.add(`beta133:${scope}`);
   state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { ...status, loading: true, mode: "loading", note: "Chargement du classement…" } };
   queueSaveState(100);
   try {
@@ -16032,7 +16032,7 @@ async function beta132FetchLeaderboard(scope = "daily", { force = false } = {}) 
     const friendCodes = friends.map(friend => friend.code || friend.id).filter(Boolean).join(",");
     const friendIds = friends.map(friend => friend.playerId || friend.friend_player_id).filter(Boolean).join(",");
     const url = `/api/v1/leaderboard/daily?scope=${encodeURIComponent(scope)}&periodKey=${encodeURIComponent(localDayKey())}&playerId=${encodeURIComponent(playerIdMe())}&friendCodes=${encodeURIComponent(friendCodes)}&friendIds=${encodeURIComponent(friendIds)}&_=${Date.now()}`;
-    const response = await beta132AbortableFetch(url, { cache: "no-store" }, 5500);
+    const response = await beta133AbortableFetch(url, { cache: "no-store" }, 5500);
     const json = await response.json().catch(() => ({}));
     const mode = json?.mode || "unknown";
     const rows = Array.isArray(json?.rows) ? json.rows : [];
@@ -16045,24 +16045,24 @@ async function beta132FetchLeaderboard(scope = "daily", { force = false } = {}) 
   } catch (error) {
     state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: "timeout", note: "Classement trop lent : affichage local conservé." } };
   } finally {
-    leaderboardFetchInFlight.delete(`beta132:${scope}`);
+    leaderboardFetchInFlight.delete(`beta133:${scope}`);
     queueSaveState(100);
     if (state.tab === "rank" && (state.rankScope || "daily") === scope) render({ immediate: true });
   }
 }
 
 // On remplace le fetch de classement par une version timeout/fallback.
-fetchServerLeaderboard = beta132FetchLeaderboard;
-ensureServerLeaderboard = function beta132EnsureServerLeaderboard(scope = "daily") {
-  clearTimeout(beta132RankFetchTimer);
-  beta132RankFetchTimer = setTimeout(() => beta132FetchLeaderboard(scope).catch(() => {}), 80);
+fetchServerLeaderboard = beta133FetchLeaderboard;
+ensureServerLeaderboard = function beta133EnsureServerLeaderboard(scope = "daily") {
+  clearTimeout(beta133RankFetchTimer);
+  beta133RankFetchTimer = setTimeout(() => beta133FetchLeaderboard(scope).catch(() => {}), 80);
 };
 
 // On rend le rendu classement robuste même si une sous-carte plante.
-const beta132PreviousRenderRank = renderRank;
-renderRank = function beta132RenderRank() {
+const beta133PreviousRenderRank = renderRank;
+renderRank = function beta133RenderRank() {
   try {
-    return beta132PreviousRenderRank();
+    return beta133PreviousRenderRank();
   } catch (error) {
     try {
       renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Classements</p><h1>Classement</h1></div></header>
@@ -16072,10 +16072,10 @@ renderRank = function beta132RenderRank() {
   }
 };
 
-function beta132InstallStyle() {
-  if (document.getElementById("beta132-safe-style")) return;
+function beta133InstallStyle() {
+  if (document.getElementById("beta133-safe-style")) return;
   const style = document.createElement("style");
-  style.id = "beta132-safe-style";
+  style.id = "beta133-safe-style";
   style.textContent = `
     .bottom-nav{display:grid!important;z-index:2147483600!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important;}
     .bottom-nav,.bottom-nav *,.nav-item,[data-tab],[data-home],[data-rank-scope],[data-open-profile],[data-refresh-social]{pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent;}
@@ -16105,9 +16105,135 @@ window.addEventListener("unhandledrejection", () => {
 });
 
 try {
-  beta132NormalizeStartup();
-  beta132InstallGlobalCriticalNavigation();
-  beta132InstallStyle();
+  beta133NormalizeStartup();
+  beta133InstallGlobalCriticalNavigation();
+  beta133InstallStyle();
   window.HistoDaily = { version: BETA132_SAFE_VERSION, safeLeaderboard: true };
+  render({ immediate: true });
+} catch {}
+
+
+/* =========================================================
+   Beta 133 — correctif sélecteur de disciplines
+   Symptôme observé : l'app fonctionne, mais les boutons Histoire,
+   Cinéma, Économie, etc. peuvent ne plus réagir sur mobile après les
+   renforcements de navigation beta131/beta132. On ajoute donc une
+   délégation dédiée aux sélecteurs de disciplines, sans toucher au
+   classement ni à Supabase.
+   ========================================================= */
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.133";
+let beta133DisciplineTapAt = 0;
+
+function beta133ValidDisciplineId(id) {
+  return Boolean(id && typeof disciplineById === "function" && disciplineById(id));
+}
+
+function beta133SwitchDiscipline(id, { openLearn = false } = {}) {
+  if (!beta133ValidDisciplineId(id)) return false;
+  const discipline = disciplineById(id);
+  const firstWorld = firstWorldForDiscipline(discipline.id);
+  const nextMystery = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset(discipline.id, 0) : null;
+  const patch = {
+    currentDiscipline: discipline.id,
+    currentGroup: firstWorld?.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
+    currentWorld: firstWorld?.id || state.currentWorld,
+    currentMysteryId: nextMystery?.id || null,
+    currentMysteryDiscipline: discipline.id,
+    learnFilter: "all",
+    learnSearch: "",
+    discoverOffset: 0
+  };
+  if (openLearn) {
+    patch.tab = "learn";
+    patch.learnDrill = "chapters";
+  } else {
+    patch.tab = "home";
+  }
+  setState(patch, { save: true });
+  return true;
+}
+
+function beta133HandleDisciplineTap(event) {
+  const target = event.target;
+  if (!target || !target.closest) return;
+
+  const homeDiscipline = target.closest("[data-home-discipline]");
+  const learnDiscipline = target.closest("[data-discipline]");
+  const button = homeDiscipline || learnDiscipline;
+  if (!button || !app || !app.contains(button)) return;
+
+  const id = homeDiscipline ? button.dataset.homeDiscipline : button.dataset.discipline;
+  if (!beta133ValidDisciplineId(id)) return;
+
+  const now = Date.now();
+  if (now - beta133DisciplineTapAt < 160) {
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    return;
+  }
+  beta133DisciplineTapAt = now;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+
+  // Depuis l'accueil, on reste sur l'accueil et on change le domaine affiché.
+  // Depuis Cours, on reste dans Cours et on rouvre les chapitres de la discipline.
+  beta133SwitchDiscipline(id, { openLearn: Boolean(learnDiscipline && !homeDiscipline) });
+}
+
+function beta133InstallDisciplineDelegation() {
+  if (window.__histodailyBeta133DisciplineDelegation) return;
+  window.__histodailyBeta133DisciplineDelegation = true;
+  document.addEventListener("touchend", beta133HandleDisciplineTap, { capture: true, passive: false });
+  document.addEventListener("pointerup", beta133HandleDisciplineTap, true);
+  document.addEventListener("click", beta133HandleDisciplineTap, true);
+}
+
+function beta133InstallDisciplineStyle() {
+  if (document.getElementById("beta133-discipline-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta133-discipline-style";
+  style.textContent = `
+    .home-mode-switcher,
+    .home-mode-switcher *,
+    [data-home-discipline],
+    .discipline-picker,
+    .discipline-picker *,
+    [data-discipline]{
+      pointer-events:auto!important;
+      touch-action:manipulation!important;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .home-mode-switcher,
+    .discipline-picker{
+      position:relative!important;
+      z-index:20!important;
+      isolation:isolate!important;
+    }
+    .mode-pill,
+    .discipline-card{
+      cursor:pointer!important;
+      user-select:none!important;
+      -webkit-user-select:none!important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// On remplace aussi les fonctions directes, pour que les anciens écouteurs
+// existants profitent du même chemin sécurisé.
+switchHomeDiscipline = function beta133SwitchHomeDiscipline(id) {
+  return beta133SwitchDiscipline(id, { openLearn: false });
+};
+
+selectDiscipline = function beta133SelectDiscipline(id) {
+  return beta133SwitchDiscipline(id, { openLearn: true });
+};
+
+try {
+  beta133InstallDisciplineDelegation();
+  beta133InstallDisciplineStyle();
+  state.beta133DisciplineVersion = BETA133_DISCIPLINE_VERSION;
+  queueSaveState(50);
+  window.HistoDaily = { version: BETA133_DISCIPLINE_VERSION, disciplineSwitchFix: true, safeLeaderboard: true };
   render({ immediate: true });
 } catch {}

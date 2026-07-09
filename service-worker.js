@@ -1,13 +1,13 @@
-const CACHE_NAME = "histodaily-beta132-leaderboard-safe-v2";
-const APP_VERSION = "1.0.0-beta.132";
+const CACHE_NAME = "histodaily-beta133-discipline-switch-fix-v1";
+const APP_VERSION = "1.0.0-beta.133";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.132",
-  "/app-core.js?v=1.0.0-beta.132",
-  "/app-onboarding.js?v=1.0.0-beta.132",
-  "/app.js?v=1.0.0-beta.132",
-  "/lessons-lite.js?v=1.0.0-beta.132",
+  "/styles.css?v=1.0.0-beta.133",
+  "/app-core.js?v=1.0.0-beta.133",
+  "/app-onboarding.js?v=1.0.0-beta.133",
+  "/app.js?v=1.0.0-beta.133",
+  "/lessons-lite.js?v=1.0.0-beta.133",
   "/manifest.webmanifest"
 ];
 
