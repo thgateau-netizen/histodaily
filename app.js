@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.137";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.138";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.137";
+const BETA124_VERSION = "1.0.0-beta.138";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.137";
+const BETA125_VERSION = "1.0.0-beta.138";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.137";
+const BETA126_VERSION = "1.0.0-beta.138";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.137";
+const BETA127_VERSION = "1.0.0-beta.138";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.137";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.138";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.137";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.138";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.137";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.138";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.137";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.138";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.137";
+const BETA132_SAFE_VERSION = "1.0.0-beta.138";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.137";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.138";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.137";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.138";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16429,7 +16429,7 @@ try {
    Beta 135 — nettoyage de copie utilisateur
    Patch note visible, vocabulaire moins interne, accueil plus clair.
    ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.137";
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.138";
 
 releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
@@ -16467,7 +16467,7 @@ try {
    puis le même tap peut être repris par la navigation après le rendu.
    On consomme donc l'événement Indice avant tout changement d'écran.
    ========================================================= */
-const BETA136_HINT_TAP_VERSION = "1.0.0-beta.137";
+const BETA136_HINT_TAP_VERSION = "1.0.0-beta.138";
 let beta136HintTapAt = 0;
 let beta136LastHintMysteryId = "";
 
@@ -16546,8 +16546,8 @@ try {
    Histoire / Cinéma / Économie / etc. déclenche parfois le mode touché.
    On distingue maintenant un vrai tap d'un swipe/scroll horizontal.
    ========================================================= */
-const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.137";
-const beta137ModeSwipe = {
+const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.138";
+const beta138ModeSwipe = {
   active: false,
   tracking: false,
   moved: false,
@@ -16558,94 +16558,94 @@ const beta137ModeSwipe = {
   lastTarget: null
 };
 
-function beta137ModeSwitcherForTarget(target) {
+function beta138ModeSwitcherForTarget(target) {
   return target && target.closest ? target.closest(".home-mode-switcher") : null;
 }
 
-function beta137IsModeSwitchTarget(target) {
+function beta138IsModeSwitchTarget(target) {
   return Boolean(target && target.closest && target.closest("[data-home-discipline]"));
 }
 
-function beta137TouchPoint(event) {
+function beta138TouchPoint(event) {
   const t = event?.changedTouches?.[0] || event?.touches?.[0] || event;
   return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
 }
 
-function beta137StartModeGesture(event) {
+function beta138StartModeGesture(event) {
   const target = event.target;
-  const switcher = beta137ModeSwitcherForTarget(target);
-  if (!switcher || !beta137IsModeSwitchTarget(target)) return;
-  const point = beta137TouchPoint(event);
-  beta137ModeSwipe.active = true;
-  beta137ModeSwipe.tracking = true;
-  beta137ModeSwipe.moved = false;
-  beta137ModeSwipe.startX = point.x;
-  beta137ModeSwipe.startY = point.y;
-  beta137ModeSwipe.startScrollLeft = Number(switcher.scrollLeft || 0);
-  beta137ModeSwipe.lastTarget = target.closest("[data-home-discipline]");
+  const switcher = beta138ModeSwitcherForTarget(target);
+  if (!switcher || !beta138IsModeSwitchTarget(target)) return;
+  const point = beta138TouchPoint(event);
+  beta138ModeSwipe.active = true;
+  beta138ModeSwipe.tracking = true;
+  beta138ModeSwipe.moved = false;
+  beta138ModeSwipe.startX = point.x;
+  beta138ModeSwipe.startY = point.y;
+  beta138ModeSwipe.startScrollLeft = Number(switcher.scrollLeft || 0);
+  beta138ModeSwipe.lastTarget = target.closest("[data-home-discipline]");
 }
 
-function beta137MoveModeGesture(event) {
-  if (!beta137ModeSwipe.tracking) return;
+function beta138MoveModeGesture(event) {
+  if (!beta138ModeSwipe.tracking) return;
   const target = event.target;
-  const switcher = beta137ModeSwitcherForTarget(target) || beta137ModeSwitcherForTarget(beta137ModeSwipe.lastTarget);
-  const point = beta137TouchPoint(event);
-  const dx = Math.abs(point.x - beta137ModeSwipe.startX);
-  const dy = Math.abs(point.y - beta137ModeSwipe.startY);
-  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta137ModeSwipe.startScrollLeft) : 0;
+  const switcher = beta138ModeSwitcherForTarget(target) || beta138ModeSwitcherForTarget(beta138ModeSwipe.lastTarget);
+  const point = beta138TouchPoint(event);
+  const dx = Math.abs(point.x - beta138ModeSwipe.startX);
+  const dy = Math.abs(point.y - beta138ModeSwipe.startY);
+  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta138ModeSwipe.startScrollLeft) : 0;
   // Un petit tremblement reste un tap. Un vrai déplacement horizontal devient un scroll.
   if ((dx > 10 && dx > dy * 0.75) || scrollDelta > 4) {
-    beta137ModeSwipe.moved = true;
-    beta137ModeSwipe.suppressUntil = Date.now() + 520;
+    beta138ModeSwipe.moved = true;
+    beta138ModeSwipe.suppressUntil = Date.now() + 520;
   }
 }
 
-function beta137EndModeGesture(event) {
+function beta138EndModeGesture(event) {
   const target = event.target;
-  const switcher = beta137ModeSwitcherForTarget(target) || beta137ModeSwitcherForTarget(beta137ModeSwipe.lastTarget);
-  if (!switcher && !beta137ModeSwipe.active) return;
-  const point = beta137TouchPoint(event);
-  const dx = Math.abs(point.x - beta137ModeSwipe.startX);
-  const dy = Math.abs(point.y - beta137ModeSwipe.startY);
-  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta137ModeSwipe.startScrollLeft) : 0;
-  const isSwipe = beta137ModeSwipe.moved || (dx > 10 && dx > dy * 0.75) || scrollDelta > 4;
-  beta137ModeSwipe.tracking = false;
-  beta137ModeSwipe.active = false;
+  const switcher = beta138ModeSwitcherForTarget(target) || beta138ModeSwitcherForTarget(beta138ModeSwipe.lastTarget);
+  if (!switcher && !beta138ModeSwipe.active) return;
+  const point = beta138TouchPoint(event);
+  const dx = Math.abs(point.x - beta138ModeSwipe.startX);
+  const dy = Math.abs(point.y - beta138ModeSwipe.startY);
+  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta138ModeSwipe.startScrollLeft) : 0;
+  const isSwipe = beta138ModeSwipe.moved || (dx > 10 && dx > dy * 0.75) || scrollDelta > 4;
+  beta138ModeSwipe.tracking = false;
+  beta138ModeSwipe.active = false;
   if (!isSwipe) return;
-  beta137ModeSwipe.suppressUntil = Date.now() + 520;
+  beta138ModeSwipe.suppressUntil = Date.now() + 520;
   event.preventDefault?.();
   event.stopPropagation?.();
   event.stopImmediatePropagation?.();
 }
 
-function beta137BlockGhostModeClick(event) {
+function beta138BlockGhostModeClick(event) {
   const target = event.target;
-  if (!beta137IsModeSwitchTarget(target)) return;
-  if (Date.now() > beta137ModeSwipe.suppressUntil) return;
+  if (!beta138IsModeSwitchTarget(target)) return;
+  if (Date.now() > beta138ModeSwipe.suppressUntil) return;
   event.preventDefault?.();
   event.stopPropagation?.();
   event.stopImmediatePropagation?.();
 }
 
-function beta137InstallModeSwipeGuard() {
-  if (window.__histodailyBeta137ModeSwipeGuard) return;
-  window.__histodailyBeta137ModeSwipeGuard = true;
+function beta138InstallModeSwipeGuard() {
+  if (window.__histodailyBeta138ModeSwipeGuard) return;
+  window.__histodailyBeta138ModeSwipeGuard = true;
   // Window capture passe avant les délégations document ajoutées dans les patchs précédents.
-  window.addEventListener("touchstart", beta137StartModeGesture, { capture: true, passive: true });
-  window.addEventListener("touchmove", beta137MoveModeGesture, { capture: true, passive: true });
-  window.addEventListener("touchend", beta137EndModeGesture, { capture: true, passive: false });
-  window.addEventListener("touchcancel", beta137EndModeGesture, { capture: true, passive: false });
-  window.addEventListener("pointerdown", beta137StartModeGesture, true);
-  window.addEventListener("pointermove", beta137MoveModeGesture, true);
-  window.addEventListener("pointerup", beta137EndModeGesture, true);
-  window.addEventListener("pointercancel", beta137EndModeGesture, true);
-  window.addEventListener("click", beta137BlockGhostModeClick, true);
+  window.addEventListener("touchstart", beta138StartModeGesture, { capture: true, passive: true });
+  window.addEventListener("touchmove", beta138MoveModeGesture, { capture: true, passive: true });
+  window.addEventListener("touchend", beta138EndModeGesture, { capture: true, passive: false });
+  window.addEventListener("touchcancel", beta138EndModeGesture, { capture: true, passive: false });
+  window.addEventListener("pointerdown", beta138StartModeGesture, true);
+  window.addEventListener("pointermove", beta138MoveModeGesture, true);
+  window.addEventListener("pointerup", beta138EndModeGesture, true);
+  window.addEventListener("pointercancel", beta138EndModeGesture, true);
+  window.addEventListener("click", beta138BlockGhostModeClick, true);
 }
 
-function beta137InstallModeSwipeStyle() {
-  if (document.getElementById("beta137-mode-scroll-style")) return;
+function beta138InstallModeSwipeStyle() {
+  if (document.getElementById("beta138-mode-scroll-style")) return;
   const style = document.createElement("style");
-  style.id = "beta137-mode-scroll-style";
+  style.id = "beta138-mode-scroll-style";
   style.textContent = `
     .home-mode-switcher{
       overflow-x:auto!important;
@@ -16665,9 +16665,9 @@ function beta137InstallModeSwipeStyle() {
 }
 
 try {
-  beta137InstallModeSwipeGuard();
-  beta137InstallModeSwipeStyle();
-  state.beta137ModeScrollVersion = BETA137_MODE_SCROLL_VERSION;
+  beta138InstallModeSwipeGuard();
+  beta138InstallModeSwipeStyle();
+  state.beta138ModeScrollVersion = BETA137_MODE_SCROLL_VERSION;
   queueSaveState(50);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA137_MODE_SCROLL_VERSION, modeScrollFix: true };
 } catch {}

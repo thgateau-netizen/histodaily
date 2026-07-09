@@ -1,16 +1,13 @@
-# HistoDaily beta137 — mode scroll fix
+# HistoDaily beta138 — friend request guard
 
-Correctif ciblé après test mobile.
+Version `1.0.0-beta.138`.
 
-## Changements
-- Le sélecteur de disciplines de l’accueil peut être scrollé horizontalement sans activer le mode touché.
-- Un vrai tap sur Histoire, Cinéma, Économie, etc. continue de changer de mode.
-- Protection contre les clics fantômes `touchend` / `pointerup` / `click` après un swipe.
-- Cache PWA renouvelé en `1.0.0-beta.137`.
-- Aucun changement Supabase nécessaire.
+Correctif ciblé social :
 
-## Test rapide
-1. Accueil : poser le doigt sur Cinéma/Économie et faire glisser horizontalement.
-2. Vérifier que le mode ne change pas pendant le scroll.
-3. Faire un vrai tap court sur un mode et vérifier qu’il s’active.
-4. Tester ensuite Mystère → Indice et Classement → Profil pour vérifier que les correctifs précédents restent OK.
+- verrouillage serveur : `/api/v1/friends/sync` ne crée plus d’ami direct ;
+- les anciens appels d’ajout ami sont convertis en demandes à valider ;
+- une ligne `hd_friends` créée par l’ancien flux est retirée si aucune demande acceptée ne justifie l’amitié ;
+- les vrais amis validés restent conservés ;
+- aucun changement Supabase obligatoire si `hd_friend_requests` existe déjà.
+
+Après déploiement : tester demande d’ami depuis classement, puis vérifier `hd_friend_requests` avant acceptation et `hd_friends` après acceptation.

@@ -1,13 +1,13 @@
-const CACHE_NAME = "histodaily-beta137-mode-scroll-fix-v1";
-const APP_VERSION = "1.0.0-beta.137";
+const CACHE_NAME = "histodaily-beta138-friend-request-guard-v1";
+const APP_VERSION = "1.0.0-beta.138";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.137",
-  "/app-core.js?v=1.0.0-beta.137",
-  "/app-onboarding.js?v=1.0.0-beta.137",
-  "/app.js?v=1.0.0-beta.137",
-  "/lessons-lite.js?v=1.0.0-beta.137",
+  "/styles.css?v=1.0.0-beta.138",
+  "/app-core.js?v=1.0.0-beta.138",
+  "/app-onboarding.js?v=1.0.0-beta.138",
+  "/app.js?v=1.0.0-beta.138",
+  "/lessons-lite.js?v=1.0.0-beta.138",
   "/manifest.webmanifest"
 ];
 
