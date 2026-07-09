@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.166";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.168";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -19338,4 +19338,369 @@ try {
     setTimeout(() => convertBeta165LocalFriends().catch(() => {}), 900);
     if (state.tab === "profile" || state.tab === "rank") setTimeout(() => { try { render?.({ immediate: true }); } catch {} }, 80);
   } catch (error) { try { console.warn("beta166 friend request fix", error); } catch {} }
+})();
+
+
+/* Beta167 — classement scroll-safe.
+   Correctif ciblé : dans le classement, la ligne entière ne doit plus ouvrir un profil.
+   Seul le petit bouton "Profil" ouvre la fiche. Les gestes de scroll sont ignorés.
+*/
+(function beta167LeaderboardScrollSafe(){
+  const BETA167_VERSION = "1.0.0-beta.167";
+  const esc = value => {
+    try { return typeof escapeHtml === "function" ? escapeHtml(String(value ?? "")) : String(value ?? "").replace(/[&<>\"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+    catch { return String(value ?? ""); }
+  };
+  const validScope = scope => ["daily", "week", "year", "friends"].includes(scope) ? scope : "daily";
+  const totalXpValue = () => {
+    try {
+      if (typeof totalXp === "function") return Number(totalXp() || 0);
+    } catch {}
+    try {
+      const row = typeof leaderboardRows === "function" ? leaderboardRows(state.rankScope || "daily").find(r => r && r.me) : null;
+      if (row) return Math.max(Number(row.score || 0), Number(row.xp || 0), Number(row.totalXp || 0));
+    } catch {}
+    return Number(state?.xp || 0);
+  };
+  const idForRow = row => String(row?.id || row?.playerId || row?.player_id || row?.friendCode || row?.friend_code || row?.code || "");
+  const titleForScope = scope => {
+    try { return typeof scopeLabel === "function" ? scopeLabel(scope) : "Classement"; }
+    catch { return "Classement"; }
+  };
+  const backend = () => { try { return typeof socialBackendMarkup === "function" ? socialBackendMarkup() : ""; } catch { return ""; } };
+  const empty = scope => { try { return typeof emptyRankMarkup === "function" ? emptyRankMarkup(scope) : "<div class='empty-rank'>Aucun score pour l’instant.</div>"; } catch { return "<div class='empty-rank'>Aucun score pour l’instant.</div>"; } };
+  const addFriend = () => { try { return typeof addFriendMarkup === "function" ? addFriendMarkup() : ""; } catch { return ""; } };
+  const friendList = () => { try { return typeof friendListMarkup === "function" ? friendListMarkup() : ""; } catch { return ""; } };
+  const rowsFor = scope => {
+    try { return typeof leaderboardRows === "function" ? (leaderboardRows(scope) || []) : []; }
+    catch { return []; }
+  };
+  const openProfile = id => {
+    const key = String(id || "").trim();
+    if (!key) return;
+    try {
+      if (typeof beta134OpenPublicProfile === "function") return beta134OpenPublicProfile(key);
+    } catch {}
+    try {
+      if (typeof viewProfile === "function") return viewProfile(key);
+    } catch {}
+    try { setState?.({ tab: "publicProfile", selectedProfileId: key }, { save: true }); } catch {}
+  };
+
+  function rankRowsMarkup(rows){
+    if (!rows.length) return "";
+    return rows.map(row => {
+      const id = idForRow(row);
+      const name = row?.name || row?.pseudo || "Joueur";
+      const score = Number(row?.score || row?.xp || row?.totalXp || 0);
+      const me = row?.me ? " me" : "";
+      const button = id ? `<button type="button" class="rank-profile-btn" data-view-profile="${esc(id)}" aria-label="Ouvrir le profil de ${esc(name)}">Profil</button>` : `<span class="rank-profile-spacer" aria-hidden="true"></span>`;
+      return `<div class="rank-row${me} beta167-rank-row" data-rank-row="1"><span>${Number(row?.rank || 0) || "—"}</span><strong>${esc(name)}</strong><em>${score} XP</em>${button}</div>`;
+    }).join("");
+  }
+
+  const previousRenderRank = typeof renderRank === "function" ? renderRank : null;
+  renderRank = function beta167RenderRank(){
+    const scope = validScope(state.rankScope || "daily");
+    state.rankScope = scope;
+    try { ensureServerLeaderboard?.(scope); } catch {}
+    if (scope === "friends") { try { ensureServerFriends?.(); } catch {} }
+    const rows = rowsFor(scope);
+    const me = rows.find(row => row && row.me);
+    const friends = scope === "friends";
+    const xp = totalXpValue();
+    try {
+      renderShell(`<header class="topbar"><button type="button" data-home>←</button><div><p class="eyebrow">Classements</p><h1>${esc(titleForScope(scope))}</h1></div></header>
+        <section class="tabs-clean rank-tabs">
+          <button type="button" data-rank-scope="daily" class="${scope === "daily" ? "active" : ""}">Aujourd’hui</button>
+          <button type="button" data-rank-scope="week" class="${scope === "week" ? "active" : ""}">Semaine</button>
+          <button type="button" data-rank-scope="year" class="${scope === "year" ? "active" : ""}">Année</button>
+          <button type="button" data-rank-scope="friends" class="${scope === "friends" ? "active" : ""}">Amis</button>
+        </section>
+        <section class="card social-rank-hero"><div><span class="card-label">Classement</span><h2>${friends ? "Tes amis" : "Classement général"}</h2><p>Score affiché = XP totale : cours + mystères.</p></div><button type="button" data-open-profile>${esc(state.pseudo || "Profil")}</button></section>
+        ${backend()}
+        <section class="card rank-summary beta165-rank-summary beta167-rank-summary"><div><span>Ton XP total</span><strong>${xp} XP</strong></div><div><span>Cours validés</span><strong>${Object.keys(state.completedLessons || {}).length}</strong></div><div><span>Mystères</span><strong>${Object.keys(state.solvedMysteries || {}).length}</strong></div><div><span>Ta place</span><strong>#${me?.rank || "—"}</strong></div></section>
+        <section class="card leaderboard leaderboard-modern beta165-leaderboard beta167-leaderboard">${rows.length ? rankRowsMarkup(rows) : empty(scope)}</section>
+        <p class="rank-note muted-note">Pour éviter les ouvertures accidentelles pendant le scroll, touche le bouton “Profil” à droite d’une ligne.</p>
+        ${friends ? `${addFriend()}${friendList()}` : ""}`);
+    } catch (error) {
+      if (previousRenderRank) return previousRenderRank();
+      throw error;
+    }
+    try { bindBeta167RankActions(); } catch {}
+  };
+
+  function bindBeta167RankActions(){
+    document.querySelectorAll("[data-rank-scope]").forEach(btn => {
+      btn.onclick = event => {
+        event?.preventDefault?.();
+        event?.stopPropagation?.();
+        try { setState({ tab: "rank", rankScope: validScope(btn.dataset.rankScope || "daily") }, { save: true }); } catch {}
+        try { window.scrollTo({ top: 0, behavior: "auto" }); } catch {}
+      };
+    });
+    document.querySelectorAll(".rank-profile-btn[data-view-profile]").forEach(btn => {
+      btn.onclick = event => {
+        event?.preventDefault?.();
+        event?.stopPropagation?.();
+        openProfile(btn.dataset.viewProfile || "");
+      };
+    });
+    document.querySelectorAll("[data-home]").forEach(btn => { btn.onclick = () => { try { setState({ tab: "home" }, { save: true }); } catch {} }; });
+    document.querySelectorAll("[data-open-profile]").forEach(btn => { btn.onclick = () => { try { setState({ tab: "profile" }, { save: true }); } catch {} }; });
+    document.querySelectorAll("[data-refresh-social]").forEach(btn => { btn.onclick = () => { try { fetchServerFriends?.({ force: true }).catch?.(()=>{}); } catch {} ["daily","week","year","friends"].forEach(s => { try { fetchServerLeaderboard?.(s, { force: true }).catch?.(()=>{}); } catch {} }); }; });
+    const form = document.querySelector("[data-add-friend]");
+    if (form) form.onsubmit = event => { try { addFriend?.(event); } catch {} };
+    const share = document.querySelector("[data-share-invite]");
+    if (share) share.onclick = event => { event?.preventDefault?.(); try { shareInviteCode?.(); } catch {} };
+  }
+
+  /* Neutralise l'ancien handler beta134, qui ouvrait un profil sur touchend même après un geste de scroll. */
+  try {
+    if (typeof beta134HandleSocialTap === "function") {
+      document.removeEventListener("touchend", beta134HandleSocialTap, true);
+      document.removeEventListener("pointerup", beta134HandleSocialTap, true);
+      document.removeEventListener("click", beta134HandleSocialTap, true);
+    }
+  } catch {}
+
+  let gesture = { x: 0, y: 0, moved: false, downAt: 0, active: false };
+  const point = event => {
+    const t = event.touches?.[0] || event.changedTouches?.[0] || event;
+    return { x: Number(t.clientX || 0), y: Number(t.clientY || 0) };
+  };
+  const begin = event => {
+    const inRank = event.target?.closest?.(".leaderboard-modern, .rank-tabs, .social-rank-hero");
+    if (!inRank) return;
+    const p = point(event);
+    gesture = { x: p.x, y: p.y, moved: false, downAt: Date.now(), active: true };
+  };
+  const move = event => {
+    if (!gesture.active) return;
+    const p = point(event);
+    if (Math.abs(p.x - gesture.x) > 8 || Math.abs(p.y - gesture.y) > 8) gesture.moved = true;
+  };
+  const end = event => {
+    const btn = event.target?.closest?.(".rank-profile-btn[data-view-profile]");
+    const socialAction = event.target?.closest?.("[data-send-friend-request],[data-back-social],[data-open-rank]");
+    if (!btn && !socialAction) return;
+    if (gesture.active && gesture.moved) {
+      event.preventDefault?.();
+      event.stopPropagation?.();
+      event.stopImmediatePropagation?.();
+      gesture.active = false;
+      return;
+    }
+    if (btn) {
+      event.preventDefault?.();
+      event.stopPropagation?.();
+      event.stopImmediatePropagation?.();
+      const id = btn.dataset.viewProfile || "";
+      gesture.active = false;
+      openProfile(id);
+      return;
+    }
+  };
+  document.addEventListener("pointerdown", begin, true);
+  document.addEventListener("pointermove", move, true);
+  document.addEventListener("touchstart", begin, { capture: true, passive: true });
+  document.addEventListener("touchmove", move, { capture: true, passive: true });
+  document.addEventListener("touchend", end, { capture: true, passive: false });
+  document.addEventListener("click", event => {
+    const row = event.target?.closest?.(".beta167-rank-row");
+    const btn = event.target?.closest?.(".rank-profile-btn[data-view-profile]");
+    if (row && !btn) {
+      event.preventDefault?.();
+      event.stopPropagation?.();
+      event.stopImmediatePropagation?.();
+    }
+  }, true);
+
+  function installStyle(){
+    if (document.getElementById("beta167-scroll-safe-style")) return;
+    const style = document.createElement("style");
+    style.id = "beta167-scroll-safe-style";
+    style.textContent = `
+      .beta167-leaderboard{display:grid;gap:10px;content-visibility:auto;contain-intrinsic-size:900px;}
+      .beta167-rank-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:12px 12px;background:rgba(255,255,255,.045);touch-action:pan-y;user-select:none;-webkit-user-select:none;}
+      .beta167-rank-row.me{border-color:rgba(246,196,83,.42);background:rgba(246,196,83,.10);}
+      .beta167-rank-row span{opacity:.72;font-weight:800;}
+      .beta167-rank-row strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+      .beta167-rank-row em{font-style:normal;opacity:.82;white-space:nowrap;}
+      .rank-profile-btn{min-height:38px;padding:8px 12px;border-radius:999px;touch-action:manipulation;position:relative;z-index:5;}
+      .rank-profile-spacer{width:58px;}
+      @media(max-width:520px){.beta167-rank-row{grid-template-columns:30px minmax(0,1fr) auto;grid-template-areas:"rank name button" "rank score button";gap:3px 8px;padding:12px 10px}.beta167-rank-row>span{grid-area:rank}.beta167-rank-row>strong{grid-area:name}.beta167-rank-row>em{grid-area:score;font-size:.86rem}.rank-profile-btn{grid-area:button;min-width:64px;padding:8px 10px}.rank-profile-spacer{grid-area:button;width:64px}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  try {
+    installStyle();
+    state.beta167LeaderboardScrollSafeVersion = BETA167_VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA167_VERSION, beta167LeaderboardScrollSafe: true };
+    try { queueSaveState?.(120); } catch {}
+    if (state.tab === "rank") setTimeout(() => { try { render?.({ immediate: true }); } catch {} }, 40);
+  } catch (error) { try { console.warn("beta167 leaderboard scroll safe", error); } catch {} }
+})();
+
+
+/* =========================================================
+   BETA168 — correctif navigation cours/quiz
+   Symptôme : sur iPhone, les boutons "Passer au cours complet"
+   et "Continuer vers le quiz" pouvaient ne rien faire après les
+   handlers globaux ajoutés pour le classement et le quiz.
+   Correctif : délégation prioritaire et sobre sur data-lesson-view,
+   active aussi sur touchend/pointerup, avec dédoublonnage.
+   ========================================================= */
+(function beta168LessonViewNavigationFix(){
+  const BETA168_VERSION = "1.0.0-beta.168";
+  const VALID_LESSON_VIEWS = new Set(["express", "complete", "quiz"]);
+  let lastTapAt = 0;
+  let lastTapView = "";
+  let touchStart = null;
+
+  const isTextInput = target => Boolean(target?.closest?.("input,textarea,select,[contenteditable='true']"));
+  const appRoot = () => document.getElementById("app");
+  const inCurrentApp = node => {
+    const root = appRoot();
+    return Boolean(root && node && root.contains(node));
+  };
+  const nearestLessonButton = target => {
+    if (!target?.closest || isTextInput(target)) return null;
+    const button = target.closest("[data-lesson-view]");
+    if (!button || button.disabled || !inCurrentApp(button)) return null;
+    const view = button.dataset.lessonView || "";
+    if (!VALID_LESSON_VIEWS.has(view)) return null;
+    return button;
+  };
+  const currentLesson = () => {
+    try {
+      const id = String(state?.currentLessonId ?? "");
+      return (typeof allLessons === "function" ? allLessons() : []).find(l => String(l.id) === id) || null;
+    } catch { return null; }
+  };
+  const saveAndRender = view => {
+    try {
+      const lesson = currentLesson();
+      const patch = { tab: "lesson", lessonView: view, lessonFocus: null };
+      if (lesson?.id != null) patch.currentLessonId = lesson.id;
+      if (typeof setState === "function") setState(patch, { save: true });
+      else {
+        state.lessonView = view;
+        state.lessonFocus = null;
+        state.tab = "lesson";
+        try { saveState?.(); } catch {}
+        try { render?.({ immediate: true }); } catch { try { render?.(); } catch {} }
+      }
+      window.setTimeout(() => {
+        try {
+          const target = view === "quiz"
+            ? document.querySelector("[data-beta165-current-question], .final-quiz, [data-focus-target='quiz']")
+            : view === "complete"
+              ? document.querySelector("[data-focus-target='complete'], .complete-course-panel")
+              : document.querySelector("[data-focus-target='express'], .express-block, .lesson-hook");
+          (target || document.querySelector(".lesson-full-page") || document.getElementById("app"))?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+        } catch {}
+      }, 60);
+      return true;
+    } catch (error) {
+      try { console.warn("beta168 lesson navigation", error); } catch {}
+      return false;
+    }
+  };
+  const consume = event => {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    event?.stopImmediatePropagation?.();
+  };
+  const point = event => {
+    const t = event?.touches?.[0] || event?.changedTouches?.[0] || event;
+    return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
+  };
+  const onStart = event => {
+    const btn = nearestLessonButton(event.target);
+    if (!btn) return;
+    const p = point(event);
+    touchStart = { x: p.x, y: p.y, at: Date.now(), view: btn.dataset.lessonView || "" };
+  };
+  const movedTooMuch = event => {
+    if (!touchStart) return false;
+    const p = point(event);
+    return Math.abs(p.x - touchStart.x) > 10 || Math.abs(p.y - touchStart.y) > 10;
+  };
+  const onActivate = event => {
+    const btn = nearestLessonButton(event.target);
+    if (!btn) return;
+    if ((event.type === "touchend" || event.type === "pointerup") && movedTooMuch(event)) return;
+    const view = btn.dataset.lessonView || "";
+    const now = Date.now();
+    if (lastTapView === view && now - lastTapAt < 260) {
+      consume(event);
+      return;
+    }
+    lastTapView = view;
+    lastTapAt = now;
+    consume(event);
+    saveAndRender(view);
+  };
+  const bindVisibleButtons = () => {
+    try {
+      document.querySelectorAll("[data-lesson-view]").forEach(button => {
+        button.setAttribute("type", "button");
+        button.style.pointerEvents = "auto";
+        button.style.touchAction = "manipulation";
+        button.onclick = event => {
+          const btn = nearestLessonButton(event.target);
+          if (!btn) return;
+          consume(event);
+          saveAndRender(btn.dataset.lessonView || "express");
+        };
+      });
+    } catch {}
+  };
+  const previousRenderLesson = typeof renderLesson === "function" ? renderLesson : null;
+  if (previousRenderLesson && !window.__histodailyBeta168RenderLessonWrapped) {
+    window.__histodailyBeta168RenderLessonWrapped = true;
+    renderLesson = function beta168RenderLesson(){
+      const out = previousRenderLesson.apply(this, arguments);
+      bindVisibleButtons();
+      return out;
+    };
+  }
+  function installStyle(){
+    if (document.getElementById("beta168-lesson-nav-style")) return;
+    const style = document.createElement("style");
+    style.id = "beta168-lesson-nav-style";
+    style.textContent = `
+      .lesson-view-tabs button,
+      .lesson-next-choice button,
+      .quiz-footer [data-lesson-view]{
+        position:relative!important;
+        z-index:2147481!important;
+        pointer-events:auto!important;
+        touch-action:manipulation!important;
+        -webkit-tap-highlight-color:rgba(86,214,255,.18)!important;
+      }
+      .lesson-next-choice,
+      .lesson-view-tabs,
+      .quiz-footer{position:relative!important;z-index:2147480!important;}
+    `;
+    document.head.appendChild(style);
+  }
+  try {
+    if (!window.__histodailyBeta168LessonNav) {
+      window.__histodailyBeta168LessonNav = true;
+      document.addEventListener("pointerdown", onStart, true);
+      document.addEventListener("touchstart", onStart, { capture: true, passive: true });
+      document.addEventListener("pointerup", onActivate, true);
+      document.addEventListener("touchend", onActivate, { capture: true, passive: false });
+      document.addEventListener("click", onActivate, true);
+    }
+    installStyle();
+    bindVisibleButtons();
+    state.beta168LessonNavigationVersion = BETA168_VERSION;
+    try { queueSaveState?.(120); } catch {}
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA168_VERSION, beta168LessonNavigation: true };
+    if (state.tab === "lesson") { try { render?.({ immediate: true }); } catch { try { render?.(); } catch {} } }
+  } catch (error) { try { console.warn("beta168 install", error); } catch {} }
 })();

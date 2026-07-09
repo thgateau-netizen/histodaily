@@ -1,13 +1,13 @@
-const CACHE_NAME = "histodaily-beta166-friend-requests-v1";
-const APP_VERSION = "1.0.0-beta.166";
+const CACHE_NAME = "histodaily-beta168-lesson-nav-v1";
+const APP_VERSION = "1.0.0-beta.168";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.166",
-  "/app-core.js?v=1.0.0-beta.166",
-  "/app-onboarding.js?v=1.0.0-beta.166",
-  "/app.js?v=1.0.0-beta.166",
-  "/lessons-lite.js?v=1.0.0-beta.166",
+  "/styles.css?v=1.0.0-beta.168",
+  "/app-core.js?v=1.0.0-beta.168",
+  "/app-onboarding.js?v=1.0.0-beta.168",
+  "/app.js?v=1.0.0-beta.168",
+  "/lessons-lite.js?v=1.0.0-beta.168",
   "/manifest.webmanifest"
 ];
 
