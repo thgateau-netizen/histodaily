@@ -1,5 +1,7 @@
-# HistoDaily beta139 — discipline content fix
+# HistoDaily beta140 — annulation demandes d’amis
 
-Version `1.0.0-beta.139`.
+Version `1.0.0-beta.140`.
 
-Correctif ciblé : les modes hors Histoire n’affichent plus de chapitres vides comme contenus jouables. Les cours et mystères des disciplines pointent uniquement vers les contenus réellement disponibles.
+Correctif ciblé : bouton Annuler une demande d’ami, nettoyage des anciens ajouts directs et meilleure robustesse mobile.
+
+Aucun changement Supabase nécessaire.

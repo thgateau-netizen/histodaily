@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.139",
-  assetsVersion: "1.0.0-beta.139",
+  version: "1.0.0-beta.140",
+  assetsVersion: "1.0.0-beta.140",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {

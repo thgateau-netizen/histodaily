@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.139";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.140";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.139";
+const BETA124_VERSION = "1.0.0-beta.140";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.139";
+const BETA125_VERSION = "1.0.0-beta.140";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.139";
+const BETA126_VERSION = "1.0.0-beta.140";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.139";
+const BETA127_VERSION = "1.0.0-beta.140";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.139";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.140";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.139";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.140";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.139";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.140";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.139";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.140";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.139";
+const BETA132_SAFE_VERSION = "1.0.0-beta.140";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.139";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.140";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.139";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.140";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16429,7 +16429,7 @@ try {
    Beta 135 — nettoyage de copie utilisateur
    Patch note visible, vocabulaire moins interne, accueil plus clair.
    ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.139";
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.140";
 
 releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
@@ -16467,7 +16467,7 @@ try {
    puis le même tap peut être repris par la navigation après le rendu.
    On consomme donc l'événement Indice avant tout changement d'écran.
    ========================================================= */
-const BETA136_HINT_TAP_VERSION = "1.0.0-beta.139";
+const BETA136_HINT_TAP_VERSION = "1.0.0-beta.140";
 let beta136HintTapAt = 0;
 let beta136LastHintMysteryId = "";
 
@@ -16546,7 +16546,7 @@ try {
    Histoire / Cinéma / Économie / etc. déclenche parfois le mode touché.
    On distingue maintenant un vrai tap d'un swipe/scroll horizontal.
    ========================================================= */
-const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.139";
+const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.140";
 const beta139ModeSwipe = {
   active: false,
   tracking: false,
@@ -16681,7 +16681,7 @@ try {
    des chapitres sans cours jouables. On filtre maintenant les actions
    principales sur les contenus réellement disponibles.
    ========================================================= */
-const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.139";
+const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.140";
 
 function beta139RealWorldsForDiscipline(disciplineId = activeDisciplineId()) {
   const id = disciplineById(disciplineId || "history").id;
@@ -16914,5 +16914,166 @@ try {
   state.beta139DisciplineContentVersion = BETA139_DISCIPLINE_CONTENT_VERSION;
   queueSaveState(50);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA139_DISCIPLINE_CONTENT_VERSION, disciplineContentFix: true };
+  render({ immediate: true });
+} catch {}
+
+
+/* =========================================================
+   Beta 140 — annulation robuste des demandes d'amis
+   - le bouton Annuler utilise un POST action=cancel fiable sur mobile/Vercel
+   - requestId serveur conservé quand disponible
+   - nettoyage local immédiat + récupération après ancien flux direct
+   ========================================================= */
+const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.140";
+let beta140LastCancelTapAt = 0;
+
+function beta140ParseTargetKey(key = "") {
+  const value = String(key || "").trim();
+  if (value.startsWith("id:")) return { targetPlayerId: value.slice(3), targetFriendCode: "" };
+  if (value.startsWith("code:")) return { targetPlayerId: "", targetFriendCode: value.slice(5) };
+  return { targetPlayerId: "", targetFriendCode: "" };
+}
+function beta140RequestIdForPlayer(player = {}) {
+  const outgoing = typeof beta125OutgoingRequestForPlayer === "function" ? beta125OutgoingRequestForPlayer(player) : null;
+  const id = outgoing?.requestId || (/^\d+$/.test(String(outgoing?.id || "")) ? outgoing.id : "");
+  return String(id || "");
+}
+function beta140CancelTargetFromButton(btn) {
+  const key = btn?.dataset?.cancelFriendRequest || "";
+  const parsed = beta140ParseTargetKey(key);
+  let target = {
+    requestId: btn?.dataset?.requestId || "",
+    targetPlayerId: btn?.dataset?.requestPlayer || parsed.targetPlayerId || "",
+    targetFriendCode: btn?.dataset?.requestCode || parsed.targetFriendCode || "",
+    targetPseudo: btn?.dataset?.requestPseudo || ""
+  };
+  if ((!target.targetPlayerId && !target.targetFriendCode) && key) {
+    const requests = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { outgoing: [] };
+    const match = (requests.outgoing || []).find(req => beta128TargetKey(req) === key || String(req.requestId || req.id || "") === key);
+    if (match) {
+      target = {
+        ...target,
+        requestId: target.requestId || match.requestId || (/^\d+$/.test(String(match.id || "")) ? match.id : ""),
+        targetPlayerId: target.targetPlayerId || match.targetPlayerId || match.otherPlayerId || "",
+        targetFriendCode: target.targetFriendCode || match.targetFriendCode || match.otherFriendCode || "",
+        targetPseudo: target.targetPseudo || match.targetPseudo || match.otherPseudo || ""
+      };
+    }
+  }
+  return target;
+}
+function beta140RemoveOutgoingLocal(target = {}) {
+  const key = beta128TargetKey(target);
+  const reqId = String(target.requestId || "");
+  const current = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [], history: [] };
+  const outgoing = (current.outgoing || []).filter(req => {
+    const sameId = reqId && String(req.requestId || req.id || "") === reqId;
+    const sameKey = key && beta128TargetKey(req) === key;
+    return !(sameId || sameKey);
+  });
+  if (typeof beta125SetFriendRequests === "function") beta125SetFriendRequests({ ...current, outgoing });
+  if (typeof beta128RemoveOutgoingFromOutbox === "function") beta128RemoveOutgoingFromOutbox(target);
+}
+
+const beta140PreviousPublicActionMarkup = typeof beta125PublicActionMarkup === "function" ? beta125PublicActionMarkup : null;
+if (beta140PreviousPublicActionMarkup) {
+  beta125PublicActionMarkup = function beta140PublicActionMarkup(player = {}) {
+    if (!player || player.me) return beta140PreviousPublicActionMarkup(player);
+    const rel = typeof beta128Relation === "function" ? beta128Relation(player) : { type: "none" };
+    if (rel.type === "outgoing") {
+      const outgoing = typeof beta125OutgoingRequestForPlayer === "function" ? beta125OutgoingRequestForPlayer(player) : null;
+      const requestId = beta140RequestIdForPlayer(player);
+      const targetPlayerId = player.playerId || player.player_id || (String(player.id || "").startsWith("me-") ? "" : player.id || "") || outgoing?.targetPlayerId || outgoing?.otherPlayerId || "";
+      const targetFriendCode = player.friendCode || player.code || player.friend_code || outgoing?.targetFriendCode || outgoing?.otherFriendCode || "";
+      const pseudo = player.name || player.pseudo || outgoing?.targetPseudo || outgoing?.otherPseudo || "ce joueur";
+      return `<section class="card beta125-profile-actions pending beta128-profile-actions beta140-cancel-card"><div><span class="card-label">Demande envoyée</span><h2>En attente de validation</h2><p>${escapeHtml(pseudo)} doit accepter la demande dans son application.</p></div><div class="home-actions-row"><button class="ghost" data-refresh-social>Actualiser</button><button type="button" class="ghost danger-action" data-cancel-friend-request="${escapeHtml(beta128TargetKey(player) || beta128TargetKey(outgoing || {}))}" data-request-id="${escapeHtml(requestId)}" data-request-player="${escapeHtml(targetPlayerId)}" data-request-code="${escapeHtml(targetFriendCode)}" data-request-pseudo="${escapeHtml(pseudo)}">Annuler la demande</button></div></section>`;
+    }
+    return beta140PreviousPublicActionMarkup(player);
+  };
+}
+
+const beta140PreviousRequestCardMarkup = typeof beta125RequestCardMarkup === "function" ? beta125RequestCardMarkup : null;
+if (beta140PreviousRequestCardMarkup) {
+  beta125RequestCardMarkup = function beta140RequestCardMarkup(options = {}) {
+    const html = beta140PreviousRequestCardMarkup(options);
+    if (options.compact) return html;
+    const requests = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { outgoing: [] };
+    const outgoing = requests.outgoing || [];
+    if (!outgoing.length) return html;
+    const cancelHtml = `<div class="beta140-cancel-list"><h3>Annuler une demande</h3>${outgoing.slice(0, 10).map(req => `<button type="button" class="ghost mini-button" data-cancel-friend-request="${escapeHtml(beta128TargetKey(req))}" data-request-id="${escapeHtml(req.requestId || (/^\d+$/.test(String(req.id || "")) ? req.id : ""))}" data-request-player="${escapeHtml(req.targetPlayerId || req.otherPlayerId || "")}" data-request-code="${escapeHtml(req.targetFriendCode || req.otherFriendCode || "")}" data-request-pseudo="${escapeHtml(req.targetPseudo || req.otherPseudo || "Joueur")}">Annuler · ${escapeHtml(req.targetPseudo || req.otherPseudo || "Joueur")}</button>`).join("")}</div>`;
+    return html.replace("</section>", `${cancelHtml}</section>`);
+  };
+}
+
+const beta140PreviousCancelFriendRequest = typeof beta128CancelFriendRequest === "function" ? beta128CancelFriendRequest : null;
+if (beta140PreviousCancelFriendRequest) {
+  beta128CancelFriendRequest = async function beta140CancelFriendRequest(target = {}) {
+    const key = beta128TargetKey(target);
+    const label = target.targetPseudo || "ce joueur";
+    beta140RemoveOutgoingLocal(target);
+    state.friendRequestFeedback = `Demande envoyée à ${label} annulée.`;
+    queueSaveState(150);
+    if (!isOnline) {
+      render({ immediate: true });
+      return;
+    }
+    try {
+      const response = await fetch("/api/v1/friends/request", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "cancel",
+          playerId: playerIdMe(),
+          pseudo: currentPseudo(),
+          myFriendCode: friendCode(),
+          requestId: target.requestId || "",
+          targetPlayerId: target.targetPlayerId || target.playerId || "",
+          targetFriendCode: target.targetFriendCode || target.friendCode || target.code || ""
+        })
+      });
+      const json = await response.json().catch(() => ({}));
+      if (response.ok && json?.ok !== false && json.requests && typeof beta125SetFriendRequests === "function") {
+        beta125SetFriendRequests(json.requests);
+      } else if (typeof beta125FetchFriendRequests === "function") {
+        await beta125FetchFriendRequests({ force: true }).catch(() => {});
+      }
+      state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "" };
+      state.friendRequestFeedback = json.mode === "supabase" ? `Demande annulée. Tu peux réessayer.` : `Demande annulée localement. Réessaie après actualisation si besoin.`;
+    } catch {
+      state.friendRequestFeedback = `Demande annulée localement. Le nettoyage en ligne sera retenté au prochain rafraîchissement.`;
+    }
+    queueSaveState(150);
+    if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+  };
+}
+
+function beta140HandleCancelTap(event) {
+  const btn = event.target?.closest?.("[data-cancel-friend-request]");
+  if (!btn) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+  const now = Date.now();
+  if (now - beta140LastCancelTapAt < 450) return;
+  beta140LastCancelTapAt = now;
+  const target = beta140CancelTargetFromButton(btn);
+  beta128CancelFriendRequest(target).catch(() => {
+    state.friendRequestFeedback = "Annulation impossible pour le moment. Réessaie après actualisation.";
+    render({ immediate: true });
+  });
+}
+
+try {
+  window.addEventListener("pointerup", beta140HandleCancelTap, true);
+  window.addEventListener("touchend", beta140HandleCancelTap, { capture: true, passive: false });
+  window.addEventListener("click", beta140HandleCancelTap, true);
+  const style = document.createElement("style");
+  style.id = "beta140-cancel-request-style";
+  style.textContent = `.beta140-cancel-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.beta140-cancel-card .danger-action{touch-action:manipulation;}`;
+  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  state.beta140CancelRequestVersion = BETA140_CANCEL_REQUEST_VERSION;
+  queueSaveState(50);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA140_CANCEL_REQUEST_VERSION, friendRequestCancelFix: true };
   render({ immediate: true });
 } catch {}
