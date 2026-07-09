@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.131";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.132";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.131";
+const BETA124_VERSION = "1.0.0-beta.132";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.131";
+const BETA125_VERSION = "1.0.0-beta.132";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.131";
+const BETA126_VERSION = "1.0.0-beta.132";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.131";
+const BETA127_VERSION = "1.0.0-beta.132";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.131";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.132";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.131";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.132";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.131";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.132";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.131";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.132";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15872,9 +15872,9 @@ function beta131RepairStartupTab() {
 }
 
 function beta131InstallNavLayerFix() {
-  if (document.getElementById("beta131-nav-fix-style")) return;
+  if (document.getElementById("beta132-leaderboard-safe-style")) return;
   const style = document.createElement("style");
-  style.id = "beta131-nav-fix-style";
+  style.id = "beta132-leaderboard-safe-style";
   style.textContent = `
     .bottom-nav{
       z-index:2147483000!important;
@@ -15919,5 +15919,195 @@ try {
   beta131InstallNavLayerFix();
   beta131RepairStartupTab();
   window.HistoDaily = { version: BETA131_NAV_FIX_VERSION, navFix: true };
+  render({ immediate: true });
+} catch {}
+
+
+/* =========================================================
+   Beta 132 — safe mode classement / navigation
+   Le bug observé : /leaderboard/daily peut ramer ou être en erreur
+   et laisser l'app bloquée visuellement sur Classement. On rend la
+   navigation indépendante du classement, on timeout les fetchs et on
+   revient à l'accueil après mise à jour.
+   ========================================================= */
+const BETA132_SAFE_VERSION = "1.0.0-beta.132";
+let beta132RankFetchTimer = 0;
+let beta132CriticalTapAt = 0;
+
+function beta132AbortableFetch(url, options = {}, timeoutMs = 5500) {
+  if (typeof AbortController !== "function") return fetch(url, options);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
+function beta132NormalizeStartup() {
+  let changed = false;
+  if (state.beta132SafeVersion !== BETA132_SAFE_VERSION) {
+    state.beta132SafeVersion = BETA132_SAFE_VERSION;
+    // Après un bug de classement, on force une reprise saine sur Accueil.
+    state.tab = "home";
+    state.rankScope = "daily";
+    state.selectedProfileId = null;
+    state.serverLeaderboardStatus = {};
+    changed = true;
+  }
+  if (!["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"].includes(state.tab)) {
+    state.tab = "home";
+    changed = true;
+  }
+  if (!["daily", "week", "year", "friends"].includes(state.rankScope)) {
+    state.rankScope = "daily";
+    changed = true;
+  }
+  if (changed) {
+    try { saveState(); } catch { queueSaveState(50); }
+  }
+}
+
+function beta132CriticalTap(event) {
+  const target = event.target;
+  if (!target || !target.closest) return;
+  const tabBtn = target.closest("[data-tab]");
+  const homeBtn = target.closest("[data-home]");
+  const scopeBtn = target.closest("[data-rank-scope]");
+  const profileBtn = target.closest("[data-open-profile]");
+  const refreshBtn = target.closest("[data-refresh-social]");
+  const critical = tabBtn || homeBtn || scopeBtn || profileBtn || refreshBtn;
+  if (!critical || !app || !app.contains(critical)) return;
+
+  const now = Date.now();
+  // iOS déclenche parfois touchend + pointerup + click. On bloque les doublons trop rapprochés,
+  // mais jamais le premier événement utile.
+  if (now - beta132CriticalTapAt < 180) {
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    return;
+  }
+  beta132CriticalTapAt = now;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+
+  if (tabBtn) {
+    const tab = tabBtn.dataset.tab;
+    if (!tab) return;
+    const patch = { tab };
+    if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
+    if (tab === "home") patch.selectedProfileId = null;
+    setState(patch, { save: true });
+    return;
+  }
+  if (homeBtn) return setState({ tab: "home", selectedProfileId: null }, { save: true });
+  if (scopeBtn) return setState({ tab: "rank", rankScope: scopeBtn.dataset.rankScope || "daily" }, { save: true });
+  if (profileBtn) return setState({ tab: "profile" }, { save: true });
+  if (refreshBtn) {
+    state.serverLeaderboardStatus = {};
+    queueSaveState(50);
+    beta132FetchLeaderboard(state.rankScope || "daily", { force: true }).catch(() => {});
+    if (typeof fetchServerFriends === "function") fetchServerFriends({ force: true }).catch(() => {});
+    if (typeof beta125FetchFriendRequests === "function") beta125FetchFriendRequests({ force: true }).catch(() => {});
+    return;
+  }
+}
+
+function beta132InstallGlobalCriticalNavigation() {
+  if (window.__histodailyBeta132CriticalNav) return;
+  window.__histodailyBeta132CriticalNav = true;
+  document.addEventListener("touchend", beta132CriticalTap, { capture: true, passive: false });
+  document.addEventListener("pointerup", beta132CriticalTap, true);
+  document.addEventListener("click", beta132CriticalTap, true);
+}
+
+async function beta132FetchLeaderboard(scope = "daily", { force = false } = {}) {
+  if (!isOnline) return;
+  const now = Date.now();
+  const status = state.serverLeaderboardStatus?.[scope] || {};
+  if (!force && status.loadedAt && now - status.loadedAt < 45000) return;
+  if (leaderboardFetchInFlight.has(`beta132:${scope}`)) return;
+  leaderboardFetchInFlight.add(`beta132:${scope}`);
+  state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { ...status, loading: true, mode: "loading", note: "Chargement du classement…" } };
+  queueSaveState(100);
+  try {
+    const friends = Object.values(state.friends || {});
+    const friendCodes = friends.map(friend => friend.code || friend.id).filter(Boolean).join(",");
+    const friendIds = friends.map(friend => friend.playerId || friend.friend_player_id).filter(Boolean).join(",");
+    const url = `/api/v1/leaderboard/daily?scope=${encodeURIComponent(scope)}&periodKey=${encodeURIComponent(localDayKey())}&playerId=${encodeURIComponent(playerIdMe())}&friendCodes=${encodeURIComponent(friendCodes)}&friendIds=${encodeURIComponent(friendIds)}&_=${Date.now()}`;
+    const response = await beta132AbortableFetch(url, { cache: "no-store" }, 5500);
+    const json = await response.json().catch(() => ({}));
+    const mode = json?.mode || "unknown";
+    const rows = Array.isArray(json?.rows) ? json.rows : [];
+    if (response.ok && json?.ok !== false && mode !== "supabase-error" && mode !== "error") {
+      state.serverLeaderboards = { ...(state.serverLeaderboards || {}), [scope]: rows };
+      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode, note: json?.note || "" } };
+    } else {
+      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: "error", note: json?.note || "Classement en ligne indisponible. L'app reste utilisable." } };
+    }
+  } catch (error) {
+    state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: "timeout", note: "Classement trop lent : affichage local conservé." } };
+  } finally {
+    leaderboardFetchInFlight.delete(`beta132:${scope}`);
+    queueSaveState(100);
+    if (state.tab === "rank" && (state.rankScope || "daily") === scope) render({ immediate: true });
+  }
+}
+
+// On remplace le fetch de classement par une version timeout/fallback.
+fetchServerLeaderboard = beta132FetchLeaderboard;
+ensureServerLeaderboard = function beta132EnsureServerLeaderboard(scope = "daily") {
+  clearTimeout(beta132RankFetchTimer);
+  beta132RankFetchTimer = setTimeout(() => beta132FetchLeaderboard(scope).catch(() => {}), 80);
+};
+
+// On rend le rendu classement robuste même si une sous-carte plante.
+const beta132PreviousRenderRank = renderRank;
+renderRank = function beta132RenderRank() {
+  try {
+    return beta132PreviousRenderRank();
+  } catch (error) {
+    try {
+      renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Classements</p><h1>Classement</h1></div></header>
+        <section class="tabs-clean rank-tabs"><button data-rank-scope="daily" class="active">Aujourd’hui</button><button data-rank-scope="week">Semaine</button><button data-rank-scope="year">Année</button><button data-rank-scope="friends">Amis</button></section>
+        <section class="card"><span class="card-label">Mode sécurisé</span><h2>Classement indisponible</h2><p>Le classement en ligne a eu un souci, mais l’app n’est pas bloquée. Tu peux changer d’onglet ou revenir à l’accueil.</p><div class="home-actions-row"><button data-home>Accueil</button><button class="ghost" data-refresh-social>Réessayer</button></div></section>`);
+    } catch {}
+  }
+};
+
+function beta132InstallStyle() {
+  if (document.getElementById("beta132-safe-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta132-safe-style";
+  style.textContent = `
+    .bottom-nav{display:grid!important;z-index:2147483600!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important;}
+    .bottom-nav,.bottom-nav *,.nav-item,[data-tab],[data-home],[data-rank-scope],[data-open-profile],[data-refresh-social]{pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent;}
+    .tabs-clean{position:relative!important;z-index:2147480!important;pointer-events:auto!important;}
+    .tab-rank .app-shell{pointer-events:auto!important;}
+    .tab-rank .leaderboard-modern{min-height:70px;}
+    .tab-rank .social-backend.compact{position:relative;z-index:2;}
+  `;
+  document.head.appendChild(style);
+}
+
+window.addEventListener("error", () => {
+  try {
+    if (state.tab === "rank") {
+      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [state.rankScope || "daily"]: { loading: false, mode: "error", note: "Erreur interceptée : classement en mode sécurisé." } };
+      queueSaveState(50);
+    }
+  } catch {}
+});
+window.addEventListener("unhandledrejection", () => {
+  try {
+    if (state.tab === "rank") {
+      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [state.rankScope || "daily"]: { loading: false, mode: "error", note: "Erreur réseau interceptée : classement en mode sécurisé." } };
+      queueSaveState(50);
+    }
+  } catch {}
+});
+
+try {
+  beta132NormalizeStartup();
+  beta132InstallGlobalCriticalNavigation();
+  beta132InstallStyle();
+  window.HistoDaily = { version: BETA132_SAFE_VERSION, safeLeaderboard: true };
   render({ immediate: true });
 } catch {}

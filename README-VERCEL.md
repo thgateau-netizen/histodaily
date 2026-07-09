@@ -1,11 +1,7 @@
-# HistoDaily beta131 — nav fix mobile
+# HistoDaily beta132 — leaderboard safe mode
 
-Version : `1.0.0-beta.131`
+Version : `1.0.0-beta.132`
 
-Correctif ciblé : navigation mobile bloquée sur Classement.
+Correctif bloquant mobile : navigation utilisable même si le classement/API rame, timeout réseau côté app, fallback local propre, migration Supabase complète pour `hd_scores`, et health plus honnête.
 
-- Délégation globale des taps sur la barre d’onglets.
-- Couche CSS prioritaire pour la bottom nav.
-- Réparation du démarrage après mise à jour : évite de rouvrir sur Classement/profil public.
-- Correction du panneau Affichage : valeurs réelles `light` / `balanced`.
-- Cache PWA renouvelé.
+Déploie le contenu du zip sur Vercel. Puis ouvre `/api/v1/health` et `/api/v1/leaderboard/daily` pour vérifier.
