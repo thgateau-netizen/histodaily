@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.163";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.164";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.163";
+const BETA124_VERSION = "1.0.0-beta.164";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.163";
+const BETA125_VERSION = "1.0.0-beta.164";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.163";
+const BETA126_VERSION = "1.0.0-beta.164";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.163";
+const BETA127_VERSION = "1.0.0-beta.164";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.163";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.164";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.163";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.164";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.163";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.164";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.163";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.164";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.163";
+const BETA132_SAFE_VERSION = "1.0.0-beta.164";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.163";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.164";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.163";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.164";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16429,7 +16429,7 @@ try {
    Beta 135 — nettoyage de copie utilisateur
    Patch note visible, vocabulaire moins interne, accueil plus clair.
    ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.163";
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.164";
 
 releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
@@ -16467,7 +16467,7 @@ try {
    puis le même tap peut être repris par la navigation après le rendu.
    On consomme donc l'événement Indice avant tout changement d'écran.
    ========================================================= */
-const BETA136_HINT_TAP_VERSION = "1.0.0-beta.163";
+const BETA136_HINT_TAP_VERSION = "1.0.0-beta.164";
 let beta136HintTapAt = 0;
 let beta136LastHintMysteryId = "";
 
@@ -16546,7 +16546,7 @@ try {
    Histoire / Cinéma / Économie / etc. déclenche parfois le mode touché.
    On distingue maintenant un vrai tap d'un swipe/scroll horizontal.
    ========================================================= */
-const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.163";
+const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.164";
 const beta139ModeSwipe = {
   active: false,
   tracking: false,
@@ -16681,7 +16681,7 @@ try {
    des chapitres sans cours jouables. On filtre maintenant les actions
    principales sur les contenus réellement disponibles.
    ========================================================= */
-const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.163";
+const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.164";
 
 function beta139RealWorldsForDiscipline(disciplineId = activeDisciplineId()) {
   const id = disciplineById(disciplineId || "history").id;
@@ -16924,7 +16924,7 @@ try {
    - requestId serveur conservé quand disponible
    - nettoyage local immédiat + récupération après ancien flux direct
    ========================================================= */
-const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.163";
+const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.164";
 let beta140LastCancelTapAt = 0;
 
 function beta140ParseTargetKey(key = "") {
@@ -17085,7 +17085,7 @@ try {
    - le bouton Actualiser remplace la liste locale par l'état Supabase
    - l'annulation nettoie demandes + ancien hd_friends puis force le rechargement
    ========================================================= */
-const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.163";
+const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.164";
 let beta141RefreshInFlight = false;
 let beta141LastRefreshTapAt = 0;
 
@@ -17262,7 +17262,7 @@ try {
    - diagnostic discret pour comprendre les états online
    - refresh social = vérité serveur + files locales
    ========================================================= */
-const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.163";
+const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.164";
 let beta142RepairInFlight = false;
 let beta142LastRepairTapAt = 0;
 
@@ -17502,7 +17502,7 @@ try {
 
 
 /* Beta 143 — online stability polish */
-const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.163";
+const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.164";
 function beta143IdentityWarningMarkup() {
   const identity = state.onlineDiagnostic?.identity || {};
   const matches = Number(identity.possibleCodeMatches || 0);
@@ -17535,7 +17535,7 @@ try {
 
 
 /* Beta 144 — online consistency preflight */
-const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.163";
+const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.164";
 function beta145OnlinePreflightSnapshot() {
   const req = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [] };
   const scoreOutbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : [];
@@ -17566,7 +17566,7 @@ try {
    - diagnostic de réparation plus clair
    - aucune nouvelle interaction obligatoire
    ========================================================= */
-const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.163";
+const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.164";
 function beta145FriendStableKey(friend = {}, fallback = "") {
   const code = normalizeFriendCode(friend.code || friend.friendCode || friend.friend_code || fallback || "");
   const suffix = typeof friendCodeSuffix === "function" ? friendCodeSuffix(code) : code;
@@ -17664,7 +17664,7 @@ try {
    - supprime les demandes locales vers soi-même
    - rend le diagnostic plus exploitable sans nouvel écran
    ========================================================= */
-const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.163";
+const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.164";
 function beta146IsSelfTarget(target = {}) {
   const targetId = String(target.targetPlayerId || target.playerId || target.player_id || target.otherPlayerId || target.id || "");
   const targetCode = normalizeFriendCode(target.targetFriendCode || target.friendCode || target.friend_code || target.otherFriendCode || target.code || "");
@@ -17790,7 +17790,7 @@ try {
    - évite les réparations en boucle et conserve un diagnostic discret
    - ne crée pas de nouvelle fonctionnalité visible
    ========================================================= */
-const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.163";
+const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.164";
 let beta147SilentRepairInFlight = false;
 function beta147SilentRepairKey() {
   const day = typeof localDayKey === "function" ? localDayKey() : String(new Date().toISOString().slice(0, 10));
@@ -17887,7 +17887,7 @@ try {
    - diagnostic profil moins "bêta"
    - bouton de pré-vérification online sans modification des données
    ========================================================= */
-const BETA148_PREFLIGHT_CLEAN_VERSION = "1.0.0-beta.163";
+const BETA148_PREFLIGHT_CLEAN_VERSION = "1.0.0-beta.164";
 function beta148PlainObject(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
@@ -18051,7 +18051,7 @@ try {
    - diagnostic discret dans le profil
    - pré-vérification serveur étendue avec /system/selftest
    ========================================================= */
-const BETA149_REGRESSION_GUARD_VERSION = "1.0.0-beta.163";
+const BETA149_REGRESSION_GUARD_VERSION = "1.0.0-beta.164";
 function beta149CountByDiscipline() {
   const rows = [];
   try {
@@ -18198,7 +18198,7 @@ try {
    Beta 150 — design boost performant
    CSS-only polish: cartes, navigation, modes, mystère, classement.
    ========================================================= */
-const BETA150_DESIGN_VERSION = "1.0.0-beta.163";
+const BETA150_DESIGN_VERSION = "1.0.0-beta.164";
 try {
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA150_DESIGN_VERSION, designBoost: true, lightweightVisuals: true };
 } catch {}
@@ -18207,7 +18207,7 @@ try {
 /* =========================================================
    Beta 151 — polish visuel et garde-fous performance
    ========================================================= */
-const BETA151_POLISH_PERF_VERSION = "1.0.0-beta.163";
+const BETA151_POLISH_PERF_VERSION = "1.0.0-beta.164";
 try {
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA151_POLISH_PERF_VERSION, designPolish: true, mobilePerfGuard: true };
 } catch {}
@@ -18217,7 +18217,7 @@ try {
    Objectif : rendre les écrans incomplets plus assumés côté utilisateur,
    sans exposer le vocabulaire interne de build/contenu.
    ========================================================= */
-const BETA152_PRODUCT_POLISH_VERSION = "1.0.0-beta.163";
+const BETA152_PRODUCT_POLISH_VERSION = "1.0.0-beta.164";
 
 function beta152PlayableCourseCount(disciplineId = activeDisciplineId()) {
   try {
@@ -18352,7 +18352,7 @@ try {
    - actions globales simples pour boutons rendus dynamiquement
    - diagnostic discret des erreurs client/cache
    ========================================================= */
-const BETA153_RELEASE_CANDIDATE_VERSION = "1.0.0-beta.163";
+const BETA153_RELEASE_CANDIDATE_VERSION = "1.0.0-beta.164";
 
 function beta153SafeShort(value, max = 90) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
@@ -18492,7 +18492,7 @@ try {
    - bouton utilisateur pour recharger proprement sans perdre la progression
    - nettoyage local plus strict mais non destructif
    ========================================================= */
-const BETA154_CACHE_RECOVERY_VERSION = "1.0.0-beta.163";
+const BETA154_CACHE_RECOVERY_VERSION = "1.0.0-beta.164";
 
 function beta154NowLabel(ts = Date.now()) {
   try { return new Date(ts).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); } catch { return "—"; }
@@ -18684,7 +18684,7 @@ try {
    - récupération douce si un ancien cache perd le code ami
    - diagnostic stockage/cache plus lisible avant test élargi
    ========================================================= */
-const BETA155_FINAL_GUARD_VERSION = "1.0.0-beta.163";
+const BETA155_FINAL_GUARD_VERSION = "1.0.0-beta.164";
 const BETA155_IDENTITY_SNAPSHOT_KEY = `${STORAGE_KEY}_identity_last_good_v2`;
 
 function beta155SafeJsonRead(key) {
@@ -18835,7 +18835,7 @@ try {
    - nettoyage local léger avant test privé
    - détection plus claire des vieux caches PWA
    ========================================================= */
-const BETA156_RELEASE_READINESS_VERSION = "1.0.0-beta.163";
+const BETA156_RELEASE_READINESS_VERSION = "1.0.0-beta.164";
 
 function beta156UniqueBy(items, keyFn) {
   const out = [];
@@ -19003,8 +19003,8 @@ try {
    - classement basé sur XP total (cours + mystères), pas seulement score mystère
    - retours et déblocage mystère robustes sans interception des champs texte
    ========================================================= */
-(function beta163StabilityGeneralFix(){
-  const BETA163_VERSION = "1.0.0-beta.163";
+(function beta164StabilityGeneralFix(){
+  const BETA164_VERSION = "1.0.0-beta.164";
   const PROFILE_KEY = `${STORAGE_KEY}_profile_stable_v1`;
   const FRIEND_DRAFT_KEY = `${STORAGE_KEY}_friend_code_draft`;
   let syncingXpProfile = false;
@@ -19122,7 +19122,7 @@ try {
 
   function saveProfileRecord(source = "auto"){
     const p = goodPseudo(state.pseudo) || goodPseudo(currentPseudo?.()) || "Invité";
-    writeJson(PROFILE_KEY, { pseudo:p, friendCode:myCode(), playerId:myId(), xp:Number(state.xp || 0), level: typeof level === "function" ? level() : 1, savedAt:now(), version:BETA163_VERSION, source });
+    writeJson(PROFILE_KEY, { pseudo:p, friendCode:myCode(), playerId:myId(), xp:Number(state.xp || 0), level: typeof level === "function" ? level() : 1, savedAt:now(), version:BETA164_VERSION, source });
     try { localStorage.setItem(`${STORAGE_KEY}_pseudo`, p); } catch {}
   }
   function hydrateProfile(){
@@ -19136,7 +19136,7 @@ try {
     window.setTimeout(() => {
       syncingXpProfile = false;
       try { saveProfileRecord(reason); } catch {}
-      try { syncMyProfileToServer?.({ source:`beta163-${reason}` }).catch?.(() => {}); } catch {}
+      try { syncMyProfileToServer?.({ source:`beta164-${reason}` }).catch?.(() => {}); } catch {}
       try { ["daily","week","year","friends"].forEach(scope => { state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loadedAt:0, loading:false, mode:"local", message:"XP total recalculé." } }; }); } catch {}
     }, 250);
   }
@@ -19146,13 +19146,13 @@ try {
   // On ne modifie pas scoreForScope global : il reste le score mystère par période.
   // Le classement, lui, utilise l'XP totale via leaderboardRows/scoreOfPlayer ci-dessous.
   const previousScoreOfPlayer = typeof scoreOfPlayer === "function" ? scoreOfPlayer : null;
-  scoreOfPlayer = function beta163ScoreOfPlayer(player = {}, scope = "daily"){
+  scoreOfPlayer = function beta164ScoreOfPlayer(player = {}, scope = "daily"){
     if (player.me) return Math.max(0, Number(state.xp || 0));
     return Math.max(0, Number(player.xp || 0), Number(player.score || 0), Number(player.daily || 0), Number(player.week || 0), Number(player.year || 0));
   };
   if (typeof remoteLeaderboardRows === "function") {
     const previousRemoteLeaderboardRows = remoteLeaderboardRows;
-    remoteLeaderboardRows = function beta163RemoteLeaderboardRows(scope = state.rankScope || "daily"){
+    remoteLeaderboardRows = function beta164RemoteLeaderboardRows(scope = state.rankScope || "daily"){
       return previousRemoteLeaderboardRows(scope).map(row => {
         const total = Math.max(Number(row.xp || 0), Number(row.score || 0), Number(row.daily || 0), Number(row.week || 0), Number(row.year || 0));
         return { ...row, score: total, daily: total, week: total, year: total };
@@ -19161,7 +19161,7 @@ try {
   }
   if (typeof leaderboardRows === "function") {
     const previousLeaderboardRows = leaderboardRows;
-    leaderboardRows = function beta163LeaderboardRows(scope = state.rankScope || "daily"){
+    leaderboardRows = function beta164LeaderboardRows(scope = state.rankScope || "daily"){
       const myProfile = (() => { try { return myPlayerProfile(); } catch { return { id:myId(), playerId:myId(), friendCode:myCode(), name:state.pseudo || "Moi", me:true }; } })();
       const myCodeValue = myCode();
       let rows = [];
@@ -19187,7 +19187,7 @@ try {
   }
   if (typeof scorePayloadForMystery === "function") {
     const previousScorePayloadForMystery = scorePayloadForMystery;
-    scorePayloadForMystery = function beta163ScorePayloadForMystery(mysteryId){
+    scorePayloadForMystery = function beta164ScorePayloadForMystery(mysteryId){
       const payload = previousScorePayloadForMystery(mysteryId) || {};
       const total = Math.max(Number(state.xp || 0), Number(payload.xp || 0), Number(payload.score || 0));
       return { ...payload, xp:total, totalXp:total, score:total, scoreMode:"total_xp" };
@@ -19196,9 +19196,9 @@ try {
 
   // Profil / code ami : formulaire stable, valeur conservée même si l'écran rerender.
   if (typeof addFriendMarkup === "function") {
-    addFriendMarkup = function beta163AddFriendMarkup(){
+    addFriendMarkup = function beta164AddFriendMarkup(){
       const draft = str(state.friendCodeDraft || (() => { try { return localStorage.getItem(FRIEND_DRAFT_KEY) || ""; } catch { return ""; } })());
-      return `<section class="card add-friend-card beta163-add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Colle le code complet, par exemple MANON-ABC123. Le champ garde ce que tu tapes même si l'app actualise l'écran.</p></div><form data-add-friend class="friend-add-form beta163-friend-add-form" autocomplete="off"><input data-friend-code-input name="friendCode" type="text" value="${esc(draft)}" placeholder="PSEUDO-ABC123" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Code ami"/><button type="submit" data-add-friend-button>Ajouter</button></form><div class="friend-code"><strong>${esc(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${esc(state.friendFeedback)}</p>` : ""}</section>`;
+      return `<section class="card add-friend-card beta164-add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Colle le code complet, par exemple MANON-ABC123. Le champ garde ce que tu tapes même si l'app actualise l'écran.</p></div><form data-add-friend class="friend-add-form beta164-friend-add-form" autocomplete="off"><input data-friend-code-input name="friendCode" type="text" value="${esc(draft)}" placeholder="PSEUDO-ABC123" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Code ami"/><button type="submit" data-add-friend-button>Ajouter</button></form><div class="friend-code"><strong>${esc(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${esc(state.friendFeedback)}</p>` : ""}</section>`;
     };
   }
   function parsedFriendFromRaw(raw){
@@ -19215,12 +19215,12 @@ try {
     addFriendLocal(friend, `${parsed.pseudo} ajouté. Synchronisation en cours…`);
     state.friendCodeDraft = "";
     try { localStorage.removeItem(FRIEND_DRAFT_KEY); } catch {}
-    try { syncMyProfileToServer?.({ source:"friend-add-beta163" }).catch?.(() => {}); } catch {}
+    try { syncMyProfileToServer?.({ source:"friend-add-beta164" }).catch?.(() => {}); } catch {}
     try { syncFriendToServer?.(friend).catch?.(error => { state.friendFeedback = `${parsed.pseudo} ajouté sur cet appareil, mais pas partagé en ligne : ${error?.message || "connexion indisponible"}.`; queueSave(); renderSoon(); }); } catch {}
     renderSoon();
     return true;
   }
-  addFriend = function beta163AddFriend(event){
+  addFriend = function beta164AddFriend(event){
     try { event?.preventDefault?.(); event?.stopPropagation?.(); } catch {}
     const form = event?.target?.closest?.("[data-add-friend]") || document.querySelector("[data-add-friend]");
     const input = form?.querySelector?.("[data-friend-code-input], input[name='friendCode'], input");
@@ -19258,14 +19258,14 @@ try {
   // Demandes d'amis : si quelqu'un est déjà ami, aucune carte "en attente" ne doit survivre.
   if (typeof beta125FriendRequestsState === "function") {
     const previousRequestsState = beta125FriendRequestsState;
-    beta125FriendRequestsState = function beta163FriendRequestsState(){ return cleanRequestsObject(previousRequestsState()); };
+    beta125FriendRequestsState = function beta164FriendRequestsState(){ return cleanRequestsObject(previousRequestsState()); };
   }
   if (typeof beta125SetFriendRequests === "function") {
-    beta125SetFriendRequests = function beta163SetFriendRequests(requests = {}){ state.friendRequests = cleanRequestsObject(requests); queueSave(); };
+    beta125SetFriendRequests = function beta164SetFriendRequests(requests = {}){ state.friendRequests = cleanRequestsObject(requests); queueSave(); };
   }
   if (typeof mergeServerFriends === "function") {
     const previousMergeServerFriends = mergeServerFriends;
-    mergeServerFriends = function beta163MergeServerFriends(rows = []){
+    mergeServerFriends = function beta164MergeServerFriends(rows = []){
       const changed = previousMergeServerFriends(rows);
       repairSocialState();
       queueSave();
@@ -19274,27 +19274,27 @@ try {
   }
   function friendCard(player = {}){
     const id = esc(player.id || player.playerId || player.friendCode || player.code || "");
-    return `<section class="card beta125-profile-actions beta163-friend-ok"><div><span class="card-label">Ami</span><h2>${esc(player.name || "Ce joueur")} est dans tes amis</h2><p>La relation est validée. Le bloc “en attente” est supprimé localement.</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
+    return `<section class="card beta125-profile-actions beta164-friend-ok"><div><span class="card-label">Ami</span><h2>${esc(player.name || "Ce joueur")} est dans tes amis</h2><p>La relation est validée. Le bloc “en attente” est supprimé localement.</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
   }
   if (typeof beta125PublicActionMarkup === "function") {
     const previousPublicActionMarkup = beta125PublicActionMarkup;
-    beta125PublicActionMarkup = function beta163PublicActionMarkup(player = {}){
+    beta125PublicActionMarkup = function beta164PublicActionMarkup(player = {}){
       const isFriend = Boolean(player?.friend || knownFriend(player));
       if (player && !player.me && isFriend) return friendCard(player);
       const html = previousPublicActionMarkup(player);
       if (/En attente de validation/i.test(String(html || ""))) {
         const target = esc(player.id || player.playerId || player.friendCode || player.code || "");
-        return String(html).replace("</section>", `<div class="home-actions-row beta163-pending-actions"><button type="button" class="ghost" data-beta163-refresh-social="${target}">Actualiser relation</button><button type="button" class="ghost" data-beta163-accept-local="${target}">Déjà accepté : corriger ici</button></div></section>`);
+        return String(html).replace("</section>", `<div class="home-actions-row beta164-pending-actions"><button type="button" class="ghost" data-beta164-refresh-social="${target}">Actualiser relation</button><button type="button" class="ghost" data-beta164-accept-local="${target}">Déjà accepté : corriger ici</button></div></section>`);
       }
       return html;
     };
   }
   document.addEventListener("click", event => {
-    const accept = event.target?.closest?.("[data-beta163-accept-local]");
-    const refresh = event.target?.closest?.("[data-beta163-refresh-social]");
+    const accept = event.target?.closest?.("[data-beta164-accept-local]");
+    const refresh = event.target?.closest?.("[data-beta164-refresh-social]");
     if (!accept && !refresh) return;
     event.preventDefault?.(); event.stopPropagation?.();
-    const targetId = accept?.dataset?.beta163AcceptLocal || refresh?.dataset?.beta163RefreshSocial || state.selectedProfileId || "";
+    const targetId = accept?.dataset?.beta164AcceptLocal || refresh?.dataset?.beta164RefreshSocial || state.selectedProfileId || "";
     const player = (() => { try { return profileById(targetId); } catch { return null; } })() || {};
     if (accept) addFriendLocal({ id:player.id || targetId, code:player.friendCode || player.code || targetId, friendCode:player.friendCode || player.code || targetId, playerId:player.playerId || "", name:player.name || "Ami", server:false }, `${player.name || "Ami"} ajouté localement.`);
     try { fetchServerFriends?.({ force:true }).catch?.(() => {}); } catch {}
@@ -19333,7 +19333,7 @@ try {
     }
     openMysteryById(m.id, accessible ? "" : "Archive débloquée : elle est ouverte ci-dessus.");
   }
-  try { unlockPastMystery = function beta163UnlockPastMystery(id){ unlockAndOpen(id); }; } catch {}
+  try { unlockPastMystery = function beta164UnlockPastMystery(id){ unlockAndOpen(id); }; } catch {}
   document.addEventListener("click", event => {
     if (event.target?.closest?.("input,textarea,select,[contenteditable='true']")) return;
     const target = event.target?.closest?.("[data-unlock-mystery],[data-open-mystery-id],[data-open-linked-mystery],[data-open-daily-mystery],[data-back-learn],[data-back-chapters],[data-back-social],[data-home],[data-back-home],[data-go-home],[data-tab]");
@@ -19360,17 +19360,17 @@ try {
   // Sauvegarde : ne plus casser friends, conserver pseudo, synchroniser quand l'XP change.
   if (typeof saveState === "function") {
     const previousSaveState = saveState;
-    saveState = function beta163SaveState(){ repairSocialState(); saveProfileRecord("save"); return previousSaveState(); };
+    saveState = function beta164SaveState(){ repairSocialState(); saveProfileRecord("save"); return previousSaveState(); };
   }
   if (typeof setState === "function") {
     const previousSetState = setState;
-    setState = function beta163SetState(patch = {}, options = {}){
+    setState = function beta164SetState(patch = {}, options = {}){
       const xpBefore = Number(state.xp || 0);
       if (patch && typeof patch === "object" && Object.prototype.hasOwnProperty.call(patch, "friends")) patch = { ...patch, friends: normalizeFriendMap(patch.friends) };
       if (patch && typeof patch === "object" && Object.prototype.hasOwnProperty.call(patch, "pseudo")) {
         const p = goodPseudo(patch.pseudo) || pseudo(patch.pseudo) || state.pseudo || "Invité";
         patch = { ...patch, pseudo:p };
-        writeJson(PROFILE_KEY, { pseudo:p, friendCode:myCode(), playerId:myId(), xp:Number(state.xp || 0), savedAt:now(), version:BETA163_VERSION, source:"setState" });
+        writeJson(PROFILE_KEY, { pseudo:p, friendCode:myCode(), playerId:myId(), xp:Number(state.xp || 0), savedAt:now(), version:BETA164_VERSION, source:"setState" });
       }
       const result = previousSetState(patch, options);
       if (repairSocialState()) queueSave();
@@ -19384,22 +19384,246 @@ try {
     repairSocialState();
     syncXpProfile("startup");
     const style = document.createElement("style");
-    style.id = "beta163-stability-general-style";
+    style.id = "beta164-stability-general-style";
     style.textContent = `
-      .beta163-add-friend-card input,[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase;}
-      .beta163-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
-      .beta163-friend-add-form button{min-height:52px!important;touch-action:manipulation!important;}
-      .beta163-friend-ok{border-color:rgba(72,213,151,.42)!important;background:linear-gradient(180deg,rgba(72,213,151,.12),rgba(255,255,255,.035))!important;}
-      .beta163-pending-actions{margin-top:10px;display:grid;grid-template-columns:1fr;gap:8px;}
+      .beta164-add-friend-card input,[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase;}
+      .beta164-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
+      .beta164-friend-add-form button{min-height:52px!important;touch-action:manipulation!important;}
+      .beta164-friend-ok{border-color:rgba(72,213,151,.42)!important;background:linear-gradient(180deg,rgba(72,213,151,.12),rgba(255,255,255,.035))!important;}
+      .beta164-pending-actions{margin-top:10px;display:grid;grid-template-columns:1fr;gap:8px;}
       .skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important;}
-      @media(max-width:430px){.beta163-friend-add-form{grid-template-columns:1fr}.beta163-friend-add-form button{width:100%;}}
+      @media(max-width:430px){.beta164-friend-add-form{grid-template-columns:1fr}.beta164-friend-add-form button{width:100%;}}
     `;
     if (!document.getElementById(style.id)) document.head.appendChild(style);
-    state.beta163StabilityGeneralFixVersion = BETA163_VERSION;
-    window.HistoDaily = { ...(window.HistoDaily || {}), version:BETA163_VERSION, stabilityGeneralFix:true, leaderboardTotalXp:true };
+    state.beta164StabilityGeneralFixVersion = BETA164_VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version:BETA164_VERSION, stabilityGeneralFix:true, leaderboardTotalXp:true };
     queueSave();
     if (["profile","rank","publicProfile"].includes(state.tab)) renderSoon();
   } catch (error) {
-    try { console.warn("beta163 stability general fix", error); } catch {}
+    try { console.warn("beta164 stability general fix", error); } catch {}
+  }
+})();
+
+/* BETA164 — quiz en flux une-question, clics robustes et rendu allégé */
+(() => {
+  const BETA164_VERSION = "1.0.0-beta.164";
+  const html = value => (typeof escapeHtml === "function" ? escapeHtml(value) : String(value ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;","\"":"&quot;"}[c])));
+  const toKey = value => String(value ?? "");
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const readQuizMap = key => (state && typeof state[key] === "object" && state[key]) ? state[key] : {};
+  const firstUnansweredIndex = (progress, total) => {
+    const answers = progress?.answers || {};
+    for (let i = 0; i < total; i += 1) {
+      if (!Number.isInteger(answers[i]) && !Number.isInteger(answers[String(i)])) return i;
+    }
+    return Math.max(0, total - 1);
+  };
+  const quizRuntimeForLesson = (lessonId, total) => {
+    const key = toKey(lessonId);
+    const progress = lessonQuizState(key);
+    const answeredCount = Object.keys(progress.answers || {}).length;
+    const correctCount = Object.values(progress.correct || {}).filter(Boolean).length;
+    const threshold = lessonQuizPassThreshold(total);
+    const finished = total > 0 && answeredCount >= total;
+    const passed = Boolean(progress.passed || (finished && correctCount >= threshold));
+    let step = Number(readQuizMap("quizStep")[key]);
+    if (!Number.isInteger(step) || step < 0 || step >= total) step = firstUnansweredIndex(progress, total);
+    if (!readQuizMap("quizAwaitContinue")[key] && !finished && Number.isInteger(progress.answers?.[step])) step = firstUnansweredIndex(progress, total);
+    return { key, progress, step: clamp(step, 0, Math.max(0, total - 1)), answeredCount, correctCount, threshold, finished, passed };
+  };
+  function setQuizRuntime(lessonId, patch = {}) {
+    const key = toKey(lessonId);
+    const quizStep = { ...readQuizMap("quizStep") };
+    const quizAwaitContinue = { ...readQuizMap("quizAwaitContinue") };
+    if (Object.prototype.hasOwnProperty.call(patch, "step")) quizStep[key] = patch.step;
+    if (Object.prototype.hasOwnProperty.call(patch, "awaitContinue")) quizAwaitContinue[key] = Boolean(patch.awaitContinue);
+    setState({ quizStep, quizAwaitContinue, lessonView: "quiz", lessonFocus: null });
+  }
+  function advanceQuizStep(lessonId) {
+    const lesson = allLessons().find(l => toKey(l.id) === toKey(lessonId));
+    if (!lesson) return;
+    const content = buildLessonContent(lesson);
+    const quizItems = normalizeQuizPack(content.quiz, lesson, content);
+    const progress = lessonQuizState(lesson.id);
+    const next = firstUnansweredIndex(progress, quizItems.length);
+    setQuizRuntime(lesson.id, { step: next, awaitContinue: false });
+    window.setTimeout(() => { try { document.querySelector("[data-beta164-current-question]")?.scrollIntoView({ behavior:"smooth", block:"start" }); } catch {} }, 40);
+  }
+
+  handleQuizChoice = function beta164HandleQuizChoice(lessonId, questionIndex, choiceIndex) {
+    const lesson = allLessons().find(l => toKey(l.id) === toKey(lessonId));
+    if (!lesson) return false;
+    const content = buildLessonContent(lesson);
+    const quizItems = normalizeQuizPack(content.quiz, lesson, content);
+    const item = quizItems[questionIndex];
+    if (!item) return false;
+    const key = toKey(lesson.id);
+    const progress = lessonQuizState(key);
+    if (Number.isInteger(progress.answers?.[questionIndex]) || Number.isInteger(progress.answers?.[String(questionIndex)]) || progress.passed) return false;
+    const choices = quizChoicesFor(item, quizItems, lesson, content, questionIndex);
+    const choice = choices[choiceIndex];
+    if (!choice) return false;
+
+    const answers = { ...(progress.answers || {}), [questionIndex]: choiceIndex };
+    const correct = { ...(progress.correct || {}) };
+    correct[questionIndex] = Boolean(choice.correct);
+    const correctCount = Object.values(correct).filter(Boolean).length;
+    const answeredCount = Object.keys(answers).length;
+    const threshold = lessonQuizPassThreshold(quizItems.length);
+    const passed = answeredCount >= quizItems.length && correctCount >= threshold;
+    const failed = answeredCount >= quizItems.length && !passed;
+    const nextQuizState = { ...progress, answers, correct, attempts: (progress.attempts || 0) + 1, passed };
+    const quizProgress = { ...(state.quizProgress || {}), [key]: nextQuizState };
+    const newlyCompleted = passed && !lessonDone(lesson.id);
+    const completedLessons = newlyCompleted ? { ...(state.completedLessons || {}), [lesson.id]: true } : state.completedLessons;
+    const achievements = newlyCompleted ? { ...(state.achievements || {}), firstLesson: true } : state.achievements;
+    const xpGain = newlyCompleted ? (lesson?.xp || 55) : 0;
+    const quizFeedback = {
+      ...(state.quizFeedback || {}),
+      [key]: passed
+        ? `Quiz réussi : ${correctCount}/${quizItems.length}. Cours validé automatiquement.`
+        : failed
+          ? `Score : ${correctCount}/${quizItems.length}. Il faut au moins ${threshold}/${quizItems.length} pour valider.`
+          : choice.correct
+            ? `Bonne réponse. ${correctCount}/${quizItems.length} pour l’instant.`
+            : `Réponse fausse. Continue : validation à ${threshold}/${quizItems.length}.`
+    };
+    const quizStep = { ...readQuizMap("quizStep"), [key]: questionIndex };
+    const quizAwaitContinue = { ...readQuizMap("quizAwaitContinue"), [key]: true };
+    setState({ quizProgress, quizFeedback, completedLessons, achievements, xp: Number(state.xp || 0) + xpGain, quizStep, quizAwaitContinue, lessonView: "quiz", lessonFocus: null });
+    if (xpGain) showXPToast(xpGain, "leçon validée");
+    return true;
+  };
+
+  resetLessonQuiz = function beta164ResetLessonQuiz(lessonId) {
+    const key = toKey(lessonId);
+    const quizProgress = { ...(state.quizProgress || {}) };
+    const quizFeedback = { ...(state.quizFeedback || {}) };
+    const quizStep = { ...readQuizMap("quizStep") };
+    const quizAwaitContinue = { ...readQuizMap("quizAwaitContinue") };
+    delete quizProgress[key];
+    delete quizFeedback[key];
+    delete quizStep[key];
+    delete quizAwaitContinue[key];
+    setState({ quizProgress, quizFeedback, quizStep, quizAwaitContinue, lessonView: "quiz", lessonFocus: null });
+  };
+
+  function beta164QuizQuestionMarkup(lesson, content, quizItems) {
+    const total = quizItems.length;
+    const runtime = quizRuntimeForLesson(lesson.id, total);
+    const progress = runtime.progress;
+    const feedback = state.quizFeedback?.[lesson.id] || state.quizFeedback?.[toKey(lesson.id)] || "";
+    if (!total) {
+      return `<section class="quiz-section isolated-quiz final-quiz beta164-quiz-runner"><div class="section-title-row"><h2>Quiz indisponible</h2><small>0 question</small></div><p>Ce cours n’a pas encore de quiz utilisable.</p></section>`;
+    }
+    if (runtime.finished || runtime.passed) {
+      return `<section class="quiz-section isolated-quiz final-quiz beta164-quiz-runner" data-beta164-current-question>
+        <div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${runtime.correctCount}/${total} bonnes</small></div>
+        <div class="beta164-score-panel ${runtime.passed ? "good" : "bad"}"><b>${runtime.passed ? "✅ Cours validé" : "Score insuffisant"}</b><span>${runtime.passed ? "L’XP du cours est prise en compte dans le total et le classement." : `Il faut ${runtime.threshold}/${total}. Recommence pour valider le cours.`}</span></div>
+        ${feedback ? `<p class="quiz-global-feedback ${runtime.passed ? "good" : ""}">${html(feedback)}</p>` : ""}
+        <div class="quiz-footer beta164-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="express">Relire le cours</button></div>
+      </section>`;
+    }
+    const index = runtime.step;
+    const item = quizItems[index];
+    const choices = quizChoicesFor(item, quizItems, lesson, content, index);
+    const selectedRaw = progress.answers?.[index] ?? progress.answers?.[String(index)];
+    const selected = Number.isInteger(selectedRaw) ? selectedRaw : null;
+    const hasAnswered = Number.isInteger(selected);
+    const selectedChoice = hasAnswered ? choices[selected] : null;
+    const isCorrect = Boolean(progress.correct?.[index] || progress.correct?.[String(index)]);
+    const remaining = Math.max(0, total - runtime.answeredCount);
+    return `<section class="quiz-section isolated-quiz final-quiz beta164-quiz-runner" data-beta164-current-question>
+      <div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${index + 1}/${total}</h2></div><small>${runtime.correctCount}/${total} bonnes · seuil ${runtime.threshold}/${total}</small></div>
+      <div class="beta164-quiz-progress" aria-hidden="true">${quizItems.map((_, i) => `<i class="${Number.isInteger(progress.answers?.[i]) || Number.isInteger(progress.answers?.[String(i)]) ? (progress.correct?.[i] || progress.correct?.[String(i)] ? "ok" : "ko") : i === index ? "current" : ""}"></i>`).join("")}</div>
+      ${feedback ? `<p class="quiz-global-feedback">${html(feedback)}</p>` : ""}
+      <article class="quiz-card beta164-single-question ${hasAnswered ? (isCorrect ? "correct" : "wrong") : "open"}">
+        <div class="quiz-question-head"><b>${index + 1}</b><div>${item.kind ? `<em>${html(item.kind)}</em>` : ""}<h3>${html(item.q)}</h3></div></div>
+        <div class="quiz-choices" role="group" aria-label="Question ${index + 1}">
+          ${choices.map((choice, choiceIndex) => {
+            const chosen = selected === choiceIndex;
+            const cls = chosen ? (choice.correct ? "selected correct" : "selected wrong") : "";
+            return `<button type="button" class="quiz-choice ${cls}" data-quiz-choice="${index}" data-choice-index="${choiceIndex}" ${hasAnswered ? "disabled" : ""}><span>${String.fromCharCode(65 + choiceIndex)}</span>${html(choice.text)}</button>`;
+          }).join("")}
+        </div>
+        ${hasAnswered ? (isCorrect
+          ? `<p class="quiz-result good"><b>Correct.</b> ${html(item.why || "Tu as retrouvé l’idée importante du cours.")}</p>${item.evidence ? `<p class="quiz-evidence"><strong>À retrouver :</strong> ${html(item.evidence)}</p>` : ""}`
+          : `<p class="quiz-result bad"><b>Raté.</b> ${html(selectedChoice?.trap || item.trap || "La réponse ne colle pas assez au cours.")}</p>`)
+          : `<p class="quiz-result neutral">Choisis une réponse. Une seule question est affichée à la fois pour éviter les listes lourdes.</p>`}
+      </article>
+      <div class="quiz-footer beta164-quiz-footer">
+        <button type="button" class="ghost" data-reset-quiz>Recommencer</button>
+        ${hasAnswered ? `<button type="button" data-quiz-next="${html(lesson.id)}">${remaining <= 0 ? "Voir le bilan" : "Continuer"}</button>` : `<span>Réponds pour passer à la suite.</span>`}
+      </div>
+    </section>`;
+  }
+
+  const previousRenderLessonText = renderLessonText;
+  renderLessonText = function beta164RenderLessonText(lesson, content) {
+    const view = lessonView();
+    if (view !== "quiz") return previousRenderLessonText(lesson, content);
+    const quizItems = normalizeQuizPack(content.quiz, lesson, content);
+    const progressForHeader = quizProgressForLesson(lesson.id, quizItems.length);
+    const fastLabel = content.mystery ? "Après le mystère" : "Lecture rapide";
+    const keyFacts = lessonKeyFacts(lesson, content);
+    const keyFactsMarkup = keyFacts.length ? `<div class="key-facts beta164-quiz-facts"><b>Repères utiles</b>${keyFacts.slice(0, 4).map(fact => `<span>${html(fact)}</span>`).join("")}</div>` : "";
+    const intro = `<section class="lesson-hook beta164-lesson-hook"><span class="card-label">${content.ready ? "⭐ Sélection" : fastLabel}</span><p>${html(content.hook)}</p></section>`;
+    const tabs = `<section class="lesson-choice-panel quiz-flow-panel beta164-quiz-tabs" aria-label="Quiz final">
+      <div><span class="card-label">Étape finale</span><h2>Quiz en 5 étapes</h2><p>Une question s’ouvre, tu réponds, puis tu passes à la suivante. C’est plus lisible et beaucoup plus léger que l’ancienne liste complète.</p></div>
+      <div class="lesson-view-tabs">${lessonTabButton("express", "⚡ Relire express", "court")}${lessonTabButton("complete", "📚 Relire complet", "5 min")}</div>
+      <small>${progressForHeader.correctCount}/${quizItems.length} bonnes · seuil ${progressForHeader.threshold}/${quizItems.length}</small>
+    </section>`;
+    return `${intro}${tabs}${keyFactsMarkup}${beta164QuizQuestionMarkup(lesson, content, quizItems)}`;
+  };
+
+  document.addEventListener("click", event => {
+    const choice = event.target?.closest?.("[data-quiz-choice]");
+    const next = event.target?.closest?.("[data-quiz-next]");
+    const reset = event.target?.closest?.("[data-reset-quiz]");
+    if (!choice && !next && !reset) return;
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+    if (choice) {
+      if (choice.disabled) return;
+      const lessonId = state.currentLessonId;
+      handleQuizChoice(lessonId, Number(choice.dataset.quizChoice), Number(choice.dataset.choiceIndex));
+      return;
+    }
+    if (next) {
+      advanceQuizStep(next.dataset.quizNext || state.currentLessonId);
+      return;
+    }
+    if (reset) resetLessonQuiz(state.currentLessonId);
+  }, true);
+
+  try {
+    const style = document.createElement("style");
+    style.id = "beta164-quiz-flow-style";
+    style.textContent = `
+      .beta164-quiz-runner{content-visibility:auto;contain-intrinsic-size:640px;overflow:clip;}
+      .beta164-quiz-tabs{margin-bottom:12px;}
+      .beta164-quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 16px;}
+      .beta164-quiz-progress i{height:8px;border-radius:999px;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
+      .beta164-quiz-progress i.current{background:rgba(246,196,83,.82);}
+      .beta164-quiz-progress i.ok{background:rgba(72,213,151,.85);}
+      .beta164-quiz-progress i.ko{background:rgba(251,113,133,.82);}
+      .beta164-single-question{margin-top:10px;}
+      .beta164-single-question .quiz-choice{touch-action:manipulation;pointer-events:auto;min-height:54px;}
+      .beta164-single-question .quiz-choice:not(:disabled){cursor:pointer;}
+      .beta164-quiz-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px;}
+      .beta164-quiz-footer button{min-height:48px;}
+      .beta164-score-panel{display:grid;gap:4px;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055);}
+      .beta164-score-panel.good{border-color:rgba(72,213,151,.45);background:rgba(72,213,151,.12);}
+      .beta164-score-panel.bad{border-color:rgba(251,113,133,.45);background:rgba(251,113,133,.10);}
+      .beta164-quiz-facts{margin:10px 0 14px;}
+      @media(max-width:520px){.beta164-quiz-footer{display:grid;grid-template-columns:1fr}.beta164-quiz-footer button{width:100%;}.beta164-quiz-tabs .lesson-view-tabs{grid-template-columns:1fr;}}
+    `;
+    if (!document.getElementById(style.id)) document.head.appendChild(style);
+    window.HistoDaily = { ...(window.HistoDaily || {}), version:BETA164_VERSION, quizFlow:true, oneQuestionQuiz:true };
+    state.beta164QuizFlowVersion = BETA164_VERSION;
+    queueSaveState?.();
+  } catch (error) {
+    try { console.warn("beta164 quiz flow", error); } catch {}
   }
 })();

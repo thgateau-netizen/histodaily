@@ -1,13 +1,13 @@
-const CACHE_NAME = "histodaily-beta163-stability-general-v1";
-const APP_VERSION = "1.0.0-beta.163";
+const CACHE_NAME = "histodaily-beta164-quiz-flow-stability-v1";
+const APP_VERSION = "1.0.0-beta.164";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.163",
-  "/app-core.js?v=1.0.0-beta.163",
-  "/app-onboarding.js?v=1.0.0-beta.163",
-  "/app.js?v=1.0.0-beta.163",
-  "/lessons-lite.js?v=1.0.0-beta.163",
+  "/styles.css?v=1.0.0-beta.164",
+  "/app-core.js?v=1.0.0-beta.164",
+  "/app-onboarding.js?v=1.0.0-beta.164",
+  "/app.js?v=1.0.0-beta.164",
+  "/lessons-lite.js?v=1.0.0-beta.164",
   "/manifest.webmanifest"
 ];
 
