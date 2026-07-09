@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.113",
-  assetsVersion: "1.0.0-beta.113",
+  version: "1.0.0-beta.115",
+  assetsVersion: "1.0.0-beta.115",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 113",
+    versionLabel: "beta 115",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Animations intelligentes : transitions légères au changement d’écran, sans retour aux gros effets qui faisaient ramer.",
-      "Rendu mieux cadencé : les changements rapides d’onglet sont regroupés dans une seule frame au lieu de relancer l’interface plusieurs fois.",
-      "Mode performance clarifié : Fluide animé par défaut, Statique si le téléphone fatigue, Visuel seulement si tout reste parfaitement fluide."
+      "Robustesse : nettoyage plus strict de l’état local au lancement pour éviter les écrans incohérents.",
+      "Profil : ajout d’un mini diagnostic et d’un bouton de réparation d’affichage sans supprimer la progression.",
+      "Mobile : garde-fou contre l’écran vide, les taps multiples et les anciennes données qui bloquent un onglet."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

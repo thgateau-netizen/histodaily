@@ -637,3 +637,40 @@ html[data-discipline="music"] .home-clean-hero h1{ text-shadow:0 16px 44px color
   .performance-smart .app-shell.motion-enter>section,
   .performance-smart .app-shell.motion-enter>.mini-grid{animation:none!important}
 }
+
+/* Beta 114 — robustesse affichage mobile */
+html, body, #app { width:100%; max-width:100%; overflow-x:hidden; }
+.app-shell, .card, .topbar, .hero, section, article, div, form, input, button { min-width:0; }
+img, svg, canvas, video { max-width:100%; height:auto; }
+button, input, textarea, select { touch-action:manipulation; }
+input, textarea, select { font-size:16px!important; max-width:100%; }
+.app-shell { overflow-x:hidden; }
+.card, .lesson-card, .mystery-mini, .achievement, .app-shell>section.card { content-visibility:visible!important; contain-intrinsic-size:auto!important; }
+.pseudo-card form { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:center; }
+.pseudo-card input { width:100%; }
+.pseudo-card button { white-space:nowrap; }
+.profile-feedback { overflow-wrap:anywhere; }
+.friend-code strong, .invite-link-card strong { overflow-wrap:anywhere; word-break:break-word; white-space:normal; }
+.app-error-shell { min-height:100svh; display:grid; align-content:center; }
+.app-error-card h1 { margin:.25rem 0 .5rem; font-size:1.65rem; letter-spacing:-.04em; }
+@media(max-width:430px){
+  .pseudo-card form { grid-template-columns:1fr; }
+  .pseudo-card form button { width:100%; }
+  .public-profile-head, .section-title-row { min-width:0; }
+}
+
+
+/* Beta 115 — durcissement affichage */
+.card,.lesson-card,.home-discovery-item,.mode-world-item,.mystery-mini,.achievement,.app-shell>section.card{content-visibility:visible!important;contain:none!important;contain-intrinsic-size:auto!important;}
+.app-shell{min-height:100svh;padding-bottom:calc(104px + env(safe-area-inset-bottom));}
+.course-fullscreen-shell{padding-bottom:24px;}
+.bottom-nav{z-index:50;will-change:auto;}
+.nav-item{min-height:48px;-webkit-tap-highlight-color:transparent;}
+.nav-item:focus-visible,button:focus-visible,[role="button"]:focus-visible,input:focus-visible{outline:2px solid color-mix(in srgb,var(--theme-accent,var(--accent)) 78%,white);outline-offset:2px;}
+.beta115-health-card{border-color:rgba(72,213,151,.22);background:radial-gradient(circle at 100% 0,rgba(72,213,151,.12),transparent 36%),linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));}
+.beta115-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.beta115-actions button{width:100%;}
+.app-error-card .home-actions-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.public-stats-grid strong{word-break:break-word;}
+.card h1,.card h2,.card h3,.hero h1,.topbar h1{overflow-wrap:anywhere;}
+@media(max-width:430px){.beta115-actions,.app-error-card .home-actions-row{grid-template-columns:1fr}.bottom-nav{padding-left:8px;padding-right:8px}.nav-item small{font-size:.62rem}.app-shell{padding-left:14px;padding-right:14px}}

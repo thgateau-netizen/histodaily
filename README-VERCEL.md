@@ -1,6 +1,6 @@
-# HistoDaily — paquet de déploiement beta113
+# HistoDaily — paquet de déploiement beta115
 
-Version : `1.0.0-beta.113`
+Version : `1.0.0-beta.115`
 
 Build public resserré pour test privé. Ajout du journal de version sur l’accueil.
 
@@ -67,8 +67,16 @@ SUPABASE_SERVICE_ROLE_KEY=...
 - Le garde-fou de cohérence ne tourne plus à chaque rendu : il reste au démarrage, pas sur chaque tap.
 
 
-## Beta 113
+## Beta 114
 
 - Animations intelligentes réactivées sans flous lourds.
 - Rendu cadencé avec requestAnimationFrame pour éviter plusieurs rendus lors de taps rapides.
 - Trois modes : Fluide animé, Statique, Visuel.
+
+
+## Beta 115
+
+- Durcissement de l’état local au lancement.
+- Ajout d’un diagnostic de stabilité dans le profil.
+- Réparation douce de l’affichage sans effacer la progression lisible.
+- Garde-fous contre écran vide, ancien cache et taps multiples.

@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.113";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.115";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -11709,3 +11709,430 @@ render = function beta113ScheduledRender(options = {}) {
 
 applyVisibleStateGuard({ save: false });
 window.addEventListener("DOMContentLoaded", render);
+
+/* =========================================================
+   Beta 114 — robustesse mobile et profil
+   Objectif : une app qui ne casse pas l'affichage si un état
+   local ancien, un rendu ou un tap mobile part de travers.
+   ========================================================= */
+const BETA114_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
+const BETA114_PSEUDO_KEY = `${STORAGE_KEY}_pseudo`;
+let beta114RenderFrame = 0;
+let beta114LastError = "";
+let beta114PseudoLock = 0;
+
+function beta114RememberPseudo(pseudo) {
+  try { localStorage.setItem(BETA114_PSEUDO_KEY, pseudo); } catch {}
+}
+function beta114SavedPseudo() {
+  try { return sanitizePseudo(localStorage.getItem(BETA114_PSEUDO_KEY) || ""); } catch { return ""; }
+}
+function beta114CoercePlainObject(value, fallback = {}) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : { ...fallback };
+}
+function beta114ValidDisciplineId(id) {
+  return DISCIPLINES.some(d => d.id === id) ? id : "history";
+}
+function beta114FirstGroupForDiscipline(disciplineId) {
+  const groups = treeGroups(disciplineId);
+  return groups[0]?.id || "origins";
+}
+function beta114FirstWorldForGroup(groupId, disciplineId) {
+  const worlds = treeWorldsForGroup(groupId, disciplineId);
+  return worlds[0]?.id || (disciplineId === "history" ? "prehistory" : "");
+}
+function beta114NormalizeState() {
+  if (!state || typeof state !== "object") state = mergeState(defaultState, {});
+  state.tab = BETA114_ALLOWED_TABS.has(state.tab) ? state.tab : "home";
+  state.currentDiscipline = beta114ValidDisciplineId(state.currentDiscipline);
+  state.currentMysteryDiscipline = beta114ValidDisciplineId(state.currentMysteryDiscipline || state.currentDiscipline);
+  state.completedLessons = beta114CoercePlainObject(state.completedLessons, defaultState.completedLessons);
+  state.quizProgress = beta114CoercePlainObject(state.quizProgress, defaultState.quizProgress);
+  state.quizFeedback = beta114CoercePlainObject(state.quizFeedback, defaultState.quizFeedback);
+  state.solvedMysteries = beta114CoercePlainObject(state.solvedMysteries, defaultState.solvedMysteries);
+  state.seenHints = beta114CoercePlainObject(state.seenHints, defaultState.seenHints);
+  state.mysteryTries = beta114CoercePlainObject(state.mysteryTries, defaultState.mysteryTries);
+  state.mysteryFeedback = beta114CoercePlainObject(state.mysteryFeedback, defaultState.mysteryFeedback);
+  state.friends = cleanStoredFriendsMap(beta114CoercePlainObject(state.friends, defaultState.friends));
+  state.achievements = { ...defaultState.achievements, ...beta114CoercePlainObject(state.achievements, defaultState.achievements) };
+  state.xp = Number.isFinite(Number(state.xp)) ? Math.max(0, Number(state.xp)) : 0;
+  state.gems = Number.isFinite(Number(state.gems)) ? Math.max(0, Number(state.gems)) : 0;
+  state.streak = Number.isFinite(Number(state.streak)) ? Math.max(0, Number(state.streak)) : 0;
+  state.pseudo = sanitizePseudo(state.pseudo || beta114SavedPseudo() || defaultState.pseudo || "Invité") || "Invité";
+
+  const groups = treeGroups(state.currentDiscipline);
+  if (groups.length) {
+    if (!groups.some(group => group.id === state.currentGroup)) state.currentGroup = beta114FirstGroupForDiscipline(state.currentDiscipline);
+    const worlds = treeWorldsForGroup(state.currentGroup, state.currentDiscipline);
+    if (worlds.length && !worlds.some(world => world.id === state.currentWorld)) state.currentWorld = beta114FirstWorldForGroup(state.currentGroup, state.currentDiscipline);
+  }
+}
+function beta114ErrorMarkup(error) {
+  const message = String(error?.message || error || "Erreur inconnue").slice(0, 220);
+  return `<main class="app-shell app-error-shell"><section class="card app-error-card"><span class="card-label">Robustesse</span><h1>Affichage relancé</h1><p>Un rendu a planté, donc l'app a affiché cette page de sécurité au lieu de rester bloquée.</p><p class="profile-feedback">${escapeHtml(message)}</p><div class="home-actions-row"><button type="button" data-beta114-safe-home>Retour accueil</button><button type="button" class="ghost" data-beta114-safe-profile>Profil</button></div><button type="button" class="ghost wide" data-beta114-soft-reset>Réparer l'état local</button></section></main>`;
+}
+function beta114BindErrorActions() {
+  document.querySelector("[data-beta114-safe-home]")?.addEventListener("click", () => setState({ tab: "home" }, { save: false }));
+  document.querySelector("[data-beta114-safe-profile]")?.addEventListener("click", () => setState({ tab: "profile" }, { save: false }));
+  document.querySelector("[data-beta114-soft-reset]")?.addEventListener("click", () => {
+    state = mergeState(defaultState, {
+      pseudo: state?.pseudo || beta114SavedPseudo() || "Invité",
+      friends: state?.friends || {},
+      performanceMode: "smart",
+      profileFeedback: "État local réparé. La progression conservée quand elle était lisible.",
+      tab: "home"
+    });
+    saveState();
+    render({ immediate: true });
+  });
+}
+function beta114DirectRender() {
+  try {
+    beta114NormalizeState();
+    beta113DirectRender();
+    beta114LastError = "";
+  } catch (error) {
+    console.error("HistoDaily render error", error);
+    beta114LastError = String(error?.message || error || "Erreur");
+    try {
+      app.innerHTML = beta114ErrorMarkup(error);
+      beta114BindErrorActions();
+    } catch {}
+  }
+}
+render = function beta114ScheduledRender(options = {}) {
+  if (options && options.immediate) return beta114DirectRender();
+  if (typeof requestAnimationFrame !== "function") return beta114DirectRender();
+  if (beta114RenderFrame) return;
+  beta114RenderFrame = requestAnimationFrame(() => {
+    beta114RenderFrame = 0;
+    beta114DirectRender();
+  });
+};
+
+function setState(patch, options = {}) {
+  if (!patch || typeof patch !== "object") return;
+  const previous = state;
+  state = { ...state, ...patch };
+  beta114NormalizeState();
+  beta113MarkMotion(previous, state, patch);
+  if (options.save !== false && patchNeedsPersistentSave(patch)) queueSaveState();
+  render(options.renderImmediate ? { immediate: true } : {});
+}
+
+function beta114PseudoInput(start) {
+  const fromStart = start?.closest?.("form")?.querySelector?.("[data-pseudo-input], input[name='pseudo']");
+  return fromStart || document.querySelector("[data-pseudo-input]") || document.querySelector("input[name='pseudo']");
+}
+function pseudoInputValue(event) {
+  const input = beta114PseudoInput(event?.target || event?.currentTarget);
+  return input?.value || "";
+}
+function savePseudoValue(rawValue, { source = "normal" } = {}) {
+  const pseudo = sanitizePseudo(rawValue);
+  const input = beta114PseudoInput(document.activeElement);
+  if (pseudo.length < 3) {
+    if (input) input.value = pseudo;
+    state.profileFeedback = "Choisis un pseudo d’au moins 3 caractères.";
+    saveState();
+    render({ immediate: true });
+    setTimeout(() => beta114PseudoInput(document)?.focus?.(), 60);
+    return false;
+  }
+  state = mergeState(defaultState, {
+    ...state,
+    pseudo,
+    profileFeedback: `Pseudo enregistré : ${pseudo}`,
+    serverLeaderboards: {},
+    serverLeaderboardStatus: {}
+  });
+  beta114RememberPseudo(pseudo);
+  saveState();
+  render({ immediate: true });
+  syncMyProfileToServer({ source }).then(() => {
+    fetchServerFriends({ force: true }).catch(() => {});
+    ["daily", "week", "year", "friends"].forEach(scope => fetchServerLeaderboard(scope, { force: true }).catch(() => {}));
+  }).catch(() => {});
+  return true;
+}
+function updatePseudo(event) {
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+  return savePseudoValue(pseudoInputValue(event), { source: "form" });
+}
+function promptPseudoEdit() {
+  const value = window.prompt("Ton pseudo HistoDaily", state.pseudo || beta114SavedPseudo() || "");
+  if (value === null) return;
+  savePseudoValue(value, { source: "prompt" });
+}
+
+function beta114HandlePseudoAction(event) {
+  const saveButton = event.target?.closest?.("[data-save-pseudo]");
+  const promptButton = event.target?.closest?.("[data-pseudo-prompt]");
+  if (!saveButton && !promptButton) return;
+  const now = Date.now();
+  if (now - beta114PseudoLock < 220) return;
+  beta114PseudoLock = now;
+  event.preventDefault();
+  event.stopPropagation();
+  if (saveButton) updatePseudo(event);
+  else promptPseudoEdit();
+}
+document.addEventListener("click", beta114HandlePseudoAction, true);
+document.addEventListener("pointerup", beta114HandlePseudoAction, true);
+document.addEventListener("submit", event => {
+  if (event.target?.matches?.("[data-pseudo-form]")) updatePseudo(event);
+}, true);
+document.addEventListener("keydown", event => {
+  if (event.key === "Enter" && event.target?.matches?.("[data-pseudo-input]")) updatePseudo(event);
+}, true);
+
+window.addEventListener("error", event => {
+  if (!event?.error) return;
+  console.error("HistoDaily global error", event.error);
+  if (!String(event.error?.message || "").includes(beta114LastError)) {
+    beta114LastError = String(event.error?.message || event.message || "Erreur");
+  }
+});
+window.addEventListener("unhandledrejection", event => {
+  console.error("HistoDaily promise error", event.reason);
+});
+
+try { beta114NormalizeState(); } catch {}
+if (document.readyState !== "loading") render({ immediate: true });
+
+
+/* =========================================================
+   Beta 115 — durcissement général
+   Objectif : continuer la stabilisation après les tests réels.
+   - état local mieux nettoyé
+   - écran vide automatiquement relancé
+   - diagnostic simple dans le profil
+   - réparation douce sans perdre la progression lisible
+   ========================================================= */
+const BETA115_VERSION = "1.0.0-beta.115";
+const BETA115_SESSION_KEY = `${STORAGE_KEY}_session_health`;
+const BETA115_ALLOWED_LESSON_VIEWS = new Set(["express", "complete", "quiz"]);
+const BETA115_ALLOWED_PERFORMANCE = new Set(["smart", "static", "balanced", "light"]);
+const beta115PreviousNormalizeState = beta114NormalizeState;
+let beta115LastHealthyRender = 0;
+let beta115LastRenderSignature = "";
+let beta115TapLock = 0;
+
+function beta115ReadHealth() {
+  try { return JSON.parse(localStorage.getItem(BETA115_SESSION_KEY) || "{}"); }
+  catch { return {}; }
+}
+function beta115WriteHealth(patch = {}) {
+  try {
+    const current = beta115ReadHealth();
+    localStorage.setItem(BETA115_SESSION_KEY, JSON.stringify({ ...current, ...patch, updatedAt: Date.now(), version: BETA115_VERSION }));
+  } catch {}
+}
+function beta115AllLessonIds() {
+  try { return new Set(allLessons().map(lesson => lesson.id).filter(Boolean)); }
+  catch { return new Set(); }
+}
+function beta115AllMysteryIds() {
+  try { return new Set((data.mysteries || []).map(mystery => mystery.id).filter(Boolean)); }
+  catch { return new Set(); }
+}
+function beta115FirstPlayableLessonForDiscipline(disciplineId = state.currentDiscipline || "history") {
+  try {
+    const lessons = curatedLessons().filter(lesson => worldDisciplineId(lessonWorld(lesson)) === disciplineId && !lessonLockedByDailyMystery(lesson));
+    return lessons[0] || curatedLessons().find(lesson => !lessonLockedByDailyMystery(lesson)) || allLessons()[0] || null;
+  } catch { return null; }
+}
+function beta115CoerceNumber(value, fallback = 0, min = 0, max = 999999) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, Math.round(n)));
+}
+function beta115CleanVolatileState(target = state) {
+  if (!target || typeof target !== "object") return target;
+  target.profileFeedback = target.profileFeedback || "";
+  target.archiveFeedback = typeof target.archiveFeedback === "string" ? target.archiveFeedback : "";
+  target.installFeedback = typeof target.installFeedback === "string" ? target.installFeedback : "";
+  target.backupFeedback = typeof target.backupFeedback === "string" ? target.backupFeedback : "";
+  target.inviteFeedback = typeof target.inviteFeedback === "string" ? target.inviteFeedback : "";
+  target.friendFeedback = typeof target.friendFeedback === "string" ? target.friendFeedback : "";
+  target.socialSubmitFeedback = typeof target.socialSubmitFeedback === "string" ? target.socialSubmitFeedback : "";
+  return target;
+}
+function beta115NormalizeDeepState() {
+  try { beta115PreviousNormalizeState(); } catch {}
+  if (!state || typeof state !== "object") state = mergeState(defaultState, {});
+
+  state.xp = beta115CoerceNumber(state.xp, 0);
+  state.gems = beta115CoerceNumber(state.gems, 0);
+  state.streak = beta115CoerceNumber(state.streak, 0, 0, 3650);
+  if (!BETA115_ALLOWED_PERFORMANCE.has(state.performanceMode)) state.performanceMode = "smart";
+  if (state.performanceMode === "light") state.performanceMode = "smart";
+  if (!BETA115_ALLOWED_LESSON_VIEWS.has(state.lessonView)) state.lessonView = "express";
+  if (!BETA115_ALLOWED_LESSON_VIEWS.has(state.lessonFocus)) state.lessonFocus = state.lessonView || "express";
+
+  const savedPseudo = beta114SavedPseudo();
+  if ((!state.pseudo || /^invité$/i.test(state.pseudo)) && savedPseudo) state.pseudo = savedPseudo;
+  state.pseudo = sanitizePseudo(state.pseudo || "Invité") || "Invité";
+  if (state.pseudo && !/^invité$/i.test(state.pseudo)) beta114RememberPseudo(state.pseudo);
+
+  const discipline = beta114ValidDisciplineId(state.currentDiscipline || "history");
+  state.currentDiscipline = discipline;
+  state.currentMysteryDiscipline = beta114ValidDisciplineId(state.currentMysteryDiscipline || discipline);
+
+  const lessonIds = beta115AllLessonIds();
+  if (state.currentLessonId && !lessonIds.has(state.currentLessonId)) state.currentLessonId = null;
+  if (state.tab === "lesson" && !state.currentLessonId) {
+    const first = beta115FirstPlayableLessonForDiscipline(discipline);
+    if (first) {
+      state.currentLessonId = first.id;
+      state.currentWorld = lessonWorldId(first.id) || state.currentWorld;
+      state.lessonView = "express";
+      state.lessonFocus = "express";
+    } else {
+      state.tab = "learn";
+    }
+  }
+
+  const mysteryIds = beta115AllMysteryIds();
+  if (state.currentMysteryId && !mysteryIds.has(state.currentMysteryId)) state.currentMysteryId = null;
+  if (state.tab === "mystery" && !state.currentMysteryId) {
+    const mystery = dailyMystery();
+    if (mystery?.id) state.currentMysteryId = mystery.id;
+    else state.tab = "home";
+  }
+
+  beta115CleanVolatileState(state);
+}
+
+beta114NormalizeState = beta115NormalizeDeepState;
+
+function beta115RenderSignature() {
+  try { return `${state.tab}|${state.currentDiscipline}|${state.currentWorld}|${state.currentLessonId || ""}|${state.currentMysteryId || ""}`; }
+  catch { return "unknown"; }
+}
+function beta115BlankApp() {
+  try { return !app || !app.textContent || app.textContent.trim().length < 8; }
+  catch { return true; }
+}
+function beta115FallbackMarkup(message = "L’affichage a été relancé.") {
+  return `<main class="app-shell app-error-shell"><section class="card app-error-card"><span class="card-label">Réparation affichage</span><h1>On remet l’app au propre</h1><p>${escapeHtml(message)}</p><div class="home-actions-row"><button type="button" data-beta115-repaint>Relancer</button><button type="button" class="ghost" data-beta115-go-home>Accueil</button></div><button type="button" class="ghost wide" data-beta115-soft-repair>Réparer sans supprimer ma progression</button></section></main>`;
+}
+function beta115AfterRenderCheck() {
+  window.setTimeout(() => {
+    if (!beta115BlankApp()) return;
+    try {
+      app.innerHTML = beta115FallbackMarkup("Un écran vide a été détecté après un changement d’onglet.");
+      beta115WriteHealth({ blankScreenRecovered: (beta115ReadHealth().blankScreenRecovered || 0) + 1, lastBlankAt: Date.now() });
+    } catch {}
+  }, 60);
+}
+
+const beta115PreviousDirectRender = beta114DirectRender;
+beta114DirectRender = function beta115DirectRender() {
+  const signature = beta115RenderSignature();
+  try {
+    beta115NormalizeDeepState();
+    beta115PreviousDirectRender();
+    beta115LastHealthyRender = Date.now();
+    beta115LastRenderSignature = signature;
+    beta115WriteHealth({ lastHealthyRender: beta115LastHealthyRender, lastSignature: beta115LastRenderSignature, lastError: "" });
+    beta115AfterRenderCheck();
+  } catch (error) {
+    console.error("HistoDaily beta115 render error", error);
+    beta115WriteHealth({ lastError: String(error?.message || error || "Erreur"), lastErrorAt: Date.now(), lastSignature: signature });
+    try {
+      app.innerHTML = beta115FallbackMarkup(String(error?.message || error || "Erreur d’affichage").slice(0, 220));
+    } catch {}
+  }
+};
+
+const beta115PreviousSetState = setState;
+setState = function beta115SetState(patch, options = {}) {
+  if (!patch || typeof patch !== "object") return;
+  const now = Date.now();
+  const onlyTab = Object.keys(patch).length === 1 && Object.prototype.hasOwnProperty.call(patch, "tab");
+  if (onlyTab && now - beta115TapLock < 80) return;
+  if (onlyTab) beta115TapLock = now;
+  const normalizedPatch = { ...patch };
+  if (normalizedPatch.tab && !BETA114_ALLOWED_TABS.has(normalizedPatch.tab)) normalizedPatch.tab = "home";
+  beta115PreviousSetState(normalizedPatch, options);
+};
+
+function beta115SoftRepairState({ goHome = false, feedback = "Affichage réparé. Progression conservée." } = {}) {
+  const pseudo = sanitizePseudo(state?.pseudo || beta114SavedPseudo() || "Invité") || "Invité";
+  const safeState = mergeState(defaultState, {
+    ...state,
+    pseudo,
+    tab: goHome ? "home" : (BETA114_ALLOWED_TABS.has(state?.tab) ? state.tab : "home"),
+    profileFeedback: feedback,
+    serverLeaderboardStatus: {},
+    serverFriendsStatus: {},
+    socialSubmitFeedback: "",
+    inviteFeedback: "",
+    backupFeedback: ""
+  });
+  state = safeState;
+  beta115NormalizeDeepState();
+  beta114RememberPseudo(state.pseudo);
+  saveState();
+  render({ immediate: true });
+}
+function beta115HealthMarkup() {
+  const health = beta115ReadHealth();
+  const recovered = Number(health.blankScreenRecovered || 0);
+  const lastOk = health.lastHealthyRender ? new Date(health.lastHealthyRender).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "—";
+  const mode = performanceMode();
+  return `<section class="card beta115-health-card"><div class="section-title-row"><div><span class="card-label">Diagnostic beta</span><h2>Stabilité de l’app</h2><p>Outils utiles quand un téléphone garde un ancien état, un onglet vide ou un affichage bizarre.</p></div><small>${escapeHtml(APP_VERSION)}</small></div><div class="public-stats-grid"><div><strong>${escapeHtml(mode)}</strong><span>Mode</span></div><div><strong>${recovered}</strong><span>Relances</span></div><div><strong>${escapeHtml(lastOk)}</strong><span>Dernier rendu OK</span></div><div><strong>${isOnline ? "Oui" : "Non"}</strong><span>Réseau</span></div></div><div class="home-actions-row beta115-actions"><button type="button" data-beta115-repaint>Relancer affichage</button><button type="button" class="ghost" data-beta115-static>Mode statique</button></div><button type="button" class="ghost wide" data-beta115-soft-repair>Réparer sans supprimer ma progression</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>`;
+}
+
+const beta115PreviousProfileSettingsMarkup = profileSettingsMarkup;
+profileSettingsMarkup = function beta115ProfileSettingsMarkup() {
+  return `${beta115HealthMarkup()}${beta115PreviousProfileSettingsMarkup()}`;
+};
+
+function beta115HandleRepairActions(event) {
+  const target = event.target?.closest?.("[data-beta115-repaint],[data-beta115-go-home],[data-beta115-soft-repair],[data-beta115-static]");
+  if (!target) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (target.matches("[data-beta115-go-home]")) return beta115SoftRepairState({ goHome: true });
+  if (target.matches("[data-beta115-static]")) return setState({ performanceMode: "static", profileFeedback: "Mode statique activé pour tester la stabilité." }, { renderImmediate: true });
+  if (target.matches("[data-beta115-soft-repair]")) return beta115SoftRepairState({ feedback: "État local nettoyé. Le pseudo et la progression lisible sont conservés." });
+  state.profileFeedback = "Affichage relancé.";
+  saveState();
+  render({ immediate: true });
+}
+document.addEventListener("click", beta115HandleRepairActions, true);
+
+window.addEventListener("pageshow", () => {
+  try {
+    beta115NormalizeDeepState();
+    if (beta115BlankApp() || Date.now() - beta115LastHealthyRender > 600000) render({ immediate: true });
+  } catch {}
+});
+window.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  try {
+    applyDisciplineTheme();
+    if (beta115BlankApp()) render({ immediate: true });
+  } catch {}
+});
+window.addEventListener("orientationchange", () => {
+  window.setTimeout(() => {
+    try { render({ immediate: true }); } catch {}
+  }, 180);
+});
+
+window.HistoDailyDebug = {
+  version: BETA115_VERSION,
+  health: beta115ReadHealth,
+  repair: () => beta115SoftRepairState({ goHome: true }),
+  state: () => ({ ...state })
+};
+
+try {
+  beta115NormalizeDeepState();
+  beta115WriteHealth({ bootAt: Date.now(), lastBootVersion: BETA115_VERSION });
+} catch {}
+if (document.readyState !== "loading") render({ immediate: true });
