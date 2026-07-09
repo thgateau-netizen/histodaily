@@ -68,3 +68,43 @@ create index if not exists hd_friend_requests_status_updated_idx on public.hd_fr
 create index if not exists hd_friend_requests_requester_target_player_idx on public.hd_friend_requests (requester_player_id, target_player_id, status, updated_at desc);
 create index if not exists hd_friend_requests_requester_target_code_idx on public.hd_friend_requests (requester_player_id, target_friend_code, status, updated_at desc);
 create unique index if not exists hd_friend_requests_pending_unique on public.hd_friend_requests (requester_player_id, coalesce(target_player_id, ''), coalesce(target_friend_code, '')) where status = 'pending';
+
+
+-- beta142 : aucun changement obligatoire si les tables existent déjà.
+-- Le serveur utilise maintenant friend_code comme point d'ancrage canonique pour éviter
+-- les profils fantômes quand le player_id local change pendant les tests.
+
+
+-- beta143 : diagnostic optionnel, aucune migration obligatoire.
+-- Requête utile pour inspecter les profils de test sans rien supprimer :
+-- select player_id, pseudo, friend_code, level, xp, solved_count, streak, created_at, updated_at
+-- from public.hd_profiles
+-- order by updated_at desc;
+
+
+-- beta144 : aucune migration obligatoire.
+-- Diagnostics utiles si tu veux inspecter plus tard les doublons de test.
+-- Profils ayant le même pseudo :
+-- select lower(pseudo) as pseudo, count(*) as nb, max(updated_at) as dernier
+-- from public.hd_profiles
+-- group by lower(pseudo)
+-- having count(*) > 1
+-- order by nb desc, dernier desc;
+-- Scores potentiellement dupliqués par code ami sur le même mystère/jour :
+-- select friend_code, mystery_id, period_key, count(*) as nb
+-- from public.hd_scores
+-- where friend_code is not null and friend_code <> ''
+-- group by friend_code, mystery_id, period_key
+-- having count(*) > 1;
+
+
+-- beta147 : aucune migration obligatoire.
+-- Diagnostic utile après déploiement :
+-- /api/v1/health doit afficher schemaChecks.profiles/scores/friends/friendRequests à true.
+-- /api/v1/social/state?playerId=TON_PLAYER_ID&friendCode=TON_CODE permet de vérifier un profil sans modifier les données.
+
+
+-- beta148 : aucune migration obligatoire. Pré-vérification via /api/v1/system/preflight.
+
+
+-- beta149 : aucune migration obligatoire. Auto-test non destructif via /api/v1/system/selftest.

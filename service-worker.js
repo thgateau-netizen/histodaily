@@ -1,13 +1,15 @@
-const CACHE_NAME = "histodaily-beta139-discipline-content-v1";
-const APP_VERSION = "1.0.0-beta.140";
+const CACHE_NAME = "histodaily-beta157-perf-v1";
+const APP_VERSION = "1.0.0-beta.157-perf";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.140",
-  "/app-core.js?v=1.0.0-beta.140",
-  "/app-onboarding.js?v=1.0.0-beta.140",
-  "/app.js?v=1.0.0-beta.140",
-  "/lessons-lite.js?v=1.0.0-beta.140",
+  "/styles.css?v=1.0.0-beta.157-perf",
+  "/styles-perf.css?v=1.0.0-beta.157-perf",
+  "/app-core.js?v=1.0.0-beta.157-perf",
+  "/app-onboarding.js?v=1.0.0-beta.157-perf",
+  "/app.js?v=1.0.0-beta.157-perf",
+  "/app-perf.js?v=1.0.0-beta.157-perf",
+  "/lessons-lite.js?v=1.0.0-beta.157-perf",
   "/manifest.webmanifest"
 ];
 
@@ -61,4 +63,12 @@ self.addEventListener("fetch", event => {
       return cached || caches.match("/index.html");
     }
   })());
+});
+
+
+// BETA149_VERSION_MESSAGE: permet à l'app de vérifier la version du service worker sans effet de bord.
+self.addEventListener("message", event => {
+  if (event.data && event.data.type === "HISTODAILY_VERSION") {
+    event.source?.postMessage?.({ type: "HISTODAILY_VERSION", version: APP_VERSION, cache: CACHE_NAME });
+  }
 });

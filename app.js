@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.140";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.156";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -980,7 +980,7 @@ function filterLessons(lessons) {
 }
 function learnFilterMarkup(all, shown) {
   if (!all.length) {
-    return `<section class="card learn-filter-card planned-lessons-note"><div><span class="card-label">Cours à écrire</span><h2>Le squelette du domaine est posé.</h2><p>Les grands chapitres sont rangés. Il reste à remplir les vrais cours, sans ajouter de contenu vide juste pour faire nombre.</p></div></section>`;
+    return `<section class="card learn-filter-card planned-lessons-note"><div><span class="card-label">À venir</span><h2>Ce chapitre arrive bientôt.</h2><p>Ce chapitre sera ouvert quand ses cours seront prêts.</p></div></section>`;
   }
   const filter = learnFilter();
   const search = learnSearchQuery();
@@ -8276,7 +8276,7 @@ function renderLearn() {
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">1 · Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === groupId, disciplineId)).join("")}</div></section>
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">2 · Thèmes du chapitre</span><h2>${escapeHtml(group.title || "Parcours")}</h2></div><small>${worlds.length} thèmes</small></div><div class="tree-grid themes-grid">${worlds.map(item => treeWorldCard(item, item.id === world.id)).join("")}</div></section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "Cours à écrire."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre thème ou reviens au parcours principal.") : "Explore un autre thème pour l’instant."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre thème ou reviens au parcours principal.") : "Explore un autre thème pour l’instant."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
   $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
   document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
   document.querySelectorAll("[data-tree-group]").forEach(card => {
@@ -9715,7 +9715,7 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
         </article>`;
       }).join("")}
     </div>
-    <div class="home-card-footer"><span>On garde des contenus propres : structure d’abord, vrais cours ensuite.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
+    <div class="home-card-footer"><span>Les cartes affichées sont prêtes à ouvrir.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
   </section>`;
 }
 function renderHome() {
@@ -13259,7 +13259,7 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
         </article>`;
       }).join("")}
     </div>
-    <div class="home-card-footer"><span>On garde des contenus propres : structure d’abord, vrais cours ensuite.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
+    <div class="home-card-footer"><span>Les cartes affichées sont prêtes à ouvrir.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
   </section>`;
 }
 
@@ -13437,7 +13437,7 @@ function beta114NormalizeState() {
 }
 function beta114ErrorMarkup(error) {
   const message = String(error?.message || error || "Erreur inconnue").slice(0, 220);
-  return `<main class="app-shell app-error-shell"><section class="card app-error-card"><span class="card-label">Robustesse</span><h1>Affichage relancé</h1><p>Un rendu a planté, donc l'app a affiché cette page de sécurité au lieu de rester bloquée.</p><p class="profile-feedback">${escapeHtml(message)}</p><div class="home-actions-row"><button type="button" data-beta114-safe-home>Retour accueil</button><button type="button" class="ghost" data-beta114-safe-profile>Profil</button></div><button type="button" class="ghost wide" data-beta114-soft-reset>Réparer l'état local</button></section></main>`;
+  return `<main class="app-shell app-error-shell"><section class="card app-error-card"><span class="card-label">Sécurité</span><h1>Affichage relancé</h1><p>L’app a rencontré un souci d’affichage et a relancé une page sûre au lieu de rester bloquée.</p><p class="profile-feedback">${escapeHtml(message)}</p><div class="home-actions-row"><button type="button" data-beta114-safe-home>Retour accueil</button><button type="button" class="ghost" data-beta114-safe-profile>Profil</button></div><button type="button" class="ghost wide" data-beta114-soft-reset>Réparer l’app</button></section></main>`;
 }
 function beta114BindErrorActions() {
   document.querySelector("[data-beta114-safe-home]")?.addEventListener("click", () => setState({ tab: "home" }, { save: false }));
@@ -13751,7 +13751,7 @@ function beta115HealthMarkup() {
   const recovered = Number(health.blankScreenRecovered || 0);
   const lastOk = health.lastHealthyRender ? new Date(health.lastHealthyRender).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "—";
   const mode = performanceMode();
-  return `<section class="card beta115-health-card"><div class="section-title-row"><div><span class="card-label">Diagnostic beta</span><h2>Stabilité de l’app</h2><p>Outils utiles quand un téléphone garde un ancien état, un onglet vide ou un affichage bizarre.</p></div><small>${escapeHtml(APP_VERSION)}</small></div><div class="public-stats-grid"><div><strong>${escapeHtml(mode)}</strong><span>Mode</span></div><div><strong>${recovered}</strong><span>Relances</span></div><div><strong>${escapeHtml(lastOk)}</strong><span>Dernier rendu OK</span></div><div><strong>${isOnline ? "Oui" : "Non"}</strong><span>Réseau</span></div></div><div class="home-actions-row beta115-actions"><button type="button" data-beta115-repaint>Relancer affichage</button><button type="button" class="ghost" data-beta115-static>Mode statique</button></div><button type="button" class="ghost wide" data-beta115-soft-repair>Réparer sans supprimer ma progression</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>`;
+  return `<section class="card beta115-health-card"><div class="section-title-row"><div><span class="card-label">Assistance</span><h2>Stabilité de l’app</h2><p>Outils utiles quand un téléphone garde un ancien état, un onglet vide ou un affichage bizarre.</p></div><small>${escapeHtml(APP_VERSION)}</small></div><div class="public-stats-grid"><div><strong>${escapeHtml(mode)}</strong><span>Mode</span></div><div><strong>${recovered}</strong><span>Relances</span></div><div><strong>${escapeHtml(lastOk)}</strong><span>Dernier rendu OK</span></div><div><strong>${isOnline ? "Oui" : "Non"}</strong><span>Réseau</span></div></div><div class="home-actions-row beta115-actions"><button type="button" data-beta115-repaint>Relancer affichage</button><button type="button" class="ghost" data-beta115-static>Mode statique</button></div><button type="button" class="ghost wide" data-beta115-soft-repair>Réparer sans supprimer ma progression</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>`;
 }
 
 const beta115PreviousProfileSettingsMarkup = profileSettingsMarkup;
@@ -13887,7 +13887,7 @@ function beta117ChapterHero(group, discipline, groupId, disciplineId) {
 }
 function beta117PlannedWorldsMarkup(worlds) {
   if (!worlds.length) return "";
-  return `<section class="card beta117-planned-topics"><span class="card-label">Thèmes préparés</span><h2>Le chapitre est rangé, les cours arrivent ensuite.</h2><div class="beta117-topic-list">${worlds.map(world => `<span>${world.emoji || "📚"} ${escapeHtml(world.title)}</span>`).join("")}</div></section>`;
+  return `<section class="card beta117-planned-topics"><span class="card-label">Thèmes préparés</span><h2>Ce chapitre arrive bientôt.</h2><div class="beta117-topic-list">${worlds.map(world => `<span>${world.emoji || "📚"} ${escapeHtml(world.title)}</span>`).join("")}</div></section>`;
 }
 function beta117RenderLearnChapters(disciplineId, discipline, groups) {
   renderShell(`
@@ -13919,7 +13919,7 @@ function beta117RenderLearnCourses(disciplineId, discipline, groupId, group) {
     <header class="topbar tree-topbar beta117-course-topbar"><button data-back-chapters>←</button><div><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(group.title || "Chapitre")}</h1><p class="tree-subtitle">Liste des cours du chapitre. Le reste du parcours est masqué pour garder la page légère.</p></div></header>
     ${beta117ChapterHero(group, discipline, groupId, disciplineId)}
     ${learnFilterMarkup(items.map(item => item.lesson), shownItems.map(item => item.lesson))}
-    <section class="tree-section beta117-course-list"><div class="section-title-row"><div><span class="card-label">Cours du chapitre</span><h2>${shownItems.length}/${items.length} cours visible${shownItems.length > 1 ? "s" : ""}</h2></div><button type="button" class="ghost beta117-back-inline" data-back-chapters>← Chapitres</button></div><div class="tree-lesson-list">${shownItems.map((item, index) => treeLessonCard(item.lesson, index, item.world)).join("") || `<div class="card empty-filter-card"><h2>${items.length ? "Aucun cours trouvé." : "Cours à écrire."}</h2><p>${items.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Aucun cours ne correspond au filtre actuel.") : "Le chapitre est prêt dans le parcours. On ajoutera ensuite de vrais cours complets, pas du remplissage."}</p>${items.length ? `<button data-learn-filter="all">Voir tous les cours du chapitre</button>` : ""}</div>`}</div></section>
+    <section class="tree-section beta117-course-list"><div class="section-title-row"><div><span class="card-label">Cours du chapitre</span><h2>${shownItems.length}/${items.length} cours visible${shownItems.length > 1 ? "s" : ""}</h2></div><button type="button" class="ghost beta117-back-inline" data-back-chapters>← Chapitres</button></div><div class="tree-lesson-list">${shownItems.map((item, index) => treeLessonCard(item.lesson, index, item.world)).join("") || `<div class="card empty-filter-card"><h2>${items.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${items.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Aucun cours ne correspond au filtre actuel.") : "Ce chapitre sera ouvert quand ses cours seront prêts."}</p>${items.length ? `<button data-learn-filter="all">Voir tous les cours du chapitre</button>` : ""}</div>`}</div></section>
     ${!items.length ? beta117PlannedWorldsMarkup(plannedWorlds) : ""}
   `);
   document.querySelectorAll("[data-back-chapters]").forEach(btn => btn.addEventListener("click", () => setState({ learnDrill: "chapters", learnSearch: "", learnFilter: "all" }, { save: false })));
@@ -13957,7 +13957,7 @@ renderLearn = function beta117RenderLearn() {
   const discipline = disciplineById(disciplineId);
   const groups = treeGroups(disciplineId);
   if (!groups.length) {
-    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">La discipline est prête, les cours arrivent ensuite.</p></div></header>${disciplineSelectorMarkup(disciplineId)}${disciplineEmptyMarkup(discipline)}`);
+    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Les premiers cours de cette discipline arrivent progressivement.</p></div></header>${disciplineSelectorMarkup(disciplineId)}${disciplineEmptyMarkup(discipline)}`);
     $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
     document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
     return;
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.140";
+const BETA124_VERSION = "1.0.0-beta.156";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.140";
+const BETA125_VERSION = "1.0.0-beta.156";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.140";
+const BETA126_VERSION = "1.0.0-beta.156";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.140";
+const BETA127_VERSION = "1.0.0-beta.156";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.140";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.156";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.140";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.156";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.140";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.156";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.140";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.156";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.140";
+const BETA132_SAFE_VERSION = "1.0.0-beta.156";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.140";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.156";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.140";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.156";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16429,7 +16429,7 @@ try {
    Beta 135 — nettoyage de copie utilisateur
    Patch note visible, vocabulaire moins interne, accueil plus clair.
    ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.140";
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.156";
 
 releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
@@ -16467,7 +16467,7 @@ try {
    puis le même tap peut être repris par la navigation après le rendu.
    On consomme donc l'événement Indice avant tout changement d'écran.
    ========================================================= */
-const BETA136_HINT_TAP_VERSION = "1.0.0-beta.140";
+const BETA136_HINT_TAP_VERSION = "1.0.0-beta.156";
 let beta136HintTapAt = 0;
 let beta136LastHintMysteryId = "";
 
@@ -16546,7 +16546,7 @@ try {
    Histoire / Cinéma / Économie / etc. déclenche parfois le mode touché.
    On distingue maintenant un vrai tap d'un swipe/scroll horizontal.
    ========================================================= */
-const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.140";
+const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.156";
 const beta139ModeSwipe = {
   active: false,
   tracking: false,
@@ -16681,7 +16681,7 @@ try {
    des chapitres sans cours jouables. On filtre maintenant les actions
    principales sur les contenus réellement disponibles.
    ========================================================= */
-const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.140";
+const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.156";
 
 function beta139RealWorldsForDiscipline(disciplineId = activeDisciplineId()) {
   const id = disciplineById(disciplineId || "history").id;
@@ -16893,7 +16893,7 @@ renderLearn = function beta139RenderLearn() {
     const mystery = dailyMystery();
     return renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Les cours de cette discipline arrivent progressivement.</p></div></header>
       ${disciplineSelectorMarkup(disciplineId)}
-      <section class="card discipline-empty-card" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${discipline.emoji}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours jouable ici</h2><p>Tu peux déjà jouer le mystère de cette catégorie. Les chapitres vides ne sont plus affichés comme s’ils étaient disponibles.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
+      <section class="card discipline-empty-card" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${discipline.emoji}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours jouable ici</h2><p>Tu peux déjà jouer le mystère de cette catégorie. Les cours seront ajoutés quand le parcours sera assez solide.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
   }
   return beta139PreviousRenderLearn ? beta139PreviousRenderLearn() : null;
 };
@@ -16924,7 +16924,7 @@ try {
    - requestId serveur conservé quand disponible
    - nettoyage local immédiat + récupération après ancien flux direct
    ========================================================= */
-const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.140";
+const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.156";
 let beta140LastCancelTapAt = 0;
 
 function beta140ParseTargetKey(key = "") {
@@ -17077,3 +17077,1911 @@ try {
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA140_CANCEL_REQUEST_VERSION, friendRequestCancelFix: true };
   render({ immediate: true });
 } catch {}
+
+
+/* =========================================================
+   Beta 141 — remise à zéro relation ami + refresh social dur
+   - corrige l'annulation qui restait bloquée après un ancien ajout direct
+   - le bouton Actualiser remplace la liste locale par l'état Supabase
+   - l'annulation nettoie demandes + ancien hd_friends puis force le rechargement
+   ========================================================= */
+const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.156";
+let beta141RefreshInFlight = false;
+let beta141LastRefreshTapAt = 0;
+
+function beta141FriendMapFromServer(rows = []) {
+  const next = {};
+  if (!Array.isArray(rows)) return next;
+  rows.forEach(row => {
+    const friend = typeof normalizeServerFriend === "function" ? normalizeServerFriend(row) : null;
+    if (!friend || !friend.code) return;
+    next[friend.id || friend.code] = { ...friend, syncedAt: Date.now() };
+  });
+  return next;
+}
+function beta141SameRequestTarget(req = {}, target = {}) {
+  const reqId = String(req.requestId || req.id || "");
+  const targetId = String(target.requestId || "");
+  if (reqId && targetId && reqId === targetId) return true;
+  const reqPlayer = String(req.targetPlayerId || req.otherPlayerId || req.playerId || "");
+  const targetPlayer = String(target.targetPlayerId || target.playerId || "");
+  if (reqPlayer && targetPlayer && reqPlayer === targetPlayer) return true;
+  const reqCode = normalizeFriendCode(req.targetFriendCode || req.otherFriendCode || req.friendCode || req.code || "");
+  const targetCode = normalizeFriendCode(target.targetFriendCode || target.friendCode || target.code || "");
+  if (reqCode && targetCode && (reqCode === targetCode || friendCodeSuffix(reqCode) === friendCodeSuffix(targetCode))) return true;
+  return false;
+}
+function beta141CleanLocalRelation(target = {}) {
+  const code = normalizeFriendCode(target.targetFriendCode || target.friendCode || target.code || "");
+  const pid = String(target.targetPlayerId || target.friendPlayerId || target.playerId || "");
+  const suffix = friendCodeSuffix(code);
+  const friends = { ...(state.friends || {}) };
+  Object.keys(friends).forEach(key => {
+    const friend = friends[key] || {};
+    const fCode = normalizeFriendCode(friend.code || friend.id || key || "");
+    const fPid = String(friend.playerId || friend.friend_player_id || "");
+    const same = (pid && fPid && pid === fPid) || (code && fCode && (fCode === code || friendCodeSuffix(fCode) === suffix));
+    if (same) delete friends[key];
+  });
+  state.friends = friends;
+  if (typeof beta125FriendRequestsState === "function" && typeof beta125SetFriendRequests === "function") {
+    const current = beta125FriendRequestsState();
+    beta125SetFriendRequests({
+      ...current,
+      outgoing: (current.outgoing || []).filter(req => !beta141SameRequestTarget(req, target)),
+      incoming: (current.incoming || []).filter(req => !beta141SameRequestTarget(req, target))
+    });
+  }
+  if (typeof beta128RemoveOutgoingFromOutbox === "function") beta128RemoveOutgoingFromOutbox(target);
+  state.serverLeaderboards = { ...(state.serverLeaderboards || {}), friends: [] };
+}
+
+const beta141PreviousFetchServerFriends = typeof fetchServerFriends === "function" ? fetchServerFriends : null;
+if (beta141PreviousFetchServerFriends) {
+  fetchServerFriends = async function beta141FetchServerFriends(options = {}) {
+    const force = Boolean(options.force);
+    const hard = force || Boolean(options.hard);
+    if (!isOnline) return beta141PreviousFetchServerFriends(options);
+    const now = Date.now();
+    const status = state.serverFriendsStatus || {};
+    if (!force && status.loadedAt && now - status.loadedAt < 45000) return;
+    if (friendsFetchInFlight) return;
+    friendsFetchInFlight = true;
+    state.serverFriendsStatus = { ...status, loading: true };
+    queueSaveState(100);
+    try {
+      const response = await fetch(`/api/v1/friends/sync?playerId=${encodeURIComponent(playerIdMe())}&myFriendCode=${encodeURIComponent(friendCode())}&hard=${hard ? "1" : "0"}&_=${Date.now()}`, { cache: "no-store" });
+      const json = await response.json().catch(() => ({}));
+      if (response.ok && json?.ok !== false && json?.mode === "supabase") {
+        const next = beta141FriendMapFromServer(json.friends || []);
+        state.friends = next;
+        state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode, message: json.message || "Amis actualisés." };
+        state.serverLeaderboards = { ...(state.serverLeaderboards || {}), friends: [] };
+        state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), friends: { loadedAt: 0, mode: "refresh", note: "Liste d’amis actualisée." } };
+        queueSaveState(100);
+        fetchServerLeaderboard("friends", { force: true }).catch(() => {});
+        if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+        return;
+      }
+      await beta141PreviousFetchServerFriends(options);
+    } catch {
+      state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: "error", message: "Amis en ligne indisponibles." };
+      queueSaveState(100);
+    } finally {
+      friendsFetchInFlight = false;
+    }
+  };
+}
+
+async function beta141HardSocialRefresh() {
+  if (beta141RefreshInFlight) return;
+  beta141RefreshInFlight = true;
+  state.friendRequestFeedback = "Actualisation…";
+  state.serverFriendsStatus = { ...(state.serverFriendsStatus || {}), loading: true };
+  state.serverFriendRequestsStatus = { ...(state.serverFriendRequestsStatus || {}), loading: true };
+  render({ immediate: true });
+  try {
+    if (typeof beta125FetchFriendRequests === "function") await beta125FetchFriendRequests({ force: true }).catch(() => {});
+    if (typeof fetchServerFriends === "function") await fetchServerFriends({ force: true, hard: true }).catch(() => {});
+    await Promise.all(["daily", "week", "year", "friends"].map(scope => fetchServerLeaderboard(scope, { force: true }).catch(() => {})));
+    state.friendRequestFeedback = "Social actualisé.";
+  } finally {
+    beta141RefreshInFlight = false;
+    queueSaveState(100);
+    if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+  }
+}
+
+const beta141PreviousCancelFriendRequest = typeof beta128CancelFriendRequest === "function" ? beta128CancelFriendRequest : null;
+if (beta141PreviousCancelFriendRequest) {
+  beta128CancelFriendRequest = async function beta141CancelFriendRequest(target = {}) {
+    const label = target.targetPseudo || "ce joueur";
+    beta141CleanLocalRelation(target);
+    state.friendRequestFeedback = `Annulation de la demande à ${label}…`;
+    queueSaveState(100);
+    if (!isOnline) {
+      render({ immediate: true });
+      return;
+    }
+    try {
+      const response = await fetch("/api/v1/friends/request", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "cancel",
+          playerId: playerIdMe(),
+          pseudo: currentPseudo(),
+          myFriendCode: friendCode(),
+          requestId: target.requestId || "",
+          targetPlayerId: target.targetPlayerId || target.playerId || "",
+          targetFriendCode: target.targetFriendCode || target.friendCode || target.code || ""
+        })
+      });
+      const json = await response.json().catch(() => ({}));
+      if (response.ok && json?.ok !== false) {
+        if (json.requests && typeof beta125SetFriendRequests === "function") beta125SetFriendRequests(json.requests);
+        if (Array.isArray(json.friends)) state.friends = beta141FriendMapFromServer(json.friends);
+        state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "" };
+        state.friendRequestFeedback = "Demande annulée. Tu peux réessayer.";
+      }
+      await beta141HardSocialRefresh();
+    } catch {
+      state.friendRequestFeedback = "Demande retirée localement. Réessaie l’actualisation si elle revient.";
+    }
+    queueSaveState(100);
+    if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+  };
+}
+
+function beta141HandleRefreshTap(event) {
+  const btn = event.target?.closest?.("[data-refresh-social],[data-refresh-requests]");
+  if (!btn) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+  const now = Date.now();
+  if (now - beta141LastRefreshTapAt < 500) return;
+  beta141LastRefreshTapAt = now;
+  beta141HardSocialRefresh().catch(() => {});
+}
+try {
+  window.addEventListener("pointerup", beta141HandleRefreshTap, true);
+  window.addEventListener("touchend", beta141HandleRefreshTap, { capture: true, passive: false });
+  window.addEventListener("click", beta141HandleRefreshTap, true);
+  state.beta141SocialResetVersion = BETA141_SOCIAL_RESET_VERSION;
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA141_SOCIAL_RESET_VERSION, socialResetFix: true };
+  queueSaveState(50);
+} catch {}
+
+
+/* =========================================================
+   Beta 142 — online hardening
+   - identité canonique renvoyée par Supabase adoptée côté app
+   - bouton Réparer la synchro
+   - diagnostic discret pour comprendre les états online
+   - refresh social = vérité serveur + files locales
+   ========================================================= */
+const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.156";
+let beta142RepairInFlight = false;
+let beta142LastRepairTapAt = 0;
+
+function beta142Short(value = "") {
+  const text = String(value || "");
+  if (!text) return "—";
+  if (text.length <= 14) return text;
+  return `${text.slice(0, 6)}…${text.slice(-5)}`;
+}
+function beta142Age(timestamp) {
+  const at = Number(timestamp || 0);
+  if (!at) return "jamais";
+  const seconds = Math.max(0, Math.round((Date.now() - at) / 1000));
+  if (seconds < 5) return "à l’instant";
+  if (seconds < 60) return `il y a ${seconds} s`;
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `il y a ${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  return `il y a ${hours} h`;
+}
+function beta142CanonicalSuffix(playerId = "") {
+  const clean = String(playerId || "").trim();
+  const match = clean.match(/^me-([A-Z0-9]{4,12})$/i);
+  return match ? match[1].toUpperCase() : "";
+}
+function beta142WriteLocalIdentityPatch({ localUserId = "", friendCodeValue = "", pseudo = "", canonicalPlayerId = "" } = {}) {
+  const suffix = beta124CleanUserSuffix?.(localUserId || beta142CanonicalSuffix(canonicalPlayerId) || friendCodeSuffix(friendCodeValue) || "") || "";
+  const code = normalizeFriendCode(friendCodeValue || "");
+  const cleanPseudo = sanitizePseudo(pseudo || "");
+  try {
+    if (suffix) {
+      localStorage.setItem(`${STORAGE_KEY}_local_user_id`, suffix);
+      localStorage.setItem("histodaily_player_suffix_v1", suffix);
+      localStorage.setItem("histodaily_local_user_id", suffix);
+    }
+    if (parseFriendCode(code)) {
+      localStorage.setItem(`${STORAGE_KEY}_friend_code`, code);
+      localStorage.setItem("histodaily_friend_code_v1", code);
+    }
+    if (cleanPseudo && !/^invité$/i.test(cleanPseudo)) {
+      localStorage.setItem("histodaily_pseudo_v1", cleanPseudo);
+      localStorage.setItem("histodaily_last_pseudo", cleanPseudo);
+      localStorage.setItem("histodaily_saved_pseudo", cleanPseudo);
+    }
+  } catch {}
+  try {
+    if (typeof beta124WriteIdentity === "function") beta124WriteIdentity({ localUserId: suffix, friendCode: code, pseudo: cleanPseudo || state.pseudo || "Invité", canonicalPlayerId: canonicalPlayerId || (suffix ? `me-${suffix}` : "") });
+  } catch {}
+  try { if (typeof beta128MirrorIdentity === "function") beta128MirrorIdentity(); } catch {}
+}
+function beta142AdoptServerIdentity(payload = {}) {
+  const canonicalPlayerId = String(payload.canonicalPlayerId || payload.profile?.player_id || payload.profile?.playerId || payload.playerId || "");
+  const canonicalFriendCode = normalizeFriendCode(payload.canonicalFriendCode || payload.profile?.friend_code || payload.profile?.friendCode || payload.friendCode || "");
+  const canonicalPseudo = sanitizePseudo(payload.canonicalPseudo || payload.profile?.pseudo || payload.pseudo || state.pseudo || "Invité");
+  const suffix = beta142CanonicalSuffix(canonicalPlayerId) || friendCodeSuffix(canonicalFriendCode);
+  const beforeId = playerIdMe();
+  beta142WriteLocalIdentityPatch({ localUserId: suffix, friendCodeValue: canonicalFriendCode, pseudo: canonicalPseudo, canonicalPlayerId });
+  if (canonicalPseudo && /^invité$/i.test(String(state.pseudo || ""))) state.pseudo = canonicalPseudo;
+  const afterId = playerIdMe();
+  if (beforeId !== afterId) {
+    state.serverLeaderboards = {};
+    state.serverLeaderboardStatus = {};
+    try {
+      if (typeof beta128ReadScoreOutbox === "function" && typeof beta128SaveScoreOutbox === "function") {
+        const outbox = beta128ReadScoreOutbox().map(item => ({ ...item, playerId: afterId, friendCode: friendCode() || item.friendCode }));
+        beta128SaveScoreOutbox(outbox);
+      }
+    } catch {}
+  }
+  state.identitySyncStatus = {
+    ok: true,
+    canonicalPlayerId: canonicalPlayerId || afterId,
+    canonicalFriendCode: canonicalFriendCode || friendCode(),
+    adopted: beforeId !== afterId || Boolean(payload.adoptedCanonicalProfile),
+    checkedAt: Date.now(),
+    message: payload.message || "Identité synchronisée."
+  };
+  queueSaveState(100);
+  return state.identitySyncStatus;
+}
+
+const beta142PreviousSyncMyProfileToServer = typeof syncMyProfileToServer === "function" ? syncMyProfileToServer : null;
+syncMyProfileToServer = async function beta142SyncMyProfileToServer({ source = "profile" } = {}) {
+  if (!isOnline) return null;
+  try {
+    const body = {
+      playerId: playerIdMe(),
+      pseudo: currentPseudo(),
+      friendCode: friendCode(),
+      level: level(),
+      xp: state.xp || 0,
+      solvedCount: Object.keys(state.solvedMysteries || {}).length,
+      streak: state.streak || 0,
+      source
+    };
+    const response = await fetch("/api/v1/me", {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const json = await response.json().catch(() => ({}));
+    if (response.ok && json?.ok !== false) beta142AdoptServerIdentity(json);
+    else if (beta142PreviousSyncMyProfileToServer) return beta142PreviousSyncMyProfileToServer({ source });
+    return json;
+  } catch (error) {
+    state.identitySyncStatus = { ok: false, checkedAt: Date.now(), message: "Profil non synchronisé pour le moment." };
+    queueSaveState(100);
+    if (beta142PreviousSyncMyProfileToServer) return beta142PreviousSyncMyProfileToServer({ source }).catch(() => null);
+    return null;
+  }
+};
+
+function beta142ApplyServerSocialSnapshot(json = {}) {
+  if (json.profile || json.canonicalPlayerId || json.canonicalFriendCode) beta142AdoptServerIdentity(json);
+  if (Array.isArray(json.friends) && typeof beta141FriendMapFromServer === "function") {
+    state.friends = beta141FriendMapFromServer(json.friends);
+    state.serverLeaderboards = { ...(state.serverLeaderboards || {}), friends: [] };
+  }
+  if (json.requests && typeof beta125SetFriendRequests === "function") beta125SetFriendRequests(json.requests);
+  if (json.diagnostics) {
+    state.onlineDiagnostic = { ...(json.diagnostics || {}), checkedAt: Date.now(), mode: json.mode || "unknown" };
+  }
+}
+async function beta142FlushLocalQueues({ force = false } = {}) {
+  try { if (typeof beta128FlushScoreOutbox === "function") await beta128FlushScoreOutbox({ force: true }); } catch {}
+  try { if (typeof beta128FlushOutgoingRequests === "function") await beta128FlushOutgoingRequests({ force: true }); } catch {}
+}
+async function beta142RepairOnlineSync({ silent = false } = {}) {
+  if (beta142RepairInFlight) return;
+  beta142RepairInFlight = true;
+  if (!silent) {
+    state.friendRequestFeedback = "Réparation de la synchro…";
+    state.profileFeedback = "Réparation de la synchro…";
+    render({ immediate: true });
+  }
+  try {
+    await syncMyProfileToServer({ source: "repair-beta142" }).catch(() => null);
+    const body = {
+      playerId: playerIdMe(),
+      pseudo: currentPseudo(),
+      friendCode: friendCode(),
+      myFriendCode: friendCode(),
+      level: level(),
+      xp: state.xp || 0,
+      solvedCount: Object.keys(state.solvedMysteries || {}).length,
+      streak: state.streak || 0
+    };
+    let json = {};
+    if (isOnline) {
+      const response = await fetch("/api/v1/social/repair", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      json = await response.json().catch(() => ({}));
+      if (response.ok && json?.ok !== false) beta142ApplyServerSocialSnapshot(json);
+    }
+    await beta142FlushLocalQueues({ force: true });
+    if (typeof fetchServerFriends === "function") await fetchServerFriends({ force: true, hard: true }).catch(() => {});
+    if (typeof beta125FetchFriendRequests === "function") await beta125FetchFriendRequests({ force: true }).catch(() => {});
+    await Promise.all(["daily", "week", "year", "friends"].map(scope => fetchServerLeaderboard(scope, { force: true }).catch(() => {})));
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      checkedAt: Date.now(),
+      mode: json.mode || state.onlineDiagnostic?.mode || (isOnline ? "checked" : "offline"),
+      playerId: playerIdMe(),
+      friendCode: friendCode(),
+      friendCount: Object.keys(state.friends || {}).length,
+      requestIncoming: (beta125FriendRequestsState?.().incoming || []).length,
+      requestOutgoing: (beta125FriendRequestsState?.().outgoing || []).length,
+      scoreOutbox: typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox().length : 0
+    };
+    state.friendRequestFeedback = "Synchro réparée.";
+    state.profileFeedback = "Synchro réparée.";
+  } catch (error) {
+    state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), checkedAt: Date.now(), mode: "error", message: error?.message || "Réparation incomplète." };
+    state.friendRequestFeedback = "Synchro incomplète : réessaie après actualisation.";
+    state.profileFeedback = "Synchro incomplète : réessaie après actualisation.";
+  } finally {
+    beta142RepairInFlight = false;
+    queueSaveState(100);
+    if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+  }
+}
+
+const beta142PreviousHardSocialRefresh = typeof beta141HardSocialRefresh === "function" ? beta141HardSocialRefresh : null;
+if (beta142PreviousHardSocialRefresh) {
+  beta141HardSocialRefresh = async function beta142HardSocialRefresh() {
+    await beta142RepairOnlineSync({ silent: false });
+  };
+}
+
+function beta142OnlineDiagnosticMarkup() {
+  const req = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [] };
+  const scores = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : [];
+  const diag = state.onlineDiagnostic || {};
+  const identity = typeof beta128IdentitySnapshot === "function" ? beta128IdentitySnapshot() : {};
+  const playerId = diag.playerId || identity.playerId || playerIdMe();
+  const code = diag.friendCode || identity.friendCode || friendCode();
+  const checkedAt = diag.checkedAt || state.identitySyncStatus?.checkedAt || state.serverFriendsStatus?.loadedAt || 0;
+  return `<div class="beta142-online-tools"><div class="home-actions-row"><button type="button" class="ghost mini-button" data-repair-social>${beta142RepairInFlight ? "Réparation…" : "Réparer la synchro"}</button></div><details class="beta142-diagnostic"><summary>État de la synchro</summary><div class="beta142-diagnostic-grid"><span>Code ami</span><strong>${escapeHtml(code || "—")}</strong><span>Profil</span><strong>${escapeHtml(beta142Short(playerId))}</strong><span>Dernière synchro</span><strong>${escapeHtml(beta142Age(checkedAt))}</strong><span>Demandes</span><strong>${(req.incoming || []).length} reçue(s) · ${(req.outgoing || []).length} envoyée(s)</strong><span>Scores en attente</span><strong>${scores.length}</strong></div>${diag.message ? `<p class="muted-note">${escapeHtml(diag.message)}</p>` : ""}</details></div>`;
+}
+const beta142PreviousSocialBackendMarkup = typeof socialBackendMarkup === "function" ? socialBackendMarkup : null;
+if (beta142PreviousSocialBackendMarkup) {
+  socialBackendMarkup = function beta142SocialBackendMarkup() {
+    const html = beta142PreviousSocialBackendMarkup();
+    return html.replace("</section>", `${beta142OnlineDiagnosticMarkup()}</section>`);
+  };
+}
+
+function beta142HandleRepairTap(event) {
+  const btn = event.target?.closest?.("[data-repair-social]");
+  if (!btn) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+  const now = Date.now();
+  if (now - beta142LastRepairTapAt < 700) return;
+  beta142LastRepairTapAt = now;
+  beta142RepairOnlineSync({ silent: false }).catch(() => {});
+}
+try {
+  window.addEventListener("pointerup", beta142HandleRepairTap, true);
+  window.addEventListener("touchend", beta142HandleRepairTap, { capture: true, passive: false });
+  window.addEventListener("click", beta142HandleRepairTap, true);
+  const style = document.createElement("style");
+  style.id = "beta142-online-hardening-style";
+  style.textContent = `.beta142-online-tools{margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}.beta142-diagnostic{margin-top:10px}.beta142-diagnostic summary{cursor:pointer;color:var(--muted);font-weight:800}.beta142-diagnostic-grid{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:10px;font-size:.88rem}.beta142-diagnostic-grid span{color:var(--muted)}.beta142-diagnostic-grid strong{font-weight:800;overflow-wrap:anywhere}`;
+  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA142_ONLINE_HARDENING_VERSION, onlineHardening: true };
+  state.beta142OnlineHardeningVersion = BETA142_ONLINE_HARDENING_VERSION;
+  queueSaveState(50);
+  syncMyProfileToServer({ source: "startup-beta142" }).catch(() => {});
+} catch {}
+
+
+/* Beta 143 — online stability polish */
+const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.156";
+function beta143IdentityWarningMarkup() {
+  const identity = state.onlineDiagnostic?.identity || {};
+  const matches = Number(identity.possibleCodeMatches || 0);
+  if (!matches || matches <= 1) return "";
+  return `<p class="muted-note warning-note">Plusieurs profils utilisent peut-être ce code ami. La synchro se rattache au profil le plus récent connu.</p>`;
+}
+const beta143PreviousOnlineDiagnosticMarkup = typeof beta142OnlineDiagnosticMarkup === "function" ? beta142OnlineDiagnosticMarkup : null;
+if (beta143PreviousOnlineDiagnosticMarkup) {
+  beta142OnlineDiagnosticMarkup = function beta143OnlineDiagnosticMarkup() {
+    return beta143PreviousOnlineDiagnosticMarkup().replace("</details>", `${beta143IdentityWarningMarkup()}</details>`);
+  };
+}
+const beta143PreviousApplyServerSocialSnapshot = typeof beta142ApplyServerSocialSnapshot === "function" ? beta142ApplyServerSocialSnapshot : null;
+if (beta143PreviousApplyServerSocialSnapshot) {
+  beta142ApplyServerSocialSnapshot = function beta143ApplyServerSocialSnapshot(json = {}) {
+    beta143PreviousApplyServerSocialSnapshot(json);
+    // Si le serveur répond, il fait autorité sur les amis/demandes visibles.
+    // Les files locales restent uniquement des outbox de retry, pas une source durable d'état social.
+    if (json && json.mode === "supabase") {
+      state.serverFriendsStatus = { ...(state.serverFriendsStatus || {}), mode: "supabase", loadedAt: Date.now(), serverTruth: true };
+      state.friendRequestFeedback = state.friendRequestFeedback || "Synchro à jour.";
+    }
+  };
+}
+try {
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA143_ONLINE_STABILITY_VERSION, onlineStability: true };
+  state.beta143OnlineStabilityVersion = BETA143_ONLINE_STABILITY_VERSION;
+  queueSaveState(50);
+} catch {}
+
+
+/* Beta 144 — online consistency preflight */
+const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.156";
+function beta145OnlinePreflightSnapshot() {
+  const req = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [] };
+  const scoreOutbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : [];
+  const requestOutbox = typeof beta128Outbox === "function" ? beta128Outbox() : [];
+  return {
+    version: BETA144_ONLINE_CONSISTENCY_VERSION,
+    playerId: typeof playerIdMe === "function" ? playerIdMe() : "",
+    friendCode: typeof friendCode === "function" ? friendCode() : "",
+    pseudo: typeof currentPseudo === "function" ? currentPseudo() : state.pseudo || "",
+    friends: Object.keys(state.friends || {}).length,
+    incomingRequests: (req.incoming || []).length,
+    outgoingRequests: (req.outgoing || []).length,
+    scoreOutbox: scoreOutbox.length,
+    requestOutbox: requestOutbox.length,
+    lastSync: state.onlineDiagnostic?.checkedAt || state.identitySyncStatus?.checkedAt || 0
+  };
+}
+try {
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA144_ONLINE_CONSISTENCY_VERSION, onlineConsistency: true, preflight: beta145OnlinePreflightSnapshot };
+  state.beta145OnlineConsistencyVersion = BETA144_ONLINE_CONSISTENCY_VERSION;
+  queueSaveState(50);
+} catch {}
+
+
+/* =========================================================
+   Beta 145 — online audit client cleanup
+   - cache social local dédoublonné
+   - diagnostic de réparation plus clair
+   - aucune nouvelle interaction obligatoire
+   ========================================================= */
+const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.156";
+function beta145FriendStableKey(friend = {}, fallback = "") {
+  const code = normalizeFriendCode(friend.code || friend.friendCode || friend.friend_code || fallback || "");
+  const suffix = typeof friendCodeSuffix === "function" ? friendCodeSuffix(code) : code;
+  const pid = String(friend.playerId || friend.friend_player_id || "");
+  return pid || suffix || code || String(fallback || "");
+}
+function beta145DedupeLocalFriends() {
+  const source = state.friends || {};
+  const next = {};
+  const selfCode = normalizeFriendCode(typeof friendCode === "function" ? friendCode() : "");
+  const selfId = String(typeof playerIdMe === "function" ? playerIdMe() : "");
+  Object.entries(source).forEach(([key, friend]) => {
+    if (!friend) return;
+    const fCode = normalizeFriendCode(friend.code || friend.friendCode || key || "");
+    const fId = String(friend.playerId || friend.friend_player_id || "");
+    if ((selfId && fId === selfId) || (selfCode && fCode && (fCode === selfCode || friendCodeSuffix(fCode) === friendCodeSuffix(selfCode)))) return;
+    const stable = beta145FriendStableKey(friend, key);
+    const existing = next[stable];
+    const currentAt = Number(friend.syncedAt || friend.createdAt || 0);
+    const existingAt = Number(existing?.syncedAt || existing?.createdAt || 0);
+    if (!existing || currentAt >= existingAt) next[stable] = friend;
+  });
+  state.friends = next;
+}
+function beta145DedupeRequestArray(rows = []) {
+  const seen = new Set();
+  return (rows || []).filter(req => {
+    const key = String(req.requestId || req.id || req.otherPlayerId || req.targetPlayerId || req.requesterPlayerId || friendCodeSuffix(normalizeFriendCode(req.otherFriendCode || req.targetFriendCode || req.requesterFriendCode || "")) || "");
+    const status = String(req.status || "pending");
+    const direction = String(req.direction || "");
+    const full = `${direction}:${status}:${key}`;
+    if (!key || seen.has(full)) return false;
+    seen.add(full);
+    return true;
+  });
+}
+function beta145DedupeLocalRequests() {
+  if (typeof beta125FriendRequestsState !== "function" || typeof beta125SetFriendRequests !== "function") return;
+  const req = beta125FriendRequestsState();
+  beta125SetFriendRequests({
+    ...req,
+    incoming: beta145DedupeRequestArray(req.incoming || []),
+    outgoing: beta145DedupeRequestArray(req.outgoing || []),
+    history: beta145DedupeRequestArray(req.history || [])
+  });
+}
+function beta145ApplyLocalOnlineCleanup() {
+  beta145DedupeLocalFriends();
+  beta145DedupeLocalRequests();
+  state.beta145LocalCleanupAt = Date.now();
+}
+const beta145PreviousApplyServerSocialSnapshot = typeof beta142ApplyServerSocialSnapshot === "function" ? beta142ApplyServerSocialSnapshot : null;
+if (beta145PreviousApplyServerSocialSnapshot) {
+  beta142ApplyServerSocialSnapshot = function beta145ApplyServerSocialSnapshot(json = {}) {
+    beta145PreviousApplyServerSocialSnapshot(json);
+    beta145ApplyLocalOnlineCleanup();
+    const cleanup = json?.diagnostics?.cleanup || {};
+    const total = Object.values(cleanup).reduce((sum, value) => sum + Number(value || 0), 0);
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      cleanup,
+      cleanupTotal: total,
+      audit: json?.diagnostics?.audit || state.onlineDiagnostic?.audit || null,
+      checkedAt: Date.now(),
+      mode: json?.mode || state.onlineDiagnostic?.mode || "checked"
+    };
+  };
+}
+const beta145PreviousOnlineDiagnosticMarkup = typeof beta142OnlineDiagnosticMarkup === "function" ? beta142OnlineDiagnosticMarkup : null;
+if (beta145PreviousOnlineDiagnosticMarkup) {
+  beta142OnlineDiagnosticMarkup = function beta145OnlineDiagnosticMarkup() {
+    const html = beta145PreviousOnlineDiagnosticMarkup();
+    const diag = state.onlineDiagnostic || {};
+    const total = Number(diag.cleanupTotal || 0);
+    const audit = diag.audit || {};
+    const extra = `<div class="beta145-audit-line"><span>Audit</span><strong>${audit?.profiles?.possibleCodeMatches ? `${audit.profiles.possibleCodeMatches} profil(s) possible(s)` : "OK"}</strong></div>${total ? `<p class="muted-note">${total} correction(s) appliquée(s) lors de la dernière réparation.</p>` : ""}`;
+    return html.replace("</details>", `${extra}</details>`);
+  };
+}
+try {
+  beta145ApplyLocalOnlineCleanup();
+  const style = document.createElement("style");
+  style.id = "beta145-online-audit-style";
+  style.textContent = `.beta145-audit-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta145-audit-line span{color:var(--muted)}.beta145-audit-line strong{font-weight:800}`;
+  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA145_ONLINE_AUDIT_VERSION, onlineAudit: true, localSocialCleanup: true };
+  state.beta145OnlineAuditVersion = BETA145_ONLINE_AUDIT_VERSION;
+  queueSaveState(50);
+} catch {}
+
+
+/* =========================================================
+   Beta 146 — online resilience pass
+   - réécrit les files locales avec l'identité canonique
+   - supprime les demandes locales vers soi-même
+   - rend le diagnostic plus exploitable sans nouvel écran
+   ========================================================= */
+const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.156";
+function beta146IsSelfTarget(target = {}) {
+  const targetId = String(target.targetPlayerId || target.playerId || target.player_id || target.otherPlayerId || target.id || "");
+  const targetCode = normalizeFriendCode(target.targetFriendCode || target.friendCode || target.friend_code || target.otherFriendCode || target.code || "");
+  const myId = typeof playerIdMe === "function" ? playerIdMe() : "";
+  const myCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
+  if (targetId && myId && targetId === myId) return true;
+  if (targetCode && myCode && (targetCode === myCode || friendCodeSuffix(targetCode) === friendCodeSuffix(myCode))) return true;
+  return false;
+}
+function beta146NormalizeRequestOutboxItems(list = []) {
+  const myId = typeof playerIdMe === "function" ? playerIdMe() : "";
+  const myCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
+  const seen = new Set();
+  const output = [];
+  (Array.isArray(list) ? list : []).forEach(item => {
+    if (!item || beta146IsSelfTarget(item)) return;
+    const key = typeof beta128TargetKey === "function" ? beta128TargetKey(item) : String(item.key || "");
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    output.push({
+      ...item,
+      key,
+      sourcePlayerId: myId,
+      requesterPlayerId: myId,
+      sourceFriendCode: myCode,
+      requesterFriendCode: myCode,
+      updatedAt: item.updatedAt || Date.now()
+    });
+  });
+  return output.slice(0, 40);
+}
+const beta146PreviousSaveOutbox = typeof beta128SaveOutbox === "function" ? beta128SaveOutbox : null;
+if (beta146PreviousSaveOutbox) {
+  beta128SaveOutbox = function beta146SaveOutbox(list = []) {
+    return beta146PreviousSaveOutbox(beta146NormalizeRequestOutboxItems(list));
+  };
+}
+function beta146RewriteScoreOutboxIdentity() {
+  try {
+    if (typeof beta128ReadScoreOutbox !== "function" || typeof beta128SaveScoreOutbox !== "function") return;
+    const myId = typeof playerIdMe === "function" ? playerIdMe() : "";
+    const myCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
+    const outbox = beta128ReadScoreOutbox();
+    if (!outbox.length) return;
+    beta128SaveScoreOutbox(outbox.map(item => ({ ...item, playerId: myId || item.playerId, friendCode: myCode || item.friendCode })));
+  } catch {}
+}
+function beta146CleanLocalRequestState() {
+  try {
+    if (typeof beta125FriendRequestsState !== "function" || typeof beta125SetFriendRequests !== "function") return;
+    const req = beta125FriendRequestsState();
+    const cleanArray = rows => {
+      const seen = new Set();
+      return (Array.isArray(rows) ? rows : []).filter(row => {
+        if (!row || beta146IsSelfTarget(row)) return false;
+        const key = (typeof beta126RequestKey === "function" ? beta126RequestKey(row) : "") || `${row.direction || ""}:${row.status || "pending"}:${typeof beta128TargetKey === "function" ? beta128TargetKey(row) : row.id || ""}`;
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    };
+    beta125SetFriendRequests({
+      ...req,
+      incoming: cleanArray(req.incoming),
+      outgoing: cleanArray(req.outgoing),
+      history: cleanArray(req.history).slice(0, 30)
+    });
+  } catch {}
+}
+function beta146LocalOnlineSanityCleanup() {
+  try { if (typeof beta128Outbox === "function" && typeof beta128SaveOutbox === "function") beta128SaveOutbox(beta128Outbox()); } catch {}
+  beta146RewriteScoreOutboxIdentity();
+  beta146CleanLocalRequestState();
+  state.beta146LocalOnlineCleanupAt = Date.now();
+}
+const beta146PreviousAdoptServerIdentity = typeof beta142AdoptServerIdentity === "function" ? beta142AdoptServerIdentity : null;
+if (beta146PreviousAdoptServerIdentity) {
+  beta142AdoptServerIdentity = function beta146AdoptServerIdentity(payload = {}) {
+    const result = beta146PreviousAdoptServerIdentity(payload);
+    beta146LocalOnlineSanityCleanup();
+    return result;
+  };
+}
+const beta146PreviousApplyServerSocialSnapshot = typeof beta142ApplyServerSocialSnapshot === "function" ? beta142ApplyServerSocialSnapshot : null;
+if (beta146PreviousApplyServerSocialSnapshot) {
+  beta142ApplyServerSocialSnapshot = function beta146ApplyServerSocialSnapshot(json = {}) {
+    beta146PreviousApplyServerSocialSnapshot(json);
+    beta146LocalOnlineSanityCleanup();
+    const audit = json?.diagnostics?.audit || state.onlineDiagnostic?.audit || {};
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      localOutboxRequests: typeof beta128Outbox === "function" ? beta128Outbox().length : 0,
+      localOutboxScores: typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox().length : 0,
+      unverifiedFriendRows: audit?.friends?.unverifiedRows || state.onlineDiagnostic?.unverifiedFriendRows || 0,
+      checkedAt: Date.now()
+    };
+  };
+}
+const beta146PreviousOnlineDiagnosticMarkup = typeof beta142OnlineDiagnosticMarkup === "function" ? beta142OnlineDiagnosticMarkup : null;
+if (beta146PreviousOnlineDiagnosticMarkup) {
+  beta142OnlineDiagnosticMarkup = function beta146OnlineDiagnosticMarkup() {
+    const html = beta146PreviousOnlineDiagnosticMarkup();
+    const diag = state.onlineDiagnostic || {};
+    const extra = `<div class="beta146-consistency-line"><span>Files locales</span><strong>${Number(diag.localOutboxScores || 0)} score(s) · ${Number(diag.localOutboxRequests || 0)} demande(s)</strong></div>${Number(diag.unverifiedFriendRows || 0) ? `<p class="muted-note warning-note">${Number(diag.unverifiedFriendRows || 0)} relation(s) ancienne(s) à vérifier côté serveur.</p>` : ""}`;
+    return html.replace("</details>", `${extra}</details>`);
+  };
+}
+try {
+  beta146LocalOnlineSanityCleanup();
+  const style = document.createElement("style");
+  style.id = "beta146-online-resilience-style";
+  style.textContent = `.beta146-consistency-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta146-consistency-line span{color:var(--muted)}.beta146-consistency-line strong{font-weight:800}`;
+  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA146_ONLINE_RESILIENCE_VERSION, onlineResilience: true, localOutboxIdentityRewrite: true };
+  state.beta146OnlineResilienceVersion = BETA146_ONLINE_RESILIENCE_VERSION;
+  queueSaveState(50);
+} catch {}
+
+
+/* =========================================================
+   Beta 147 — release hardening pass
+   - contrôle silencieux de cohérence online au démarrage/retour app
+   - évite les réparations en boucle et conserve un diagnostic discret
+   - ne crée pas de nouvelle fonctionnalité visible
+   ========================================================= */
+const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.156";
+let beta147SilentRepairInFlight = false;
+function beta147SilentRepairKey() {
+  const day = typeof localDayKey === "function" ? localDayKey() : String(new Date().toISOString().slice(0, 10));
+  const code = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
+  return `${BETA147_RELEASE_HARDENING_VERSION}:${day}:${code}`;
+}
+function beta147ShouldRunSilentRepair({ force = false } = {}) {
+  if (beta147SilentRepairInFlight) return false;
+  if (!force && !isOnline) return false;
+  if (typeof beta142RepairOnlineSync !== "function") return false;
+  const lastAt = Number(state.beta147SilentRepairAt || 0);
+  if (!force && lastAt && Date.now() - lastAt < 10 * 60 * 1000) return false;
+  const key = beta147SilentRepairKey();
+  if (!force && state.beta147SilentRepairKey === key) return false;
+  return true;
+}
+async function beta147RunSilentRepair({ force = false, source = "auto" } = {}) {
+  if (!beta147ShouldRunSilentRepair({ force })) return false;
+  beta147SilentRepairInFlight = true;
+  const key = beta147SilentRepairKey();
+  state.beta147SilentRepairKey = key;
+  state.beta147SilentRepairStartedAt = Date.now();
+  try {
+    await beta142RepairOnlineSync({ silent: true });
+    state.beta147SilentRepairAt = Date.now();
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      silentRepairAt: Date.now(),
+      silentRepairSource: source,
+      releaseHardening: true
+    };
+    queueSaveState(120);
+    return true;
+  } catch (error) {
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      silentRepairAt: Date.now(),
+      silentRepairSource: source,
+      silentRepairError: error?.message || "silent-repair-failed",
+      releaseHardening: true
+    };
+    queueSaveState(120);
+    return false;
+  } finally {
+    beta147SilentRepairInFlight = false;
+  }
+}
+const beta147PreviousApplyServerSocialSnapshot = typeof beta142ApplyServerSocialSnapshot === "function" ? beta142ApplyServerSocialSnapshot : null;
+if (beta147PreviousApplyServerSocialSnapshot) {
+  beta142ApplyServerSocialSnapshot = function beta147ApplyServerSocialSnapshot(json = {}) {
+    beta147PreviousApplyServerSocialSnapshot(json);
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      serverVersion: json.version || state.onlineDiagnostic?.serverVersion || "",
+      serverFeatures: json.features || state.onlineDiagnostic?.serverFeatures || null,
+      lastSnapshotAt: Date.now(),
+      releaseHardening: true
+    };
+  };
+}
+const beta147PreviousOnlineDiagnosticMarkup = typeof beta142OnlineDiagnosticMarkup === "function" ? beta142OnlineDiagnosticMarkup : null;
+if (beta147PreviousOnlineDiagnosticMarkup) {
+  beta142OnlineDiagnosticMarkup = function beta147OnlineDiagnosticMarkup() {
+    const html = beta147PreviousOnlineDiagnosticMarkup();
+    const diag = state.onlineDiagnostic || {};
+    const last = diag.silentRepairAt ? beta142Age(diag.silentRepairAt) : "—";
+    const extra = `<div class="beta147-release-line"><span>Vérification auto</span><strong>${escapeHtml(last)}</strong></div>`;
+    return html.replace("</details>", `${extra}</details>`);
+  };
+}
+function beta147ScheduleSilentRepair(source = "startup") {
+  const delay = source === "startup" ? 2400 : 500;
+  window.setTimeout(() => beta147RunSilentRepair({ source }).catch(() => {}), delay);
+}
+try {
+  window.addEventListener("online", () => beta147ScheduleSilentRepair("online"));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") beta147ScheduleSilentRepair("visible");
+  });
+  beta147ScheduleSilentRepair("startup");
+  const style = document.createElement("style");
+  style.id = "beta147-release-hardening-style";
+  style.textContent = `.beta147-release-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta147-release-line span{color:var(--muted)}.beta147-release-line strong{font-weight:800}`;
+  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA147_RELEASE_HARDENING_VERSION, releaseHardening: true, silentOnlineRepair: true };
+  state.beta147ReleaseHardeningVersion = BETA147_RELEASE_HARDENING_VERSION;
+  queueSaveState(80);
+} catch {}
+
+
+/* =========================================================
+   Beta 148 — preflight clean + diagnostic utilisateur
+   - nettoyage local non destructif au démarrage
+   - diagnostic profil moins "bêta"
+   - bouton de pré-vérification online sans modification des données
+   ========================================================= */
+const BETA148_PREFLIGHT_CLEAN_VERSION = "1.0.0-beta.156";
+function beta148PlainObject(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+}
+function beta148ValidDisciplineId(id) {
+  try { return DISCIPLINES.some(item => item.id === id); } catch { return id === "history"; }
+}
+function beta148SafeTimestamp(value) {
+  const n = Number(value || 0);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+function beta148DedupArray(list = [], keyFn = item => item?.id || item?.key || JSON.stringify(item)) {
+  const seen = new Set();
+  const output = [];
+  (Array.isArray(list) ? list : []).forEach(item => {
+    if (!item || typeof item !== "object") return;
+    const key = String(keyFn(item) || "").trim();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    output.push(item);
+  });
+  return output;
+}
+function beta148LocalPreflightCleanup() {
+  try {
+    let changed = false;
+    const allowedTabs = typeof BETA114_ALLOWED_TABS !== "undefined" ? BETA114_ALLOWED_TABS : new Set(["home", "learn", "mystery", "ranking", "profile"]);
+    if (!allowedTabs.has(state.tab)) { state.tab = "home"; changed = true; }
+    if (!beta148ValidDisciplineId(state.currentDiscipline)) { state.currentDiscipline = "history"; changed = true; }
+    if (!beta148ValidDisciplineId(state.currentMysteryDiscipline)) { state.currentMysteryDiscipline = state.currentDiscipline || "history"; changed = true; }
+    state.serverLeaderboardStatus = beta148PlainObject(state.serverLeaderboardStatus);
+    state.serverFriendsStatus = beta148PlainObject(state.serverFriendsStatus);
+    state.lastScoreSubmit = beta148PlainObject(state.lastScoreSubmit);
+    state.onlineDiagnostic = beta148PlainObject(state.onlineDiagnostic);
+    if (typeof cleanStoredFriendsMap === "function") {
+      const before = Object.keys(beta148PlainObject(state.friends)).length;
+      state.friends = cleanStoredFriendsMap(state.friends || {});
+      if (Object.keys(state.friends || {}).length !== before) changed = true;
+    }
+    if (typeof beta125FriendRequestsState === "function" && typeof beta125SetFriendRequests === "function") {
+      const req = beta125FriendRequestsState();
+      const keyReq = row => row?.requestId || row?.id || `${row?.direction || ""}:${row?.status || "pending"}:${row?.requesterPlayerId || row?.requester_friend_code || ""}:${row?.targetPlayerId || row?.target_friend_code || row?.friendCode || ""}`;
+      const cleaned = {
+        ...req,
+        incoming: beta148DedupArray(req.incoming, keyReq),
+        outgoing: beta148DedupArray(req.outgoing, keyReq),
+        history: beta148DedupArray(req.history, keyReq).slice(0, 40)
+      };
+      if (JSON.stringify(cleaned) !== JSON.stringify(req)) { beta125SetFriendRequests(cleaned); changed = true; }
+    }
+    if (typeof beta128ReadScoreOutbox === "function" && typeof beta128SaveScoreOutbox === "function") {
+      const outbox = beta128ReadScoreOutbox();
+      const cleaned = beta148DedupArray(outbox, item => `${item.mysteryId || item.id || ""}:${item.periodKey || item.dayKey || ""}:${item.scope || "daily"}`).slice(0, 20);
+      if (cleaned.length !== outbox.length) { beta128SaveScoreOutbox(cleaned); changed = true; }
+    }
+    if (typeof beta128Outbox === "function" && typeof beta128SaveOutbox === "function") {
+      const outbox = beta128Outbox();
+      const cleaned = beta148DedupArray(outbox, item => typeof beta128TargetKey === "function" ? beta128TargetKey(item) : (item.key || item.friendCode || item.targetFriendCode || item.targetPlayerId || "")).slice(0, 30);
+      if (cleaned.length !== outbox.length) { beta128SaveOutbox(cleaned); changed = true; }
+    }
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      localPreflightAt: Date.now(),
+      localPreflightChanged: changed,
+      appVersion: BETA148_PREFLIGHT_CLEAN_VERSION
+    };
+    state.beta148PreflightCleanVersion = BETA148_PREFLIGHT_CLEAN_VERSION;
+    queueSaveState(90);
+  } catch {}
+}
+async function beta148RunOnlinePreflight({ silent = false } = {}) {
+  if (!isOnline) {
+    state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), preflightAt: Date.now(), preflightOk: false, preflightMessage: "Hors ligne" };
+    if (!silent) setState({ profileFeedback: "Pré-vérification impossible hors ligne." }, { renderImmediate: true });
+    else queueSaveState(100);
+    return null;
+  }
+  const params = new URLSearchParams();
+  try {
+    params.set("playerId", playerIdMe());
+    params.set("friendCode", friendCode());
+  } catch {}
+  try {
+    const response = await fetch(`/api/v1/system/preflight?${params.toString()}&_=${Date.now()}`, { cache: "no-store" });
+    const json = await response.json().catch(() => ({}));
+    const ok = Boolean(response.ok && json?.ok !== false && json?.checks?.api);
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      preflightAt: Date.now(),
+      preflightOk: ok,
+      preflightMode: json.mode || "unknown",
+      preflightChecks: json.checks || null,
+      preflightWarnings: json.warnings || [],
+      preflightMessage: json.message || (ok ? "Pré-vérification OK" : "Pré-vérification incomplète")
+    };
+    if (!silent) setState({ profileFeedback: ok ? "Pré-vérification en ligne OK." : "Pré-vérification incomplète. Regarde l’état de la synchro." }, { renderImmediate: true });
+    else queueSaveState(100);
+    return json;
+  } catch (error) {
+    state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), preflightAt: Date.now(), preflightOk: false, preflightMessage: error?.message || "Pré-vérification indisponible" };
+    if (!silent) setState({ profileFeedback: "Pré-vérification indisponible pour le moment." }, { renderImmediate: true });
+    else queueSaveState(100);
+    return null;
+  }
+}
+// Remplace le vieux bloc "Assistance" par une assistance discrète et compréhensible.
+if (typeof beta115HealthMarkup === "function") {
+  beta115HealthMarkup = function beta148HealthMarkup() {
+    const health = typeof beta115ReadHealth === "function" ? beta115ReadHealth() : {};
+    const recovered = Number(health.blankScreenRecovered || 0);
+    const lastOk = health.lastHealthyRender ? new Date(health.lastHealthyRender).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "—";
+    const diag = state.onlineDiagnostic || {};
+    const preflight = diag.preflightAt ? (diag.preflightOk ? "OK" : "À vérifier") : "Non lancé";
+    return `<section class="card beta148-support-card"><details><summary><span><span class="card-label">Assistance</span><strong>Stabilité et synchro</strong></span><small>${escapeHtml(preflight)}</small></summary><p>Ces outils servent uniquement si l’app garde un ancien état, si un ami disparaît ou si le classement semble incohérent.</p><div class="public-stats-grid"><div><strong>${recovered}</strong><span>Relances écran</span></div><div><strong>${escapeHtml(lastOk)}</strong><span>Dernier rendu OK</span></div><div><strong>${isOnline ? "Oui" : "Non"}</strong><span>Réseau</span></div><div><strong>${escapeHtml(preflight)}</strong><span>Pré-vérification</span></div></div><div class="home-actions-row beta148-actions"><button type="button" class="ghost" data-beta148-preflight>Vérifier en ligne</button><button type="button" class="ghost" data-beta115-soft-repair>Réparer l’affichage</button></div>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</details></section>`;
+  };
+}
+const beta148PreviousOnlineDiagnosticMarkup = typeof beta142OnlineDiagnosticMarkup === "function" ? beta142OnlineDiagnosticMarkup : null;
+if (beta148PreviousOnlineDiagnosticMarkup) {
+  beta142OnlineDiagnosticMarkup = function beta148OnlineDiagnosticMarkup() {
+    const html = beta148PreviousOnlineDiagnosticMarkup();
+    const diag = state.onlineDiagnostic || {};
+    const text = diag.preflightAt ? `${diag.preflightOk ? "OK" : "À vérifier"} · ${escapeHtml(beta142Age(diag.preflightAt))}` : "non lancée";
+    const warnings = Array.isArray(diag.preflightWarnings) && diag.preflightWarnings.length ? `<p class="muted-note warning-note">${escapeHtml(diag.preflightWarnings.slice(0, 2).join(" · "))}</p>` : "";
+    const extra = `<div class="beta148-preflight-line"><span>Pré-vérification</span><strong>${text}</strong></div>${warnings}`;
+    return html.replace("</details>", `${extra}</details>`);
+  };
+}
+function beta148HandlePreflightTap(event) {
+  const btn = event.target?.closest?.("[data-beta148-preflight]");
+  if (!btn) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+  beta148RunOnlinePreflight({ silent: false }).catch(() => {});
+}
+try {
+  beta148LocalPreflightCleanup();
+  document.addEventListener("click", beta148HandlePreflightTap, true);
+  window.setTimeout(() => beta148RunOnlinePreflight({ silent: true }).catch(() => {}), 3500);
+  const style = document.createElement("style");
+  style.id = "beta148-preflight-clean-style";
+  style.textContent = `.beta148-support-card details{border:0}.beta148-support-card summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}.beta148-support-card summary::-webkit-details-marker{display:none}.beta148-support-card summary strong{display:block;font-size:1rem;margin-top:2px}.beta148-support-card summary small{color:var(--muted);font-size:.78rem}.beta148-preflight-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta148-preflight-line span{color:var(--muted)}.beta148-preflight-line strong{font-weight:800}.beta148-actions button{min-height:38px}`;
+  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA148_PREFLIGHT_CLEAN_VERSION, preflightClean: true };
+} catch {}
+
+// Beta148 final polish: réintroduit l'assistance propre dans le profil après les nettoyages de copie.
+try {
+  if (typeof profileSettingsMarkup === "function" && typeof beta115HealthMarkup === "function" && !window.__HISTODAILY_BETA148_PROFILE_SUPPORT__) {
+    const beta148PreviousProfileSettingsMarkup = profileSettingsMarkup;
+    profileSettingsMarkup = function beta148ProfileSettingsMarkup() {
+      return `${beta148PreviousProfileSettingsMarkup()}${beta115HealthMarkup()}`;
+    };
+    window.__HISTODAILY_BETA148_PROFILE_SUPPORT__ = true;
+  }
+} catch {}
+
+
+/* =========================================================
+   Beta 149 — regression guard côté appareil
+   - contrôle local non destructif du contenu, des modes et des files de synchro
+   - diagnostic discret dans le profil
+   - pré-vérification serveur étendue avec /system/selftest
+   ========================================================= */
+const BETA149_REGRESSION_GUARD_VERSION = "1.0.0-beta.156";
+function beta149CountByDiscipline() {
+  const rows = [];
+  try {
+    DISCIPLINES.forEach(discipline => {
+      const id = discipline.id;
+      const lessons = typeof beta139ReadyLessonsForDiscipline === "function" ? beta139ReadyLessonsForDiscipline(id) : (typeof lessonsForDiscipline === "function" ? lessonsForDiscipline(id) : []);
+      const mysteries = typeof publicMysteries === "function" ? publicMysteries(id) : [];
+      rows.push({ id, title: discipline.title, lessons: Array.isArray(lessons) ? lessons.length : 0, mysteries: Array.isArray(mysteries) ? mysteries.length : 0 });
+    });
+  } catch {}
+  return rows;
+}
+function beta149LocalRegressionReport() {
+  const warnings = [];
+  let scoreOutbox = [];
+  let friendOutbox = [];
+  try { scoreOutbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : []; } catch {}
+  try { friendOutbox = typeof beta128Outbox === "function" ? beta128Outbox() : []; } catch {}
+  const disciplines = beta149CountByDiscipline();
+  disciplines.forEach(row => {
+    if (row.id !== "history" && row.mysteries > 0 && row.lessons === 0) warnings.push(`${row.title}: mystères sans cours publiés`);
+  });
+  const tabOk = (typeof BETA114_ALLOWED_TABS !== "undefined" ? BETA114_ALLOWED_TABS : new Set(["home", "learn", "mystery", "rank", "profile", "publicProfile"])).has(state.tab);
+  if (!tabOk) warnings.push("Onglet local invalide corrigible");
+  const currentCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
+  const currentId = typeof playerIdMe === "function" ? playerIdMe() : "";
+  if (!currentCode) warnings.push("Code ami local absent");
+  if (!currentId) warnings.push("Identifiant joueur local absent");
+  return {
+    ok: warnings.length === 0,
+    checkedAt: Date.now(),
+    warnings: warnings.slice(0, 8),
+    disciplines,
+    scoreOutbox: Array.isArray(scoreOutbox) ? scoreOutbox.length : 0,
+    friendOutbox: Array.isArray(friendOutbox) ? friendOutbox.length : 0,
+    friendCount: Object.keys(state.friends || {}).length,
+    version: BETA149_REGRESSION_GUARD_VERSION
+  };
+}
+function beta149CleanImpossibleSocialLocalState() {
+  let changed = false;
+  try {
+    const myCode = normalizeFriendCode(friendCode());
+    if (state.friends && typeof state.friends === "object") {
+      Object.keys(state.friends).forEach(key => {
+        const code = normalizeFriendCode(state.friends[key]?.code || key);
+        if (!code || (myCode && code === myCode)) { delete state.friends[key]; changed = true; }
+      });
+    }
+    if (typeof beta125FriendRequestsState === "function" && typeof beta125SetFriendRequests === "function") {
+      const req = beta125FriendRequestsState();
+      const notSelf = item => normalizeFriendCode(item?.targetFriendCode || item?.otherFriendCode || item?.requesterFriendCode || "") !== myCode;
+      const cleaned = {
+        ...req,
+        incoming: (req.incoming || []).filter(notSelf),
+        outgoing: (req.outgoing || []).filter(notSelf),
+        history: (req.history || []).slice(0, 40)
+      };
+      if (JSON.stringify(cleaned) !== JSON.stringify(req)) { beta125SetFriendRequests(cleaned); changed = true; }
+    }
+  } catch {}
+  return changed;
+}
+async function beta149RunRegressionGuard({ silent = true } = {}) {
+  const cleaned = beta149CleanImpossibleSocialLocalState();
+  const local = beta149LocalRegressionReport();
+  state.onlineDiagnostic = {
+    ...(state.onlineDiagnostic || {}),
+    regressionGuardAt: Date.now(),
+    regressionGuardOk: local.ok,
+    regressionGuardWarnings: local.warnings,
+    localContentStats: local.disciplines,
+    localScoreOutbox: local.scoreOutbox,
+    localFriendOutbox: local.friendOutbox,
+    localFriendCount: local.friendCount,
+    localRegressionCleaned: cleaned,
+    regressionGuardVersion: BETA149_REGRESSION_GUARD_VERSION
+  };
+  if (!silent && !local.ok) state.profileFeedback = `Contrôle local : ${local.warnings[0] || "point à vérifier"}.`;
+  queueSaveState(120);
+  return local;
+}
+async function beta149RunServerSelftest({ silent = true } = {}) {
+  if (!isOnline) return null;
+  try {
+    const response = await fetch(`/api/v1/system/selftest?_=${Date.now()}`, { cache: "no-store" });
+    const json = await response.json().catch(() => ({}));
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      selftestAt: Date.now(),
+      selftestOk: Boolean(response.ok && json?.ok !== false),
+      selftestWarnings: json?.warnings || [],
+      selftestDurationMs: json?.durationMs || 0
+    };
+    if (!silent) state.profileFeedback = json?.ok ? "Contrôle en ligne OK." : (json?.warnings?.[0] || "Contrôle en ligne à vérifier.");
+    queueSaveState(120);
+    return json;
+  } catch (error) {
+    state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), selftestAt: Date.now(), selftestOk: false, selftestWarnings: [error?.message || "Selftest indisponible"] };
+    if (!silent) state.profileFeedback = "Contrôle en ligne indisponible.";
+    queueSaveState(120);
+    return null;
+  }
+}
+const beta149PreviousOnlineDiagnosticMarkup = typeof beta142OnlineDiagnosticMarkup === "function" ? beta142OnlineDiagnosticMarkup : null;
+if (beta149PreviousOnlineDiagnosticMarkup) {
+  beta142OnlineDiagnosticMarkup = function beta149OnlineDiagnosticMarkup() {
+    const html = beta149PreviousOnlineDiagnosticMarkup();
+    const diag = state.onlineDiagnostic || {};
+    const local = diag.regressionGuardAt ? (diag.regressionGuardOk ? "OK" : "À vérifier") : "non lancé";
+    const server = diag.selftestAt ? (diag.selftestOk ? "OK" : "À vérifier") : "non lancé";
+    const extra = `<div class="beta149-regression-line"><span>Contrôle local</span><strong>${escapeHtml(local)}</strong></div><div class="beta149-regression-line"><span>Contrôle serveur</span><strong>${escapeHtml(server)}</strong></div>`;
+    return html.replace("</details>", `${extra}</details>`);
+  };
+}
+function beta149HandleRegressionTap(event) {
+  const btn = event.target?.closest?.("[data-beta149-regression-check]");
+  if (!btn) return;
+  event.preventDefault();
+  event.stopPropagation();
+  beta149RunRegressionGuard({ silent: false }).then(() => beta149RunServerSelftest({ silent: false })).then(() => render({ immediate: true })).catch(() => {});
+}
+try {
+  const previousHealthMarkup = typeof beta115HealthMarkup === "function" ? beta115HealthMarkup : null;
+  if (previousHealthMarkup) {
+    beta115HealthMarkup = function beta149HealthMarkup() {
+      return previousHealthMarkup().replace("</details></section>", `<div class="home-actions-row beta149-actions"><button type="button" class="ghost" data-beta149-regression-check>Contrôler l’appareil</button></div></details></section>`);
+    };
+  }
+  beta149RunRegressionGuard({ silent: true }).catch(() => {});
+  window.setTimeout(() => beta149RunServerSelftest({ silent: true }).catch(() => {}), 5200);
+  document.addEventListener("click", beta149HandleRegressionTap, true);
+  const style = document.createElement("style");
+  style.id = "beta149-regression-guard-style";
+  style.textContent = `.beta149-regression-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta149-regression-line span{color:var(--muted)}.beta149-regression-line strong{font-weight:800}.beta149-actions{margin-top:10px}.beta149-actions button{min-height:38px}`;
+  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA149_REGRESSION_GUARD_VERSION, regressionGuard: true };
+  state.beta149RegressionGuardVersion = BETA149_REGRESSION_GUARD_VERSION;
+  queueSaveState(100);
+} catch {}
+
+
+/* =========================================================
+   Beta 150 — design boost performant
+   CSS-only polish: cartes, navigation, modes, mystère, classement.
+   ========================================================= */
+const BETA150_DESIGN_VERSION = "1.0.0-beta.156";
+try {
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA150_DESIGN_VERSION, designBoost: true, lightweightVisuals: true };
+} catch {}
+
+
+/* =========================================================
+   Beta 151 — polish visuel et garde-fous performance
+   ========================================================= */
+const BETA151_POLISH_PERF_VERSION = "1.0.0-beta.156";
+try {
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA151_POLISH_PERF_VERSION, designPolish: true, mobilePerfGuard: true };
+} catch {}
+
+/* =========================================================
+   Beta 152 — polish produit et états vides
+   Objectif : rendre les écrans incomplets plus assumés côté utilisateur,
+   sans exposer le vocabulaire interne de build/contenu.
+   ========================================================= */
+const BETA152_PRODUCT_POLISH_VERSION = "1.0.0-beta.156";
+
+function beta152PlayableCourseCount(disciplineId = activeDisciplineId()) {
+  try {
+    const lessons = typeof beta139ReadyLessonsForDiscipline === "function" ? beta139ReadyLessonsForDiscipline(disciplineId) : lessonsForDiscipline(disciplineId);
+    return Array.isArray(lessons) ? lessons.length : 0;
+  } catch { return 0; }
+}
+function beta152MysteryCount(disciplineId = activeDisciplineId()) {
+  try {
+    const mysteries = publicMysteries(disciplineId);
+    return Array.isArray(mysteries) ? mysteries.length : 0;
+  } catch { return 0; }
+}
+function beta152ModeStateLine(disciplineId = activeDisciplineId()) {
+  const courses = beta152PlayableCourseCount(disciplineId);
+  const mysteries = beta152MysteryCount(disciplineId);
+  if (courses && mysteries) return `${courses} cours · ${mysteries} mystère${mysteries > 1 ? "s" : ""}`;
+  if (courses) return `${courses} cours disponibles`;
+  if (mysteries) return `${mysteries} mystère${mysteries > 1 ? "s" : ""} à jouer`;
+  return "Parcours en ouverture";
+}
+
+if (typeof modeSnapshotMarkup === "function") {
+  modeSnapshotMarkup = function beta152ModeSnapshotMarkup(disciplineId = activeDisciplineId()) {
+    const { discipline, progress, groups, readyLessons, mysteryCount } = disciplineHomeStats(disciplineId);
+    const mode = disciplineModeCopy(discipline.id);
+    const intro = readyLessons.length
+      ? (groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).filter(Boolean).join(" · ") || discipline.description)
+      : "Commence par le mystère du jour. Les cours de cette catégorie seront ajoutés progressivement.";
+    return `<section class="card home-mode-card beta152-mode-summary" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="home-mode-card-main"><span class="mode-badge">${discipline.emoji} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(intro)}</p></div>
+      <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${readyLessons.length}</b><span>cours</span></div><div><b>${mysteryCount}</b><span>mystères</span></div></div>
+    </section>`;
+  };
+}
+
+if (typeof modeContinueMarkup === "function") {
+  const beta152PreviousModeContinueMarkup = modeContinueMarkup;
+  modeContinueMarkup = function beta152ModeContinueMarkup(disciplineId = activeDisciplineId()) {
+    const id = disciplineById(disciplineId || "history").id;
+    if (id === "history") return beta152PreviousModeContinueMarkup(disciplineId);
+    const { discipline, groups, worlds, readyLessons, mysteryCount } = disciplineHomeStats(id);
+    const first = worlds[0] || null;
+    const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
+    if (!first || !readyLessons.length) {
+      return `<section class="card home-main-card home-continue-card mode-continue-card beta152-empty-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+        <div class="section-title-row"><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Le mystère est prêt</h2></div><small>${mysteryCount} mystère${mysteryCount > 1 ? "s" : ""}</small></div>
+        <p>Cette catégorie commence par un défi quotidien. Les cours arriveront ensuite pour approfondir le sujet.</p>
+        <div class="home-card-footer"><span>${escapeHtml(beta152ModeStateLine(id))}</span><button type="button" data-open-daily-mystery>Jouer le mystère</button></div>
+      </section>`;
+    }
+    return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first.emoji || discipline.emoji} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
+      <p>${escapeHtml(first.subtitle || group?.description || discipline.description)}</p>
+      <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
+      <div class="home-card-footer"><span>${escapeHtml(beta152ModeStateLine(id))}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les cours</button></div>
+    </section>`;
+  };
+}
+
+if (typeof modeRecommendationsMarkup === "function") {
+  const beta152PreviousModeRecommendationsMarkup = modeRecommendationsMarkup;
+  modeRecommendationsMarkup = function beta152ModeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
+    const html = beta152PreviousModeRecommendationsMarkup(disciplineId);
+    if (!html) return "";
+    return String(html)
+      .replace("Seulement les cours disponibles sont affichés ici.", "Les cartes affichées sont prêtes à ouvrir.")
+      .replace(/cours recommandés/g, "à découvrir")
+      .replace(/piste\(s\)/g, "pistes");
+  };
+}
+
+if (typeof renderLearn === "function") {
+  const beta152PreviousRenderLearn = renderLearn;
+  renderLearn = function beta152RenderLearn() {
+    const disciplineId = activeDisciplineId();
+    const worlds = typeof beta139RealWorldsForDiscipline === "function" ? beta139RealWorldsForDiscipline(disciplineId) : treeAvailableWorlds(disciplineId);
+    if (!worlds.length) {
+      const discipline = disciplineById(disciplineId);
+      const mystery = dailyMystery();
+      renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Cette catégorie commence par les mystères. Les cours suivront progressivement.</p></div></header>
+        ${disciplineSelectorMarkup(disciplineId)}
+        <section class="card discipline-empty-card beta152-discipline-empty" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${discipline.emoji}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours dans ce mode</h2><p>Tu peux déjà jouer le mystère du jour. Les cours seront ajoutés quand le parcours sera assez solide.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
+      $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
+      $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() }));
+      document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
+      return;
+    }
+    return beta152PreviousRenderLearn();
+  };
+}
+
+if (typeof emptyRankMarkup === "function") {
+  emptyRankMarkup = function beta152EmptyRankMarkup(scope = "daily") {
+    if (scope === "friends") return `<div class="empty-rank beta152-empty-rank"><h2>Aucun score ami pour l’instant</h2><p>Ajoute un ami puis revenez après le mystère du jour pour comparer vos résultats.</p><button type="button" class="ghost mini-button" data-home-profile>Ajouter un ami</button></div>`;
+    if (scope === "week") return `<div class="empty-rank beta152-empty-rank"><h2>La semaine démarre</h2><p>Les scores apparaîtront quand des joueurs résoudront les mystères de la semaine.</p></div>`;
+    if (scope === "year") return `<div class="empty-rank beta152-empty-rank"><h2>Encore aucun score annuel</h2><p>Le classement annuel se remplit avec les scores réellement enregistrés.</p></div>`;
+    return `<div class="empty-rank beta152-empty-rank"><h2>Aucun score aujourd’hui</h2><p>Résous le mystère du jour pour lancer le classement.</p></div>`;
+  };
+}
+
+function beta152InstallProductPolishStyle() {
+  if (document.getElementById("beta152-product-polish-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta152-product-polish-style";
+  style.textContent = `
+    .beta152-empty-mode-card,.beta152-discipline-empty,.beta152-empty-rank{border-style:solid;border-color:color-mix(in srgb,var(--discipline-accent,#f6c453) 24%,rgba(255,255,255,.10));}
+    .beta152-empty-mode-card .home-card-footer span{color:color-mix(in srgb,var(--discipline-accent,#f6c453) 86%,white);font-weight:900;}
+    .beta152-discipline-empty{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:radial-gradient(circle at 0 0,color-mix(in srgb,var(--discipline-accent,#f6c453) 16%,transparent),transparent 42%),linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));}
+    .beta152-discipline-empty .discipline-empty-icon{font-size:2rem;display:grid;place-items:center;width:60px;height:60px;border-radius:22px;background:color-mix(in srgb,var(--discipline-accent,#f6c453) 16%,transparent);}
+    .empty-rank.beta152-empty-rank{padding:18px;text-align:center;background:rgba(255,255,255,.045);border-radius:22px;}
+    .empty-rank.beta152-empty-rank h2{margin:.15rem 0 .35rem;letter-spacing:-.03em;}
+    .empty-rank.beta152-empty-rank p{margin:0 auto 10px;max-width:34ch;}
+    .release-card ul{padding-left:1.05rem;margin:.55rem 0 .2rem;}
+    .release-card li{margin:.34rem 0;color:#d8e4f1;line-height:1.38;}
+    @media(max-width:430px){.beta152-discipline-empty{grid-template-columns:1fr}.beta152-discipline-empty .discipline-empty-icon{width:54px;height:54px}.beta152-discipline-empty .after-actions{display:grid;grid-template-columns:1fr;}}
+  `;
+  document.head.appendChild(style);
+}
+
+try {
+  beta152InstallProductPolishStyle();
+  state.beta152ProductPolishVersion = BETA152_PRODUCT_POLISH_VERSION;
+  queueSaveState(80);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA152_PRODUCT_POLISH_VERSION, productPolish: true };
+} catch {}
+
+
+/* =========================================================
+   Beta 153 — release candidate polish
+   - garde-fous locaux avant test public
+   - actions globales simples pour boutons rendus dynamiquement
+   - diagnostic discret des erreurs client/cache
+   ========================================================= */
+const BETA153_RELEASE_CANDIDATE_VERSION = "1.0.0-beta.156";
+
+function beta153SafeShort(value, max = 90) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+function beta153ValidDisciplineId(id) {
+  try { return DISCIPLINES.some(item => item.id === id); } catch { return false; }
+}
+
+function beta153RepairReleaseCandidateState() {
+  let changed = false;
+  try {
+    const allowedTabs = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
+    if (!allowedTabs.has(state.tab)) { state.tab = "home"; changed = true; }
+    if (!beta153ValidDisciplineId(state.currentDiscipline)) { state.currentDiscipline = "history"; changed = true; }
+    if (state.currentMysteryDiscipline && !beta153ValidDisciplineId(state.currentMysteryDiscipline)) { state.currentMysteryDiscipline = activeDisciplineId(); changed = true; }
+    if (!["daily", "week", "year", "friends"].includes(state.rankScope)) { state.rankScope = "daily"; changed = true; }
+    if (state.tab === "lesson") {
+      const lessonExists = allLessons().some(lesson => String(lesson.id) === String(state.currentLessonId));
+      if (!lessonExists) { state.tab = "learn"; state.currentLessonId = null; changed = true; }
+    }
+    if (state.friends && typeof state.friends === "object") {
+      const ownCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
+      const ownId = typeof playerIdMe === "function" ? String(playerIdMe()) : "";
+      Object.keys(state.friends).forEach(key => {
+        const entry = state.friends[key] || {};
+        const code = normalizeFriendCode(entry.code || entry.friendCode || key);
+        const id = String(entry.playerId || entry.friend_player_id || entry.id || "");
+        if (!code || (ownCode && code === ownCode) || (ownId && id && id === ownId)) {
+          delete state.friends[key];
+          changed = true;
+        }
+      });
+    }
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      releaseCandidateCheckedAt: Date.now(),
+      releaseCandidateVersion: BETA153_RELEASE_CANDIDATE_VERSION,
+      releaseCandidateChanged: changed
+    };
+    if (changed) queueSaveState(80);
+  } catch {}
+  return changed;
+}
+
+function beta153RecordClientIssue(source, detail) {
+  try {
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      lastClientIssueAt: Date.now(),
+      lastClientIssueSource: beta153SafeShort(source, 40),
+      lastClientIssue: beta153SafeShort(detail, 120),
+      lastClientIssueVersion: BETA153_RELEASE_CANDIDATE_VERSION
+    };
+    queueSaveState(250);
+  } catch {}
+}
+
+function beta153InstallClientIssueCapture() {
+  if (window.__HISTODAILY_BETA153_CLIENT_CAPTURE__) return;
+  window.__HISTODAILY_BETA153_CLIENT_CAPTURE__ = true;
+  window.addEventListener("error", event => beta153RecordClientIssue("front", event?.message || event?.error?.message || "Erreur interface"));
+  window.addEventListener("unhandledrejection", event => beta153RecordClientIssue("async", event?.reason?.message || event?.reason || "Erreur asynchrone"));
+}
+
+function beta153HandleGlobalSimpleAction(event) {
+  const target = event.target?.closest?.("[data-home-profile],[data-open-daily-mystery]");
+  if (!target || !app?.contains?.(target)) return;
+  // Ne pas voler les taps déjà consommés par les correctifs de swipe/navigation.
+  if (event.defaultPrevented) return;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+  if (target.matches("[data-home-profile]")) return setState({ tab: "profile" }, { save: true });
+  if (target.matches("[data-open-daily-mystery]")) return setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() }, { save: true });
+}
+
+function beta153InstallGlobalSimpleActions() {
+  if (window.__HISTODAILY_BETA153_GLOBAL_ACTIONS__) return;
+  window.__HISTODAILY_BETA153_GLOBAL_ACTIONS__ = true;
+  document.addEventListener("click", beta153HandleGlobalSimpleAction, true);
+}
+
+async function beta153CheckServiceWorkerVersion() {
+  try {
+    if (!("serviceWorker" in navigator) || !navigator.serviceWorker.controller || typeof MessageChannel !== "function") return null;
+    const channel = new MessageChannel();
+    const result = await new Promise(resolve => {
+      const timer = setTimeout(() => resolve(null), 1200);
+      channel.port1.onmessage = event => { clearTimeout(timer); resolve(event.data || null); };
+      navigator.serviceWorker.controller.postMessage({ type: "HISTODAILY_VERSION" }, [channel.port2]);
+    });
+    if (result) {
+      state.onlineDiagnostic = {
+        ...(state.onlineDiagnostic || {}),
+        serviceWorkerCheckedAt: Date.now(),
+        serviceWorkerVersion: result.version || "inconnue",
+        serviceWorkerCache: result.cache || "—",
+        serviceWorkerMatchesApp: result.version === APP_VERSION
+      };
+      queueSaveState(200);
+    }
+    return result;
+  } catch { return null; }
+}
+
+if (typeof beta142OnlineDiagnosticMarkup === "function") {
+  const beta153PreviousOnlineDiagnosticMarkup = beta142OnlineDiagnosticMarkup;
+  beta142OnlineDiagnosticMarkup = function beta153OnlineDiagnosticMarkup() {
+    const html = beta153PreviousOnlineDiagnosticMarkup();
+    const diag = state.onlineDiagnostic || {};
+    const sw = diag.serviceWorkerVersion ? `${diag.serviceWorkerMatchesApp ? "OK" : "ancien cache"} · ${escapeHtml(diag.serviceWorkerVersion)}` : "non vérifié";
+    const issue = diag.lastClientIssue ? `<p class="muted-note warning-note">Dernier incident local : ${escapeHtml(diag.lastClientIssue)}</p>` : "";
+    const extra = `<div class="beta153-rc-line"><span>Version installée</span><strong>${escapeHtml(APP_VERSION)}</strong></div><div class="beta153-rc-line"><span>Cache PWA</span><strong>${sw}</strong></div>${issue}`;
+    return html.replace("</details>", `${extra}</details>`);
+  };
+}
+
+try {
+  beta153RepairReleaseCandidateState();
+  beta153InstallClientIssueCapture();
+  beta153InstallGlobalSimpleActions();
+  window.setTimeout(() => beta153CheckServiceWorkerVersion().catch(() => {}), 1800);
+  const style = document.createElement("style");
+  style.id = "beta153-release-candidate-style";
+  style.textContent = `.beta153-rc-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta153-rc-line span{color:var(--muted)}.beta153-rc-line strong{font-weight:800}.warning-note{color:#fde68a}`;
+  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  state.beta153ReleaseCandidateVersion = BETA153_RELEASE_CANDIDATE_VERSION;
+  queueSaveState(100);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA153_RELEASE_CANDIDATE_VERSION, releaseCandidate: true };
+} catch (error) { beta153RecordClientIssue("beta153", error?.message || error); }
+
+/* =========================================================
+   Beta 154 — cache recovery + public readiness guard
+   - diagnostic de version navigateur/API/service worker
+   - bouton utilisateur pour recharger proprement sans perdre la progression
+   - nettoyage local plus strict mais non destructif
+   ========================================================= */
+const BETA154_CACHE_RECOVERY_VERSION = "1.0.0-beta.156";
+
+function beta154NowLabel(ts = Date.now()) {
+  try { return new Date(ts).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); } catch { return "—"; }
+}
+
+function beta154DedupeArrayBy(items = [], keyFn = item => item) {
+  const seen = new Set();
+  const out = [];
+  for (const item of Array.isArray(items) ? items : []) {
+    const key = String(keyFn(item) || "").trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+
+function beta154LocalReadinessCleanup() {
+  let changed = false;
+  try {
+    if (Array.isArray(state.beta128ScoreOutbox)) {
+      const before = state.beta128ScoreOutbox.length;
+      state.beta128ScoreOutbox = beta154DedupeArrayBy(state.beta128ScoreOutbox, item => `${item?.playerId || item?.player_id || ""}:${item?.mysteryId || item?.mystery_id || ""}:${item?.periodKey || item?.period_key || ""}:${item?.scope || "daily"}`);
+      changed = changed || before !== state.beta128ScoreOutbox.length;
+    }
+    if (Array.isArray(state.beta127OutgoingFriendRequests)) {
+      const own = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
+      const before = state.beta127OutgoingFriendRequests.length;
+      state.beta127OutgoingFriendRequests = beta154DedupeArrayBy(state.beta127OutgoingFriendRequests.filter(item => {
+        const code = normalizeFriendCode(item?.targetFriendCode || item?.friendCode || item?.code || "");
+        return code && (!own || code !== own);
+      }), item => normalizeFriendCode(item?.targetFriendCode || item?.friendCode || item?.code || ""));
+      changed = changed || before !== state.beta127OutgoingFriendRequests.length;
+    }
+    if (state.friends && typeof state.friends === "object") {
+      const ownCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
+      const ownId = typeof playerIdMe === "function" ? String(playerIdMe()) : "";
+      const cleaned = {};
+      Object.entries(state.friends).forEach(([key, value]) => {
+        const code = normalizeFriendCode(value?.code || value?.friendCode || key);
+        const id = String(value?.playerId || value?.friend_player_id || value?.id || "");
+        if (!code || (ownCode && code === ownCode) || (ownId && id && id === ownId)) { changed = true; return; }
+        if (!cleaned[code]) cleaned[code] = { ...value, code };
+        else changed = true;
+      });
+      state.friends = cleaned;
+    }
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      localReadinessCheckedAt: Date.now(),
+      localReadinessChanged: changed,
+      localReadinessVersion: BETA154_CACHE_RECOVERY_VERSION
+    };
+    if (changed) queueSaveState(100);
+  } catch {}
+  return changed;
+}
+
+async function beta154FetchJson(path, timeoutMs = 3500) {
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+  try {
+    const res = await fetch(path, { cache: "no-store", signal: controller?.signal });
+    const data = await res.json().catch(() => null);
+    return { ok: Boolean(res.ok && data?.ok !== false), status: res.status, data };
+  } catch (error) {
+    return { ok: false, status: 0, error: String(error?.message || error || "Erreur réseau") };
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+async function beta154CheckAppReadiness() {
+  try {
+    const [health, selftest] = await Promise.all([
+      beta154FetchJson("/api/v1/health", 3500),
+      beta154FetchJson("/api/v1/system/selftest", 4500)
+    ]);
+    const apiVersion = health.data?.version || health.data?.deployment?.version || selftest.data?.version || "—";
+    const selftestOk = Boolean(selftest.data?.ok);
+    const healthOk = Boolean(health.ok);
+    const serviceWorkerVersion = state.onlineDiagnostic?.serviceWorkerVersion || "—";
+    const cacheMismatch = serviceWorkerVersion !== "—" && serviceWorkerVersion !== APP_VERSION;
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      beta154ReadinessCheckedAt: Date.now(),
+      beta154ReadinessVersion: BETA154_CACHE_RECOVERY_VERSION,
+      beta154HealthOk: healthOk,
+      beta154SelftestOk: selftestOk,
+      beta154ApiVersion: apiVersion,
+      beta154CacheMismatch: cacheMismatch,
+      beta154Warnings: [
+        ...(Array.isArray(health.data?.deployment?.selftestWarnings) ? health.data.deployment.selftestWarnings : []),
+        ...(Array.isArray(selftest.data?.warnings) ? selftest.data.warnings : [])
+      ].slice(0, 4)
+    };
+    queueSaveState(150);
+    return { health, selftest, cacheMismatch };
+  } catch { return null; }
+}
+
+async function beta154CleanReloadApp() {
+  try {
+    setState({ profileFeedback: "Rechargement propre de l’app…" }, { save: true, render: true });
+  } catch {}
+  try {
+    if (typeof caches !== "undefined") {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter(key => /histodaily/i.test(key)).map(key => caches.delete(key)));
+    }
+  } catch {}
+  try {
+    if (navigator.serviceWorker?.getRegistrations) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg => reg.update().catch(() => null)));
+    }
+  } catch {}
+  const url = new URL(window.location.href);
+  url.searchParams.set("fresh", "156");
+  url.searchParams.set("t", String(Date.now()));
+  window.location.replace(url.toString());
+}
+
+function beta154ReadinessLineMarkup() {
+  const diag = state.onlineDiagnostic || {};
+  const checked = diag.beta154ReadinessCheckedAt ? beta154NowLabel(diag.beta154ReadinessCheckedAt) : "non vérifié";
+  const api = diag.beta154ApiVersion || "—";
+  const health = diag.beta154HealthOk ? "OK" : "à vérifier";
+  const self = diag.beta154SelftestOk ? "OK" : "à vérifier";
+  const cache = diag.beta154CacheMismatch ? "ancien cache" : "OK";
+  const warnings = Array.isArray(diag.beta154Warnings) && diag.beta154Warnings.length
+    ? `<p class="muted-note warning-note">À surveiller : ${diag.beta154Warnings.map(escapeHtml).join(" · ")}</p>`
+    : "";
+  return `<div class="beta154-readiness-grid"><div><span>Vérification</span><strong>${escapeHtml(checked)}</strong></div><div><span>API</span><strong>${escapeHtml(health)} · ${escapeHtml(api)}</strong></div><div><span>Auto-test</span><strong>${escapeHtml(self)}</strong></div><div><span>Cache</span><strong>${escapeHtml(cache)}</strong></div></div>${warnings}<div class="home-actions-row beta154-actions"><button type="button" class="ghost" data-beta154-check>Vérifier en ligne</button><button type="button" class="ghost" data-beta154-clean-reload>Recharger proprement l’app</button></div>`;
+}
+
+if (typeof beta142OnlineDiagnosticMarkup === "function") {
+  const beta154PreviousOnlineDiagnosticMarkup = beta142OnlineDiagnosticMarkup;
+  beta142OnlineDiagnosticMarkup = function beta154OnlineDiagnosticMarkup() {
+    const html = beta154PreviousOnlineDiagnosticMarkup();
+    return String(html).replace("</details>", `${beta154ReadinessLineMarkup()}</details>`);
+  };
+}
+
+function beta154GlobalAction(event) {
+  const target = event.target?.closest?.("[data-beta154-check],[data-beta154-clean-reload]");
+  if (!target || !document.body.contains(target)) return;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+  if (target.matches("[data-beta154-clean-reload]")) return beta154CleanReloadApp();
+  if (target.matches("[data-beta154-check]")) {
+    setState({ profileFeedback: "Vérification en cours…" }, { save: true, render: true });
+    beta154CheckAppReadiness().then(() => setState({ profileFeedback: "Vérification terminée." }, { save: true, render: true })).catch(() => setState({ profileFeedback: "Vérification impossible pour le moment." }, { save: true, render: true }));
+  }
+}
+
+function beta154InstallStyle() {
+  if (document.getElementById("beta154-cache-recovery-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta154-cache-recovery-style";
+  style.textContent = `
+    .beta154-readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+    .beta154-readiness-grid div{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);border-radius:14px;padding:9px 10px}
+    .beta154-readiness-grid span{display:block;color:var(--muted);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+    .beta154-readiness-grid strong{display:block;margin-top:2px;font-size:.88rem;line-height:1.2}
+    .beta154-actions{margin-top:10px;gap:8px;flex-wrap:wrap}.beta154-actions button{min-height:40px}
+    @media(max-width:430px){.beta154-readiness-grid{grid-template-columns:1fr}.beta154-actions{display:grid}.beta154-actions button{width:100%}}
+  `;
+  document.head.appendChild(style);
+}
+
+try {
+  beta154LocalReadinessCleanup();
+  beta154InstallStyle();
+  if (!window.__HISTODAILY_BETA154_ACTIONS__) {
+    window.__HISTODAILY_BETA154_ACTIONS__ = true;
+    document.addEventListener("click", beta154GlobalAction, true);
+  }
+  window.setTimeout(() => beta154CheckAppReadiness().catch(() => {}), 2600);
+  state.beta154CacheRecoveryVersion = BETA154_CACHE_RECOVERY_VERSION;
+  queueSaveState(150);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA154_CACHE_RECOVERY_VERSION, cacheRecovery: true, publicReadinessGuard: true };
+} catch (error) { try { beta153RecordClientIssue?.("beta154", error?.message || error); } catch {} }
+
+/* =========================================================
+   Beta 155 — final guard + identity last-known-good
+   - sauvegarde séparée de la dernière identité saine
+   - récupération douce si un ancien cache perd le code ami
+   - diagnostic stockage/cache plus lisible avant test élargi
+   ========================================================= */
+const BETA155_FINAL_GUARD_VERSION = "1.0.0-beta.156";
+const BETA155_IDENTITY_SNAPSHOT_KEY = `${STORAGE_KEY}_identity_last_good_v2`;
+
+function beta155SafeJsonRead(key) {
+  try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
+}
+function beta155SafeJsonWrite(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
+}
+function beta155MeasureLocalStorageFootprint() {
+  try {
+    let total = 0;
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i) || "";
+      if (!/histodaily/i.test(key)) continue;
+      total += key.length + String(localStorage.getItem(key) || "").length;
+    }
+    return total;
+  } catch { return 0; }
+}
+function beta155StorageWritable() {
+  try {
+    const key = `${STORAGE_KEY}_write_probe`;
+    localStorage.setItem(key, String(Date.now()));
+    localStorage.removeItem(key);
+    return true;
+  } catch { return false; }
+}
+function beta155IdentitySnapshotPayload() {
+  let code = "";
+  let pid = "";
+  let localId = "";
+  try { code = normalizeFriendCode(friendCode()); } catch {}
+  try { pid = String(playerIdMe()); } catch {}
+  try { localId = String(localUserId()); } catch {}
+  if (!parseFriendCode(code) || !pid) return null;
+  return {
+    app: "HistoDaily",
+    version: BETA155_FINAL_GUARD_VERSION,
+    savedAt: Date.now(),
+    playerId: pid,
+    localUserId: localId,
+    friendCode: code,
+    pseudo: sanitizePseudo(currentPseudo?.() || state.pseudo || "Invité"),
+    level: typeof level === "function" ? level() : 1,
+    xp: Number(state.xp || 0),
+    solvedCount: Object.keys(state.solvedMysteries || {}).length,
+    source: "last-known-good"
+  };
+}
+function beta155SaveIdentitySnapshot() {
+  const payload = beta155IdentitySnapshotPayload();
+  if (!payload) return false;
+  const ok = beta155SafeJsonWrite(BETA155_IDENTITY_SNAPSHOT_KEY, payload);
+  if (ok) {
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      beta155IdentitySnapshotAt: payload.savedAt,
+      beta155StorageFootprint: beta155MeasureLocalStorageFootprint(),
+      beta155StorageWritable: beta155StorageWritable(),
+      beta155Version: BETA155_FINAL_GUARD_VERSION
+    };
+  }
+  return ok;
+}
+function beta155RecoverIdentityFromSnapshot() {
+  try {
+    const snap = beta155SafeJsonRead(BETA155_IDENTITY_SNAPSHOT_KEY);
+    if (!snap || !parseFriendCode(snap.friendCode || "")) return false;
+    let changed = false;
+    const currentCode = normalizeFriendCode(localStorage.getItem(`${STORAGE_KEY}_friend_code`) || "");
+    if (!parseFriendCode(currentCode)) {
+      localStorage.setItem(`${STORAGE_KEY}_friend_code`, normalizeFriendCode(snap.friendCode));
+      if (snap.localUserId) localStorage.setItem(`${STORAGE_KEY}_local_user_id`, String(snap.localUserId));
+      changed = true;
+    }
+    if ((!state.pseudo || state.pseudo === "Invité") && snap.pseudo && snap.pseudo !== "Invité") {
+      state.pseudo = sanitizePseudo(snap.pseudo);
+      changed = true;
+    }
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      beta155RecoveredIdentity: changed,
+      beta155RecoveredAt: changed ? Date.now() : (state.onlineDiagnostic || {}).beta155RecoveredAt,
+      beta155LastGoodFriendCode: normalizeFriendCode(snap.friendCode),
+      beta155LastGoodPlayerId: String(snap.playerId || ""),
+      beta155Version: BETA155_FINAL_GUARD_VERSION
+    };
+    if (changed) queueSaveState(100);
+    return changed;
+  } catch { return false; }
+}
+function beta155FinalGuardMarkup() {
+  const diag = state.onlineDiagnostic || {};
+  const writable = diag.beta155StorageWritable === false ? "à surveiller" : "OK";
+  const footprint = Number(diag.beta155StorageFootprint || beta155MeasureLocalStorageFootprint());
+  const footprintKo = footprint ? `${Math.round(footprint / 1024)} Ko` : "—";
+  const saved = diag.beta155IdentitySnapshotAt ? beta154NowLabel?.(diag.beta155IdentitySnapshotAt) || "OK" : "à créer";
+  const recovered = diag.beta155RecoveredIdentity ? `<p class="muted-note warning-note">Identité récupérée depuis la dernière sauvegarde saine.</p>` : "";
+  return `<div class="beta155-final-grid"><div><span>Identité saine</span><strong>${escapeHtml(saved)}</strong></div><div><span>Stockage</span><strong>${escapeHtml(writable)} · ${escapeHtml(footprintKo)}</strong></div></div>${recovered}<div class="home-actions-row beta155-actions"><button type="button" class="ghost" data-beta155-save-identity>Fixer mon identité</button></div>`;
+}
+if (typeof beta142OnlineDiagnosticMarkup === "function") {
+  const beta155PreviousOnlineDiagnosticMarkup = beta142OnlineDiagnosticMarkup;
+  beta142OnlineDiagnosticMarkup = function beta155OnlineDiagnosticMarkup() {
+    const html = beta155PreviousOnlineDiagnosticMarkup();
+    return String(html).replace("</details>", `${beta155FinalGuardMarkup()}</details>`);
+  };
+}
+function beta155GlobalAction(event) {
+  const target = event.target?.closest?.("[data-beta155-save-identity]");
+  if (!target || !document.body.contains(target)) return;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+  const ok = beta155SaveIdentitySnapshot();
+  setState({ profileFeedback: ok ? "Identité sauvegardée comme référence saine." : "Impossible de sauvegarder l’identité pour le moment." }, { save: true, render: true });
+}
+function beta155InstallStyle() {
+  if (document.getElementById("beta156-release-readiness-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta156-release-readiness-style";
+  style.textContent = `
+    .beta155-final-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+    .beta155-final-grid div{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);border-radius:14px;padding:9px 10px}
+    .beta155-final-grid span{display:block;color:var(--muted);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+    .beta155-final-grid strong{display:block;margin-top:2px;font-size:.88rem;line-height:1.2}.beta155-actions{margin-top:10px}.beta155-actions button{min-height:40px}
+    @media(max-width:430px){.beta155-final-grid{grid-template-columns:1fr}.beta155-actions{display:grid}.beta155-actions button{width:100%}}
+  `;
+  document.head.appendChild(style);
+}
+try {
+  beta155RecoverIdentityFromSnapshot();
+  beta155SaveIdentitySnapshot();
+  beta155InstallStyle();
+  if (!window.__HISTODAILY_BETA155_ACTIONS__) {
+    window.__HISTODAILY_BETA155_ACTIONS__ = true;
+    document.addEventListener("click", beta155GlobalAction, true);
+    window.addEventListener("beforeunload", () => { try { beta155SaveIdentitySnapshot(); } catch {} });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) { try { beta155SaveIdentitySnapshot(); } catch {} } });
+  }
+  state.beta155FinalGuardVersion = BETA155_FINAL_GUARD_VERSION;
+  queueSaveState(150);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA155_FINAL_GUARD_VERSION, finalGuard: true, identityLastKnownGood: true };
+} catch (error) { try { beta153RecordClientIssue?.("beta155", error?.message || error); } catch {} }
+
+/* =========================================================
+   Beta 156 — release readiness guard
+   - contrôle final non destructif côté API
+   - nettoyage local léger avant test privé
+   - détection plus claire des vieux caches PWA
+   ========================================================= */
+const BETA156_RELEASE_READINESS_VERSION = "1.0.0-beta.156";
+
+function beta156UniqueBy(items, keyFn) {
+  const out = [];
+  const seen = new Set();
+  (Array.isArray(items) ? items : []).forEach(item => {
+    const key = String(keyFn(item) || "").trim().toLowerCase();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    out.push(item);
+  });
+  return out;
+}
+
+function beta156ReleaseLocalCleanup() {
+  try {
+    const validTabs = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
+    const validDisciplines = new Set((DISCIPLINES || []).map(d => d.id));
+    const patch = {};
+    if (!validTabs.has(state.tab)) patch.tab = "home";
+    if (!validDisciplines.has(state.currentDiscipline)) patch.currentDiscipline = "history";
+    const lessons = allLessons?.() || [];
+    if (state.currentLessonId && !lessons.some(lesson => lesson.id === state.currentLessonId)) {
+      patch.currentLessonId = null;
+      if ((patch.tab || state.tab) === "lesson") patch.tab = "learn";
+    }
+    const mysteryIds = new Set((mysteries || []).map(m => m.id));
+    if (state.currentMysteryId && !mysteryIds.has(state.currentMysteryId)) patch.currentMysteryId = dailyMystery?.()?.id || null;
+
+    const myCode = normalizeFriendCode(friendCode?.() || "");
+    const myId = String(playerIdMe?.() || "");
+    const friends = beta156UniqueBy(state.friends || [], friend => normalizeFriendCode(friend.friendCode || friend.code || friend.id || "") || String(friend.playerId || friend.friendPlayerId || ""))
+      .filter(friend => {
+        const code = normalizeFriendCode(friend.friendCode || friend.code || friend.id || "");
+        const pid = String(friend.playerId || friend.friendPlayerId || "");
+        return code !== myCode && pid !== myId;
+      });
+    if (JSON.stringify(friends) !== JSON.stringify(state.friends || [])) patch.friends = friends;
+
+    const outgoing = beta156UniqueBy(state.friendRequestOutbox || [], req => normalizeFriendCode(req.targetFriendCode || req.friendCode || req.code || "") || String(req.targetPlayerId || ""))
+      .filter(req => normalizeFriendCode(req.targetFriendCode || req.friendCode || req.code || "") !== myCode && String(req.targetPlayerId || "") !== myId);
+    if (JSON.stringify(outgoing) !== JSON.stringify(state.friendRequestOutbox || [])) patch.friendRequestOutbox = outgoing;
+
+    const scores = beta156UniqueBy(state.scoreOutbox || [], score => `${score.mysteryId || ""}|${score.periodKey || ""}|${score.scope || "daily"}|${score.playerId || myId}`);
+    if (JSON.stringify(scores) !== JSON.stringify(state.scoreOutbox || [])) patch.scoreOutbox = scores;
+
+    if (Object.keys(patch).length) setState(patch, { save: true, render: false });
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      beta156LocalCleanupAt: Date.now(),
+      beta156CleanedFriends: friends.length,
+      beta156CleanedRequests: outgoing.length,
+      beta156CleanedScores: scores.length,
+      beta156Version: BETA156_RELEASE_READINESS_VERSION
+    };
+    queueSaveState?.(180);
+  } catch (error) { try { beta153RecordClientIssue?.("beta156-local-cleanup", error?.message || error); } catch {} }
+}
+
+async function beta156ReleaseCheck() {
+  const started = Date.now();
+  try {
+    const response = await fetch(`/api/v1/system/release-check?playerId=${encodeURIComponent(playerIdMe?.() || "")}&friendCode=${encodeURIComponent(friendCode?.() || "")}&_=${Date.now()}`, { cache: "no-store" });
+    const json = await response.json().catch(() => null);
+    const warnings = Array.isArray(json?.warnings) ? json.warnings : [];
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      beta156ReleaseCheckAt: Date.now(),
+      beta156ReleaseCheckOk: Boolean(json?.ok),
+      beta156ReleaseCheckScore: Number(json?.readinessScore || 0),
+      beta156ReleaseWarnings: warnings.slice(0, 6),
+      beta156ReleaseMode: json?.mode || "—",
+      beta156ReleaseDurationMs: Date.now() - started,
+      beta156Version: BETA156_RELEASE_READINESS_VERSION
+    };
+    queueSaveState?.(120);
+    return json;
+  } catch (error) {
+    state.onlineDiagnostic = {
+      ...(state.onlineDiagnostic || {}),
+      beta156ReleaseCheckAt: Date.now(),
+      beta156ReleaseCheckOk: false,
+      beta156ReleaseWarnings: ["Contrôle final indisponible pour le moment."],
+      beta156ReleaseDurationMs: Date.now() - started,
+      beta156Version: BETA156_RELEASE_READINESS_VERSION
+    };
+    queueSaveState?.(120);
+    throw error;
+  }
+}
+
+function beta156ReleaseReadinessMarkup() {
+  const diag = state.onlineDiagnostic || {};
+  const checked = diag.beta156ReleaseCheckAt ? (beta154NowLabel?.(diag.beta156ReleaseCheckAt) || "OK") : "non lancé";
+  const score = Number(diag.beta156ReleaseCheckScore || 0);
+  const status = diag.beta156ReleaseCheckOk ? "OK" : (diag.beta156ReleaseCheckAt ? "à vérifier" : "en attente");
+  const warnings = Array.isArray(diag.beta156ReleaseWarnings) && diag.beta156ReleaseWarnings.length
+    ? `<p class="muted-note warning-note">${diag.beta156ReleaseWarnings.map(escapeHtml).join(" · ")}</p>`
+    : "";
+  return `<div class="beta156-readiness-grid"><div><span>Contrôle final</span><strong>${escapeHtml(status)}</strong></div><div><span>Score</span><strong>${escapeHtml(score ? `${score}/100` : "—")}</strong></div><div><span>Dernier contrôle</span><strong>${escapeHtml(checked)}</strong></div><div><span>Mode</span><strong>${escapeHtml(diag.beta156ReleaseMode || "—")}</strong></div></div>${warnings}<div class="home-actions-row beta156-actions"><button type="button" class="ghost" data-beta156-release-check>Contrôle final</button></div>`;
+}
+
+if (typeof beta142OnlineDiagnosticMarkup === "function") {
+  const beta156PreviousOnlineDiagnosticMarkup = beta142OnlineDiagnosticMarkup;
+  beta142OnlineDiagnosticMarkup = function beta156OnlineDiagnosticMarkup() {
+    const html = beta156PreviousOnlineDiagnosticMarkup();
+    return String(html).replace("</details>", `${beta156ReleaseReadinessMarkup()}</details>`);
+  };
+}
+
+function beta156GlobalAction(event) {
+  const target = event.target?.closest?.("[data-beta156-release-check]");
+  if (!target || !document.body.contains(target)) return;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+  setState({ profileFeedback: "Contrôle final en cours…" }, { save: true, render: true });
+  beta156ReleaseLocalCleanup();
+  beta156ReleaseCheck()
+    .then(json => setState({ profileFeedback: json?.ok ? "Contrôle final OK." : "Contrôle final terminé avec points à surveiller." }, { save: true, render: true }))
+    .catch(() => setState({ profileFeedback: "Contrôle final impossible pour le moment." }, { save: true, render: true }));
+}
+
+function beta156InstallStyle() {
+  if (document.getElementById("beta156-release-readiness-style")) return;
+  const style = document.createElement("style");
+  style.id = "beta156-release-readiness-style";
+  style.textContent = `
+    .beta156-readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+    .beta156-readiness-grid div{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);border-radius:14px;padding:9px 10px}
+    .beta156-readiness-grid span{display:block;color:var(--muted);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+    .beta156-readiness-grid strong{display:block;margin-top:2px;font-size:.88rem;line-height:1.2}.beta156-actions{margin-top:10px}.beta156-actions button{min-height:40px}
+    @media(max-width:430px){.beta156-readiness-grid{grid-template-columns:1fr}.beta156-actions{display:grid}.beta156-actions button{width:100%}}
+  `;
+  document.head.appendChild(style);
+}
+
+try {
+  beta156ReleaseLocalCleanup();
+  beta156InstallStyle();
+  if (!window.__HISTODAILY_BETA156_ACTIONS__) {
+    window.__HISTODAILY_BETA156_ACTIONS__ = true;
+    document.addEventListener("click", beta156GlobalAction, true);
+    window.addEventListener("online", () => { try { beta156ReleaseLocalCleanup(); } catch {} });
+    window.addEventListener("pageshow", event => { if (event.persisted) { try { beta156ReleaseLocalCleanup(); } catch {} } });
+  }
+  state.beta156ReleaseReadinessVersion = BETA156_RELEASE_READINESS_VERSION;
+  queueSaveState?.(150);
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA156_RELEASE_READINESS_VERSION, releaseReadiness: true, privateBetaGuard: true };
+} catch (error) { try { beta153RecordClientIssue?.("beta156", error?.message || error); } catch {} }

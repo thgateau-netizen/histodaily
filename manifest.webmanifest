@@ -1,7 +1,7 @@
 {
   "name": "HistoDaily",
   "short_name": "HistoDaily",
-  "description": "HistoDaily — un mystère par jour, des cours courts ou complets, des profils et des classements entre amis.",
+  "description": "HistoDaily — un mystère quotidien, des cours clairs, des classements et des amis.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -38,5 +38,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "1.0.0-beta.140"
+  "version": "1.0.0-beta.156"
 }
