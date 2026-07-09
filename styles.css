@@ -1642,15 +1642,3 @@ button,.nav-item,[data-discipline],[data-view-profile],[data-open-daily-mystery]
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important;}
 }
-
-/* Beta162 — éviter que le lien d'accessibilité reste collé visuellement sur mobile après un changement d'écran. */
-.skip-link:not(:focus-visible){
-  transform:translateY(-220%)!important;
-  opacity:0!important;
-  pointer-events:none!important;
-}
-.skip-link:focus-visible{
-  transform:translateY(0)!important;
-  opacity:1!important;
-  pointer-events:auto!important;
-}

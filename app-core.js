@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.162",
-  assetsVersion: "1.0.0-beta.162",
+  version: "1.0.0-beta.163",
+  assetsVersion: "1.0.0-beta.163",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -18,9 +18,10 @@ window.HISTODAILY_CORE = {
     versionLabel: "mise à jour",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Navigation : les flèches retour et les boutons principaux sont capturés de façon plus robuste.",
-      "Mystères : après déblocage avec gemmes, le dossier ouvert apparaît directement en haut de page.",
-      "Stabilité : correctif global sans nouvelle optimisation agressive."
+      "Correctif général : profil, code ami, navigation et classement XP total.",
+      "Préparation test privé : nouveau contrôle final en ligne, sans modifier les données.",
+      "Stabilité renforcée : l’app détecte mieux les anciens caches et états locaux incohérents.",
+      "Interface plus propre : assistance repliée, messages plus clairs et moins de bruit technique."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

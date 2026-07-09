@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.156";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.163";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -14242,7 +14242,7 @@ if (document.readyState !== "loading") render({ immediate: true });
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.156";
+const BETA124_VERSION = "1.0.0-beta.163";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -14486,7 +14486,7 @@ try { render({ immediate: true }); } catch {}
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.156";
+const BETA125_VERSION = "1.0.0-beta.163";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -14777,7 +14777,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.156";
+const BETA126_VERSION = "1.0.0-beta.163";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -14920,7 +14920,7 @@ try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.Hist
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.156";
+const BETA127_VERSION = "1.0.0-beta.163";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -15276,7 +15276,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.156";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.163";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -15585,7 +15585,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.156";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.163";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -15713,7 +15713,7 @@ try {
    affichages de bêta, les panneaux trop bavards et les outils
    de test visibles avant un essai réel sur mobile.
    ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.156";
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.163";
 
 function beta130HasPendingSocialWork() {
   try {
@@ -15798,7 +15798,7 @@ try { render({ immediate: true }); } catch {}
    sur les onglets. On renforce donc la navigation par délégation
    globale + couche CSS prioritaire + réparation du dernier onglet.
    ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.156";
+const BETA131_NAV_FIX_VERSION = "1.0.0-beta.163";
 const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
 let beta131LastNavigationTap = 0;
 
@@ -15930,7 +15930,7 @@ try {
    navigation indépendante du classement, on timeout les fetchs et on
    revient à l'accueil après mise à jour.
    ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.156";
+const BETA132_SAFE_VERSION = "1.0.0-beta.163";
 let beta133RankFetchTimer = 0;
 let beta133CriticalTapAt = 0;
 
@@ -16121,7 +16121,7 @@ try {
    délégation dédiée aux sélecteurs de disciplines, sans toucher au
    classement ni à Supabase.
    ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.156";
+const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.163";
 let beta133DisciplineTapAt = 0;
 
 function beta133ValidDisciplineId(id) {
@@ -16246,7 +16246,7 @@ try {
    On ajoute une délégation globale sociale, indépendante du rendu, et
    on rend la résolution de profil tolérante aux id string/number.
    ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.156";
+const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.163";
 let beta134SocialTapAt = 0;
 
 function beta134SameToken(a, b) {
@@ -16429,7 +16429,7 @@ try {
    Beta 135 — nettoyage de copie utilisateur
    Patch note visible, vocabulaire moins interne, accueil plus clair.
    ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.156";
+const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.163";
 
 releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
   const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
@@ -16467,7 +16467,7 @@ try {
    puis le même tap peut être repris par la navigation après le rendu.
    On consomme donc l'événement Indice avant tout changement d'écran.
    ========================================================= */
-const BETA136_HINT_TAP_VERSION = "1.0.0-beta.156";
+const BETA136_HINT_TAP_VERSION = "1.0.0-beta.163";
 let beta136HintTapAt = 0;
 let beta136LastHintMysteryId = "";
 
@@ -16546,7 +16546,7 @@ try {
    Histoire / Cinéma / Économie / etc. déclenche parfois le mode touché.
    On distingue maintenant un vrai tap d'un swipe/scroll horizontal.
    ========================================================= */
-const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.156";
+const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.163";
 const beta139ModeSwipe = {
   active: false,
   tracking: false,
@@ -16681,7 +16681,7 @@ try {
    des chapitres sans cours jouables. On filtre maintenant les actions
    principales sur les contenus réellement disponibles.
    ========================================================= */
-const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.156";
+const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.163";
 
 function beta139RealWorldsForDiscipline(disciplineId = activeDisciplineId()) {
   const id = disciplineById(disciplineId || "history").id;
@@ -16924,7 +16924,7 @@ try {
    - requestId serveur conservé quand disponible
    - nettoyage local immédiat + récupération après ancien flux direct
    ========================================================= */
-const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.156";
+const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.163";
 let beta140LastCancelTapAt = 0;
 
 function beta140ParseTargetKey(key = "") {
@@ -17085,7 +17085,7 @@ try {
    - le bouton Actualiser remplace la liste locale par l'état Supabase
    - l'annulation nettoie demandes + ancien hd_friends puis force le rechargement
    ========================================================= */
-const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.156";
+const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.163";
 let beta141RefreshInFlight = false;
 let beta141LastRefreshTapAt = 0;
 
@@ -17262,7 +17262,7 @@ try {
    - diagnostic discret pour comprendre les états online
    - refresh social = vérité serveur + files locales
    ========================================================= */
-const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.156";
+const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.163";
 let beta142RepairInFlight = false;
 let beta142LastRepairTapAt = 0;
 
@@ -17502,7 +17502,7 @@ try {
 
 
 /* Beta 143 — online stability polish */
-const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.156";
+const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.163";
 function beta143IdentityWarningMarkup() {
   const identity = state.onlineDiagnostic?.identity || {};
   const matches = Number(identity.possibleCodeMatches || 0);
@@ -17535,7 +17535,7 @@ try {
 
 
 /* Beta 144 — online consistency preflight */
-const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.156";
+const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.163";
 function beta145OnlinePreflightSnapshot() {
   const req = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [] };
   const scoreOutbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : [];
@@ -17566,7 +17566,7 @@ try {
    - diagnostic de réparation plus clair
    - aucune nouvelle interaction obligatoire
    ========================================================= */
-const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.156";
+const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.163";
 function beta145FriendStableKey(friend = {}, fallback = "") {
   const code = normalizeFriendCode(friend.code || friend.friendCode || friend.friend_code || fallback || "");
   const suffix = typeof friendCodeSuffix === "function" ? friendCodeSuffix(code) : code;
@@ -17664,7 +17664,7 @@ try {
    - supprime les demandes locales vers soi-même
    - rend le diagnostic plus exploitable sans nouvel écran
    ========================================================= */
-const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.156";
+const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.163";
 function beta146IsSelfTarget(target = {}) {
   const targetId = String(target.targetPlayerId || target.playerId || target.player_id || target.otherPlayerId || target.id || "");
   const targetCode = normalizeFriendCode(target.targetFriendCode || target.friendCode || target.friend_code || target.otherFriendCode || target.code || "");
@@ -17790,7 +17790,7 @@ try {
    - évite les réparations en boucle et conserve un diagnostic discret
    - ne crée pas de nouvelle fonctionnalité visible
    ========================================================= */
-const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.156";
+const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.163";
 let beta147SilentRepairInFlight = false;
 function beta147SilentRepairKey() {
   const day = typeof localDayKey === "function" ? localDayKey() : String(new Date().toISOString().slice(0, 10));
@@ -17887,7 +17887,7 @@ try {
    - diagnostic profil moins "bêta"
    - bouton de pré-vérification online sans modification des données
    ========================================================= */
-const BETA148_PREFLIGHT_CLEAN_VERSION = "1.0.0-beta.156";
+const BETA148_PREFLIGHT_CLEAN_VERSION = "1.0.0-beta.163";
 function beta148PlainObject(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
@@ -18051,7 +18051,7 @@ try {
    - diagnostic discret dans le profil
    - pré-vérification serveur étendue avec /system/selftest
    ========================================================= */
-const BETA149_REGRESSION_GUARD_VERSION = "1.0.0-beta.156";
+const BETA149_REGRESSION_GUARD_VERSION = "1.0.0-beta.163";
 function beta149CountByDiscipline() {
   const rows = [];
   try {
@@ -18198,7 +18198,7 @@ try {
    Beta 150 — design boost performant
    CSS-only polish: cartes, navigation, modes, mystère, classement.
    ========================================================= */
-const BETA150_DESIGN_VERSION = "1.0.0-beta.156";
+const BETA150_DESIGN_VERSION = "1.0.0-beta.163";
 try {
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA150_DESIGN_VERSION, designBoost: true, lightweightVisuals: true };
 } catch {}
@@ -18207,7 +18207,7 @@ try {
 /* =========================================================
    Beta 151 — polish visuel et garde-fous performance
    ========================================================= */
-const BETA151_POLISH_PERF_VERSION = "1.0.0-beta.156";
+const BETA151_POLISH_PERF_VERSION = "1.0.0-beta.163";
 try {
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA151_POLISH_PERF_VERSION, designPolish: true, mobilePerfGuard: true };
 } catch {}
@@ -18217,7 +18217,7 @@ try {
    Objectif : rendre les écrans incomplets plus assumés côté utilisateur,
    sans exposer le vocabulaire interne de build/contenu.
    ========================================================= */
-const BETA152_PRODUCT_POLISH_VERSION = "1.0.0-beta.156";
+const BETA152_PRODUCT_POLISH_VERSION = "1.0.0-beta.163";
 
 function beta152PlayableCourseCount(disciplineId = activeDisciplineId()) {
   try {
@@ -18352,7 +18352,7 @@ try {
    - actions globales simples pour boutons rendus dynamiquement
    - diagnostic discret des erreurs client/cache
    ========================================================= */
-const BETA153_RELEASE_CANDIDATE_VERSION = "1.0.0-beta.156";
+const BETA153_RELEASE_CANDIDATE_VERSION = "1.0.0-beta.163";
 
 function beta153SafeShort(value, max = 90) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
@@ -18492,7 +18492,7 @@ try {
    - bouton utilisateur pour recharger proprement sans perdre la progression
    - nettoyage local plus strict mais non destructif
    ========================================================= */
-const BETA154_CACHE_RECOVERY_VERSION = "1.0.0-beta.156";
+const BETA154_CACHE_RECOVERY_VERSION = "1.0.0-beta.163";
 
 function beta154NowLabel(ts = Date.now()) {
   try { return new Date(ts).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); } catch { return "—"; }
@@ -18684,7 +18684,7 @@ try {
    - récupération douce si un ancien cache perd le code ami
    - diagnostic stockage/cache plus lisible avant test élargi
    ========================================================= */
-const BETA155_FINAL_GUARD_VERSION = "1.0.0-beta.156";
+const BETA155_FINAL_GUARD_VERSION = "1.0.0-beta.163";
 const BETA155_IDENTITY_SNAPSHOT_KEY = `${STORAGE_KEY}_identity_last_good_v2`;
 
 function beta155SafeJsonRead(key) {
@@ -18835,7 +18835,7 @@ try {
    - nettoyage local léger avant test privé
    - détection plus claire des vieux caches PWA
    ========================================================= */
-const BETA156_RELEASE_READINESS_VERSION = "1.0.0-beta.156";
+const BETA156_RELEASE_READINESS_VERSION = "1.0.0-beta.163";
 
 function beta156UniqueBy(items, keyFn) {
   const out = [];
@@ -18866,13 +18866,21 @@ function beta156ReleaseLocalCleanup() {
 
     const myCode = normalizeFriendCode(friendCode?.() || "");
     const myId = String(playerIdMe?.() || "");
-    const friends = beta156UniqueBy(state.friends || [], friend => normalizeFriendCode(friend.friendCode || friend.code || friend.id || "") || String(friend.playerId || friend.friendPlayerId || ""))
-      .filter(friend => {
-        const code = normalizeFriendCode(friend.friendCode || friend.code || friend.id || "");
-        const pid = String(friend.playerId || friend.friendPlayerId || "");
-        return code !== myCode && pid !== myId;
-      });
-    if (JSON.stringify(friends) !== JSON.stringify(state.friends || [])) patch.friends = friends;
+    const rawFriendEntries = Array.isArray(state.friends)
+      ? (state.friends || []).map((friend, index) => [friend?.id || friend?.code || String(index), friend])
+      : Object.entries(state.friends && typeof state.friends === "object" ? state.friends : {});
+    const friendMap = {};
+    rawFriendEntries.forEach(([fallbackKey, friend]) => {
+      if (!friend || typeof friend !== "object") return;
+      const code = normalizeFriendCode(friend.friendCode || friend.code || friend.id || fallbackKey || "");
+      const pid = String(friend.playerId || friend.friendPlayerId || friend.friend_player_id || "");
+      if ((code && code === myCode) || (pid && pid === myId)) return;
+      const key = code || pid || String(fallbackKey || "");
+      if (!key || friendMap[key]) return;
+      friendMap[key] = { ...friend, id: friend.id || key, code: friend.code || code, friendCode: friend.friendCode || friend.code || code };
+    });
+    const friends = Object.values(friendMap);
+    if (JSON.stringify(friendMap) !== JSON.stringify(state.friends || {})) patch.friends = friendMap;
 
     const outgoing = beta156UniqueBy(state.friendRequestOutbox || [], req => normalizeFriendCode(req.targetFriendCode || req.friendCode || req.code || "") || String(req.targetPlayerId || ""))
       .filter(req => normalizeFriendCode(req.targetFriendCode || req.friendCode || req.code || "") !== myCode && String(req.targetPlayerId || "") !== myId);
@@ -18986,879 +18994,412 @@ try {
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA156_RELEASE_READINESS_VERSION, releaseReadiness: true, privateBetaGuard: true };
 } catch (error) { try { beta153RecordClientIssue?.("beta156", error?.message || error); } catch {} }
 
+
 /* =========================================================
-   Beta 160 — correctif général profil + social + stabilité onglets
-   Objectif : arrêter les micro-correctifs. Le pseudo, l'identité et
-   les demandes d'amis sont normalisés dans un seul flux non destructif.
+   Beta 163 — vrai correctif général stabilité
+   - rollback logique sur base 156 + patch unique non agressif
+   - saisie code ami protégée contre les rerenders
+   - amis conservés en map, demandes obsolètes nettoyées
+   - classement basé sur XP total (cours + mystères), pas seulement score mystère
+   - retours et déblocage mystère robustes sans interception des champs texte
    ========================================================= */
-(() => {
-  const BETA160_VERSION = "1.0.0-beta.160";
-  const PROFILE_KEY = `${STORAGE_KEY}_profile_v3`;
-  const PROFILE_LEGACY_KEYS = [
-    `${STORAGE_KEY}_pseudo`,
-    `${STORAGE_KEY}_identity`,
-    `${STORAGE_KEY}_identity_last_good_v2`
-  ];
-  let beta160SavingPseudo = false;
-  let beta160LastRenderSignature = "";
+(function beta163StabilityGeneralFix(){
+  const BETA163_VERSION = "1.0.0-beta.163";
+  const PROFILE_KEY = `${STORAGE_KEY}_profile_stable_v1`;
+  const FRIEND_DRAFT_KEY = `${STORAGE_KEY}_friend_code_draft`;
+  let syncingXpProfile = false;
 
-  function beta160Now() { return Date.now ? Date.now() : new Date().getTime(); }
-  function beta160String(value = "") { return String(value ?? "").trim(); }
-  function beta160SafePseudo(value = "") {
-    const cleaned = sanitizePseudo ? sanitizePseudo(value) : beta160String(value).replace(/\s+/g, " ").slice(0, 18);
-    return cleaned || "Invité";
-  }
-  function beta160RealPseudo(value = "") {
-    const pseudo = beta160SafePseudo(value);
-    return pseudo && !/^invité$/i.test(pseudo) ? pseudo : "";
-  }
-  function beta160ReadJson(key) {
-    try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
-  }
-  function beta160WriteJson(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
-  }
-  function beta160ReadProfileRecord() {
-    const direct = beta160ReadJson(PROFILE_KEY);
-    const candidates = [];
-    if (direct && typeof direct === "object") candidates.push(direct);
-    for (const key of PROFILE_LEGACY_KEYS) {
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) continue;
-        if (raw.trim().startsWith("{")) {
-          const obj = JSON.parse(raw);
-          if (obj && typeof obj === "object") candidates.push(obj);
-        } else {
-          candidates.push({ pseudo: raw, savedAt: 0, source: key });
-        }
-      } catch {}
-    }
-    const current = state && typeof state === "object" ? state : {};
-    candidates.push({ pseudo: current.pseudo, friendCode: (() => { try { return friendCode?.(); } catch { return ""; } })(), playerId: (() => { try { return playerIdMe?.(); } catch { return ""; } })(), savedAt: current.profileSavedAt || 0, source: "state" });
-    candidates.sort((a, b) => Number(b.savedAt || b.updatedAt || 0) - Number(a.savedAt || a.updatedAt || 0));
-    const real = candidates.find(item => beta160RealPseudo(item?.pseudo || item?.name || item?.displayName));
-    const best = real || candidates[0] || {};
-    return {
-      pseudo: beta160RealPseudo(best.pseudo || best.name || best.displayName) || beta160RealPseudo(current.pseudo) || "Invité",
-      friendCode: normalizeFriendCode?.(best.friendCode || best.code || "") || "",
-      playerId: beta160String(best.playerId || best.player_id || ""),
-      savedAt: Number(best.savedAt || best.updatedAt || 0),
-      source: best.source || "beta160"
-    };
-  }
-  function beta160WriteProfileRecord(pseudo, extra = {}) {
-    const safe = beta160SafePseudo(pseudo);
-    const record = {
-      app: "HistoDaily",
-      version: BETA160_VERSION,
-      pseudo: safe,
-      friendCode: (() => { try { return normalizeFriendCode(friendCode?.() || extra.friendCode || ""); } catch { return extra.friendCode || ""; } })(),
-      playerId: (() => { try { return beta160String(playerIdMe?.() || extra.playerId || ""); } catch { return beta160String(extra.playerId || ""); } })(),
-      savedAt: beta160Now(),
-      source: extra.source || "profile"
-    };
-    beta160WriteJson(PROFILE_KEY, record);
-    try { localStorage.setItem(`${STORAGE_KEY}_pseudo`, safe); } catch {}
-    try { if (typeof beta114RememberPseudo === "function") beta114RememberPseudo(safe); } catch {}
-    try { if (typeof beta124WriteIdentity === "function") beta124WriteIdentity({ pseudo: safe, friendCode: record.friendCode, playerId: record.playerId }); } catch {}
-    return record;
-  }
-  function beta160HydrateProfile({ force = false } = {}) {
-    if (!state || typeof state !== "object") return false;
-    const before = state.pseudo;
-    const record = beta160ReadProfileRecord();
-    const currentReal = beta160RealPseudo(state.pseudo);
-    if (force || !currentReal) state.pseudo = beta160SafePseudo(record.pseudo || state.pseudo);
-    state.profileSavedAt = record.savedAt || state.profileSavedAt || beta160Now();
-    if (beta160RealPseudo(state.pseudo)) beta160WriteProfileRecord(state.pseudo, { source: "hydrate" });
-    return before !== state.pseudo;
-  }
+  function str(value){ return String(value == null ? "" : value).trim(); }
+  function now(){ return Date.now ? Date.now() : new Date().getTime(); }
+  function esc(value){ try { return escapeHtml(String(value == null ? "" : value)); } catch { return String(value == null ? "" : value).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); } }
+  function code(value){ try { return normalizeFriendCode(value || ""); } catch { return str(value).toUpperCase(); } }
+  function suffix(value){ try { return friendCodeSuffix(code(value)); } catch { return code(value).split("-").pop() || ""; } }
+  function pseudo(value){ try { return sanitizePseudo(value || ""); } catch { return str(value).replace(/\s+/g," ").slice(0,18); } }
+  function goodPseudo(value){ const p = pseudo(value); return p && !/^invité$/i.test(p) && !/^joueur$/i.test(p) ? p : ""; }
+  function myCode(){ try { return code(friendCode()); } catch { return ""; } }
+  function myId(){ try { return str(playerIdMe()); } catch { return ""; } }
+  function readJson(key, fallback = null){ try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; } }
+  function writeJson(key, value){ try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } }
+  function queueSave(ms = 120){ try { queueSaveState?.(ms); } catch { try { saveState?.(); } catch {} } }
+  function renderSoon(){ window.setTimeout(() => { try { render?.({ immediate:true }); } catch { try { render?.(); } catch {} } }, 0); }
 
-  function beta160Code(value = "") {
-    try { return normalizeFriendCode(value || ""); } catch { return beta160String(value).toUpperCase(); }
+  function identityOf(item = {}){
+    const c = code(item.friendCode || item.code || item.friend_code || item.otherFriendCode || item.requesterFriendCode || item.targetFriendCode || item.id || "");
+    const pid = str(item.playerId || item.player_id || item.friend_player_id || item.friendPlayerId || item.otherPlayerId || item.requesterPlayerId || item.targetPlayerId || "");
+    return { code:c, playerId:pid, suffix:suffix(c) };
   }
-  function beta160Suffix(code = "") {
-    try { return friendCodeSuffix(beta160Code(code)); } catch { return beta160Code(code).split("-").pop() || ""; }
-  }
-  function beta160Identity(item = {}) {
-    const code = beta160Code(item.code || item.friendCode || item.friend_code || item.otherFriendCode || item.requesterFriendCode || item.targetFriendCode || "");
-    const playerId = beta160String(item.playerId || item.player_id || item.friend_player_id || item.otherPlayerId || item.requesterPlayerId || item.targetPlayerId || "");
-    return { code, playerId, suffix: beta160Suffix(code) };
-  }
-  function beta160SameIdentity(a = {}, b = {}) {
-    const ia = beta160Identity(a);
-    const ib = beta160Identity(b);
+  function sameIdentity(a = {}, b = {}){
+    const ia = identityOf(a), ib = identityOf(b);
     return Boolean((ia.playerId && ib.playerId && ia.playerId === ib.playerId) || (ia.code && ib.code && ia.code === ib.code) || (ia.suffix && ib.suffix && ia.suffix === ib.suffix));
   }
-  function beta160FriendKey(friend = {}, fallback = "") {
-    const id = beta160Identity({ ...friend, code: friend.code || friend.friendCode || fallback });
-    return id.code || id.playerId || beta160String(friend.id || fallback);
+  function friendKey(friend = {}, fallback = ""){
+    const id = identityOf({ ...friend, code: friend.code || friend.friendCode || fallback });
+    return id.code || id.playerId || str(friend.id || fallback);
   }
-  function beta160FriendFromRequest(req = {}) {
-    const code = beta160Code(req.requesterFriendCode || req.otherFriendCode || req.friendCode || req.code || "");
-    const playerId = beta160String(req.requesterPlayerId || req.otherPlayerId || req.playerId || "");
-    const pseudo = beta160SafePseudo(req.requesterPseudo || req.otherPseudo || req.pseudo || req.name || "Ami");
-    const parsed = (() => { try { return parseFriendCode(code); } catch { return null; } })();
-    return {
-      id: code || playerId || beta160String(req.id || `ami-${beta160Now()}`),
-      code,
-      friendCode: code,
-      playerId,
-      name: beta160RealPseudo(pseudo) || parsed?.pseudo || "Ami",
-      addedAt: beta160Now(),
-      server: Boolean(req.server || req.mode === "supabase"),
-      level: Number(req.level || 1),
-      xp: Number(req.xp || 0),
-      solved: Number(req.solved || req.solvedCount || req.solved_count || 0),
-      streak: Number(req.streak || 0)
-    };
-  }
-  function beta160NormalizeFriendMap(raw = state?.friends) {
+  function normalizeFriendMap(raw = state.friends){
+    const entries = Array.isArray(raw) ? raw.map((friend, index) => [friend?.id || friend?.code || String(index), friend]) : Object.entries(raw && typeof raw === "object" ? raw : {});
     const out = {};
-    const source = Array.isArray(raw) ? raw.map((friend, index) => [friend?.id || friend?.code || String(index), friend]) : Object.entries(raw && typeof raw === "object" ? raw : {});
-    for (const [fallback, friend] of source) {
+    for (const [fallback, friend] of entries) {
       if (!friend || typeof friend !== "object") continue;
-      const key = beta160FriendKey(friend, fallback);
-      if (!key) continue;
       const parsed = (() => { try { return parseFriendCode(friend.code || friend.friendCode || fallback || ""); } catch { return null; } })();
-      const name = beta160RealPseudo(friend.name || friend.pseudo || friend.friendPseudo || parsed?.pseudo) || "Ami";
-      const previous = out[key] || {};
-      out[key] = {
+      const k = friendKey(friend, fallback || parsed?.code || "");
+      if (!k) continue;
+      const c = code(friend.code || friend.friendCode || parsed?.code || k);
+      const pid = str(friend.playerId || friend.player_id || friend.friend_player_id || friend.friendPlayerId || "");
+      if (sameIdentity({ code:c, playerId:pid }, { code:myCode(), playerId:myId() })) continue;
+      const name = goodPseudo(friend.name || friend.pseudo || friend.friendPseudo || parsed?.pseudo) || "Ami";
+      const previous = out[k] || {};
+      out[k] = {
         ...previous,
         ...friend,
-        id: friend.id || key,
-        code: beta160Code(friend.code || friend.friendCode || parsed?.code || fallback || ""),
-        friendCode: beta160Code(friend.friendCode || friend.code || parsed?.code || fallback || ""),
-        playerId: beta160String(friend.playerId || friend.player_id || friend.friend_player_id || previous.playerId || ""),
+        id: friend.id || k,
+        code: c,
+        friendCode: code(friend.friendCode || friend.code || c),
+        playerId: pid || previous.playerId || "",
         name,
-        pseudo: beta160RealPseudo(friend.pseudo || name) || name,
-        addedAt: Number(friend.addedAt || previous.addedAt || beta160Now()),
+        pseudo: goodPseudo(friend.pseudo || name) || name,
+        addedAt: Number(friend.addedAt || previous.addedAt || now()),
         level: Number(friend.level || previous.level || 1),
         xp: Number(friend.xp || previous.xp || 0),
         solved: Number(friend.solved || friend.solvedCount || friend.solved_count || previous.solved || 0),
         streak: Number(friend.streak || previous.streak || 0),
-        daily: Number(friend.daily || previous.daily || 0),
-        week: Number(friend.week || previous.week || 0),
-        year: Number(friend.year || previous.year || 0),
+        daily: Math.max(Number(friend.daily || 0), Number(friend.score || 0), Number(friend.xp || 0), Number(previous.daily || 0)),
+        week: Math.max(Number(friend.week || 0), Number(friend.xp || 0), Number(previous.week || 0)),
+        year: Math.max(Number(friend.year || 0), Number(friend.xp || 0), Number(previous.year || 0)),
         server: Boolean(friend.server || previous.server),
         syncedAt: friend.syncedAt || previous.syncedAt || 0
       };
     }
-    const mine = { code: (() => { try { return friendCode?.(); } catch { return ""; } })(), playerId: (() => { try { return playerIdMe?.(); } catch { return ""; } })() };
-    Object.keys(out).forEach(key => { if (beta160SameIdentity(out[key], mine)) delete out[key]; });
     return out;
   }
-  function beta160KnownFriend(item = {}) {
-    const friends = beta160NormalizeFriendMap(state?.friends);
-    return Object.values(friends).find(friend => beta160SameIdentity(friend, item)) || null;
+  function knownFriend(item = {}){
+    const map = normalizeFriendMap(state.friends);
+    return Object.values(map).find(friend => sameIdentity(friend, item)) || null;
   }
-  function beta160CleanRequestList(list = []) {
+  function cleanRequestList(list = []){
     const seen = new Set();
     return (Array.isArray(list) ? list : []).filter(req => {
       if (!req || typeof req !== "object") return false;
-      if (beta160KnownFriend(req)) return false;
-      const id = beta160Identity(req);
+      if (knownFriend(req)) return false;
+      const id = identityOf(req);
       const key = `${req.direction || req.status || "pending"}:${id.playerId || id.code || id.suffix || JSON.stringify(req).slice(0,80)}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
-    }).slice(0, 30);
+    }).slice(0,40);
   }
-  function beta160CleanRequests(requests = {}) {
+  function cleanRequestsObject(requests = {}){
     return {
-      incoming: beta160CleanRequestList(requests.incoming),
-      outgoing: beta160CleanRequestList(requests.outgoing),
-      history: Array.isArray(requests.history) ? requests.history.slice(0, 30) : []
+      incoming: cleanRequestList(requests.incoming || []),
+      outgoing: cleanRequestList(requests.outgoing || []),
+      history: Array.isArray(requests.history) ? requests.history.slice(0,40) : []
     };
   }
-  function beta160RepairSocialState({ save = false } = {}) {
-    if (!state || typeof state !== "object") return false;
+  function repairSocialState(){
     const beforeFriends = JSON.stringify(state.friends || {});
-    state.friends = beta160NormalizeFriendMap(state.friends);
-    const req = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : (state.friendRequests || {});
-    state.friendRequests = beta160CleanRequests(req);
-    if (Array.isArray(state.friendRequestOutbox)) state.friendRequestOutbox = beta160CleanRequestList(state.friendRequestOutbox);
-    const changed = beforeFriends !== JSON.stringify(state.friends || {}) || JSON.stringify(req || {}) !== JSON.stringify(state.friendRequests || {});
-    if (save && changed) { try { queueSaveState?.(80); } catch {} }
-    return changed;
+    const beforeRequests = JSON.stringify(state.friendRequests || {});
+    state.friends = normalizeFriendMap(state.friends);
+    if (state.friendRequests && typeof state.friendRequests === "object") state.friendRequests = cleanRequestsObject(state.friendRequests);
+    if (Array.isArray(state.friendRequestOutbox)) state.friendRequestOutbox = cleanRequestList(state.friendRequestOutbox);
+    const afterFriends = JSON.stringify(state.friends || {});
+    const afterRequests = JSON.stringify(state.friendRequests || {});
+    return beforeFriends !== afterFriends || beforeRequests !== afterRequests;
   }
-  function beta160AddFriendLocal(friend = {}) {
+  function addFriendLocal(friend = {}, message = "Ami ajouté."){
     if (!friend || typeof friend !== "object") return false;
-    const current = beta160NormalizeFriendMap(state.friends);
-    const key = beta160FriendKey(friend, friend.code || friend.friendCode || friend.id || friend.playerId);
-    if (!key) return false;
-    current[key] = { ...(current[key] || {}), ...friend, id: friend.id || key, code: beta160Code(friend.code || friend.friendCode || key), friendCode: beta160Code(friend.friendCode || friend.code || key), name: beta160RealPseudo(friend.name || friend.pseudo) || "Ami", addedAt: Number(friend.addedAt || beta160Now()) };
-    state.friends = current;
-    beta160RepairSocialState({ save: true });
+    const map = normalizeFriendMap(state.friends);
+    const k = friendKey(friend, friend.code || friend.friendCode || friend.playerId || friend.id);
+    if (!k) return false;
+    const c = code(friend.code || friend.friendCode || k);
+    const name = goodPseudo(friend.name || friend.pseudo) || (() => { try { return parseFriendCode(c)?.pseudo || "Ami"; } catch { return "Ami"; } })();
+    map[k] = { ...(map[k] || {}), ...friend, id: friend.id || k, code:c, friendCode:c, name, pseudo:name, addedAt:Number(friend.addedAt || now()) };
+    state.friends = map;
+    repairSocialState();
+    state.friendFeedback = message;
+    queueSave();
     return true;
   }
 
-  // Profil : sauvegarde atomique et indépendante du gros state.
-  const beta160PreviousSavePseudoValue = typeof savePseudoValue === "function" ? savePseudoValue : null;
-  if (beta160PreviousSavePseudoValue) {
-    savePseudoValue = function beta160SavePseudoValue(rawValue, options = {}) {
-      if (beta160SavingPseudo) return false;
-      const pseudo = beta160SafePseudo(rawValue);
-      if (pseudo.length < 3 || !beta160RealPseudo(pseudo)) {
-        try { setState({ profileFeedback: "Choisis un pseudo d’au moins 3 caractères." }, { save: true, renderImmediate: true }); }
-        catch { state.profileFeedback = "Choisis un pseudo d’au moins 3 caractères."; saveState?.(); render?.({ immediate: true }); }
-        return false;
-      }
-      beta160SavingPseudo = true;
-      try {
-        if (!state || typeof state !== "object") state = mergeState(defaultState, {});
-        state.pseudo = pseudo;
-        state.profileFeedback = `Pseudo enregistré : ${pseudo}`;
-        state.serverLeaderboards = {};
-        state.serverLeaderboardStatus = {};
-        state.profileSavedAt = beta160Now();
-        beta160WriteProfileRecord(pseudo, { source: options.source || "profile" });
-        saveState?.();
-        try { syncMyProfileToServer?.({ source: options.source || "profile-beta160" }).catch?.(() => {}); } catch {}
-        try { beta124RefreshSocialData?.({ force: true, reason: "pseudo-beta160" }).catch?.(() => {}); } catch {}
-        render?.({ immediate: true });
-        return true;
-      } finally {
-        beta160SavingPseudo = false;
-      }
+  function saveProfileRecord(source = "auto"){
+    const p = goodPseudo(state.pseudo) || goodPseudo(currentPseudo?.()) || "Invité";
+    writeJson(PROFILE_KEY, { pseudo:p, friendCode:myCode(), playerId:myId(), xp:Number(state.xp || 0), level: typeof level === "function" ? level() : 1, savedAt:now(), version:BETA163_VERSION, source });
+    try { localStorage.setItem(`${STORAGE_KEY}_pseudo`, p); } catch {}
+  }
+  function hydrateProfile(){
+    const rec = readJson(PROFILE_KEY, {});
+    if ((!goodPseudo(state.pseudo) || /^invité$/i.test(state.pseudo || "")) && goodPseudo(rec.pseudo)) state.pseudo = goodPseudo(rec.pseudo);
+    saveProfileRecord("hydrate");
+  }
+  function syncXpProfile(reason = "xp"){
+    if (syncingXpProfile) return;
+    syncingXpProfile = true;
+    window.setTimeout(() => {
+      syncingXpProfile = false;
+      try { saveProfileRecord(reason); } catch {}
+      try { syncMyProfileToServer?.({ source:`beta163-${reason}` }).catch?.(() => {}); } catch {}
+      try { ["daily","week","year","friends"].forEach(scope => { state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loadedAt:0, loading:false, mode:"local", message:"XP total recalculé." } }; }); } catch {}
+    }, 250);
+  }
+
+  // Classement : afficher l'XP total, pas seulement le score du mystère du jour.
+  const previousScoreForScope = typeof scoreForScope === "function" ? scoreForScope : null;
+  // On ne modifie pas scoreForScope global : il reste le score mystère par période.
+  // Le classement, lui, utilise l'XP totale via leaderboardRows/scoreOfPlayer ci-dessous.
+  const previousScoreOfPlayer = typeof scoreOfPlayer === "function" ? scoreOfPlayer : null;
+  scoreOfPlayer = function beta163ScoreOfPlayer(player = {}, scope = "daily"){
+    if (player.me) return Math.max(0, Number(state.xp || 0));
+    return Math.max(0, Number(player.xp || 0), Number(player.score || 0), Number(player.daily || 0), Number(player.week || 0), Number(player.year || 0));
+  };
+  if (typeof remoteLeaderboardRows === "function") {
+    const previousRemoteLeaderboardRows = remoteLeaderboardRows;
+    remoteLeaderboardRows = function beta163RemoteLeaderboardRows(scope = state.rankScope || "daily"){
+      return previousRemoteLeaderboardRows(scope).map(row => {
+        const total = Math.max(Number(row.xp || 0), Number(row.score || 0), Number(row.daily || 0), Number(row.week || 0), Number(row.year || 0));
+        return { ...row, score: total, daily: total, week: total, year: total };
+      }).filter(row => Number(row.score || 0) > 0);
+    };
+  }
+  if (typeof leaderboardRows === "function") {
+    const previousLeaderboardRows = leaderboardRows;
+    leaderboardRows = function beta163LeaderboardRows(scope = state.rankScope || "daily"){
+      const myProfile = (() => { try { return myPlayerProfile(); } catch { return { id:myId(), playerId:myId(), friendCode:myCode(), name:state.pseudo || "Moi", me:true }; } })();
+      const myCodeValue = myCode();
+      let rows = [];
+      try { rows = previousLeaderboardRows(scope) || []; } catch { rows = []; }
+      rows = rows.map(row => {
+        const isMe = Boolean(row.me || row.id === myProfile.id || row.playerId === myProfile.id || code(row.friendCode) === myCodeValue);
+        const total = isMe ? Math.max(Number(state.xp || 0), Number(row.xp || 0), Number(row.score || 0)) : Math.max(Number(row.xp || 0), Number(row.score || 0), Number(row.daily || 0), Number(row.week || 0), Number(row.year || 0));
+        return { ...row, score: total, xp: Math.max(Number(row.xp || 0), total), daily: total, week: total, year: total, me: isMe };
+      });
+      const hasMe = rows.some(row => row.me);
+      if (!hasMe && Number(state.xp || 0) > 0) rows.push({ ...myProfile, id:myProfile.id || myId(), playerId:myProfile.playerId || myProfile.id || myId(), friendCode:myCodeValue, me:true, score:Number(state.xp || 0), xp:Number(state.xp || 0), daily:Number(state.xp || 0), week:Number(state.xp || 0), year:Number(state.xp || 0) });
+      const byId = new Map();
+      rows.forEach(row => {
+        const key = code(row.friendCode) || row.playerId || row.id || row.name;
+        const prev = byId.get(key);
+        if (!prev || Number(row.score || 0) > Number(prev.score || 0) || row.me) byId.set(key, row);
+      });
+      return Array.from(byId.values())
+        .filter(row => Number(row.score || 0) > 0)
+        .sort((a,b) => Number(b.score || 0) - Number(a.score || 0) || String(a.name || "").localeCompare(String(b.name || ""), "fr"))
+        .map((row, index) => ({ ...row, rank:index+1 }));
+    };
+  }
+  if (typeof scorePayloadForMystery === "function") {
+    const previousScorePayloadForMystery = scorePayloadForMystery;
+    scorePayloadForMystery = function beta163ScorePayloadForMystery(mysteryId){
+      const payload = previousScorePayloadForMystery(mysteryId) || {};
+      const total = Math.max(Number(state.xp || 0), Number(payload.xp || 0), Number(payload.score || 0));
+      return { ...payload, xp:total, totalXp:total, score:total, scoreMode:"total_xp" };
     };
   }
 
-  currentPseudo = function beta160CurrentPseudo() {
-    const input = document.activeElement?.matches?.("[data-pseudo-input]") ? document.activeElement.value : "";
-    const pseudo = beta160RealPseudo(input) || beta160RealPseudo(state?.pseudo) || beta160RealPseudo(beta160ReadProfileRecord().pseudo);
-    return pseudo || "Invité";
+  // Profil / code ami : formulaire stable, valeur conservée même si l'écran rerender.
+  if (typeof addFriendMarkup === "function") {
+    addFriendMarkup = function beta163AddFriendMarkup(){
+      const draft = str(state.friendCodeDraft || (() => { try { return localStorage.getItem(FRIEND_DRAFT_KEY) || ""; } catch { return ""; } })());
+      return `<section class="card add-friend-card beta163-add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Colle le code complet, par exemple MANON-ABC123. Le champ garde ce que tu tapes même si l'app actualise l'écran.</p></div><form data-add-friend class="friend-add-form beta163-friend-add-form" autocomplete="off"><input data-friend-code-input name="friendCode" type="text" value="${esc(draft)}" placeholder="PSEUDO-ABC123" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Code ami"/><button type="submit" data-add-friend-button>Ajouter</button></form><div class="friend-code"><strong>${esc(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${esc(state.friendFeedback)}</p>` : ""}</section>`;
+    };
+  }
+  function parsedFriendFromRaw(raw){
+    try { return parseFriendCode(raw || ""); } catch { return null; }
+  }
+  function addFriendByRaw(raw){
+    const value = str(raw);
+    const parsed = parsedFriendFromRaw(value);
+    if (!parsed) { try { setState({ friendFeedback:"Code ami invalide. Format attendu : PSEUDO-ABC123.", friendCodeDraft:value }, { save:true, render:true }); } catch { state.friendFeedback = "Code ami invalide. Format attendu : PSEUDO-ABC123."; renderSoon(); } return false; }
+    if (code(parsed.id) === myCode() || code(parsed.code) === myCode()) { setState({ friendFeedback:"C’est ton propre code. Partage-le, mais ne l’ajoute pas à tes amis.", friendCodeDraft:value }, { save:true, render:true }); return false; }
+    const already = knownFriend({ code:parsed.code, friendCode:parsed.code });
+    if (already) { setState({ friendFeedback:`${already.name || parsed.pseudo} est déjà dans tes amis.`, friendCodeDraft:"" }, { save:true, render:true }); try { localStorage.removeItem(FRIEND_DRAFT_KEY); } catch {} return true; }
+    const friend = { id:parsed.id, code:parsed.code, friendCode:parsed.code, name:parsed.pseudo, pseudo:parsed.pseudo, addedAt:now(), local:true };
+    addFriendLocal(friend, `${parsed.pseudo} ajouté. Synchronisation en cours…`);
+    state.friendCodeDraft = "";
+    try { localStorage.removeItem(FRIEND_DRAFT_KEY); } catch {}
+    try { syncMyProfileToServer?.({ source:"friend-add-beta163" }).catch?.(() => {}); } catch {}
+    try { syncFriendToServer?.(friend).catch?.(error => { state.friendFeedback = `${parsed.pseudo} ajouté sur cet appareil, mais pas partagé en ligne : ${error?.message || "connexion indisponible"}.`; queueSave(); renderSoon(); }); } catch {}
+    renderSoon();
+    return true;
+  }
+  addFriend = function beta163AddFriend(event){
+    try { event?.preventDefault?.(); event?.stopPropagation?.(); } catch {}
+    const form = event?.target?.closest?.("[data-add-friend]") || document.querySelector("[data-add-friend]");
+    const input = form?.querySelector?.("[data-friend-code-input], input[name='friendCode'], input");
+    return addFriendByRaw(input?.value || state.friendCodeDraft || "");
   };
 
-  const beta160PreviousSaveState = typeof saveState === "function" ? saveState : null;
-  if (beta160PreviousSaveState) {
-    saveState = function beta160SaveState() {
-      if (state?.pseudo) beta160WriteProfileRecord(state.pseudo, { source: "save-state" });
-      beta160RepairSocialState({ save: false });
-      return beta160PreviousSaveState();
-    };
-  }
+  document.addEventListener("input", event => {
+    const input = event.target?.closest?.("[data-friend-code-input]");
+    if (!input) return;
+    state.friendCodeDraft = input.value || "";
+    try { localStorage.setItem(FRIEND_DRAFT_KEY, state.friendCodeDraft); } catch {}
+  }, true);
+  document.addEventListener("click", event => {
+    const input = event.target?.closest?.("[data-friend-code-input]");
+    if (!input) return;
+    // Important : ne jamais preventDefault ici, sinon le clavier iPhone ne s'ouvre pas.
+    try { input.focus({ preventScroll:false }); } catch { try { input.focus(); } catch {} }
+  }, true);
+  document.addEventListener("submit", event => {
+    const form = event.target?.closest?.("[data-add-friend]");
+    if (!form) return;
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    addFriendByRaw(form.querySelector("[data-friend-code-input], input[name='friendCode'], input")?.value || "");
+  }, true);
+  document.addEventListener("click", event => {
+    const btn = event.target?.closest?.("[data-add-friend-button]");
+    if (!btn) return;
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    const form = btn.closest("[data-add-friend]");
+    addFriendByRaw(form?.querySelector("[data-friend-code-input], input[name='friendCode'], input")?.value || "");
+  }, true);
 
+  // Demandes d'amis : si quelqu'un est déjà ami, aucune carte "en attente" ne doit survivre.
   if (typeof beta125FriendRequestsState === "function") {
     const previousRequestsState = beta125FriendRequestsState;
-    beta125FriendRequestsState = function beta160FriendRequestsState() {
-      return beta160CleanRequests(previousRequestsState());
-    };
+    beta125FriendRequestsState = function beta163FriendRequestsState(){ return cleanRequestsObject(previousRequestsState()); };
   }
   if (typeof beta125SetFriendRequests === "function") {
-    beta125SetFriendRequests = function beta160SetFriendRequests(requests = {}) {
-      state.friendRequests = beta160CleanRequests(requests);
-    };
+    beta125SetFriendRequests = function beta163SetFriendRequests(requests = {}){ state.friendRequests = cleanRequestsObject(requests); queueSave(); };
   }
   if (typeof mergeServerFriends === "function") {
     const previousMergeServerFriends = mergeServerFriends;
-    mergeServerFriends = function beta160MergeServerFriends(rows = []) {
+    mergeServerFriends = function beta163MergeServerFriends(rows = []){
       const changed = previousMergeServerFriends(rows);
-      beta160RepairSocialState({ save: true });
-      return changed || true;
+      repairSocialState();
+      queueSave();
+      return changed || Boolean((rows || []).length);
     };
   }
-  if (typeof beta125RespondFriendRequest === "function") {
-    const previousRespond = beta125RespondFriendRequest;
-    beta125RespondFriendRequest = async function beta160RespondFriendRequest(args = {}) {
-      const current = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [] };
-      const match = (current.incoming || []).find(req => {
-        const code = beta160Code(args.requesterFriendCode || "");
-        const id = beta160String(args.requesterPlayerId || "");
-        return (id && (req.requesterPlayerId === id || req.otherPlayerId === id)) || (code && beta160SameIdentity(req, { code }));
-      });
-      if ((args.response || "decline") === "accept" && match) beta160AddFriendLocal(beta160FriendFromRequest(match));
-      const result = await previousRespond(args);
-      beta160RepairSocialState({ save: true });
-      saveState?.();
-      return result;
-    };
+  function friendCard(player = {}){
+    const id = esc(player.id || player.playerId || player.friendCode || player.code || "");
+    return `<section class="card beta125-profile-actions beta163-friend-ok"><div><span class="card-label">Ami</span><h2>${esc(player.name || "Ce joueur")} est dans tes amis</h2><p>La relation est validée. Le bloc “en attente” est supprimé localement.</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
   }
   if (typeof beta125PublicActionMarkup === "function") {
     const previousPublicActionMarkup = beta125PublicActionMarkup;
-    beta125PublicActionMarkup = function beta160PublicActionMarkup(player = {}) {
-      if (player && !player.me && (player.friend || beta160KnownFriend(player))) {
-        const id = escapeHtml(player.id || player.playerId || player.friendCode || player.code || "");
-        return `<section class="card beta125-profile-actions beta160-friend-ok"><div><span class="card-label">Ami</span><h2>${escapeHtml(player.name || "Ce joueur")} est dans tes amis</h2><p>La demande est validée. Plus d’attente de validation pour ce profil.</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
+    beta125PublicActionMarkup = function beta163PublicActionMarkup(player = {}){
+      const isFriend = Boolean(player?.friend || knownFriend(player));
+      if (player && !player.me && isFriend) return friendCard(player);
+      const html = previousPublicActionMarkup(player);
+      if (/En attente de validation/i.test(String(html || ""))) {
+        const target = esc(player.id || player.playerId || player.friendCode || player.code || "");
+        return String(html).replace("</section>", `<div class="home-actions-row beta163-pending-actions"><button type="button" class="ghost" data-beta163-refresh-social="${target}">Actualiser relation</button><button type="button" class="ghost" data-beta163-accept-local="${target}">Déjà accepté : corriger ici</button></div></section>`);
       }
-      return previousPublicActionMarkup(player);
+      return html;
     };
   }
-  if (typeof beta140PublicActionMarkup === "function") {
-    const previousBeta140PublicActionMarkup = beta140PublicActionMarkup;
-    beta140PublicActionMarkup = function beta160Beta140PublicActionMarkup(player = {}) {
-      if (player && !player.me && (player.friend || beta160KnownFriend(player))) {
-        const id = escapeHtml(player.id || player.playerId || player.friendCode || player.code || "");
-        return `<section class="card beta125-profile-actions beta160-friend-ok"><div><span class="card-label">Ami</span><h2>${escapeHtml(player.name || "Ce joueur")} est dans tes amis</h2><p>Relation validée et demandes obsolètes nettoyées.</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
-      }
-      return previousBeta140PublicActionMarkup(player);
-    };
-  }
-
-  // Garde-fou rendu : pas de fenêtre de réparation sur simple onglet vide fugitif.
-  if (typeof beta115AfterRenderCheck === "function") {
-    beta115AfterRenderCheck = function beta160AfterRenderCheck() {
-      window.setTimeout(() => {
-        try {
-          if (!app || !app.isConnected) return;
-          const hasShell = Boolean(document.querySelector(".app-shell"));
-          const hasText = app.textContent && app.textContent.trim().length >= 8;
-          if (hasShell || hasText) return;
-          app.innerHTML = `<main class="app-shell app-error-shell beta160-safe-shell"><section class="card app-error-card beta160-safe-card"><span class="card-label">Réparation</span><h1>Écran vide récupéré</h1><p>L’état local a été nettoyé sans supprimer ta progression.</p><div class="home-actions-row"><button type="button" data-beta160-go-home>Accueil</button><button type="button" class="ghost" data-beta160-go-profile>Profil</button></div></section></main>`;
-        } catch {}
-      }, 180);
-    };
-  }
-  function beta160FallbackMarkup(message = "L’app a rencontré un vrai souci d’affichage.") {
-    return `<main class="app-shell app-error-shell beta160-safe-shell"><section class="card app-error-card beta160-safe-card"><span class="card-label">Mode secours</span><h1>Affichage sécurisé</h1><p>${escapeHtml(String(message || "Erreur").slice(0, 180))}</p><p class="muted-note">Les boutons utilisent un gestionnaire global, donc ils restent cliquables même si l’écran normal a planté.</p><div class="home-actions-row"><button type="button" data-beta160-go-home>Accueil</button><button type="button" class="ghost" data-beta160-go-profile>Profil</button></div><button type="button" class="ghost wide" data-beta160-repair-social>Réparer profil et amis</button></section></main>`;
-  }
-  try { if (typeof beta114ErrorMarkup === "function") beta114ErrorMarkup = beta160FallbackMarkup; } catch {}
-  try { if (typeof beta115FallbackMarkup === "function") beta115FallbackMarkup = beta160FallbackMarkup; } catch {}
-
-  function beta160GlobalHandler(event) {
-    const target = event.target?.closest?.("[data-beta160-go-home],[data-beta160-go-profile],[data-beta160-repair-social],[data-save-pseudo],[data-pseudo-prompt]");
-    if (!target) return;
-    if (target.matches("[data-save-pseudo]")) {
-      event.preventDefault?.(); event.stopPropagation?.();
-      const input = document.querySelector("[data-pseudo-input]");
-      savePseudoValue?.(input?.value || state?.pseudo || "", { source: "button-beta160" });
-      return;
-    }
-    if (target.matches("[data-pseudo-prompt]")) {
-      event.preventDefault?.(); event.stopPropagation?.();
-      const value = window.prompt("Ton pseudo HistoDaily", beta160RealPseudo(state?.pseudo) || beta160ReadProfileRecord().pseudo || "");
-      if (value !== null) savePseudoValue?.(value, { source: "prompt-beta160" });
-      return;
-    }
-    event.preventDefault?.(); event.stopPropagation?.();
-    if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-    beta160HydrateProfile({ force: false });
-    beta160RepairSocialState({ save: true });
-    state.tab = target.matches("[data-beta160-go-profile],[data-beta160-repair-social]") ? "profile" : "home";
-    state.profileFeedback = target.matches("[data-beta160-repair-social]") ? "Profil, pseudo et demandes d’amis nettoyés. Progression conservée." : state.profileFeedback || "";
-    saveState?.();
-    render?.({ immediate: true });
-  }
-  document.addEventListener("click", beta160GlobalHandler, true);
-  document.addEventListener("submit", event => {
-    if (!event.target?.matches?.("[data-pseudo-form]")) return;
-    event.preventDefault?.(); event.stopPropagation?.();
-    const input = event.target.querySelector("[data-pseudo-input], input[name='pseudo']");
-    savePseudoValue?.(input?.value || "", { source: "submit-beta160" });
-  }, true);
-
-  const beta160PreviousSetState = typeof setState === "function" ? setState : null;
-  if (beta160PreviousSetState) {
-    setState = function beta160SetState(patch, options = {}) {
-      if (patch && typeof patch === "object" && Object.prototype.hasOwnProperty.call(patch, "pseudo")) {
-        patch = { ...patch, pseudo: beta160SafePseudo(patch.pseudo), profileSavedAt: beta160Now() };
-        beta160WriteProfileRecord(patch.pseudo, { source: "set-state" });
-      }
-      const before = `${state?.tab || ""}|${state?.pseudo || ""}|${JSON.stringify(state?.friendRequests || {})}|${JSON.stringify(state?.friends || {})}`;
-      const result = beta160PreviousSetState(patch, options);
-      beta160HydrateProfile({ force: false });
-      beta160RepairSocialState({ save: true });
-      const signature = `${state?.tab || ""}|${state?.pseudo || ""}|${JSON.stringify(state?.friendRequests || {})}|${JSON.stringify(state?.friends || {})}`;
-      if (signature !== before && options.save !== false) { try { queueSaveState?.(100); } catch {} }
-      return result;
-    };
-  }
-
-  function beta160InstallStyle() {
-    if (document.getElementById("beta160-profile-social-corefix-style")) return;
-    const style = document.createElement("style");
-    style.id = "beta160-profile-social-corefix-style";
-    style.textContent = `
-      .beta160-safe-card button{pointer-events:auto!important;touch-action:manipulation!important;min-height:46px!important}
-      .beta160-friend-ok{border-color:rgba(72,213,151,.34)!important;background:linear-gradient(180deg,rgba(72,213,151,.10),rgba(255,255,255,.035))!important}
-      .beta160-friend-ok .card-label{background:rgba(72,213,151,.16);color:#caffdf}
-      [data-pseudo-form] input{min-height:48px}[data-pseudo-form] button{min-height:48px;touch-action:manipulation}
-      .app-error-card:not(.beta160-safe-card){display:none!important}
-    `;
-    document.head.appendChild(style);
-  }
-
-  try {
-    beta160HydrateProfile({ force: false });
-    beta160RepairSocialState({ save: true });
-    beta160InstallStyle();
-    state.beta160ProfileSocialCorefixVersion = BETA160_VERSION;
-    state.profileFeedback = state.profileFeedback || "Correctif profil actif : pseudo et amis mieux conservés.";
-    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA160_VERSION, profileSocialCorefix: true };
-    saveState?.();
-    if (document.readyState !== "loading") render?.({ immediate: true });
-  } catch (error) {
-    try { console.warn("beta160 profile-social corefix", error); } catch {}
-  }
-})();
-
-/* =========================================================
-   Beta 161 — correctif général profil + relation ami
-   - ne laisse plus une demande sortante masquer une relation déjà validée
-   - donne la priorité au cache de profil public enrichi (relationship.friend)
-   - nettoie les demandes/outbox dès qu'un ami est reconnu
-   - ajoute une réparation locale explicite si le serveur est resté bloqué
-   ========================================================= */
-(function beta161ProfileRelationFix() {
-  const BETA161_VERSION = "1.0.0-beta.161";
-  const OUTBOX_KEY = "histodaily_social_request_outbox_v1";
-
-  function s(value = "") { return String(value ?? "").trim(); }
-  function code(value = "") { try { return normalizeFriendCode(value || ""); } catch { return s(value).toUpperCase(); } }
-  function suffix(value = "") { try { return friendCodeSuffix(code(value)); } catch { return code(value).split("-").filter(Boolean).pop() || ""; } }
-  function pseudo(value = "") { try { return sanitizePseudo(value || ""); } catch { return s(value).replace(/\s+/g, " ").slice(0, 18); } }
-  function validPseudo(value = "") {
-    const p = pseudo(value);
-    return p && !/^(invité|invite|joueur|local-player)$/i.test(p) ? p : "";
-  }
-  function identity(item = {}) {
-    const c = code(item.code || item.friendCode || item.friend_code || item.otherFriendCode || item.requesterFriendCode || item.targetFriendCode || "");
-    const id = s(item.playerId || item.player_id || item.friend_player_id || item.otherPlayerId || item.requesterPlayerId || item.targetPlayerId || item.id || "");
-    return { code: c, suffix: suffix(c), playerId: id };
-  }
-  function sameIdentity(a = {}, b = {}) {
-    const ia = identity(a);
-    const ib = identity(b);
-    return Boolean(
-      (ia.playerId && ib.playerId && ia.playerId === ib.playerId) ||
-      (ia.code && ib.code && ia.code === ib.code) ||
-      (ia.suffix && ib.suffix && ia.suffix === ib.suffix)
-    );
-  }
-  function friendKey(item = {}) {
-    const id = identity(item);
-    return id.code || id.playerId || s(item.id || "");
-  }
-  function friendFromPlayer(player = {}, extra = {}) {
-    const id = identity(player);
-    const name = validPseudo(player.name || player.pseudo || player.profile_pseudo || player.friend_pseudo || extra.name) || "Ami";
-    return {
-      id: id.code || id.playerId || name,
-      code: id.code,
-      friendCode: id.code,
-      playerId: id.playerId,
-      name,
-      pseudo: name,
-      avatar: String(name || "A").charAt(0).toUpperCase(),
-      addedAt: Date.now(),
-      server: Boolean(player.server || player.relationship?.friend || extra.server),
-      syncedAt: Date.now(),
-      level: Number(player.level || 1),
-      xp: Number(player.xp || 0),
-      solved: Number(player.solved || player.solved_count || 0),
-      streak: Number(player.streak || 0),
-      daily: Number(player.daily || 0),
-      week: Number(player.week || 0),
-      year: Number(player.year || 0),
-      badges: Array.isArray(player.badges) ? player.badges : ["Ami"]
-    };
-  }
-  function normalizeFriends(raw = state?.friends) {
-    const out = {};
-    const entries = Array.isArray(raw) ? raw.map((item, index) => [item?.id || item?.code || String(index), item]) : Object.entries(raw && typeof raw === "object" ? raw : {});
-    for (const [fallback, item] of entries) {
-      if (!item || typeof item !== "object") continue;
-      const merged = friendFromPlayer({ ...item, id: item.id || fallback });
-      const key = friendKey(merged) || fallback;
-      if (!key) continue;
-      out[key] = { ...(out[key] || {}), ...item, ...merged, addedAt: Number(item.addedAt || merged.addedAt) };
-    }
-    const mine = { code: (() => { try { return friendCode(); } catch { return ""; } })(), playerId: (() => { try { return playerIdMe(); } catch { return ""; } })() };
-    Object.keys(out).forEach(key => { if (sameIdentity(out[key], mine)) delete out[key]; });
-    return out;
-  }
-  function knownFriend(item = {}) {
-    const map = normalizeFriends(state?.friends);
-    return Object.values(map).find(friend => sameIdentity(friend, item)) || null;
-  }
-  function readOutbox() {
-    try { const parsed = JSON.parse(localStorage.getItem(OUTBOX_KEY) || "[]"); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
-  }
-  function writeOutbox(list = []) {
-    const clean = [];
-    const seen = new Set();
-    for (const item of Array.isArray(list) ? list : []) {
-      if (!item || typeof item !== "object") continue;
-      if (knownFriend(item)) continue;
-      const key = friendKey(item);
-      if (!key || seen.has(key)) continue;
-      seen.add(key);
-      clean.push(item);
-    }
-    try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(clean.slice(0, 40))); } catch {}
-    state.friendRequestOutbox = clean.slice(0, 40);
-  }
-  function cleanRequestList(list = []) {
-    const clean = [];
-    const seen = new Set();
-    for (const req of Array.isArray(list) ? list : []) {
-      if (!req || typeof req !== "object") continue;
-      if (knownFriend(req)) continue;
-      const id = identity(req);
-      const key = `${req.direction || "pending"}:${id.playerId || id.code || id.suffix || JSON.stringify(req).slice(0, 80)}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      clean.push(req);
-    }
-    return clean.slice(0, 30);
-  }
-  function cleanRequests() {
-    const current = (() => { try { return beta125FriendRequestsState(); } catch { return state.friendRequests || {}; } })();
-    const next = {
-      incoming: cleanRequestList(current.incoming),
-      outgoing: cleanRequestList(current.outgoing),
-      history: Array.isArray(current.history) ? current.history.slice(0, 30) : []
-    };
-    state.friendRequests = next;
-    writeOutbox([...(Array.isArray(state.friendRequestOutbox) ? state.friendRequestOutbox : []), ...readOutbox()]);
-    return next;
-  }
-  function addLocalFriend(player = {}, reason = "relation") {
-    if (!player || player.me) return false;
-    const friend = friendFromPlayer(player, { server: reason !== "manual" });
-    const key = friendKey(friend);
-    if (!key) return false;
-    const map = normalizeFriends(state?.friends);
-    map[key] = { ...(map[key] || {}), ...friend, friend: true };
-    state.friends = map;
-    cleanRequests();
-    state.serverLeaderboards = { ...(state.serverLeaderboards || {}), friends: [] };
-    state.friendRequestFeedback = reason === "manual"
-      ? `${friend.name} marqué comme ami sur cet appareil.`
-      : `${friend.name} est reconnu comme ami.`;
-    try { queueSaveState(80); } catch {}
-    return true;
-  }
-  function relationSaysFriend(player = {}) {
-    return Boolean(player?.friend || player?.relationship?.friend || knownFriend(player));
-  }
-  function friendCard(player = {}, detail = "Relation validée. La demande d’attente a été nettoyée.") {
-    const name = validPseudo(player.name || player.pseudo) || "Ce joueur";
-    const id = escapeHtml(player.id || player.playerId || player.friendCode || player.code || "");
-    return `<section class="card beta125-profile-actions beta161-friend-ok"><div><span class="card-label">Ami</span><h2>${escapeHtml(name)} est dans tes amis</h2><p>${escapeHtml(detail)}</p></div><button class="ghost wide" data-remove-friend="${id}">Retirer des amis</button></section>`;
-  }
-  function pendingCard(player = {}, outgoing = null) {
-    const name = validPseudo(player.name || player.pseudo || outgoing?.targetPseudo || outgoing?.otherPseudo) || "ce joueur";
-    const targetPlayerId = escapeHtml(player.playerId || outgoing?.targetPlayerId || outgoing?.otherPlayerId || "");
-    const targetFriendCode = escapeHtml(player.friendCode || player.code || outgoing?.targetFriendCode || outgoing?.otherFriendCode || "");
-    const targetId = escapeHtml(player.id || player.playerId || player.friendCode || player.code || state.selectedProfileId || "");
-    return `<section class="card beta125-profile-actions pending beta161-pending-card"><div><span class="card-label">Demande envoyée</span><h2>En attente de validation</h2><p>${escapeHtml(name)} doit accepter la demande dans son application. Si elle l’a déjà fait, l’app va essayer de réparer la relation.</p></div><div class="home-actions-row"><button type="button" data-beta161-recheck-social="${targetId}" data-request-player="${targetPlayerId}" data-request-code="${targetFriendCode}">Actualiser vraiment</button><button type="button" class="ghost" data-beta161-accept-local="${targetId}" data-request-player="${targetPlayerId}" data-request-code="${targetFriendCode}">Manon a accepté : corriger ici</button></div><button type="button" class="ghost danger-action wide" data-cancel-friend-request="${targetId}" data-request-player="${targetPlayerId}" data-request-code="${targetFriendCode}" data-request-pseudo="${escapeHtml(name)}">Annuler la demande</button></section>`;
-  }
-  function enrichPlayer(player = {}) {
-    if (!player || typeof player !== "object") return player;
-    let cached = null;
-    try { cached = beta126FindCachedProfile?.(player) || beta126FindCachedProfile?.(player.id || player.playerId || player.friendCode || player.code || ""); } catch {}
-    const merged = cached ? { ...player, ...cached, relationship: cached.relationship || player.relationship } : player;
-    if (relationSaysFriend(merged)) {
-      addLocalFriend(merged, merged.relationship?.friend ? "server" : "local");
-      return { ...merged, friend: true };
-    }
-    return merged;
-  }
-
-  try {
-    const previousProfileById = profileById;
-    profileById = function beta161ProfileById(id) {
-      const base = previousProfileById ? previousProfileById(id) : null;
-      let cached = null;
-      try { cached = beta126FindCachedProfile?.(id) || beta126FindCachedProfile?.(base || {}); } catch {}
-      const merged = cached ? { ...(base || {}), ...cached, relationship: cached.relationship || base?.relationship || null } : (base || {});
-      return enrichPlayer(merged);
-    };
-  } catch {}
-
-  try {
-    const previousFetchPublicProfile = beta126FetchPublicProfile;
-    beta126FetchPublicProfile = async function beta161FetchPublicProfile(player = {}, options = {}) {
-      const result = await previousFetchPublicProfile(player, options);
-      if (result?.relationship?.friend) {
-        addLocalFriend(result, "server");
-        if (state.tab === "publicProfile") setTimeout(() => { try { render({ immediate: true }); } catch {} }, 0);
-      } else {
-        cleanRequests();
-      }
-      return result;
-    };
-  } catch {}
-
-  try {
-    const previousMergeServerFriends = mergeServerFriends;
-    mergeServerFriends = function beta161MergeServerFriends(rows = []) {
-      const changed = previousMergeServerFriends ? previousMergeServerFriends(rows) : false;
-      state.friends = normalizeFriends(state.friends);
-      cleanRequests();
-      return changed || Boolean((rows || []).length);
-    };
-  } catch {}
-
-  try {
-    if (typeof beta125SetFriendRequests === "function") {
-      const previousSetFriendRequests = beta125SetFriendRequests;
-      beta125SetFriendRequests = function beta161SetFriendRequests(requests = {}) {
-        previousSetFriendRequests(requests);
-        cleanRequests();
-      };
-    }
-  } catch {}
-
-  try {
-    const previousPublicActionMarkup = beta125PublicActionMarkup;
-    beta125PublicActionMarkup = function beta161PublicActionMarkup(player = {}) {
-      const enriched = enrichPlayer(player);
-      if (relationSaysFriend(enriched)) return friendCard(enriched);
-      const outgoing = (() => { try { return beta125OutgoingRequestForPlayer(enriched); } catch { return null; } })();
-      if (outgoing) return pendingCard(enriched, outgoing);
-      return previousPublicActionMarkup ? previousPublicActionMarkup(enriched) : "";
-    };
-  } catch {}
-
-  try {
-    const previousFetchServerFriends = fetchServerFriends;
-    fetchServerFriends = async function beta161FetchServerFriends(options = {}) {
-      const result = await previousFetchServerFriends(options);
-      state.friends = normalizeFriends(state.friends);
-      cleanRequests();
-      return result;
-    };
-  } catch {}
-
-  async function recheckSocial(targetId = "") {
-    const player = enrichPlayer(profileById(targetId || state.selectedProfileId));
-    state.friendRequestFeedback = "Actualisation complète de la relation…";
-    try { render({ immediate: true }); } catch {}
-    await Promise.allSettled([
-      (async () => { try { await syncMyProfileToServer({ source: "beta161-recheck" }); } catch {} })(),
-      (async () => { try { await fetchServerFriends({ force: true }); } catch {} })(),
-      (async () => { try { await beta125FetchFriendRequests({ force: true }); } catch {} })(),
-      (async () => { try { await beta126FetchPublicProfile(player, { force: true }); } catch {} })(),
-      (async () => { try { await fetchServerLeaderboard("friends", { force: true }); } catch {} })()
-    ]);
-    const refreshed = enrichPlayer(profileById(targetId || state.selectedProfileId));
-    if (relationSaysFriend(refreshed)) addLocalFriend(refreshed, "server");
-    else cleanRequests();
-    try { saveState(); } catch {}
-    try { render({ immediate: true }); } catch {}
-  }
-
   document.addEventListener("click", event => {
-    const recheck = event.target?.closest?.("[data-beta161-recheck-social]");
-    const accept = event.target?.closest?.("[data-beta161-accept-local]");
-    const refresh = event.target?.closest?.("[data-refresh-social],[data-refresh-requests]");
-    if (!recheck && !accept && !refresh) return;
-    if (recheck || accept) {
-      event.preventDefault?.();
-      event.stopPropagation?.();
-      if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-    }
-    const targetId = recheck?.dataset?.beta161RecheckSocial || accept?.dataset?.beta161AcceptLocal || state.selectedProfileId || "";
-    if (accept) {
-      const player = enrichPlayer(profileById(targetId));
-      addLocalFriend(player, "manual");
-      try { saveState(); } catch {}
-      try { render({ immediate: true }); } catch {}
-      recheckSocial(targetId).catch(() => {});
-      return;
-    }
-    recheckSocial(targetId).catch(() => {});
+    const accept = event.target?.closest?.("[data-beta163-accept-local]");
+    const refresh = event.target?.closest?.("[data-beta163-refresh-social]");
+    if (!accept && !refresh) return;
+    event.preventDefault?.(); event.stopPropagation?.();
+    const targetId = accept?.dataset?.beta163AcceptLocal || refresh?.dataset?.beta163RefreshSocial || state.selectedProfileId || "";
+    const player = (() => { try { return profileById(targetId); } catch { return null; } })() || {};
+    if (accept) addFriendLocal({ id:player.id || targetId, code:player.friendCode || player.code || targetId, friendCode:player.friendCode || player.code || targetId, playerId:player.playerId || "", name:player.name || "Ami", server:false }, `${player.name || "Ami"} ajouté localement.`);
+    try { fetchServerFriends?.({ force:true }).catch?.(() => {}); } catch {}
+    try { beta125FetchFriendRequests?.({ force:true }).catch?.(() => {}); } catch {}
+    try { beta126FetchPublicProfile?.(player, { force:true }).catch?.(() => {}); } catch {}
+    renderSoon();
   }, true);
 
-  try {
-    state.friends = normalizeFriends(state.friends);
-    cleanRequests();
-    state.beta161ProfileRelationFixVersion = BETA161_VERSION;
-    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA161_VERSION, profileRelationFix: true };
-    const style = document.createElement("style");
-    style.id = "beta161-profile-relation-fix-style";
-    style.textContent = `.beta161-friend-ok{border-color:rgba(72,213,151,.42)!important;background:linear-gradient(180deg,rgba(72,213,151,.12),rgba(255,255,255,.035))!important}.beta161-pending-card{border-color:rgba(245,199,71,.42)!important}.beta161-pending-card .home-actions-row{gap:10px;flex-wrap:wrap}.beta161-pending-card button{min-height:48px;touch-action:manipulation}`;
-    if (!document.getElementById(style.id)) document.head.appendChild(style);
-    try { saveState(); } catch {}
-    if (document.readyState !== "loading") setTimeout(() => { try { render({ immediate: true }); } catch {} }, 0);
-  } catch (error) {
-    try { console.warn("beta161 profile relation fix", error); } catch {}
+  // Navigation : gérer les retours et déblocages sans bloquer les champs texte.
+  function setPatch(patch, top = true){
+    try { setState(patch, { save:true, renderImmediate:true }); } catch { Object.assign(state, patch); try { saveState?.(); } catch {}; renderSoon(); }
+    if (top) window.setTimeout(() => { try { window.scrollTo({ top:0, behavior:"smooth" }); } catch { window.scrollTo(0,0); } }, 40);
   }
-})();
-
-/* =========================================================
-   Beta 162 — correctif général navigation + flux mystères
-   Objectif : rendre les retours, onglets et déblocages robustes
-   avec une délégation globale, sans nouvelle optimisation risquée.
-   ========================================================= */
-(function beta162NavigationFlowHotfix(){
-  const BETA162_VERSION = "1.0.0-beta.162";
-  let lastActionKey = "";
-  let lastActionAt = 0;
-
-  function now(){ return Date.now ? Date.now() : new Date().getTime(); }
-  function safeString(value){ return String(value == null ? "" : value).trim(); }
-  function once(key, delay = 420){
-    const t = now();
-    if (key && key === lastActionKey && t - lastActionAt < delay) return false;
-    lastActionKey = key || "action";
-    lastActionAt = t;
-    return true;
-  }
-  function consume(event){
-    try { event.preventDefault?.(); } catch {}
-    try { event.stopPropagation?.(); } catch {}
-    try { event.stopImmediatePropagation?.(); } catch {}
-  }
-  function renderNow(){
-    try { render?.({ immediate: true }); }
-    catch { try { render?.(); } catch {} }
-  }
-  function scrollTopSoon(){
-    window.setTimeout(() => {
-      try { window.scrollTo({ top: 0, behavior: "smooth" }); }
-      catch { try { window.scrollTo(0, 0); } catch {} }
-      try { document.querySelector(".topbar h1,.hero h1,.app-shell")?.focus?.({ preventScroll: true }); } catch {}
-    }, 40);
-  }
-  function setPatch(patch, { save = false, top = false } = {}){
-    if (!patch || typeof patch !== "object") return;
-    try { setState?.(patch, { save, renderImmediate: true }); }
-    catch {
-      try { state = { ...state, ...patch }; if (save) saveState?.(); renderNow(); } catch {}
-    }
-    if (top) scrollTopSoon();
-  }
-  function mysteryByAnyId(id){
-    const key = safeString(id);
-    if (!key) return null;
-    try { return mysteryById?.(key) || null; } catch {}
-    try { return (data?.mysteries || []).find(m => m?.id === key) || null; } catch {}
+  function findMystery(id){
+    try { return mysteryById?.(id) || null; } catch {}
+    try { return (data.mysteries || []).find(m => m.id === id) || null; } catch {}
     return null;
   }
-  function mysteryDiscipline(mystery){
-    try { return mysteryDisciplineId?.(mystery) || activeDisciplineId?.() || "history"; }
-    catch { return "history"; }
+  function openMysteryById(id, feedback = ""){
+    const m = findMystery(id);
+    if (!m) return setPatch({ tab:"mystery", archiveFeedback:"Mystère introuvable." });
+    const disc = (() => { try { return mysteryDisciplineId?.(m) || activeDisciplineId?.() || "history"; } catch { return "history"; } })();
+    setPatch({ tab:"mystery", currentMysteryId:m.id, currentMysteryDiscipline:disc, currentDiscipline:disc, archiveFeedback:feedback });
   }
-  function openMystery(id, feedback = ""){
-    const mystery = mysteryByAnyId(id);
-    if (!mystery?.id) {
-      setPatch({ tab: "mystery", archiveFeedback: "Mystère introuvable. Reviens au dossier du jour." }, { save: false, top: true });
-      return false;
-    }
-    const disc = mysteryDiscipline(mystery);
-    const patch = {
-      tab: "mystery",
-      currentMysteryId: mystery.id,
-      currentMysteryDiscipline: disc,
-      currentDiscipline: disc,
-      archiveFeedback: feedback || ""
-    };
-    setPatch(patch, { save: true, top: true });
-    return true;
-  }
-  function unlockAndOpenMystery(id){
-    const mystery = mysteryByAnyId(id);
-    if (!mystery?.id) return openMystery(id, "Mystère introuvable.");
+  function unlockAndOpen(id){
+    const m = findMystery(id);
+    if (!m) return openMysteryById(id, "Mystère introuvable.");
     let accessible = false;
-    try { accessible = Boolean(isAccessibleMystery?.(mystery.id)); } catch {}
-    if (accessible) return openMystery(mystery.id, "");
-    const cost = Number(typeof ARCHIVE_UNLOCK_COST !== "undefined" ? ARCHIVE_UNLOCK_COST : 2) || 2;
-    const gems = Number(state?.gems || 0);
-    if (gems < cost) {
-      const msg = `Il te faut ${cost} gemmes pour ouvrir cette archive. Tu en as ${gems}.`;
-      setPatch({ tab: "mystery", archiveFeedback: msg }, { save: false, top: false });
-      window.setTimeout(() => { try { document.querySelector("[data-archive-shelf]")?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch {} }, 60);
-      return false;
+    try { accessible = Boolean(isAccessibleMystery?.(m.id)); } catch {}
+    if (!accessible) {
+      const cost = Number(typeof ARCHIVE_UNLOCK_COST !== "undefined" ? ARCHIVE_UNLOCK_COST : 2) || 2;
+      if (Number(state.gems || 0) < cost) return setPatch({ tab:"mystery", archiveFeedback:`Il te faut ${cost} gemmes pour ouvrir cette archive.` }, false);
+      state.gems = Math.max(0, Number(state.gems || 0) - cost);
+      state.unlockedMysteries = { ...(state.unlockedMysteries || {}), [m.id]: { at:now(), cost } };
+      state.achievements = { ...(state.achievements || {}), firstArchive:true };
     }
-    try {
-      state.gems = Math.max(0, gems - cost);
-      state.unlockedMysteries = { ...(state.unlockedMysteries || {}), [mystery.id]: { at: now(), cost } };
-      state.achievements = { ...(state.achievements || {}), firstArchive: true };
-      saveState?.();
-    } catch {}
-    return openMystery(mystery.id, "Archive débloquée : elle est ouverte ci-dessus.");
+    openMysteryById(m.id, accessible ? "" : "Archive débloquée : elle est ouverte ci-dessus.");
   }
-
-  try { unlockPastMystery = function beta162UnlockPastMystery(id){ return unlockAndOpenMystery(id); }; } catch {}
-
-  function backToLearn(){
-    const patch = { tab: "learn", lessonFocus: null, lessonView: "express" };
-    try {
-      const lesson = state?.currentLessonId ? curatedLessonById?.(state.currentLessonId) : null;
-      if (lesson) {
-        const worldId = lessonWorldId?.(lesson.id) || lessonWorld?.(lesson)?.id || "";
-        const disc = worldId ? worldDisciplineId?.(lessonWorld?.(lesson) || {}) : "";
-        if (worldId) patch.currentWorld = worldId;
-        if (disc) patch.currentDiscipline = disc;
-      }
-    } catch {}
-    setPatch(patch, { save: false, top: true });
-  }
-  function openDailyMystery(){
-    let mystery = null;
-    try { mystery = dailyMystery?.(); } catch {}
-    if (!mystery && typeof mysteryForDisciplineDayOffset === "function") {
-      try { mystery = mysteryForDisciplineDayOffset(activeDisciplineId?.() || "history", 0); } catch {}
-    }
-    if (mystery?.id) openMystery(mystery.id);
-    else setPatch({ tab: "mystery" }, { save: false, top: true });
-  }
-  function openRank(scope){
-    setPatch({ tab: "rank", rankScope: safeString(scope) || "daily" }, { save: false, top: true });
-  }
-  function handleNavigationTarget(target){
-    if (!target?.matches) return false;
-    if (target.matches("[data-unlock-mystery]")) return unlockAndOpenMystery(target.dataset.unlockMystery), true;
-    if (target.matches("[data-open-mystery-id]")) return openMystery(target.dataset.openMysteryId), true;
-    if (target.matches("[data-open-linked-mystery]")) return openMystery(target.dataset.openLinkedMystery), true;
-    if (target.matches("[data-open-daily-mystery]")) return openDailyMystery(), true;
-    if (target.matches("[data-back-learn]")) return backToLearn(), true;
-    if (target.matches("[data-back-chapters]")) return setPatch({ tab: "learn", learnDrill: "chapters", learnSearch: "", learnFilter: "all" }, { save: false, top: true }), true;
-    if (target.matches("[data-back-social]")) return openRank(state?.rankScope || "daily"), true;
-    if (target.matches("[data-home],[data-back-home],[data-go-home]")) return setPatch({ tab: "home" }, { save: false, top: true }), true;
-    if (target.matches("[data-go-learn]")) return setPatch({ tab: "learn" }, { save: false, top: true }), true;
-    if (target.matches("[data-home-rank],[data-go-rank]")) return openRank("daily"), true;
-    if (target.matches("[data-open-rank]")) return openRank(target.dataset.openRank || "daily"), true;
-    if (target.matches("[data-profile-rank]")) return openRank(target.dataset.profileRank || "daily"), true;
-    if (target.matches("[data-home-profile],[data-open-profile],[data-open-profile-after]")) return setPatch({ tab: "profile" }, { save: false, top: true }), true;
-    if (target.matches("[data-tab]")) {
-      const tab = safeString(target.dataset.tab);
-      if (!tab || tab === state?.tab) return true;
-      const patch = { tab };
-      if (tab === "mystery") {
-        try {
-          const mystery = dailyMystery?.();
-          patch.currentMysteryId = mystery?.id || null;
-          patch.currentMysteryDiscipline = mystery ? mysteryDiscipline(mystery) : (activeDisciplineId?.() || "history");
-        } catch {}
-      }
-      setPatch(patch, { save: false, top: true });
-      return true;
-    }
-    return false;
-  }
-  function delegatedNavigation(event){
-    const rawTarget = event.target;
-    if (!rawTarget?.closest) return;
-    const target = rawTarget.closest([
-      "[data-unlock-mystery]", "[data-open-mystery-id]", "[data-open-linked-mystery]", "[data-open-daily-mystery]",
-      "[data-back-learn]", "[data-back-chapters]", "[data-back-social]", "[data-home]", "[data-back-home]", "[data-go-home]",
-      "[data-go-learn]", "[data-home-rank]", "[data-go-rank]", "[data-open-rank]", "[data-profile-rank]",
-      "[data-home-profile]", "[data-open-profile]", "[data-open-profile-after]", "[data-tab]"
-    ].join(","));
+  try { unlockPastMystery = function beta163UnlockPastMystery(id){ unlockAndOpen(id); }; } catch {}
+  document.addEventListener("click", event => {
+    if (event.target?.closest?.("input,textarea,select,[contenteditable='true']")) return;
+    const target = event.target?.closest?.("[data-unlock-mystery],[data-open-mystery-id],[data-open-linked-mystery],[data-open-daily-mystery],[data-back-learn],[data-back-chapters],[data-back-social],[data-home],[data-back-home],[data-go-home],[data-tab]");
     if (!target) return;
-    const key = `${event.type}:${target.getAttribute("data-unlock-mystery") || target.getAttribute("data-open-mystery-id") || target.getAttribute("data-open-linked-mystery") || target.getAttribute("data-tab") || target.textContent || target.tagName}`;
-    if (!once(key)) { consume(event); return; }
-    const handled = handleNavigationTarget(target);
-    if (handled) consume(event);
-  }
+    const tag = target.tagName ? target.tagName.toLowerCase() : "";
+    if (tag !== "button" && !target.hasAttribute("role") && !target.matches("[data-tab]")) return;
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    if (target.matches("[data-unlock-mystery]")) return unlockAndOpen(target.dataset.unlockMystery);
+    if (target.matches("[data-open-mystery-id]")) return openMysteryById(target.dataset.openMysteryId);
+    if (target.matches("[data-open-linked-mystery]")) return openMysteryById(target.dataset.openLinkedMystery);
+    if (target.matches("[data-open-daily-mystery]")) { const d = (() => { try { return dailyMystery(); } catch { return null; } })(); return d?.id ? openMysteryById(d.id) : setPatch({ tab:"mystery" }); }
+    if (target.matches("[data-back-learn]")) return setPatch({ tab:"learn", lessonFocus:null, lessonView:"express" });
+    if (target.matches("[data-back-chapters]")) return setPatch({ tab:"learn", learnDrill:"chapters", learnSearch:"", learnFilter:"all" });
+    if (target.matches("[data-back-social]")) return setPatch({ tab:"rank", rankScope:state.rankScope || "daily" });
+    if (target.matches("[data-home],[data-back-home],[data-go-home]")) return setPatch({ tab:"home" });
+    if (target.matches("[data-tab]")) {
+      const tab = str(target.dataset.tab);
+      if (!tab) return;
+      return setPatch({ tab });
+    }
+  }, true);
 
-  document.addEventListener("pointerup", delegatedNavigation, { capture: true, passive: false });
-  document.addEventListener("click", delegatedNavigation, true);
+  // Sauvegarde : ne plus casser friends, conserver pseudo, synchroniser quand l'XP change.
+  if (typeof saveState === "function") {
+    const previousSaveState = saveState;
+    saveState = function beta163SaveState(){ repairSocialState(); saveProfileRecord("save"); return previousSaveState(); };
+  }
+  if (typeof setState === "function") {
+    const previousSetState = setState;
+    setState = function beta163SetState(patch = {}, options = {}){
+      const xpBefore = Number(state.xp || 0);
+      if (patch && typeof patch === "object" && Object.prototype.hasOwnProperty.call(patch, "friends")) patch = { ...patch, friends: normalizeFriendMap(patch.friends) };
+      if (patch && typeof patch === "object" && Object.prototype.hasOwnProperty.call(patch, "pseudo")) {
+        const p = goodPseudo(patch.pseudo) || pseudo(patch.pseudo) || state.pseudo || "Invité";
+        patch = { ...patch, pseudo:p };
+        writeJson(PROFILE_KEY, { pseudo:p, friendCode:myCode(), playerId:myId(), xp:Number(state.xp || 0), savedAt:now(), version:BETA163_VERSION, source:"setState" });
+      }
+      const result = previousSetState(patch, options);
+      if (repairSocialState()) queueSave();
+      if (Number(state.xp || 0) !== xpBefore) syncXpProfile("xp-change");
+      return result;
+    };
+  }
 
   try {
-    state.beta162NavigationFlowFixVersion = BETA162_VERSION;
-    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA162_VERSION, navigationFlowFix: true };
+    hydrateProfile();
+    repairSocialState();
+    syncXpProfile("startup");
     const style = document.createElement("style");
-    style.id = "beta162-navigation-flow-style";
-    style.textContent = `.topbar button,[data-back-home],[data-back-learn],[data-home],[data-unlock-mystery],[data-open-mystery-id],.bottom-nav button{touch-action:manipulation!important;pointer-events:auto!important}.archive-feedback{font-weight:800}.skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important}.skip-link:focus-visible{transform:translateY(0)!important;opacity:1!important;pointer-events:auto!important}`;
+    style.id = "beta163-stability-general-style";
+    style.textContent = `
+      .beta163-add-friend-card input,[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase;}
+      .beta163-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
+      .beta163-friend-add-form button{min-height:52px!important;touch-action:manipulation!important;}
+      .beta163-friend-ok{border-color:rgba(72,213,151,.42)!important;background:linear-gradient(180deg,rgba(72,213,151,.12),rgba(255,255,255,.035))!important;}
+      .beta163-pending-actions{margin-top:10px;display:grid;grid-template-columns:1fr;gap:8px;}
+      .skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important;}
+      @media(max-width:430px){.beta163-friend-add-form{grid-template-columns:1fr}.beta163-friend-add-form button{width:100%;}}
+    `;
     if (!document.getElementById(style.id)) document.head.appendChild(style);
-    try { queueSaveState?.(120); } catch {}
+    state.beta163StabilityGeneralFixVersion = BETA163_VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version:BETA163_VERSION, stabilityGeneralFix:true, leaderboardTotalXp:true };
+    queueSave();
+    if (["profile","rank","publicProfile"].includes(state.tab)) renderSoon();
   } catch (error) {
-    try { console.warn("beta162 navigation flow fix", error); } catch {}
+    try { console.warn("beta163 stability general fix", error); } catch {}
   }
 })();
