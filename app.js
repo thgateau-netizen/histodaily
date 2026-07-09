@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.123";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.130";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -7738,11 +7738,10 @@ function applyStartupSocialLinks() {
     if (parsed.id === friendCode().toUpperCase()) {
       state.friendFeedback = "C’est ton propre lien ami. Partage-le à quelqu’un d’autre.";
     } else if (!knownFriendByCode(parsed.code)) {
-      const friend = { id: parsed.id, code: parsed.code, name: parsed.pseudo, addedAt: Date.now(), source: "invite-link" };
-      state.friends = { ...(state.friends || {}), [parsed.id]: friend };
-      state.friendFeedback = `${parsed.pseudo} ajouté via lien d’invitation. Synchronisation en cours…`;
+      const pendingInvite = { id: parsed.id, code: parsed.code, friendCode: parsed.code, name: parsed.pseudo, addedAt: Date.now(), source: "invite-link" };
+      state.pendingInviteFriend = pendingInvite;
+      state.friendFeedback = `Lien reçu : demande d’ami prête pour ${parsed.pseudo}.`;
       state.tab = "profile";
-      setTimeout(() => syncFriendToServer(friend).catch(() => {}), 0);
     }
     params.delete("friend"); params.delete("addFriend"); params.delete("invite");
     const clean = `${location.pathname}${params.toString() ? `?${params}` : ""}${location.hash || ""}`;
@@ -14235,3 +14234,1558 @@ window.HistoDailyBeta118 = {
 
 try { beta114NormalizeState(); } catch {}
 if (document.readyState !== "loading") render({ immediate: true });
+
+
+/* =========================================================
+   Beta 124 — multi persistant et classement plus frais
+   - pseudo, code ami et identifiant joueur migrés dans une identité stable
+   - conservation entre versions même si l'état principal est nettoyé
+   - rafraîchissement social au retour en ligne, au focus et sur le classement
+   ========================================================= */
+const BETA124_VERSION = "1.0.0-beta.130";
+const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
+const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
+const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
+const BETA124_FRIEND_CODE_KEYS = ["histodaily_friend_code_v1", `${STORAGE_KEY}_friend_code`];
+const BETA124_RANK_REFRESH_MS = 30000;
+let beta124RankTimer = null;
+let beta124SocialRefreshInFlight = false;
+let beta124LastFocusRefresh = 0;
+
+function beta124LocalGet(key) {
+  try { return localStorage.getItem(key) || ""; } catch { return ""; }
+}
+function beta124LocalSet(key, value) {
+  if (!key || value === undefined || value === null || value === "") return;
+  try { localStorage.setItem(key, String(value)); } catch {}
+}
+function beta124ReadJson(key) {
+  try { return JSON.parse(localStorage.getItem(key) || "{}"); } catch { return {}; }
+}
+function beta124CleanUserSuffix(value = "") {
+  const cleaned = String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+  return cleaned.length >= 4 ? cleaned : "";
+}
+function beta124IsGuestPseudo(value = "") {
+  const n = normalize(value || "");
+  return !n || ["invite", "invité", "joueur", "local player", "localplayer"].includes(n);
+}
+function beta124ReadIdentity() {
+  const stored = beta124ReadJson(BETA124_IDENTITY_KEY);
+  const suffixFromCode = friendCodeSuffix(stored.friendCode || beta124LocalGet(BETA124_FRIEND_CODE_KEYS[0]) || beta124LocalGet(BETA124_FRIEND_CODE_KEYS[1]));
+  const localUserId = beta124CleanUserSuffix(stored.localUserId)
+    || beta124CleanUserSuffix(suffixFromCode)
+    || BETA124_USER_ID_KEYS.map(beta124LocalGet).map(beta124CleanUserSuffix).find(Boolean)
+    || "";
+  const friendCodeValue = normalizeFriendCode(stored.friendCode || BETA124_FRIEND_CODE_KEYS.map(beta124LocalGet).find(Boolean) || "");
+  const pseudo = sanitizePseudo(stored.pseudo || BETA124_PSEUDO_KEYS.map(beta124LocalGet).find(Boolean) || beta114SavedPseudo?.() || "");
+  return {
+    localUserId,
+    friendCode: parseFriendCode(friendCodeValue) ? friendCodeValue : "",
+    pseudo: beta124IsGuestPseudo(pseudo) ? "" : pseudo,
+    lastSyncedAt: Number(stored.lastSyncedAt || 0),
+    updatedAt: Number(stored.updatedAt || 0)
+  };
+}
+function beta124WriteIdentity(patch = {}) {
+  try {
+    const previous = beta124ReadIdentity();
+    const next = {
+      ...previous,
+      ...patch,
+      updatedAt: Date.now(),
+      appVersion: BETA124_VERSION
+    };
+    next.localUserId = beta124CleanUserSuffix(next.localUserId || previous.localUserId || "");
+    next.friendCode = normalizeFriendCode(next.friendCode || previous.friendCode || "");
+    next.pseudo = sanitizePseudo(next.pseudo || previous.pseudo || "");
+    if (next.localUserId) BETA124_USER_ID_KEYS.forEach(key => beta124LocalSet(key, next.localUserId));
+    if (parseFriendCode(next.friendCode)) BETA124_FRIEND_CODE_KEYS.forEach(key => beta124LocalSet(key, next.friendCode));
+    if (next.pseudo && !beta124IsGuestPseudo(next.pseudo)) BETA124_PSEUDO_KEYS.forEach(key => beta124LocalSet(key, next.pseudo));
+    localStorage.setItem(BETA124_IDENTITY_KEY, JSON.stringify(next));
+    return next;
+  } catch { return null; }
+}
+function beta124MirrorCurrentIdentity() {
+  const pseudo = sanitizePseudo(state?.pseudo || "");
+  const identity = beta124ReadIdentity();
+  const suffix = beta124CleanUserSuffix(identity.localUserId || beta124PreviousLocalUserId?.() || "");
+  const code = normalizeFriendCode(identity.friendCode || beta124PreviousFriendCode?.() || "");
+  beta124WriteIdentity({
+    localUserId: suffix,
+    friendCode: parseFriendCode(code) ? code : undefined,
+    pseudo: !beta124IsGuestPseudo(pseudo) ? pseudo : identity.pseudo
+  });
+}
+function beta124HydrateProfileFromIdentity() {
+  const identity = beta124ReadIdentity();
+  let changed = false;
+  if (identity.pseudo && beta124IsGuestPseudo(state?.pseudo || "")) {
+    state.pseudo = identity.pseudo;
+    changed = true;
+  }
+  if (identity.localUserId) BETA124_USER_ID_KEYS.forEach(key => beta124LocalSet(key, identity.localUserId));
+  if (identity.friendCode) BETA124_FRIEND_CODE_KEYS.forEach(key => beta124LocalSet(key, identity.friendCode));
+  if (identity.pseudo) BETA124_PSEUDO_KEYS.forEach(key => beta124LocalSet(key, identity.pseudo));
+  return changed;
+}
+
+const beta124PreviousLocalUserId = localUserId;
+localUserId = function beta124LocalUserId() {
+  const identity = beta124ReadIdentity();
+  let id = beta124CleanUserSuffix(identity.localUserId);
+  if (!id) id = BETA124_USER_ID_KEYS.map(beta124LocalGet).map(beta124CleanUserSuffix).find(Boolean) || "";
+  if (!id) {
+    try { id = crypto?.randomUUID?.().replace(/-/g, "").slice(0, 6).toUpperCase() || ""; } catch {}
+  }
+  if (!id) id = Math.random().toString(36).slice(2, 8).toUpperCase();
+  beta124WriteIdentity({ localUserId: id });
+  return id;
+};
+
+const beta124PreviousFriendCode = friendCode;
+friendCode = function beta124FriendCode() {
+  const identity = beta124ReadIdentity();
+  if (identity.friendCode && parseFriendCode(identity.friendCode)) {
+    beta124WriteIdentity({ friendCode: identity.friendCode, localUserId: identity.localUserId || friendCodeSuffix(identity.friendCode) });
+    return identity.friendCode;
+  }
+  const legacy = BETA124_FRIEND_CODE_KEYS.map(beta124LocalGet).map(normalizeFriendCode).find(code => parseFriendCode(code));
+  if (legacy) {
+    beta124WriteIdentity({ friendCode: legacy, localUserId: friendCodeSuffix(legacy) });
+    return legacy;
+  }
+  const persistentPseudo = beta124ReadIdentity().pseudo || state?.pseudo || "Joueur";
+  const base = normalize(persistentPseudo || "joueur").replace(/\s+/g, "").slice(0, 6).toUpperCase() || "JOUEUR";
+  const code = `${base}-${localUserId()}`.toUpperCase();
+  beta124WriteIdentity({ friendCode: code });
+  return code;
+};
+
+const beta124PreviousSaveState = saveState;
+saveState = function beta124SaveState() {
+  beta124MirrorCurrentIdentity();
+  return beta124PreviousSaveState();
+};
+
+const beta124PreviousSavePseudoValue = savePseudoValue;
+savePseudoValue = function beta124SavePseudoValue(rawValue, options = {}) {
+  const ok = beta124PreviousSavePseudoValue(rawValue, options);
+  if (ok) {
+    beta124WriteIdentity({ pseudo: sanitizePseudo(rawValue), localUserId: localUserId(), friendCode: friendCode() });
+    syncMyProfileToServer({ source: options.source || "pseudo-beta124" }).catch(() => {});
+    beta124RefreshSocialData({ force: true, reason: "pseudo" }).catch(() => {});
+  }
+  return ok;
+};
+
+const beta124PreviousSyncMyProfileToServer = syncMyProfileToServer;
+syncMyProfileToServer = async function beta124SyncMyProfileToServer(options = {}) {
+  beta124MirrorCurrentIdentity();
+  const result = await beta124PreviousSyncMyProfileToServer(options);
+  beta124WriteIdentity({ lastSyncedAt: Date.now(), pseudo: currentPseudo(), localUserId: localUserId(), friendCode: friendCode() });
+  return result;
+};
+
+async function beta124RefreshSocialData({ force = false, reason = "manual" } = {}) {
+  if (!isOnline) return;
+  if (beta124SocialRefreshInFlight && !force) return;
+  beta124SocialRefreshInFlight = true;
+  try {
+    await syncMyProfileToServer({ source: `refresh-${reason}` }).catch(() => {});
+    await fetchServerFriends({ force }).catch(() => {});
+    await Promise.all(["daily", "week", "year", "friends"].map(scope => fetchServerLeaderboard(scope, { force }).catch(() => {})));
+  } finally {
+    beta124SocialRefreshInFlight = false;
+    if (state.tab === "rank" || state.tab === "profile") render({ immediate: true });
+  }
+}
+function beta124ScheduleRankRefresh(scope = state.rankScope || "daily") {
+  try { window.clearTimeout(beta124RankTimer); } catch {}
+  if (!isOnline || state.tab !== "rank") return;
+  beta124RankTimer = window.setTimeout(() => {
+    if (state.tab !== "rank" || !isOnline) return;
+    const activeScope = state.rankScope || scope || "daily";
+    fetchServerLeaderboard(activeScope, { force: true }).catch(() => {});
+    if (activeScope === "friends") fetchServerFriends({ force: true }).catch(() => {});
+    beta124ScheduleRankRefresh(activeScope);
+  }, BETA124_RANK_REFRESH_MS);
+}
+
+const beta124PreviousRenderRank = renderRank;
+renderRank = function beta124RenderRank() {
+  const scope = state.rankScope || "daily";
+  fetchServerLeaderboard(scope, { force: false }).catch(() => {});
+  if (scope === "friends") fetchServerFriends({ force: false }).catch(() => {});
+  const out = beta124PreviousRenderRank();
+  beta124ScheduleRankRefresh(scope);
+  return out;
+};
+
+const beta124PreviousLeaderboardIntroText = leaderboardIntroText;
+leaderboardIntroText = function beta124LeaderboardIntroText(scope = "daily") {
+  const status = state.serverLeaderboardStatus?.[scope] || {};
+  if (status.loadedAt) {
+    const seconds = Math.max(0, Math.round((Date.now() - Number(status.loadedAt || 0)) / 1000));
+    if (status.mode === "supabase") return `Classement en ligne actualisé il y a ${seconds < 5 ? "quelques" : seconds} s.`;
+  }
+  return beta124PreviousLeaderboardIntroText(scope);
+};
+
+const beta124PreviousSocialBackendMarkup = socialBackendMarkup;
+socialBackendMarkup = function beta124SocialBackendMarkup() {
+  const html = beta124PreviousSocialBackendMarkup();
+  const identity = beta124ReadIdentity();
+  const saved = identity.pseudo || state.pseudo || "Invité";
+  const code = identity.friendCode || friendCode();
+  const addition = `<div class="beta124-social-persist"><small>Profil conservé : <strong>${escapeHtml(saved)}</strong> · code ami stable <strong>${escapeHtml(code)}</strong></small></div>`;
+  return html.replace("</section>", `${addition}</section>`);
+};
+
+function beta124HandleRefreshClick(event) {
+  const button = event.target?.closest?.("[data-refresh-social]");
+  if (!button) return;
+  event.preventDefault();
+  event.stopPropagation();
+  state.serverFriendsStatus = { ...(state.serverFriendsStatus || {}), loading: true, message: "Actualisation…" };
+  state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [state.rankScope || "daily"]: { ...(state.serverLeaderboardStatus?.[state.rankScope || "daily"] || {}), loading: true } };
+  render({ immediate: true });
+  beta124RefreshSocialData({ force: true, reason: "button" }).catch(() => {});
+}
+
+document.addEventListener("click", beta124HandleRefreshClick, true);
+window.addEventListener("online", () => beta124RefreshSocialData({ force: true, reason: "online" }).catch(() => {}));
+window.addEventListener("focus", () => {
+  if (Date.now() - beta124LastFocusRefresh < 15000) return;
+  beta124LastFocusRefresh = Date.now();
+  beta124RefreshSocialData({ force: false, reason: "focus" }).catch(() => {});
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") beta124RefreshSocialData({ force: false, reason: "visible" }).catch(() => {});
+});
+
+try {
+  const changed = beta124HydrateProfileFromIdentity();
+  beta124MirrorCurrentIdentity();
+  if (changed) saveState();
+  beta124RefreshSocialData({ force: false, reason: "startup" }).catch(() => {});
+} catch {}
+
+window.HistoDailyBeta124 = {
+  version: BETA124_VERSION,
+  identity: beta124ReadIdentity,
+  refreshSocial: beta124RefreshSocialData
+};
+
+try { render({ immediate: true }); } catch {}
+
+
+/* =========================================================
+   Beta 125 — profils cliquables et demandes d'amis
+   - ouvrir un profil depuis le classement
+   - envoyer une demande au lieu d'ajouter directement
+   - accepter / refuser les demandes reçues
+   ========================================================= */
+const BETA125_VERSION = "1.0.0-beta.130";
+const BETA125_REQUEST_REFRESH_MS = 30000;
+let beta125RequestFetchInFlight = false;
+let beta125LastRequestFetch = 0;
+
+function beta125FriendRequestsState() {
+  const value = state.friendRequests || {};
+  return {
+    incoming: Array.isArray(value.incoming) ? value.incoming : [],
+    outgoing: Array.isArray(value.outgoing) ? value.outgoing : [],
+    history: Array.isArray(value.history) ? value.history : []
+  };
+}
+function beta125SetFriendRequests(requests = {}) {
+  state.friendRequests = {
+    incoming: Array.isArray(requests.incoming) ? requests.incoming : [],
+    outgoing: Array.isArray(requests.outgoing) ? requests.outgoing : [],
+    history: Array.isArray(requests.history) ? requests.history : []
+  };
+}
+function beta125RequestOtherCode(req = {}) { return normalizeFriendCode(req.otherFriendCode || req.requesterFriendCode || req.targetFriendCode || ""); }
+function beta125RequestOtherId(req = {}) { return String(req.otherPlayerId || req.requesterPlayerId || req.targetPlayerId || ""); }
+function beta125PlayerCode(player = {}) { return normalizeFriendCode(player.code || player.friendCode || player.friend_code || ""); }
+function beta125PlayerId(player = {}) { return String(player.playerId || player.player_id || player.id || ""); }
+function beta125MatchesPlayer(req = {}, player = {}) {
+  const reqCode = beta125RequestOtherCode(req);
+  const reqId = beta125RequestOtherId(req);
+  const playerCode = beta125PlayerCode(player);
+  const playerId = beta125PlayerId(player);
+  return Boolean((reqId && playerId && reqId === playerId) || (reqCode && playerCode && (reqCode === playerCode || friendCodeSuffix(reqCode) === friendCodeSuffix(playerCode))));
+}
+function beta125OutgoingRequestForPlayer(player = {}) {
+  return beta125FriendRequestsState().outgoing.find(req => beta125MatchesPlayer(req, player));
+}
+function beta125IncomingRequestForPlayer(player = {}) {
+  return beta125FriendRequestsState().incoming.find(req => beta125MatchesPlayer(req, player));
+}
+function beta125RequestBadgeCount() { return beta125FriendRequestsState().incoming.length; }
+function beta125RequestFeedback() { return state.friendRequestFeedback || state.friendFeedback || ""; }
+function beta125PublicActionMarkup(player = {}) {
+  if (!player || player.me) return `<section class="card beta125-profile-actions"><button class="ghost wide" data-open-rank="daily">Retour au classement</button></section>`;
+  const incoming = beta125IncomingRequestForPlayer(player);
+  const outgoing = beta125OutgoingRequestForPlayer(player);
+  const alreadyFriend = player.friend || knownFriendByCode(beta125PlayerCode(player));
+  if (alreadyFriend) return `<section class="card beta125-profile-actions"><div><span class="card-label">Ami</span><h2>${escapeHtml(player.name)} est dans tes amis</h2><p>Son score apparaît dans le classement amis quand il joue.</p></div><button class="ghost wide" data-remove-friend="${escapeHtml(player.id)}">Retirer des amis</button></section>`;
+  if (incoming) return `<section class="card beta125-profile-actions pending"><div><span class="card-label">Demande reçue</span><h2>${escapeHtml(player.name)} veut t’ajouter</h2><p>Accepte pour vous ajouter mutuellement et afficher vos scores dans le classement amis.</p></div><div class="home-actions-row"><button data-respond-friend-request="accept" data-request-player="${escapeHtml(incoming.requesterPlayerId || incoming.otherPlayerId || player.playerId || "")}" data-request-code="${escapeHtml(incoming.requesterFriendCode || incoming.otherFriendCode || beta125PlayerCode(player))}">Accepter</button><button class="ghost" data-respond-friend-request="decline" data-request-player="${escapeHtml(incoming.requesterPlayerId || incoming.otherPlayerId || player.playerId || "")}" data-request-code="${escapeHtml(incoming.requesterFriendCode || incoming.otherFriendCode || beta125PlayerCode(player))}">Refuser</button></div></section>`;
+  if (outgoing) return `<section class="card beta125-profile-actions pending"><div><span class="card-label">Demande envoyée</span><h2>En attente de validation</h2><p>${escapeHtml(player.name)} doit accepter la demande dans son application.</p></div><button class="ghost wide" data-refresh-social>Actualiser</button></section>`;
+  const disabled = (!beta125PlayerCode(player) && !player.playerId) ? "disabled" : "";
+  return `<section class="card beta125-profile-actions"><div><span class="card-label">Ajouter</span><h2>Envoyer une demande d’ami</h2><p>La personne devra accepter avant d’apparaître dans tes amis.</p></div><button class="wide" data-send-friend-request="${escapeHtml(player.id)}" ${disabled}>Demander en ami</button>${disabled ? `<p class="muted-note">Ce profil n’a pas encore de code ami public.</p>` : ""}</section>`;
+}
+function beta125RequestCardMarkup({ compact = false } = {}) {
+  const requests = beta125FriendRequestsState();
+  const incoming = requests.incoming || [];
+  const outgoing = requests.outgoing || [];
+  const status = state.serverFriendRequestsStatus || {};
+  if (!incoming.length && !outgoing.length && compact) return "";
+  const incomingHtml = incoming.length ? incoming.slice(0, compact ? 2 : 10).map(req => `<div class="friend-row beta125-request-row"><button type="button" class="friend-main" data-view-profile="${escapeHtml(req.requesterPlayerId || req.otherPlayerId || req.requesterFriendCode || req.otherFriendCode)}"><span class="avatar tiny">${escapeHtml(String(req.requesterPseudo || req.otherPseudo || "J").charAt(0).toUpperCase())}</span><span><strong>${escapeHtml(req.requesterPseudo || req.otherPseudo || "Joueur")}</strong><em>Demande reçue</em></span></button><div class="request-actions"><button class="mini-button" data-respond-friend-request="accept" data-request-player="${escapeHtml(req.requesterPlayerId || req.otherPlayerId || "")}" data-request-code="${escapeHtml(req.requesterFriendCode || req.otherFriendCode || "")}">OK</button><button class="ghost mini-button" data-respond-friend-request="decline" data-request-player="${escapeHtml(req.requesterPlayerId || req.otherPlayerId || "")}" data-request-code="${escapeHtml(req.requesterFriendCode || req.otherFriendCode || "")}">Non</button></div></div>`).join("") : `<p class="muted-note">Aucune demande reçue.</p>`;
+  const outgoingHtml = outgoing.length && !compact ? `<div class="beta125-outgoing"><h3>Envoyées</h3>${outgoing.slice(0, 10).map(req => `<p><strong>${escapeHtml(req.targetPseudo || req.otherPseudo || "Joueur")}</strong> · en attente</p>`).join("")}</div>` : "";
+  return `<section class="card beta125-requests-card"><div class="section-title-row"><div><span class="card-label">Demandes d’amis</span><h2>${incoming.length ? `${incoming.length} à valider` : "Aucune demande"}</h2><p>${status.loading ? "Actualisation des demandes…" : "Les ajouts passent maintenant par une validation."}</p></div><button type="button" class="ghost mini-button" data-refresh-requests>Actualiser</button></div>${incomingHtml}${outgoingHtml}${beta125RequestFeedback() ? `<p class="profile-feedback">${escapeHtml(beta125RequestFeedback())}</p>` : ""}</section>`;
+}
+async function beta125FetchFriendRequests({ force = false } = {}) {
+  if (!isOnline || beta125RequestFetchInFlight) return;
+  const now = Date.now();
+  if (!force && beta125LastRequestFetch && now - beta125LastRequestFetch < BETA125_REQUEST_REFRESH_MS) return;
+  beta125RequestFetchInFlight = true;
+  state.serverFriendRequestsStatus = { ...(state.serverFriendRequestsStatus || {}), loading: true };
+  queueSaveState(250);
+  try {
+    const response = await fetch(`/api/v1/friends/requests?playerId=${encodeURIComponent(playerIdMe())}&friendCode=${encodeURIComponent(friendCode())}&_=${Date.now()}`, { cache: "no-store" });
+    const json = await response.json().catch(() => ({}));
+    if (response.ok && json?.ok !== false) {
+      beta125SetFriendRequests(json.requests || {});
+      state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "" };
+      beta125LastRequestFetch = Date.now();
+    } else {
+      state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: "error", message: json?.message || "Demandes indisponibles." };
+    }
+  } catch {
+    state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: "error", message: "Demandes indisponibles." };
+  } finally {
+    beta125RequestFetchInFlight = false;
+    queueSaveState(250);
+    if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+  }
+}
+async function beta125SendFriendRequest(player = {}) {
+  if (!player || player.me) return;
+  const targetFriendCode = beta125PlayerCode(player);
+  const targetPlayerId = player.playerId || (String(player.id || "").startsWith("me-") ? "" : player.id) || "";
+  if (!targetFriendCode && !targetPlayerId) return setState({ friendRequestFeedback: "Ce profil n’a pas encore de code ami public." });
+  if (knownFriendByCode(targetFriendCode)) return setState({ friendRequestFeedback: `${player.name || "Ce joueur"} est déjà dans tes amis.` });
+  const localOutgoing = {
+    direction: "outgoing",
+    status: "pending",
+    targetPlayerId,
+    targetFriendCode,
+    targetPseudo: player.name || "Joueur",
+    otherPlayerId: targetPlayerId,
+    otherFriendCode: targetFriendCode,
+    otherPseudo: player.name || "Joueur",
+    createdAt: new Date().toISOString()
+  };
+  const current = beta125FriendRequestsState();
+  beta125SetFriendRequests({ ...current, outgoing: [localOutgoing, ...current.outgoing.filter(req => !beta125MatchesPlayer(req, player))] });
+  state.friendRequestFeedback = `Demande envoyée à ${player.name || "ce joueur"}.`;
+  queueSaveState(250);
+  if (!isOnline) return render({ immediate: true });
+  try {
+    await syncMyProfileToServer({ source: "friend-request" }).catch(() => {});
+    const response = await fetch("/api/v1/friends/request", {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        playerId: playerIdMe(),
+        pseudo: currentPseudo(),
+        myFriendCode: friendCode(),
+        targetPlayerId,
+        targetFriendCode,
+        targetPseudo: player.name || "Joueur",
+        level: level(),
+        xp: state.xp || 0,
+        solvedCount: Object.keys(state.solvedMysteries || {}).length,
+        streak: state.streak || 0
+      })
+    });
+    const json = await response.json().catch(() => ({}));
+    if (!response.ok || json?.ok === false || json?.mode === "supabase-error") throw new Error(json?.message || "Demande non envoyée en ligne.");
+    beta125SetFriendRequests(json.requests || beta125FriendRequestsState());
+    state.friendRequestFeedback = json.mode === "supabase" ? `Demande envoyée à ${player.name || "ce joueur"}.` : (json.message || "Demande gardée localement.");
+    state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "" };
+  } catch (error) {
+    state.friendRequestFeedback = `${player.name || "Joueur"} : demande gardée localement, mais pas envoyée en ligne (${error?.message || "connexion"}).`;
+  }
+  queueSaveState(250);
+  if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+}
+async function beta125RespondFriendRequest({ response = "decline", requesterPlayerId = "", requesterFriendCode = "" } = {}) {
+  const current = beta125FriendRequestsState();
+  const targetReq = current.incoming.find(req => (requesterPlayerId && (req.requesterPlayerId === requesterPlayerId || req.otherPlayerId === requesterPlayerId)) || (requesterFriendCode && (normalizeFriendCode(req.requesterFriendCode) === normalizeFriendCode(requesterFriendCode) || normalizeFriendCode(req.otherFriendCode) === normalizeFriendCode(requesterFriendCode))));
+  const label = targetReq?.requesterPseudo || targetReq?.otherPseudo || "Joueur";
+  beta125SetFriendRequests({ ...current, incoming: current.incoming.filter(req => req !== targetReq) });
+  state.friendRequestFeedback = response === "accept" ? `${label} ajouté aux amis.` : `Demande de ${label} refusée.`;
+  queueSaveState(250);
+  try {
+    const apiResponse = await fetch("/api/v1/friends/request/respond", {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        playerId: playerIdMe(),
+        pseudo: currentPseudo(),
+        myFriendCode: friendCode(),
+        requesterPlayerId: requesterPlayerId || targetReq?.requesterPlayerId || targetReq?.otherPlayerId || "",
+        requesterFriendCode: requesterFriendCode || targetReq?.requesterFriendCode || targetReq?.otherFriendCode || "",
+        requesterPseudo: label,
+        response,
+        level: level(),
+        xp: state.xp || 0,
+        solvedCount: Object.keys(state.solvedMysteries || {}).length,
+        streak: state.streak || 0
+      })
+    });
+    const json = await apiResponse.json().catch(() => ({}));
+    if (!apiResponse.ok || json?.ok === false || json?.mode === "supabase-error") throw new Error(json?.message || "Réponse non synchronisée.");
+    beta125SetFriendRequests(json.requests || beta125FriendRequestsState());
+    mergeServerFriends(json.friends || []);
+    state.friendRequestFeedback = json.message || state.friendRequestFeedback;
+    state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "" };
+    await fetchServerFriends({ force: true }).catch(() => {});
+    await fetchServerLeaderboard("friends", { force: true }).catch(() => {});
+  } catch (error) {
+    state.friendRequestFeedback = `${state.friendRequestFeedback} Synchronisation en ligne à réessayer.`;
+  }
+  queueSaveState(250);
+  if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+}
+
+const beta125PreviousAddFriend = addFriend;
+addFriend = function beta125AddFriend(event) {
+  event.preventDefault();
+  const input = event.target.querySelector("input");
+  const parsed = parseFriendCode(input?.value || "");
+  if (!parsed) return setState({ friendFeedback: "Code ami invalide. Format attendu : PSEUDO-ABC123." });
+  if (normalizeFriendCode(parsed.id) === normalizeFriendCode(friendCode())) return setState({ friendFeedback: "C’est ton propre code. Partage-le, mais ne l’ajoute pas à tes amis." });
+  const already = knownFriendByCode(parsed.code);
+  if (already) return setState({ friendFeedback: `${already.name || parsed.pseudo} est déjà dans tes amis.` });
+  if (input) input.value = "";
+  beta125SendFriendRequest({ id: parsed.id, playerId: "", code: parsed.code, friendCode: parsed.code, name: parsed.pseudo, avatar: String(parsed.pseudo || "A").charAt(0).toUpperCase(), level: 1, xp: 0, solved: 0, streak: 0, badges: ["Demande"] });
+};
+
+const beta125PreviousSyncFriendToServer = syncFriendToServer;
+syncFriendToServer = async function beta125SyncFriendToServer(friend) {
+  return beta125SendFriendRequest(friendProfileFromCode(friend.code || friend.id, friend.name, friend));
+};
+
+const beta125PreviousProfileById = profileById;
+profileById = function beta125ProfileById(id) {
+  const player = beta125PreviousProfileById(id);
+  const incoming = beta125IncomingRequestForPlayer(player);
+  const outgoing = beta125OutgoingRequestForPlayer(player);
+  return { ...player, requestIncoming: incoming || null, requestOutgoing: outgoing || null };
+};
+
+const beta125PreviousRenderPublicProfile = renderPublicProfile;
+renderPublicProfile = function beta125RenderPublicProfile() {
+  beta125FetchFriendRequests({ force: false }).catch(() => {});
+  const player = profileById(state.selectedProfileId);
+  renderShell(`<header class="topbar"><button data-back-social>←</button><div><p class="eyebrow">Profil joueur</p><h1>${escapeHtml(player.name)}</h1></div></header>
+    ${publicProfileMarkup(player)}
+    ${beta125PublicActionMarkup(player)}
+    <section class="card profile-score-card"><div class="section-title-row"><div><span class="card-label">Scores</span><h2>Classements</h2></div><small>${player.me ? "toi" : player.friend ? "ami" : "joueur"}</small></div><div class="public-stats-grid"><div><strong>${scoreOfPlayer(player, "daily")}</strong><span>Aujourd’hui</span></div><div><strong>${scoreOfPlayer(player, "week")}</strong><span>Semaine</span></div><div><strong>${scoreOfPlayer(player, "year")}</strong><span>Année</span></div><div><strong>#${leaderboardRows(state.rankScope || "daily").find(r => r.id === player.id || r.playerId === player.playerId)?.rank || "—"}</strong><span>Rang actuel</span></div></div></section>
+    ${beta125RequestCardMarkup({ compact: true })}
+    <section class="card social-shortcuts"><div class="home-actions-row"><button data-open-rank="daily">Classement jour</button><button class="ghost" data-open-rank="friends">Classement amis</button></div></section>`);
+  $(`[data-back-social]`)?.addEventListener("click", () => setState({ tab: "rank" }));
+  document.querySelectorAll("[data-open-rank]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "rank", rankScope: btn.dataset.openRank })));
+  document.querySelectorAll("[data-remove-friend]").forEach(btn => btn.addEventListener("click", () => removeFriend(btn.dataset.removeFriend)));
+};
+
+function beta125InjectRequestsCard() {
+  const html = beta125RequestCardMarkup({ compact: state.tab === "rank" });
+  if (!html) return;
+  const anchor = document.querySelector(".social-backend") || document.querySelector(".public-profile-card") || document.querySelector(".leaderboard-modern");
+  if (anchor && !document.querySelector(".beta125-requests-card")) anchor.insertAdjacentHTML("afterend", html);
+}
+const beta125PreviousRenderRank = renderRank;
+renderRank = function beta125RenderRank() {
+  beta125FetchFriendRequests({ force: false }).catch(() => {});
+  const out = beta125PreviousRenderRank();
+  beta125InjectRequestsCard();
+  return out;
+};
+const beta125PreviousRenderProfile = renderProfile;
+renderProfile = function beta125RenderProfile() {
+  beta125FetchFriendRequests({ force: false }).catch(() => {});
+  const out = beta125PreviousRenderProfile();
+  beta125InjectRequestsCard();
+  return out;
+};
+
+const beta125PreviousSocialBackendMarkup = socialBackendMarkup;
+socialBackendMarkup = function beta125SocialBackendMarkup() {
+  const html = beta125PreviousSocialBackendMarkup();
+  const count = beta125RequestBadgeCount();
+  const pill = `<div class="beta125-request-persist"><small>${count ? `<strong>${count}</strong> demande${count > 1 ? "s" : ""} à valider` : "Demandes d’amis activées"}</small></div>`;
+  return html.replace("</section>", `${pill}</section>`);
+};
+
+const beta125PreviousBeta124RefreshSocialData = typeof beta124RefreshSocialData === "function" ? beta124RefreshSocialData : null;
+if (beta125PreviousBeta124RefreshSocialData) {
+  beta124RefreshSocialData = async function beta125RefreshSocialData(options = {}) {
+    const result = await beta125PreviousBeta124RefreshSocialData(options);
+    await beta125FetchFriendRequests({ force: Boolean(options.force) }).catch(() => {});
+    return result;
+  };
+}
+
+document.addEventListener("click", event => {
+  const sendBtn = event.target?.closest?.("[data-send-friend-request]");
+  if (sendBtn) {
+    event.preventDefault();
+    const player = profileById(sendBtn.dataset.sendFriendRequest);
+    beta125SendFriendRequest(player).catch(() => {});
+    return;
+  }
+  const respondBtn = event.target?.closest?.("[data-respond-friend-request]");
+  if (respondBtn) {
+    event.preventDefault();
+    beta125RespondFriendRequest({ response: respondBtn.dataset.respondFriendRequest, requesterPlayerId: respondBtn.dataset.requestPlayer || "", requesterFriendCode: respondBtn.dataset.requestCode || "" }).catch(() => {});
+    return;
+  }
+  const refreshBtn = event.target?.closest?.("[data-refresh-requests]");
+  if (refreshBtn) {
+    event.preventDefault();
+    beta125FetchFriendRequests({ force: true }).catch(() => {});
+  }
+}, true);
+
+try {
+  beta125FetchFriendRequests({ force: true }).catch(() => {});
+  window.HistoDailyBeta125 = { version: BETA125_VERSION, fetchFriendRequests: beta125FetchFriendRequests };
+  render({ immediate: true });
+} catch {}
+
+
+/* =========================================================
+   Beta 126 — social live polish
+   - badges visibles quand une demande est à valider
+   - dédoublonnage robuste des demandes locales et reçues
+   - profil joueur rafraîchi depuis le serveur quand on l'ouvre
+   ========================================================= */
+const BETA126_VERSION = "1.0.0-beta.130";
+const BETA126_PROFILE_REFRESH_MS = 45000;
+let beta126ProfileFetchInFlight = new Set();
+
+function beta126RequestKey(req = {}) {
+  const a = normalizeFriendCode(req.requesterFriendCode || req.requester_friend_code || "") || String(req.requesterPlayerId || req.requester_player_id || "");
+  const b = normalizeFriendCode(req.targetFriendCode || req.target_friend_code || "") || String(req.targetPlayerId || req.target_player_id || "");
+  return `${req.direction || ""}:${a}->${b}:${req.status || "pending"}`;
+}
+function beta126DedupeRequests(list = []) {
+  const seen = new Set();
+  return (Array.isArray(list) ? list : []).filter(req => {
+    const key = beta126RequestKey(req);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+const beta126PreviousSetFriendRequests = typeof beta125SetFriendRequests === "function" ? beta125SetFriendRequests : null;
+if (beta126PreviousSetFriendRequests) {
+  beta125SetFriendRequests = function beta126SetFriendRequests(requests = {}) {
+    beta126PreviousSetFriendRequests({
+      incoming: beta126DedupeRequests(requests.incoming || []),
+      outgoing: beta126DedupeRequests(requests.outgoing || []),
+      history: beta126DedupeRequests(requests.history || []).slice(0, 30)
+    });
+    state.friendRequestsUpdatedAt = Date.now();
+    queueSaveState(250);
+  };
+}
+function beta126RequestCount() { try { return beta125RequestBadgeCount ? beta125RequestBadgeCount() : 0; } catch { return 0; } }
+const beta126PreviousNavButton = navButton;
+navButton = function beta126NavButton(tab, icon, label) {
+  let html = beta126PreviousNavButton(tab, icon, label);
+  const count = beta126RequestCount();
+  if (count && (tab === "profile" || tab === "rank")) html = html.replace("</button>", `<i class="nav-badge" aria-label="${count} demande${count > 1 ? "s" : ""} à valider">${count}</i></button>`);
+  return html;
+};
+function beta126ProfileCache() { if (!state.remoteProfiles || typeof state.remoteProfiles !== "object") state.remoteProfiles = {}; return state.remoteProfiles; }
+function beta126ProfileKey(player = {}) { const code = normalizeFriendCode(player.friendCode || player.code || player.friend_code || ""); return String(player.playerId || player.player_id || player.id || code || ""); }
+function beta126FindCachedProfile(idOrPlayer) {
+  const cache = beta126ProfileCache();
+  const wanted = typeof idOrPlayer === "string" ? idOrPlayer : beta126ProfileKey(idOrPlayer || {});
+  const wantedCode = normalizeFriendCode(typeof idOrPlayer === "string" ? idOrPlayer : (idOrPlayer?.friendCode || idOrPlayer?.code || ""));
+  const wantedSuffix = friendCodeSuffix(wantedCode);
+  return Object.values(cache).find(profile => {
+    const pid = String(profile.playerId || profile.player_id || profile.id || "");
+    const pcode = normalizeFriendCode(profile.friendCode || profile.code || profile.friend_code || "");
+    return (wanted && (pid === wanted || pcode === normalizeFriendCode(wanted))) || (wantedSuffix && friendCodeSuffix(pcode) === wantedSuffix);
+  }) || null;
+}
+function beta126NormalizeRemoteProfile(profile = {}) {
+  const name = sanitizePseudo(profile.name || profile.pseudo || "Joueur") || "Joueur";
+  const code = normalizeFriendCode(profile.friendCode || profile.code || profile.friend_code || "");
+  const playerId = String(profile.playerId || profile.player_id || profile.id || "");
+  return { id: playerId || code || name, playerId, code, friendCode: code, name, avatar: String(name || "J").charAt(0).toUpperCase(), bio: "Profil en ligne HistoDaily, actualisé depuis le classement.", level: Number(profile.level || 1), xp: Number(profile.xp || 0), solved: Number(profile.solved || profile.solved_count || 0), streak: Number(profile.streak || 0), daily: Number(profile.daily || 0), week: Number(profile.week || 0), year: Number(profile.year || 0), badges: ["En ligne"], server: true, syncedAt: Date.now() };
+}
+async function beta126FetchPublicProfile(player = {}, { force = false } = {}) {
+  if (!isOnline || !player || player.me) return null;
+  const code = normalizeFriendCode(player.friendCode || player.code || "");
+  const playerId = String(player.playerId || (String(player.id || "").startsWith("me-") ? "" : player.id || ""));
+  if (!code && !playerId) return null;
+  const key = playerId || code;
+  const cached = beta126FindCachedProfile(player);
+  if (!force && cached?.syncedAt && Date.now() - cached.syncedAt < BETA126_PROFILE_REFRESH_MS) return cached;
+  if (beta126ProfileFetchInFlight.has(key)) return cached;
+  beta126ProfileFetchInFlight.add(key);
+  try {
+    const response = await fetch(`/api/v1/friends/profile?playerId=${encodeURIComponent(playerId)}&friendCode=${encodeURIComponent(code)}&_=${Date.now()}`, { cache: "no-store" });
+    const json = await response.json().catch(() => ({}));
+    if (response.ok && json?.ok !== false && json.profile) {
+      const normalized = beta126NormalizeRemoteProfile(json.profile);
+      beta126ProfileCache()[beta126ProfileKey(normalized)] = normalized;
+      queueSaveState(250);
+      if (state.tab === "publicProfile") render({ immediate: true });
+      return normalized;
+    }
+  } catch {}
+  finally { beta126ProfileFetchInFlight.delete(key); }
+  return cached || null;
+}
+const beta126PreviousProfileById = profileById;
+profileById = function beta126ProfileById(id) {
+  const base = beta126PreviousProfileById(id);
+  const cached = beta126FindCachedProfile(base) || beta126FindCachedProfile(id);
+  if (!cached) return base;
+  return { ...base, ...cached, friend: base.friend || Boolean(knownFriendByCode(cached.code || cached.friendCode)), requestIncoming: base.requestIncoming, requestOutgoing: base.requestOutgoing };
+};
+const beta126PreviousViewProfile = viewProfile;
+viewProfile = function beta126ViewProfile(id) { beta126PreviousViewProfile(id); setTimeout(() => beta126FetchPublicProfile(profileById(id), { force: false }).catch(() => {}), 0); };
+const beta126PreviousRenderPublicProfile = renderPublicProfile;
+renderPublicProfile = function beta126RenderPublicProfile() { const out = beta126PreviousRenderPublicProfile(); beta126FetchPublicProfile(profileById(state.selectedProfileId), { force: false }).catch(() => {}); return out; };
+const beta126PreviousRequestCardMarkup = typeof beta125RequestCardMarkup === "function" ? beta125RequestCardMarkup : null;
+if (beta126PreviousRequestCardMarkup) {
+  beta125RequestCardMarkup = function beta126RequestCardMarkup(options = {}) {
+    const html = beta126PreviousRequestCardMarkup(options);
+    if (!html) return html;
+    const count = beta126RequestCount();
+    const status = state.serverFriendRequestsStatus || {};
+    const age = status.loadedAt ? Math.max(0, Math.round((Date.now() - Number(status.loadedAt || 0)) / 1000)) : null;
+    const line = `<div class="beta126-request-status"><span>${count ? `${count} demande${count > 1 ? "s" : ""} à valider` : "Aucune demande reçue"}</span><small>${status.loading ? "actualisation…" : age !== null ? `vu il y a ${age}s` : "pas encore synchronisé"}</small></div>`;
+    return html.replace("</section>", `${line}</section>`);
+  };
+}
+const beta126PreviousSendFriendRequest = typeof beta125SendFriendRequest === "function" ? beta125SendFriendRequest : null;
+if (beta126PreviousSendFriendRequest) {
+  beta125SendFriendRequest = async function beta126SendFriendRequest(player = {}) {
+    if (beta125OutgoingRequestForPlayer?.(player)) {
+      state.friendRequestFeedback = `Demande déjà envoyée à ${player.name || "ce joueur"}.`;
+      queueSaveState(250);
+      if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+      return;
+    }
+    return beta126PreviousSendFriendRequest(player);
+  };
+}
+const beta126PreviousRespondFriendRequest = typeof beta125RespondFriendRequest === "function" ? beta125RespondFriendRequest : null;
+if (beta126PreviousRespondFriendRequest) {
+  beta125RespondFriendRequest = async function beta126RespondFriendRequest(args = {}) {
+    const result = await beta126PreviousRespondFriendRequest(args);
+    await beta125FetchFriendRequests({ force: true }).catch(() => {});
+    await fetchServerFriends({ force: true }).catch(() => {});
+    await fetchServerLeaderboard("friends", { force: true }).catch(() => {});
+    return result;
+  };
+}
+const beta126PreviousSocialBackendMarkup = socialBackendMarkup;
+socialBackendMarkup = function beta126SocialBackendMarkup() {
+  const html = beta126PreviousSocialBackendMarkup();
+  const count = beta126RequestCount();
+  if (!count) return html;
+  return html.replace("</section>", `<div class="beta126-social-alert"><strong>${count}</strong><span>demande${count > 1 ? "s" : ""} d’ami à valider</span></div></section>`);
+};
+try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.HistoDailyBeta126 = { version: BETA126_VERSION, fetchProfile: beta126FetchPublicProfile, requests: beta125FriendRequestsState }; render({ immediate: true }); } catch {}
+
+
+/* =========================================================
+   Beta 127 — social robustness
+   - file locale des demandes sortantes
+   - annulation d'une demande envoyée
+   - état social visible dans le classement
+   - conservation des demandes locales si le serveur n'est pas prêt
+   ========================================================= */
+const BETA127_VERSION = "1.0.0-beta.130";
+const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
+let beta128FlushInFlight = false;
+
+function beta128ReadOutbox() {
+  try {
+    const raw = localStorage.getItem(BETA127_OUTBOX_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch { return []; }
+}
+function beta128SaveOutbox(list = []) {
+  const clean = [];
+  const seen = new Set();
+  (Array.isArray(list) ? list : []).forEach(item => {
+    const key = beta128TargetKey(item);
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    clean.push({ ...item, key, updatedAt: item.updatedAt || Date.now() });
+  });
+  try { localStorage.setItem(BETA127_OUTBOX_KEY, JSON.stringify(clean.slice(0, 40))); } catch {}
+  state.friendRequestOutbox = clean.slice(0, 40);
+  queueSaveState(250);
+  return clean;
+}
+function beta128Outbox() {
+  const local = beta128ReadOutbox();
+  const stateList = Array.isArray(state.friendRequestOutbox) ? state.friendRequestOutbox : [];
+  return beta128SaveOutbox([...stateList, ...local]);
+}
+function beta128TargetKey(player = {}) {
+  const id = String(player.targetPlayerId || player.playerId || player.player_id || (String(player.id || "").startsWith("me-") ? "" : player.id || ""));
+  const code = normalizeFriendCode(player.targetFriendCode || player.friendCode || player.code || player.friend_code || "");
+  const suffix = friendCodeSuffix(code);
+  return id ? `id:${id}` : suffix ? `code:${suffix}` : code ? `code:${code}` : "";
+}
+function beta128KnownFriendByPlayerId(playerId = "") {
+  const id = String(playerId || "");
+  if (!id) return null;
+  return Object.values(state.friends || {}).find(friend => String(friend.playerId || friend.friend_player_id || "") === id) || null;
+}
+function beta128MergeLocalRequests(base = {}, extra = {}) {
+  const merge = (a = [], b = []) => {
+    const out = [];
+    const seen = new Set();
+    [...(Array.isArray(a) ? a : []), ...(Array.isArray(b) ? b : [])].forEach(req => {
+      const key = typeof beta126RequestKey === "function" ? beta126RequestKey(req) : `${req.direction || ""}:${beta128TargetKey(req)}:${req.status || "pending"}`;
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      out.push(req);
+    });
+    return out;
+  };
+  return {
+    incoming: merge(base.incoming, extra.incoming),
+    outgoing: merge(base.outgoing, extra.outgoing),
+    history: merge(base.history, extra.history).slice(0, 30)
+  };
+}
+function beta128TrackOutgoing(player = {}) {
+  const key = beta128TargetKey(player);
+  if (!key) return;
+  const item = {
+    key,
+    targetPlayerId: String(player.targetPlayerId || player.playerId || player.player_id || (String(player.id || "").startsWith("me-") ? "" : player.id || "")),
+    targetFriendCode: normalizeFriendCode(player.targetFriendCode || player.friendCode || player.code || player.friend_code || ""),
+    targetPseudo: sanitizePseudo(player.targetPseudo || player.name || player.pseudo || "Joueur") || "Joueur",
+    createdAt: player.createdAt || new Date().toISOString(),
+    updatedAt: Date.now(),
+    tries: Number(player.tries || 0)
+  };
+  beta128SaveOutbox([item, ...beta128Outbox().filter(old => beta128TargetKey(old) !== key)]);
+}
+function beta128RemoveOutgoingFromOutbox(target = {}) {
+  const key = beta128TargetKey(target);
+  if (!key) return;
+  beta128SaveOutbox(beta128Outbox().filter(item => beta128TargetKey(item) !== key));
+}
+function beta128Relation(player = {}) {
+  if (!player || player.me) return { type: "me", label: "Toi" };
+  const code = normalizeFriendCode(player.friendCode || player.code || player.friend_code || "");
+  const pid = String(player.playerId || player.player_id || (String(player.id || "").startsWith("me-") ? "" : player.id || ""));
+  if (player.friend || knownFriendByCode(code) || beta128KnownFriendByPlayerId(pid)) return { type: "friend", label: "Ami" };
+  const incoming = typeof beta125IncomingRequestForPlayer === "function" ? beta125IncomingRequestForPlayer(player) : null;
+  if (incoming) return { type: "incoming", label: "À valider" };
+  const outgoing = typeof beta125OutgoingRequestForPlayer === "function" ? beta125OutgoingRequestForPlayer(player) : null;
+  const outbox = beta128Outbox().find(item => beta128TargetKey(item) === beta128TargetKey(player));
+  if (outgoing || outbox) return { type: "outgoing", label: "Envoyée" };
+  return { type: "none", label: "" };
+}
+function beta128RelationChip(player = {}) {
+  const rel = beta128Relation(player);
+  return rel.label ? `<small class="beta128-relation-chip ${escapeHtml(rel.type)}">${escapeHtml(rel.label)}</small>` : "";
+}
+function beta128DecorateLeaderboardRows() {
+  try {
+    document.querySelectorAll(".leaderboard-modern .rank-row[data-view-profile]").forEach(row => {
+      if (row.querySelector(".beta128-relation-chip")) return;
+      const player = profileById(row.dataset.viewProfile);
+      const chip = beta128RelationChip(player);
+      if (chip) row.insertAdjacentHTML("beforeend", chip);
+    });
+  } catch {}
+}
+
+const beta128PreviousRenderRank = renderRank;
+renderRank = function beta128RenderRank() {
+  const out = beta128PreviousRenderRank();
+  beta128DecorateLeaderboardRows();
+  return out;
+};
+
+const beta128PreviousRequestCardMarkup = typeof beta125RequestCardMarkup === "function" ? beta125RequestCardMarkup : null;
+if (beta128PreviousRequestCardMarkup) {
+  beta125RequestCardMarkup = function beta128RequestCardMarkup(options = {}) {
+    let html = beta128PreviousRequestCardMarkup(options);
+    const outboxCount = beta128Outbox().length;
+    if (outboxCount) {
+      html = html.replace("</section>", `<div class="beta128-outbox-line"><strong>${outboxCount}</strong><span>demande${outboxCount > 1 ? "s" : ""} en file locale, renvoi automatique dès que possible.</span></div></section>`);
+    }
+    return html;
+  };
+}
+
+const beta128PreviousPublicActionMarkup = typeof beta125PublicActionMarkup === "function" ? beta125PublicActionMarkup : null;
+if (beta128PreviousPublicActionMarkup) {
+  beta125PublicActionMarkup = function beta128PublicActionMarkup(player = {}) {
+    if (!player || player.me) return beta128PreviousPublicActionMarkup(player);
+    const rel = beta128Relation(player);
+    if (rel.type === "outgoing") {
+      return `<section class="card beta125-profile-actions pending beta128-profile-actions"><div><span class="card-label">Demande envoyée</span><h2>En attente de validation</h2><p>${escapeHtml(player.name || "Ce joueur")} doit accepter la demande dans son application. Elle restera en attente même si tu mets l’app à jour.</p></div><div class="home-actions-row"><button class="ghost" data-refresh-social>Actualiser</button><button class="ghost danger-action" data-cancel-friend-request="${escapeHtml(beta128TargetKey(player))}" data-request-player="${escapeHtml(player.playerId || player.id || "")}" data-request-code="${escapeHtml(player.friendCode || player.code || "")}">Annuler</button></div></section>`;
+    }
+    return beta128PreviousPublicActionMarkup(player);
+  };
+}
+
+async function beta128PostFriendRequest(item = {}) {
+  const response = await fetch("/api/v1/friends/request", {
+    method: "POST",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      playerId: playerIdMe(),
+      pseudo: currentPseudo(),
+      myFriendCode: friendCode(),
+      targetPlayerId: item.targetPlayerId || "",
+      targetFriendCode: item.targetFriendCode || "",
+      targetPseudo: item.targetPseudo || "Joueur",
+      level: level(),
+      xp: state.xp || 0,
+      solvedCount: Object.keys(state.solvedMysteries || {}).length,
+      streak: state.streak || 0
+    })
+  });
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok || json?.ok === false || json?.mode === "supabase-error") throw new Error(json?.message || "Demande non synchronisée.");
+  if (json.requests && typeof beta125SetFriendRequests === "function") beta125SetFriendRequests(json.requests);
+  state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "" };
+  return json;
+}
+async function beta128FlushOutgoingRequests({ force = false } = {}) {
+  if (!isOnline || beta128FlushInFlight) return;
+  const pending = beta128Outbox();
+  if (!pending.length) return;
+  beta128FlushInFlight = true;
+  try {
+    const remaining = [];
+    for (const item of pending.slice(0, 8)) {
+      try {
+        const json = await beta128PostFriendRequest(item);
+        if (json.mode !== "supabase") remaining.push({ ...item, tries: Number(item.tries || 0) + 1, updatedAt: Date.now() });
+      } catch {
+        remaining.push({ ...item, tries: Number(item.tries || 0) + 1, updatedAt: Date.now() });
+      }
+    }
+    beta128SaveOutbox([...remaining, ...pending.slice(8)]);
+  } finally {
+    beta128FlushInFlight = false;
+    if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+  }
+}
+
+const beta128PreviousSendFriendRequest = typeof beta125SendFriendRequest === "function" ? beta125SendFriendRequest : null;
+if (beta128PreviousSendFriendRequest) {
+  beta125SendFriendRequest = async function beta128SendFriendRequest(player = {}) {
+    beta128TrackOutgoing(player);
+    await beta128PreviousSendFriendRequest(player);
+    const mode = state.serverFriendRequestsStatus?.mode || "";
+    if (mode === "supabase") beta128RemoveOutgoingFromOutbox(player);
+    else beta128TrackOutgoing(player);
+    if (state.tab === "rank") beta128DecorateLeaderboardRows();
+  };
+}
+
+const beta128PreviousFetchFriendRequests = typeof beta125FetchFriendRequests === "function" ? beta125FetchFriendRequests : null;
+if (beta128PreviousFetchFriendRequests) {
+  beta125FetchFriendRequests = async function beta128FetchFriendRequests(options = {}) {
+    const before = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [], history: [] };
+    await beta128PreviousFetchFriendRequests(options);
+    const status = state.serverFriendRequestsStatus || {};
+    if (status.mode !== "supabase" && typeof beta125SetFriendRequests === "function") {
+      beta125SetFriendRequests(beta128MergeLocalRequests(beta125FriendRequestsState(), before));
+    }
+    await beta128FlushOutgoingRequests({ force: Boolean(options.force) }).catch(() => {});
+    if (state.tab === "rank") beta128DecorateLeaderboardRows();
+  };
+}
+
+async function beta128CancelFriendRequest(target = {}) {
+  const key = beta128TargetKey(target);
+  const current = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [], history: [] };
+  const match = current.outgoing.find(req => beta128TargetKey(req) === key);
+  const label = match?.targetPseudo || match?.otherPseudo || target.targetPseudo || "ce joueur";
+  if (typeof beta125SetFriendRequests === "function") beta125SetFriendRequests({ ...current, outgoing: current.outgoing.filter(req => beta128TargetKey(req) !== key) });
+  beta128RemoveOutgoingFromOutbox(target);
+  state.friendRequestFeedback = `Demande envoyée à ${label} annulée.`;
+  queueSaveState(250);
+  if (!isOnline) return render({ immediate: true });
+  try {
+    const response = await fetch("/api/v1/friends/request", {
+      method: "DELETE",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        playerId: playerIdMe(),
+        myFriendCode: friendCode(),
+        targetPlayerId: target.targetPlayerId || target.playerId || "",
+        targetFriendCode: target.targetFriendCode || target.friendCode || target.code || ""
+      })
+    });
+    const json = await response.json().catch(() => ({}));
+    if (response.ok && json?.ok !== false && json.requests && typeof beta125SetFriendRequests === "function") beta125SetFriendRequests(json.requests);
+    state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "" };
+  } catch {
+    state.friendRequestFeedback = `Demande annulée localement. Le serveur sera nettoyé au prochain rafraîchissement.`;
+  }
+  queueSaveState(250);
+  if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
+}
+
+document.addEventListener("click", event => {
+  const cancelBtn = event.target?.closest?.("[data-cancel-friend-request]");
+  if (!cancelBtn) return;
+  event.preventDefault();
+  event.stopPropagation();
+  beta128CancelFriendRequest({ targetPlayerId: cancelBtn.dataset.requestPlayer || "", targetFriendCode: cancelBtn.dataset.requestCode || "" }).catch(() => {});
+}, true);
+
+const beta128PreviousDeleteFriendFromServer = typeof deleteFriendFromServer === "function" ? deleteFriendFromServer : null;
+if (beta128PreviousDeleteFriendFromServer) {
+  deleteFriendFromServer = async function beta128DeleteFriendFromServer(friend) {
+    if (!isOnline || !friend?.code) return;
+    const response = await fetch("/api/v1/friends/sync", {
+      method: "DELETE",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ playerId: playerIdMe(), myFriendCode: friendCode(), friendCode: friend.code, friendPlayerId: friend.playerId || friend.friend_player_id || "" })
+    });
+    const json = await response.json().catch(() => ({}));
+    if (!response.ok || json?.ok === false || json?.mode === "supabase-error") throw new Error(json?.message || json?.note || `HTTP ${response.status}`);
+    state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: json?.mode || "unknown", message: json?.message || "" };
+    mergeServerFriends(json?.friends || []);
+  };
+}
+
+const beta128PreviousFetchPublicProfile = typeof beta126FetchPublicProfile === "function" ? beta126FetchPublicProfile : null;
+if (beta128PreviousFetchPublicProfile) {
+  beta126FetchPublicProfile = async function beta128FetchPublicProfile(player = {}, options = {}) {
+    const code = normalizeFriendCode(player.friendCode || player.code || "");
+    const playerId = String(player.playerId || (String(player.id || "").startsWith("me-") ? "" : player.id || ""));
+    if (isOnline && (code || playerId)) {
+      try {
+        const response = await fetch(`/api/v1/friends/profile?playerId=${encodeURIComponent(playerId)}&friendCode=${encodeURIComponent(code)}&viewerPlayerId=${encodeURIComponent(playerIdMe())}&viewerFriendCode=${encodeURIComponent(friendCode())}&_=${Date.now()}`, { cache: "no-store" });
+        const json = await response.json().catch(() => ({}));
+        if (response.ok && json?.ok !== false && json.profile) {
+          const normalized = beta126NormalizeRemoteProfile(json.profile);
+          normalized.relationship = json.relationship || null;
+          beta126ProfileCache()[beta126ProfileKey(normalized)] = normalized;
+          queueSaveState(250);
+          if (state.tab === "publicProfile") render({ immediate: true });
+          return normalized;
+        }
+      } catch {}
+    }
+    return beta128PreviousFetchPublicProfile(player, options);
+  };
+}
+
+window.addEventListener("online", () => beta128FlushOutgoingRequests({ force: true }).catch(() => {}));
+window.addEventListener("focus", () => beta128FlushOutgoingRequests({ force: false }).catch(() => {}));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") beta128FlushOutgoingRequests({ force: false }).catch(() => {}); });
+try {
+  beta128Outbox();
+  beta128FlushOutgoingRequests({ force: false }).catch(() => {});
+  window.HistoDailyBeta127 = { version: BETA127_VERSION, outbox: beta128Outbox, flush: beta128FlushOutgoingRequests, relation: beta128Relation };
+  render({ immediate: true });
+} catch {}
+
+
+/* Beta128.1 — garde visible les demandes locales même si /friends/request répond local-preview. */
+function beta128OutgoingRequestFromItem(item = {}) {
+  return {
+    direction: "outgoing",
+    status: "pending",
+    targetPlayerId: String(item.targetPlayerId || item.playerId || ""),
+    targetFriendCode: normalizeFriendCode(item.targetFriendCode || item.friendCode || item.code || ""),
+    targetPseudo: sanitizePseudo(item.targetPseudo || item.name || item.pseudo || "Joueur") || "Joueur",
+    otherPlayerId: String(item.targetPlayerId || item.playerId || ""),
+    otherFriendCode: normalizeFriendCode(item.targetFriendCode || item.friendCode || item.code || ""),
+    otherPseudo: sanitizePseudo(item.targetPseudo || item.name || item.pseudo || "Joueur") || "Joueur",
+    createdAt: item.createdAt || new Date().toISOString(),
+    localOnly: true
+  };
+}
+function beta128EnsureOutgoingVisible(item = {}) {
+  if (typeof beta125FriendRequestsState !== "function" || typeof beta125SetFriendRequests !== "function") return;
+  const req = beta128OutgoingRequestFromItem(item);
+  if (!beta128TargetKey(req)) return;
+  const current = beta125FriendRequestsState();
+  beta125SetFriendRequests({ ...current, outgoing: [req, ...current.outgoing.filter(old => beta128TargetKey(old) !== beta128TargetKey(req))] });
+}
+const beta128PreviousTrackOutgoing = beta128TrackOutgoing;
+beta128TrackOutgoing = function beta128TrackOutgoingVisible(player = {}) {
+  beta128PreviousTrackOutgoing(player);
+  const item = beta128Outbox().find(entry => beta128TargetKey(entry) === beta128TargetKey(player)) || player;
+  beta128EnsureOutgoingVisible(item);
+};
+const beta128PreviousPostFriendRequest = beta128PostFriendRequest;
+beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(item = {}) {
+  const response = await fetch("/api/v1/friends/request", {
+    method: "POST",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      playerId: playerIdMe(),
+      pseudo: currentPseudo(),
+      myFriendCode: friendCode(),
+      targetPlayerId: item.targetPlayerId || "",
+      targetFriendCode: item.targetFriendCode || "",
+      targetPseudo: item.targetPseudo || "Joueur",
+      level: level(),
+      xp: state.xp || 0,
+      solvedCount: Object.keys(state.solvedMysteries || {}).length,
+      streak: state.streak || 0
+    })
+  });
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok || json?.ok === false || json?.mode === "supabase-error") throw new Error(json?.message || "Demande non synchronisée.");
+  if (json.mode === "supabase" && json.requests && typeof beta125SetFriendRequests === "function") beta125SetFriendRequests(json.requests);
+  else beta128EnsureOutgoingVisible(item);
+  state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "" };
+  return json;
+};
+
+
+/* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
+const BETA128_HARDENING_VERSION = "1.0.0-beta.130";
+const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
+const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
+let beta128ScoreFlushInFlight = false;
+let beta128LastLiveRefresh = 0;
+
+function beta128ReadJson(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : fallback;
+  } catch { return fallback; }
+}
+function beta128WriteJson(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
+}
+function beta128IsWeakPseudo(value = "") {
+  return !String(value || "").trim() || /^invité$/i.test(String(value || "").trim()) || /^joueur$/i.test(String(value || "").trim());
+}
+function beta128IdentitySnapshot() {
+  return beta128ReadJson(BETA128_IDENTITY_KEY, {});
+}
+function beta128MirrorIdentity() {
+  try {
+    const pseudo = sanitizePseudo(state.pseudo || currentPseudo() || "Invité") || "Invité";
+    const previous = beta128IdentitySnapshot();
+    const next = {
+      ...previous,
+      pseudo: beta128IsWeakPseudo(pseudo) && previous.pseudo ? previous.pseudo : pseudo,
+      playerId: playerIdMe(),
+      localUserId: localUserId(),
+      friendCode: friendCode(),
+      level: level(),
+      xp: state.xp || 0,
+      solvedCount: Object.keys(state.solvedMysteries || {}).length,
+      streak: state.streak || 0,
+      version: BETA128_HARDENING_VERSION,
+      updatedAt: new Date().toISOString()
+    };
+    beta128WriteJson(BETA128_IDENTITY_KEY, next);
+  } catch {}
+}
+function beta128RecoverIdentity() {
+  try {
+    const snap = beta128IdentitySnapshot();
+    if (!snap || typeof snap !== "object") return;
+    if (snap.localUserId && !localStorage.getItem(`${STORAGE_KEY}_local_user_id`)) localStorage.setItem(`${STORAGE_KEY}_local_user_id`, String(snap.localUserId));
+    if (snap.friendCode && !parseFriendCode(localStorage.getItem(`${STORAGE_KEY}_friend_code`) || "")) localStorage.setItem(`${STORAGE_KEY}_friend_code`, normalizeFriendCode(snap.friendCode));
+    if (snap.pseudo && beta128IsWeakPseudo(state.pseudo)) {
+      state.pseudo = sanitizePseudo(snap.pseudo) || state.pseudo;
+      state.profileFeedback = "Identité sociale récupérée depuis la sauvegarde locale.";
+      saveState();
+    }
+  } catch {}
+}
+function beta128ScoreKey(payload = {}) {
+  return [payload.playerId || playerIdMe(), payload.mysteryId || "", payload.periodKey || payload.dayKey || localDayKey(), payload.scope || "daily"].map(v => String(v || "")).join("__");
+}
+function beta128CleanScorePayload(payload = {}) {
+  return {
+    playerId: String(payload.playerId || playerIdMe()),
+    pseudo: sanitizePseudo(payload.pseudo || currentPseudo() || state.pseudo || "Invité") || "Invité",
+    friendCode: normalizeFriendCode(payload.friendCode || friendCode()),
+    mysteryId: String(payload.mysteryId || ""),
+    dayKey: String(payload.dayKey || payload.periodKey || localDayKey()),
+    periodKey: String(payload.periodKey || payload.dayKey || localDayKey()),
+    scope: "daily",
+    score: Math.max(0, Number(payload.score || 0)),
+    hints: Math.max(0, Number(payload.hints || 0)),
+    tries: Math.max(1, Number(payload.answerTries || payload.tries || 1)),
+    retryCount: Math.max(0, Number(payload.retryCount || payload.sendAttempts || 0)),
+    difficulty: String(payload.difficulty || "moyen"),
+    solvedAt: Number(payload.solvedAt || Date.now()),
+    level: Math.max(1, Number(payload.level || level())),
+    xp: Math.max(0, Number(payload.xp || state.xp || 0)),
+    solvedCount: Math.max(0, Number(payload.solvedCount || Object.keys(state.solvedMysteries || {}).length)),
+    streak: Math.max(0, Number(payload.streak || state.streak || 0))
+  };
+}
+function beta128ReadScoreOutbox() {
+  const raw = beta128ReadJson(BETA128_SCORE_OUTBOX_KEY, []);
+  return Array.isArray(raw) ? raw.filter(item => item && item.mysteryId) : [];
+}
+function beta128SaveScoreOutbox(list = []) {
+  const map = new Map();
+  (Array.isArray(list) ? list : []).forEach(item => {
+    const payload = beta128CleanScorePayload(item);
+    if (!payload.mysteryId) return;
+    const key = beta128ScoreKey(payload);
+    const previous = map.get(key) || {};
+    map.set(key, {
+      ...previous,
+      ...item,
+      ...payload,
+      outboxKey: key,
+      score: Math.max(Number(previous.score || 0), Number(payload.score || 0)),
+      queuedAt: previous.queuedAt || item.queuedAt || Date.now(),
+      updatedAt: Date.now(),
+      tries: Math.max(1, Number(payload.tries || item.tries || previous.tries || 1)),
+      retryCount: Math.max(Number(previous.retryCount || 0), Number(item.retryCount || payload.retryCount || 0))
+    });
+  });
+  const normalized = Array.from(map.values()).sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0)).slice(0, 60);
+  beta128WriteJson(BETA128_SCORE_OUTBOX_KEY, normalized);
+  return normalized;
+}
+function beta128QueueScorePayload(payload = {}, reason = "solve") {
+  const clean = beta128CleanScorePayload(payload);
+  if (!clean.mysteryId) return [];
+  const list = beta128ReadScoreOutbox();
+  const key = beta128ScoreKey(clean);
+  const previous = list.find(item => beta128ScoreKey(item) === key) || {};
+  const next = {
+    ...previous,
+    ...clean,
+    outboxKey: key,
+    reason,
+    queuedAt: previous.queuedAt || Date.now(),
+    updatedAt: Date.now(),
+    nextTryAt: 0,
+    retryCount: Number(previous.retryCount || clean.retryCount || 0),
+    lastMode: previous.lastMode || "queued",
+    lastMessage: previous.lastMessage || "Score en attente de synchronisation."
+  };
+  return beta128SaveScoreOutbox([next, ...list.filter(item => beta128ScoreKey(item) !== key)]);
+}
+function beta128RemoveScorePayload(payload = {}) {
+  const key = beta128ScoreKey(payload);
+  return beta128SaveScoreOutbox(beta128ReadScoreOutbox().filter(item => beta128ScoreKey(item) !== key));
+}
+function beta128PendingScoreCount() { return beta128ReadScoreOutbox().length; }
+function beta128RetryDelayMs(item = {}) {
+  const tries = Math.min(8, Number(item.retryCount || 0));
+  if (item.lastMode === "local-preview") return 5 * 60 * 1000;
+  return Math.min(10 * 60 * 1000, 15000 * Math.pow(1.7, tries));
+}
+const beta128SubmitScoreToServer = submitScoreToServer;
+async function beta128FlushScoreOutbox({ force = false, reason = "auto" } = {}) {
+  if (beta128ScoreFlushInFlight) return;
+  const now = Date.now();
+  let outbox = beta128ReadScoreOutbox();
+  if (!outbox.length) return;
+  if (!isOnline) {
+    outbox.forEach(item => { item.lastMode = "offline"; item.lastMessage = "Hors ligne : renvoi prévu au retour du réseau."; });
+    beta128SaveScoreOutbox(outbox);
+    return;
+  }
+  const due = outbox.filter(item => force || !item.nextTryAt || Number(item.nextTryAt || 0) <= now).slice(0, 10);
+  if (!due.length) return;
+  beta128ScoreFlushInFlight = true;
+  let storedCount = 0;
+  try {
+    for (const item of due) {
+      const payload = beta128CleanScorePayload(item);
+      const key = beta128ScoreKey(payload);
+      try {
+        state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: true, stored: false, mode: "outbox", message: "Renvoi du score vers le classement…" } };
+        const result = await beta128SubmitScoreToServer(payload);
+        if (result?.stored) {
+          storedCount += 1;
+          beta128RemoveScorePayload(payload);
+          state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: false, stored: true, mode: result.mode || "supabase", message: result.message || "Score synchronisé." } };
+        } else {
+          const current = beta128ReadScoreOutbox();
+          const updated = current.map(entry => beta128ScoreKey(entry) === key ? {
+            ...entry,
+            retryCount: Number(entry.retryCount || 0) + 1,
+            lastMode: result?.mode || "local-preview",
+            lastMessage: result?.message || "Score conservé localement, renvoi prévu plus tard.",
+            nextTryAt: Date.now() + beta128RetryDelayMs({ ...entry, lastMode: result?.mode || "local-preview" }),
+            updatedAt: Date.now()
+          } : entry);
+          beta128SaveScoreOutbox(updated);
+          state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: false, stored: false, mode: result?.mode || "local-preview", message: result?.message || "Score conservé localement, renvoi prévu plus tard." } };
+        }
+      } catch {
+        const current = beta128ReadScoreOutbox();
+        const updated = current.map(entry => beta128ScoreKey(entry) === key ? {
+          ...entry,
+          retryCount: Number(entry.retryCount || 0) + 1,
+          lastMode: "error",
+          lastMessage: "Connexion instable : nouveau renvoi automatique prévu.",
+          nextTryAt: Date.now() + beta128RetryDelayMs(entry),
+          updatedAt: Date.now()
+        } : entry);
+        beta128SaveScoreOutbox(updated);
+        state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: false, stored: false, mode: "error", message: "Connexion instable : nouveau renvoi automatique prévu." } };
+      }
+    }
+    if (storedCount) {
+      fetchServerFriends({ force: true }).catch(() => {});
+      ["daily", "week", "year", "friends"].forEach(scope => fetchServerLeaderboard(scope, { force: true }).catch(() => {}));
+    }
+    queueSaveState(150);
+  } finally {
+    beta128ScoreFlushInFlight = false;
+    if (["rank", "profile", "mystery", "home"].includes(state.tab)) render({ immediate: true });
+  }
+}
+const beta128PreviousQueueScoreSubmit = queueScoreSubmit;
+queueScoreSubmit = function beta128QueueScoreSubmit(mysteryId) {
+  const payload = scorePayloadForMystery(mysteryId);
+  beta128QueueScorePayload(payload, "solve");
+  state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [mysteryId]: {
+    pending: isOnline,
+    stored: false,
+    mode: isOnline ? "outbox" : "offline",
+    message: isOnline ? "Score en file d’envoi vers le classement…" : "Hors ligne : score gardé et renvoyé automatiquement."
+  } };
+  saveState();
+  beta128FlushScoreOutbox({ force: true, reason: "solve" }).catch(() => {});
+  if (state.tab === "mystery") render();
+};
+const beta128PreviousFetchServerLeaderboard = fetchServerLeaderboard;
+fetchServerLeaderboard = async function beta128FetchServerLeaderboard(scope = "daily", options = {}) {
+  await beta128FlushScoreOutbox({ force: Boolean(options.force), reason: `leaderboard:${scope}` }).catch(() => {});
+  return beta128PreviousFetchServerLeaderboard(scope, options);
+};
+function beta128ScoreSyncMarkup({ compact = false } = {}) {
+  const outbox = beta128ReadScoreOutbox();
+  if (!outbox.length && isOnline) return "";
+  const latest = outbox[0] || {};
+  const label = !isOnline ? "Hors ligne" : outbox.length ? "Scores à synchroniser" : "Synchronisation OK";
+  const detail = !isOnline
+    ? "Tes réponses restent enregistrées. Les scores partiront automatiquement au retour du réseau."
+    : outbox.length
+      ? `${outbox.length} score${outbox.length > 1 ? "s" : ""} en attente. ${latest.lastMessage || "Renvoi automatique actif."}`
+      : "Tout est à jour.";
+  return `<section class="card beta128-sync-card ${!isOnline ? "offline" : outbox.length ? "pending" : "ok"}"><div><span class="card-label">Synchronisation</span><h2>${escapeHtml(label)}</h2><p>${escapeHtml(detail)}</p></div><div class="home-actions-row"><button type="button" data-flush-scores>${outbox.length ? "Renvoyer" : "Vérifier"}</button>${outbox.length ? `<button type="button" class="ghost" data-clear-score-outbox>Masquer</button>` : ""}</div></section>`;
+}
+function beta128InstallSyncActions() {
+  document.querySelectorAll("[data-flush-scores]").forEach(btn => btn.addEventListener("click", () => {
+    beta128FlushScoreOutbox({ force: true, reason: "manual" }).catch(() => {});
+    beta128RefreshLive({ force: true, reason: "manual" });
+  }));
+  document.querySelectorAll("[data-clear-score-outbox]").forEach(btn => btn.addEventListener("click", () => {
+    beta128SaveScoreOutbox([]);
+    state.profileFeedback = "File de scores locale vidée. Les scores déjà visibles sur l’appareil restent conservés.";
+    saveState();
+    render({ immediate: true });
+  }));
+}
+function beta128DecorateSyncCards() {
+  const markup = beta128ScoreSyncMarkup();
+  if (!markup) return;
+  if (state.tab === "rank") document.querySelector(".social-backend")?.insertAdjacentHTML("afterend", markup);
+  if (state.tab === "profile") document.querySelector(".social-shortcuts")?.insertAdjacentHTML("afterend", markup);
+  if (state.tab === "home" && (!isOnline || beta128PendingScoreCount())) document.querySelector(".daily-hero,.hero-card,.home-hero")?.insertAdjacentHTML("afterend", markup);
+}
+function beta128RefreshLive({ force = false, reason = "auto" } = {}) {
+  if (!isOnline) return;
+  const now = Date.now();
+  if (!force && now - beta128LastLiveRefresh < 25000) return;
+  beta128LastLiveRefresh = now;
+  beta128FlushScoreOutbox({ force, reason }).catch(() => {});
+  fetchServerFriends({ force }).catch(() => {});
+  if (typeof beta125FetchFriendRequests === "function") beta125FetchFriendRequests({ force }).catch(() => {});
+  if (state.tab === "rank") {
+    const scope = state.rankScope || "daily";
+    fetchServerLeaderboard(scope, { force }).catch(() => {});
+    if (scope !== "friends") fetchServerLeaderboard("friends", { force: false }).catch(() => {});
+  }
+}
+const beta128PreviousRender = render;
+render = function beta128Render(options = {}) {
+  const output = beta128PreviousRender(options);
+  try {
+    beta128MirrorIdentity();
+    beta128DecorateSyncCards();
+    beta128InstallSyncActions();
+  } catch {}
+  return output;
+};
+const beta128PreviousSavePseudoValue = savePseudoValue;
+savePseudoValue = function beta128SavePseudoValue(rawValue, options = {}) {
+  const ok = beta128PreviousSavePseudoValue(rawValue, options);
+  beta128MirrorIdentity();
+  return ok;
+};
+window.addEventListener("online", () => {
+  isOnline = true;
+  beta128RefreshLive({ force: true, reason: "online" });
+});
+window.addEventListener("focus", () => beta128RefreshLive({ force: false, reason: "focus" }));
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") beta128RefreshLive({ force: false, reason: "visible" });
+});
+try {
+  beta128RecoverIdentity();
+  Object.entries(state.solvedMysteries || {}).forEach(([mysteryId, solved]) => {
+    const status = state.lastScoreSubmit?.[mysteryId];
+    if (solved && (!status || (!status.stored && (status.mode === "offline" || status.mode === "error")))) {
+      beta128QueueScorePayload(scorePayloadForMystery(mysteryId), "recovery");
+    }
+  });
+  beta128MirrorIdentity();
+  beta128FlushScoreOutbox({ force: false, reason: "startup" }).catch(() => {});
+  window.HistoDailyBeta128 = { version: BETA128_HARDENING_VERSION, scoreOutbox: beta128ReadScoreOutbox, flushScores: beta128FlushScoreOutbox, identity: beta128IdentitySnapshot };
+  render({ immediate: true });
+} catch {}
+
+
+/* Beta129 — bug sweep pré-test réel.
+   - un lien ami ne force plus un ajout direct : il déclenche une demande validable.
+   - les amis ajoutés directement par anciens liens invite-link sont reconvertis en demandes sortantes.
+   - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
+   - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
+*/
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.130";
+let beta129InviteProcessing = false;
+
+function beta129PlayerFromInvite(invite = {}) {
+  const parsed = parseFriendCode(invite.code || invite.friendCode || invite.id || "");
+  const code = normalizeFriendCode(invite.code || invite.friendCode || parsed?.code || "");
+  const name = sanitizePseudo(invite.name || invite.pseudo || parsed?.pseudo || "Joueur") || "Joueur";
+  return {
+    id: parsed?.id || code || invite.id || "",
+    playerId: invite.playerId || invite.friend_player_id || "",
+    code,
+    friendCode: code,
+    name,
+    avatar: String(name || "J").charAt(0).toUpperCase(),
+    level: Number(invite.level || 1),
+    xp: Number(invite.xp || 0),
+    solved: Number(invite.solved || invite.solved_count || 0),
+    streak: Number(invite.streak || 0),
+    badges: ["Demande"]
+  };
+}
+
+function beta129MigrateDirectInviteFriends() {
+  const friends = { ...(state.friends || {}) };
+  const migrated = [];
+  Object.entries(friends).forEach(([key, friend]) => {
+    if (!friend || friend.source !== "invite-link" || friend.server) return;
+    migrated.push(beta129PlayerFromInvite(friend));
+    delete friends[key];
+  });
+  if (!migrated.length) return false;
+  state.friends = friends;
+  state.friendFeedback = `${migrated.length} ancien ajout par lien converti en demande à valider.`;
+  migrated.forEach(player => {
+    try {
+      beta128TrackOutgoing(player);
+      beta128EnsureOutgoingVisible(player);
+    } catch {}
+  });
+  queueSaveState(150);
+  return true;
+}
+
+async function beta129ProcessPendingInvite({ force = false } = {}) {
+  if (beta129InviteProcessing && !force) return;
+  const invite = state.pendingInviteFriend;
+  if (!invite || typeof beta125SendFriendRequest !== "function") return;
+  const player = beta129PlayerFromInvite(invite);
+  if (!player.friendCode && !player.playerId) {
+    delete state.pendingInviteFriend;
+    state.friendFeedback = "Lien ami illisible : demande annulée.";
+    queueSaveState(150);
+    if (state.tab === "profile") render({ immediate: true });
+    return;
+  }
+  if (knownFriendByCode(player.friendCode)) {
+    delete state.pendingInviteFriend;
+    state.friendFeedback = `${player.name} est déjà dans tes amis.`;
+    queueSaveState(150);
+    if (state.tab === "profile") render({ immediate: true });
+    return;
+  }
+  beta129InviteProcessing = true;
+  try {
+    await beta125SendFriendRequest(player);
+    delete state.pendingInviteFriend;
+    state.friendFeedback = `Demande envoyée à ${player.name}.`;
+  } catch {
+    beta128TrackOutgoing(player);
+    beta128EnsureOutgoingVisible(player);
+    state.friendFeedback = `Demande préparée pour ${player.name}. Elle partira quand le réseau sera disponible.`;
+  } finally {
+    beta129InviteProcessing = false;
+    queueSaveState(150);
+    if (state.tab === "profile" || state.tab === "rank") render({ immediate: true });
+  }
+}
+
+const beta129PreviousInstallSyncActions = typeof beta128InstallSyncActions === "function" ? beta128InstallSyncActions : null;
+if (beta129PreviousInstallSyncActions) {
+  beta128InstallSyncActions = function beta129InstallSyncActions() {
+    document.querySelectorAll("[data-flush-scores]").forEach(btn => {
+      if (btn.dataset.beta129Bound) return;
+      btn.dataset.beta129Bound = "1";
+      btn.addEventListener("click", () => {
+        beta128FlushScoreOutbox({ force: true, reason: "manual" }).catch(() => {});
+        beta128RefreshLive({ force: true, reason: "manual" });
+      });
+    });
+    document.querySelectorAll("[data-clear-score-outbox]").forEach(btn => {
+      if (btn.dataset.beta129Bound) return;
+      btn.dataset.beta129Bound = "1";
+      btn.addEventListener("click", () => {
+        beta128SaveScoreOutbox([]);
+        state.profileFeedback = "File de scores locale vidée. Les scores déjà visibles sur l’appareil restent conservés.";
+        saveState();
+        render({ immediate: true });
+      });
+    });
+  };
+}
+
+const beta129PreviousSocialBackendMode = socialBackendMode;
+socialBackendMode = function beta129SocialBackendMode() {
+  const mode = beta129PreviousSocialBackendMode();
+  if (state.pendingInviteFriend) return { label: "Demande prête", detail: "Un lien ami a été ouvert : l’app va envoyer une demande à valider.", status: "pending" };
+  return mode;
+};
+
+try {
+  beta129MigrateDirectInviteFriends();
+  beta129ProcessPendingInvite({ force: true }).catch(() => {});
+  window.HistoDailyBeta129 = {
+    version: BETA129_BUG_SWEEP_VERSION,
+    pendingInvite: () => state.pendingInviteFriend || null,
+    scoreOutbox: typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox : () => [],
+    requestOutbox: typeof beta128Outbox === "function" ? beta128Outbox : () => []
+  };
+  render({ immediate: true });
+} catch {}
+
+
+/* =========================================================
+   Beta 130 — nettoyage produit
+   Objectif : garder les sécurités internes, mais retirer les
+   affichages de bêta, les panneaux trop bavards et les outils
+   de test visibles avant un essai réel sur mobile.
+   ========================================================= */
+const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.130";
+
+function beta130HasPendingSocialWork() {
+  try {
+    const requests = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [] };
+    const reqOutbox = typeof beta128Outbox === "function" ? beta128Outbox() : [];
+    return Boolean((requests.incoming || []).length || (requests.outgoing || []).length || reqOutbox.length);
+  } catch { return false; }
+}
+function beta130HasPendingScores() {
+  try { return typeof beta128PendingScoreCount === "function" && beta128PendingScoreCount() > 0; }
+  catch { return false; }
+}
+
+// Plus de changelog ni de pastille de version sur l'accueil normal.
+releaseNotesMarkup = function beta130ReleaseNotesMarkup() { return ""; };
+homeVersionPillMarkup = function beta130HomeVersionPillMarkup() { return ""; };
+
+// Le bouton “Autre mystère” était utile en bêta, mais pas en usage réel.
+if (typeof beta117MysteryToolMarkup === "function") {
+  beta117MysteryToolMarkup = function beta130MysteryToolMarkup() { return ""; };
+}
+
+// Le panneau multi ne doit pas prendre de place quand tout va bien.
+const beta130PreviousSocialBackendMarkup = socialBackendMarkup;
+socialBackendMarkup = function beta130SocialBackendMarkup() {
+  const mode = socialBackendMode();
+  const pending = beta130HasPendingSocialWork() || beta130HasPendingScores();
+  if (["server", "local"].includes(mode.status) && !pending) return "";
+  const friendCount = friendProfiles().length;
+  const title = mode.status === "offline" ? "Hors ligne" : mode.status === "pending" ? "Mise à jour" : mode.status === "warning" ? "Connexion instable" : "Synchronisation";
+  return `<section class="card social-backend compact ${escapeHtml(mode.status)}"><div><span class="card-label">Multi</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(mode.detail)}</p></div><div class="social-backend-actions"><strong>${friendCount} ami${friendCount > 1 ? "s" : ""}</strong><button type="button" class="ghost mini-button" data-refresh-social>Actualiser</button></div></section>`;
+};
+
+// L'invitation reste disponible, mais sans afficher un long lien brut qui alourdit le profil.
+socialInviteLinkMarkup = function beta130SocialInviteLinkMarkup() {
+  return `<section class="card invite-link-card compact"><div><span class="card-label">Invitation</span><h2>Lien ami</h2><p>Envoie un lien : l’autre joueur recevra une demande à valider.</p></div><div class="home-actions-row"><button type="button" data-copy-invite-link>Copier le lien</button><button type="button" class="ghost" data-share-invite>Partager le code</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
+};
+
+// Les réglages restent accessibles, mais on cache les outils avancés par défaut.
+performanceSettingsMarkup = function beta130PerformanceSettingsMarkup() {
+  const mode = performanceMode();
+  return `<section class="card performance-card compact"><div><span class="card-label">Affichage</span><h2>${mode === "static" ? "Mode statique" : "Mode fluide"}</h2><p>Garde le mode fluide sauf si ton téléphone rame.</p></div><div class="performance-actions"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">Fluide</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">Statique</button></div></section>`;
+};
+backupToolsMarkup = function beta130BackupToolsMarkup() {
+  return `<details class="card backup-card compact"><summary><span><b>Sauvegarde locale</b><em>Exporter / restaurer si besoin</em></span></summary><div class="backup-actions"><button data-export-save>Copier</button><button class="ghost" data-download-save>Télécharger</button><button class="ghost" data-import-save>Restaurer</button></div>${state.backupFeedback ? `<p>${escapeHtml(state.backupFeedback)}</p>` : ""}</details>`;
+};
+
+// Retire le diagnostic beta du profil normal, tout en gardant la réparation d'urgence dans le code.
+profileSettingsMarkup = function beta130ProfileSettingsMarkup() {
+  return `<section class="card profile-settings-card compact"><div class="section-title-row"><div><span class="card-label">Réglages</span><h2>Préférences</h2></div></div>${settingsInnerMarkup(performanceSettingsMarkup(), "performance-card")}${settingsInnerMarkup(recentDailyCalendarMarkup({ compact: true }), "calendar-card")}</section>`;
+};
+
+// Carte score/synchro plus discrète : elle n’apparaît que s’il y a vraiment quelque chose à dire.
+if (typeof beta128ScoreSyncMarkup === "function") {
+  beta128ScoreSyncMarkup = function beta130ScoreSyncMarkup() {
+    const outbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : [];
+    if (!outbox.length && isOnline) return "";
+    const latest = outbox[0] || {};
+    const label = !isOnline ? "Hors ligne" : "Score en attente";
+    const detail = !isOnline ? "Les réponses restent enregistrées et partiront au retour du réseau." : `${outbox.length} score${outbox.length > 1 ? "s" : ""} à envoyer. ${latest.lastMessage || "Renvoi automatique actif."}`;
+    return `<section class="card beta128-sync-card compact ${!isOnline ? "offline" : "pending"}"><div><span class="card-label">Sync</span><h2>${escapeHtml(label)}</h2><p>${escapeHtml(detail)}</p></div><div class="home-actions-row"><button type="button" data-flush-scores>Renvoyer</button></div></section>`;
+  };
+}
+
+// Évite d’exposer des objets de debug en usage normal.
+try {
+  delete window.HistoDailyDebug;
+  delete window.HistoDailyBeta117;
+  delete window.HistoDailyBeta125;
+  delete window.HistoDailyBeta126;
+  delete window.HistoDailyBeta128;
+  window.HistoDaily = { version: BETA130_PRODUCT_CLEAN_VERSION };
+} catch {}
+
+try { render({ immediate: true }); } catch {}

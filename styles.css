@@ -1176,3 +1176,107 @@ button:focus-visible,.home-discovery-item:focus-visible,.tree-card:focus-visible
   .mystery-brief{grid-template-columns:1fr;gap:6px;}
   .mystery-brief span{padding:9px 10px;}
 }
+
+/* Beta 124 — statut de persistance multi */
+.beta124-social-persist{width:100%;margin-top:8px;color:var(--muted,#94a3b8);font-size:.82rem}
+.beta124-social-persist strong{color:var(--text,#f8fafc)}
+
+
+/* Beta 125 — profils sociaux et demandes d'amis */
+.beta125-requests-card,
+.beta125-profile-actions {
+  border-color: rgba(125, 211, 252, .28);
+  background: linear-gradient(135deg, rgba(14, 165, 233, .10), rgba(15, 23, 42, .78));
+}
+.beta125-profile-actions.pending {
+  border-color: rgba(251, 191, 36, .35);
+  background: linear-gradient(135deg, rgba(251, 191, 36, .11), rgba(15, 23, 42, .78));
+}
+.beta125-request-row {
+  align-items: center;
+}
+.request-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+.beta125-outgoing {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+.beta125-outgoing h3 {
+  margin: 0 0 8px;
+  font-size: .95rem;
+}
+.beta125-outgoing p {
+  margin: 6px 0;
+  color: var(--muted, #94a3b8);
+}
+.beta125-request-persist {
+  width: 100%;
+  margin-top: 8px;
+  color: var(--muted, #94a3b8);
+}
+.beta125-request-persist strong {
+  color: #f8fafc;
+}
+.rank-row::after {
+  content: "Voir profil";
+  font-size: .72rem;
+  color: var(--muted, #94a3b8);
+  margin-left: auto;
+}
+@media (max-width: 560px) {
+  .request-actions { gap: 6px; }
+  .beta125-request-row { grid-template-columns: 1fr; }
+  .rank-row::after { content: "Profil"; }
+}
+
+
+/* Beta126 — social live polish */
+.nav-item{position:relative}.nav-badge{position:absolute;top:5px;right:14px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#fb7185;color:white;font-size:.68rem;font-style:normal;font-weight:1000;display:grid;place-items:center;box-shadow:0 8px 20px rgba(251,113,133,.35)}
+.beta126-request-status{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;border:1px solid rgba(255,255,255,.09);background:rgba(5,9,20,.22);border-radius:14px;padding:9px 10px;color:#dce7f4;font-weight:850}.beta126-request-status small{color:var(--muted);font-weight:800}.beta126-social-alert{display:flex;align-items:center;gap:8px;margin-top:10px;border:1px solid rgba(251,113,133,.22);background:rgba(251,113,133,.10);border-radius:15px;padding:9px 10px}.beta126-social-alert strong{display:grid;place-items:center;width:24px;height:24px;border-radius:999px;background:#fb7185;color:white}.beta126-social-alert span{color:#ffd9e0;font-weight:900}
+
+
+/* beta127 social robustness */
+.beta127-relation-chip{justify-self:end;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:4px 8px;font-size:.68rem;font-weight:950;color:#dbeafe;background:rgba(255,255,255,.07)}
+.beta127-relation-chip.friend{color:#bbf7d0;background:rgba(72,213,151,.12);border-color:rgba(72,213,151,.24)}
+.beta127-relation-chip.outgoing{color:#fde68a;background:rgba(246,196,83,.12);border-color:rgba(246,196,83,.24)}
+.beta127-relation-chip.incoming{color:#bfdbfe;background:rgba(86,214,255,.12);border-color:rgba(86,214,255,.24)}
+.beta127-relation-chip.me{color:#fff7ed;background:rgba(249,115,22,.14);border-color:rgba(249,115,22,.25)}
+.beta127-outbox-line,.beta126-request-status{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px 12px;border-radius:16px;border:1px solid rgba(246,196,83,.18);background:rgba(246,196,83,.07);color:#fef3c7;font-size:.78rem;font-weight:850}
+.beta127-outbox-line strong{font-size:1.05rem}.beta127-outbox-line span{color:#f8e6b2}.danger-action{border-color:rgba(251,113,133,.32)!important;color:#fecdd3!important;background:rgba(251,113,133,.09)!important}.beta127-profile-actions .home-actions-row{grid-template-columns:1fr 1fr}.leaderboard-modern .rank-row .beta127-relation-chip{grid-column:3}.leaderboard-modern .rank-row{grid-template-columns:34px 1fr auto auto}@media(max-width:430px){.leaderboard-modern .rank-row{grid-template-columns:28px 1fr auto}.leaderboard-modern .rank-row .beta127-relation-chip{grid-column:3;grid-row:1}.beta127-profile-actions .home-actions-row{grid-template-columns:1fr}}
+
+
+/* Beta128 — cartes de synchronisation robustes */
+.beta128-sync-card{border-color:rgba(125,211,252,.26);background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(15,23,42,.72));display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.beta128-sync-card h2{margin:.1rem 0 .35rem}.beta128-sync-card p{margin:0;color:var(--muted)}
+.beta128-sync-card.pending{border-color:rgba(251,191,36,.36);background:linear-gradient(135deg,rgba(251,191,36,.13),rgba(15,23,42,.74))}
+.beta128-sync-card.offline{border-color:rgba(248,113,113,.38);background:linear-gradient(135deg,rgba(248,113,113,.13),rgba(15,23,42,.78))}
+.beta128-sync-card.ok{border-color:rgba(74,222,128,.28)}
+@media(max-width:620px){.beta128-sync-card{grid-template-columns:1fr}.beta128-sync-card .home-actions-row{justify-content:stretch}.beta128-sync-card .home-actions-row button{flex:1}}
+
+/* Beta128 compatibility for social chips renamed during version bump */
+.beta128-relation-chip{justify-self:end;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:4px 8px;font-size:.68rem;font-weight:950;color:#dbeafe;background:rgba(255,255,255,.07)}
+.beta128-relation-chip.friend{color:#bbf7d0;background:rgba(72,213,151,.12);border-color:rgba(72,213,151,.24)}
+.beta128-relation-chip.outgoing{color:#fde68a;background:rgba(246,196,83,.12);border-color:rgba(246,196,83,.24)}
+.beta128-relation-chip.incoming{color:#bfdbfe;background:rgba(86,214,255,.12);border-color:rgba(86,214,255,.24)}
+.beta128-relation-chip.me{color:#fff7ed;background:rgba(249,115,22,.14);border-color:rgba(249,115,22,.25)}
+.beta128-outbox-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px 12px;border-radius:16px;border:1px solid rgba(246,196,83,.18);background:rgba(246,196,83,.07);color:#fef3c7;font-size:.78rem;font-weight:850}
+.beta128-outbox-line strong{font-size:1.05rem}.beta128-outbox-line span{color:#f8e6b2}.beta128-profile-actions .home-actions-row{grid-template-columns:1fr 1fr}.leaderboard-modern .rank-row .beta128-relation-chip{grid-column:3}
+@media(max-width:430px){.leaderboard-modern .rank-row .beta128-relation-chip{grid-column:3;grid-row:1}.beta128-profile-actions .home-actions-row{grid-template-columns:1fr}}
+
+
+/* Beta130 — nettoyage visible */
+.release-card,.version-pill,.beta-mystery-refresh,.beta-mystery-count,.beta115-health-card{display:none!important}
+.social-backend.compact,.invite-link-card.compact,.profile-settings-card.compact,.performance-card.compact,.backup-card.compact,.beta128-sync-card.compact{padding:14px 15px}
+.social-backend.compact h2,.invite-link-card.compact h2,.profile-settings-card.compact h2,.performance-card.compact h2,.beta128-sync-card.compact h2{font-size:1.05rem;margin:.05rem 0 .25rem}
+.social-backend.compact p,.invite-link-card.compact p,.performance-card.compact p,.beta128-sync-card.compact p{font-size:.88rem;margin:0;color:var(--muted)}
+.backup-card.compact summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.backup-card.compact summary::-webkit-details-marker{display:none}
+.backup-card.compact summary span{display:grid;gap:2px}.backup-card.compact summary b{font-size:1rem}.backup-card.compact summary em{font-size:.82rem;color:var(--muted);font-style:normal}
+.backup-card.compact[open] .backup-actions{margin-top:12px}
+.home-mode-hero .hero-metrics{gap:8px;flex-wrap:wrap}.home-mode-hero .hero-metrics span{white-space:nowrap}
+@media(max-width:520px){.social-backend.compact{grid-template-columns:1fr}.social-backend.compact .social-backend-actions{justify-content:space-between}.invite-link-card.compact .home-actions-row{grid-template-columns:1fr 1fr}.profile-settings-card.compact .settings-inner{padding:0}}

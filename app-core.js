@@ -1,8 +1,8 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.123",
-  assetsVersion: "1.0.0-beta.123",
+  version: "1.0.0-beta.130",
+  assetsVersion: "1.0.0-beta.130",
   storageKey: "histodaily_state",
-  legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup"],
+  legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
     base: { facile: 95, moyen: 120, difficile: 150, expert: 180 },
     floor: { facile: 35, moyen: 45, difficile: 55, expert: 70 },
@@ -15,13 +15,9 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 122",
+    versionLabel: "beta 130",
     shareBaseUrl: "https://histodaily.vercel.app",
-    releaseNotes: [
-      "Mystères de discipline densifiés : art, cinéma, économie, géographie, musique et sciences gagnent de nouveaux dossiers.",
-      "Les énigmes gardent le type recherché clair, mais déplacent les mots-clés évidents dans les indices.",
-      "Chaque mode hors histoire possède maintenant au moins trois mystères jouables."
-    ]
+    releaseNotes: []
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
   storage: {

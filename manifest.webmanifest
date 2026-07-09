@@ -1,7 +1,7 @@
 {
   "name": "HistoDaily",
   "short_name": "HistoDaily",
-  "description": "HistoDaily — mystère historique quotidien, cours courts, progression, profils amis et classements.",
+  "description": "HistoDaily — apprendre l’Histoire comme un jeu mobile, avec profils, demandes d’amis, classements persistants et scores hors ligne renvoyés automatiquement.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -38,5 +38,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "1.0.0-beta.123"
+  "version": "1.0.0-beta.130"
 }
