@@ -31,33 +31,34 @@
       case 'history': return baseFrame(...THEMES.history, `<path d="M46 83h88" stroke="#fff" stroke-opacity=".82" stroke-width="6" stroke-linecap="round"/><path d="M54 79V44m24 35V44m24 35V44m24 35V44" stroke="#fff" stroke-opacity=".78" stroke-width="6" stroke-linecap="round"/><path d="M48 41h84" stroke="#fff" stroke-opacity=".9" stroke-width="6" stroke-linecap="round"/><path d="M60 34l30-12 30 12" stroke="#fff" stroke-opacity=".92" stroke-width="6" fill="none" stroke-linejoin="round"/>`);
       case 'art': return baseFrame(...THEMES.art, `<path d="M74 28c-25 0-44 18-44 40 0 20 16 36 38 36h12c8 0 13-8 9-15-3-6 2-12 9-12h13c18 0 31-12 31-28 0-22-28-49-68-21Z" fill="rgba(255,255,255,.16)" stroke="#fff" stroke-opacity=".78" stroke-width="5"/><circle cx="59" cy="59" r="6" fill="#fff" fill-opacity=".88"/><circle cx="79" cy="45" r="6" fill="#fff" fill-opacity=".88"/><circle cx="101" cy="52" r="6" fill="#fff" fill-opacity=".88"/><path d="M119 91c8-16 20-28 36-36" stroke="#fff" stroke-opacity=".82" stroke-width="8" stroke-linecap="round"/><path d="M130 84l20 12" stroke="#fff" stroke-opacity=".65" stroke-width="8" stroke-linecap="round"/>`);
       case 'cinema': return baseFrame(...THEMES.cinema, `
-        <circle cx="46" cy="52" r="15" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".78" stroke-width="4"/>
-        <circle cx="46" cy="52" r="5" fill="#fff" fill-opacity=".78"/>
-        <circle cx="74" cy="45" r="11" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-opacity=".72" stroke-width="4"/>
-        <circle cx="74" cy="45" r="4" fill="#fff" fill-opacity=".72"/>
-        <rect x="36" y="64" width="52" height="16" rx="8" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-opacity=".72" stroke-width="4"/>
-        <path d="M88 49l54 9-54 9Z" fill="rgba(255,255,255,.18)"/>
-        <rect x="111" y="33" width="34" height="50" rx="10" fill="rgba(255,255,255,.10)" stroke="#fff" stroke-opacity=".82" stroke-width="4"/>
-        <path d="M120 47h16m-16 11h16m-16 11h10" stroke="#fff" stroke-opacity=".92" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="52" cy="48" r="18" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-opacity=".82" stroke-width="4"/>
+        <circle cx="52" cy="48" r="5" fill="#fff" fill-opacity=".86"/>
+        <circle cx="45" cy="41" r="2.6" fill="#fff" fill-opacity=".82"/><circle cx="59" cy="41" r="2.6" fill="#fff" fill-opacity=".82"/><circle cx="45" cy="55" r="2.6" fill="#fff" fill-opacity=".82"/><circle cx="59" cy="55" r="2.6" fill="#fff" fill-opacity=".82"/>
+        <path d="M74 44l34 10-34 10Z" fill="rgba(255,255,255,.20)" stroke="#fff" stroke-opacity=".72" stroke-width="3" stroke-linejoin="round"/>
+        <rect x="104" y="33" width="40" height="54" rx="11" fill="rgba(255,255,255,.10)" stroke="#fff" stroke-opacity=".84" stroke-width="4"/>
+        <path d="M114 47h18m-18 11h20m-20 11h12" stroke="#fff" stroke-opacity=".92" stroke-width="4" stroke-linecap="round"/>
+        <path d="M90 81h44" stroke="#c4b5fd" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/>
       `);
       case 'science-inventions': return baseFrame(...THEMES['science-inventions'], `<path d="M64 28h34m-8 0v22l22 35a12 12 0 0 1-10 18H60a12 12 0 0 1-10-18l22-35V28" stroke="#fff" stroke-opacity=".88" stroke-width="6" fill="rgba(255,255,255,.10)" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 83h42" stroke="#fff" stroke-opacity=".82" stroke-width="6" stroke-linecap="round"/><circle cx="128" cy="38" r="6" fill="#fff" fill-opacity=".85"/><circle cx="143" cy="57" r="10" fill="rgba(255,255,255,.20)" stroke="#fff" stroke-opacity=".72" stroke-width="4"/>`);
       case 'economy': return baseFrame(...THEMES.economy, `
-        <circle cx="55" cy="74" r="18" fill="rgba(255,214,102,.24)" stroke="#fef3c7" stroke-opacity=".9" stroke-width="4"/>
-        <circle cx="77" cy="63" r="18" fill="rgba(255,214,102,.22)" stroke="#fef3c7" stroke-opacity=".82" stroke-width="4"/>
-        <path d="M52 74h6m-3-3v6" stroke="#fff7ed" stroke-opacity=".95" stroke-width="3.5" stroke-linecap="round"/>
-        <path d="M73 63h8" stroke="#fff7ed" stroke-opacity=".95" stroke-width="3.5" stroke-linecap="round"/>
-        <path d="M106 78l14-14 10 8 18-24" stroke="#fff" stroke-opacity=".94" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M141 49h13v13" stroke="#fff" stroke-opacity=".94" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M102 88h50" stroke="#d1fae5" stroke-opacity=".72" stroke-width="4" stroke-linecap="round"/>
-      `,{bgOpacity:'.20'});
+        <rect x="34" y="66" width="14" height="20" rx="5" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-opacity=".74" stroke-width="3.5"/>
+        <rect x="54" y="56" width="14" height="30" rx="5" fill="rgba(255,255,255,.16)" stroke="#fff" stroke-opacity=".78" stroke-width="3.5"/>
+        <rect x="74" y="46" width="14" height="40" rx="5" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-opacity=".82" stroke-width="3.5"/>
+        <circle cx="56" cy="38" r="11" fill="rgba(255,214,102,.22)" stroke="#fef3c7" stroke-opacity=".9" stroke-width="3.5"/>
+        <path d="M52 38h8m-4-4v8" stroke="#fff7ed" stroke-opacity=".95" stroke-width="3" stroke-linecap="round"/>
+        <path d="M101 78l14-14 10 8 19-25" stroke="#fff" stroke-opacity=".94" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M136 47h14v14" stroke="#fff" stroke-opacity=".94" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M32 92h120" stroke="#d1fae5" stroke-opacity=".38" stroke-width="4" stroke-linecap="round"/>
+      `,{bgOpacity:'.22'});
       case 'geography': return baseFrame(...THEMES.geography, `<circle cx="88" cy="60" r="34" fill="rgba(255,255,255,.10)" stroke="#fff" stroke-opacity=".8" stroke-width="5"/><path d="M54 60h68M88 26a58 58 0 0 0 0 68M88 26a58 58 0 0 1 0 68" stroke="#fff" stroke-opacity=".72" stroke-width="4"/><path d="M136 38l18 9-3 24-20 11-18-9 3-24 20-11Z" fill="rgba(255,255,255,.16)" stroke="#fff" stroke-opacity=".82" stroke-width="4"/><circle cx="133" cy="60" r="4" fill="#fff" fill-opacity=".92"/>`);
       case 'music': return baseFrame(...THEMES.music, `
-        <circle cx="60" cy="60" r="25" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".82" stroke-width="4"/>
-        <circle cx="60" cy="60" r="8" fill="rgba(255,255,255,.84)"/>
-        <path d="M60 35a25 25 0 0 1 0 50" stroke="#fff" stroke-opacity=".48" stroke-width="4" fill="none"/>
-        <path d="M105 38v37.5a10 10 0 1 1-6-9.2V46l25-6v28.5a10 10 0 1 1-6-9.2V48l-13 3Z" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".88" stroke-width="4.5" stroke-linejoin="round"/>
-        <path d="M35 91c8-5 15-5 23 0 8 5 15 5 23 0" stroke="#fff" stroke-opacity=".7" stroke-width="4" fill="none" stroke-linecap="round"/>
-      `,{bgOpacity:'.22'});
+        <circle cx="56" cy="58" r="26" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".84" stroke-width="4"/>
+        <circle cx="56" cy="58" r="7" fill="#fff" fill-opacity=".86"/>
+        <path d="M56 32a26 26 0 0 1 0 52" stroke="#fff" stroke-opacity=".42" stroke-width="4" fill="none"/>
+        <path d="M104 35v40a11 11 0 1 1-6.5-10.2V44l24-6v28a11 11 0 1 1-6.5-10.2V46l-11 2.8Z" fill="rgba(255,255,255,.13)" stroke="#fff" stroke-opacity=".9" stroke-width="4.2" stroke-linejoin="round"/>
+        <path d="M35 89c8-4 15-4 23 0 8 4 15 4 23 0" stroke="#fff" stroke-opacity=".74" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M132 43c6 3 10 8 12 15" stroke="#ffd5df" stroke-opacity=".6" stroke-width="4" fill="none" stroke-linecap="round"/>
+      `,{bgOpacity:'.24'});
       case 'astronomy': return baseFrame(...THEMES.astronomy, `
         <circle cx="89" cy="61" r="18" fill="#05070d" stroke="#fbbf24" stroke-opacity=".45" stroke-width="3"/>
         <ellipse cx="89" cy="61" rx="44" ry="15" fill="none" stroke="#fbbf24" stroke-opacity=".95" stroke-width="6"/>

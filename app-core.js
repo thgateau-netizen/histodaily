@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.196",
-  assetsVersion: "1.0.0-beta.196",
+  version: "1.0.0-beta.197",
+  assetsVersion: "1.0.0-beta.197",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,7 +15,7 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 196",
+    versionLabel: "beta 197",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
       "Correctif classement : le résumé et la ligne personnelle utilisent désormais exactement le même score de période.",
