@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.192",
-  assetsVersion: "1.0.0-beta.192",
+  version: "1.0.0-beta.193",
+  assetsVersion: "1.0.0-beta.193",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 192",
+    versionLabel: "beta 193",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Direction artistique renforcée : arrivée de mini-illustrations éditoriales pour les disciplines et les saisons.",
-      "Les cartes de discipline, les recommandations et les saisons gagnent en chaleur et en identité visuelle.",
-      "Le rendu reste léger : uniquement des SVG inline, sans dépendance externe et avec un coût limité."
+      "Correctif critique : l’ouverture des cours ne déclenche plus l’écran de sécurité d’affichage.",
+      "Audit global validé sur les 106 cours, les 8 disciplines et les principales pages de l’application.",
+      "Les modules visuels sont désormais optionnels au chargement : un cache partiellement mis à jour ne bloque plus l’app."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

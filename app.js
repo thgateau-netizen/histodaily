@@ -7,6 +7,20 @@ const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 const $ = (selector) => document.querySelector(selector);
 const app = document.getElementById("app");
 
+window.HD_ICONS = window.HD_ICONS || {
+  render: () => "",
+  discipline: () => "",
+  world: () => "",
+  lesson: () => "",
+  action: () => "",
+  fromText: (_text, fallback = "lesson") => fallback
+};
+window.HD_ART = window.HD_ART || {
+  discipline: () => "",
+  season: () => "",
+  hero: () => ""
+};
+
 const data = {
   worlds: typeof HISTO_WORLDS !== "undefined" && Array.isArray(HISTO_WORLDS) ? HISTO_WORLDS : [],
   lessons: typeof HISTO_LESSONS !== "undefined" ? HISTO_LESSONS : {},
@@ -1357,9 +1371,9 @@ function renderLearn() {
   const curatedInWorld = lessons.filter(isCuratedLesson);
   renderShell(`
     <header class="topbar"><button data-back-home>←</button><div><p class="eyebrow">Parcours</p><h1>${escapeHtml(world.title || "Histoire")}</h1></div></header>
-    <section class="chips">${worlds.map(w => `<button data-world="${w.id}" class="chip ${w.id === world.id ? "active" : ""}">${HD_ICONS.world(w, disciplineById(currentDisciplineId || state.learnDiscipline || disciplineForWorld(w.id)?.id))} ${escapeHtml(w.title)}</button>`).join("")}</section>
+    <section class="chips">${worlds.map(w => `<button data-world="${w.id}" class="chip ${w.id === world.id ? "active" : ""}">${HD_ICONS.world(w, disciplineForWorldObject(w))} ${escapeHtml(w.title)}</button>`).join("")}</section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    ${curatedInWorld.length ? `<section class="card ready-strip"><div><span class="card-label">À commencer ici</span><h2>${curatedInWorld.length} cours à découvrir</h2><p>Une sélection pour entrer dans le chapitre sans se perdre.</p></div><div class="ready-mini-list">${curatedInWorld.slice(0,3).map(lesson => `<button data-ready-lesson="${lesson.id}">${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
+    ${curatedInWorld.length ? `<section class="card ready-strip"><div><span class="card-label">À commencer ici</span><h2>${curatedInWorld.length} cours à découvrir</h2><p>Une sélection pour entrer dans le chapitre sans se perdre.</p></div><div class="ready-mini-list">${curatedInWorld.slice(0,3).map(lesson => `<button data-ready-lesson="${lesson.id}">${HD_ICONS.lesson(lesson, world, disciplineForWorldObject(world))} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
     <section class="lesson-list">
       ${shownLessons.map((lesson, index) => lessonCard(lesson, index)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre chapitre ou reviens au parcours principal."}</p><button data-learn-filter="all">Voir tous les cours disponibles</button></div>`}
     </section>`);
@@ -1377,6 +1391,8 @@ function renderLearn() {
   document.querySelectorAll("[data-locked-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() })));
 }
 function lessonCard(lesson, index) {
+  const world = lessonWorld(lesson);
+  const discipline = disciplineForLessonObject(lesson);
   const done = lessonDone(lesson.id);
   const mystery = relatedMysteryForLesson(lesson.id);
   const ready = Boolean(READY_LESSON_PACKS[lesson.id]);
@@ -1390,7 +1406,7 @@ function lessonCard(lesson, index) {
   }
   return `<article class="card lesson-card ${done ? "done" : ""}" data-lesson="${escapeHtml(lesson.id)}">
     <span class="lesson-index">${done ? "✓" : index + 1}</span>
-    <div><h2>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</h2><p>${escapeHtml(lesson.period || lesson.location || "Leçon courte")}</p><small>${mystery ? "Mystère lié · " : ""}Express · Complet · Quiz</small></div>
+    <div><h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(lesson.title)}</h2><p>${escapeHtml(lesson.period || lesson.location || "Leçon courte")}</p><small>${mystery ? "Mystère lié · " : ""}Express · Complet · Quiz</small></div>
     <strong>${done ? "fait" : `${lesson.xp || 55} XP`}</strong>
   </article>`;
 }
@@ -1401,6 +1417,14 @@ function lessonWorldId(lessonId) {
 function lessonWorld(lesson) {
   const id = lessonWorldId(lesson.id);
   return allDisciplineWorlds().find(world => world.id === id) || activeWorld() || {};
+}
+function disciplineForWorldObject(world = {}) {
+  try { return disciplineById(worldDisciplineId(world)); }
+  catch { return disciplineById(state.currentDiscipline || "history"); }
+}
+function disciplineForLessonObject(lesson = {}) {
+  try { return disciplineForWorldObject(lessonWorld(lesson)); }
+  catch { return disciplineById(state.currentDiscipline || "history"); }
 }
 function relatedMysteryForLesson(lessonId) {
   return data.mysteries.find(mystery => mystery.lessonId === lessonId);
@@ -7368,7 +7392,7 @@ function scrollLessonPart(focus) {
 }
 function renderCourseUnavailable(lesson = {}) {
   const world = lessonWorld(lesson);
-  renderShell(`<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(world.title || "Parcours")}</p><h1>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineById(disciplineIdForLesson(lesson.id)))} ${escapeHtml(lesson.title || "Cours")}</h1></div></header>
+  renderShell(`<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(world.title || "Parcours")}</p><h1>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(lesson.title || "Cours")}</h1></div></header>
     <section class="card locked-course-card"><span class="card-label">À venir</span><h2>Ce parcours sera ajouté plus tard.</h2><p>Reviens au chapitre pour choisir un cours disponible dès maintenant.</p><div class="after-actions"><button data-back-learn>Retour au parcours</button><button class="ghost" data-go-home>Accueil</button></div></section>`);
   document.querySelectorAll("[data-back-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn", currentWorld: lessonWorldId(lesson.id), lessonFocus: null, lessonView: "express" })));
   document.querySelectorAll("[data-go-home]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "home" })));
@@ -7398,7 +7422,7 @@ function renderLesson() {
     ? `<div class="lesson-validation-done"><b>${HD_ICONS.action("check")} Cours validé</b><span>${lessonDone(lesson.id) ? "Progression enregistrée." : "Quiz réussi : progression prise en compte."}</span></div>`
     : ``;
   renderShell(`
-    <header class="topbar lesson-full-topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml((typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS.find(g => g.id === lessonWorld(lesson).group)?.title : "") || "Cours")} › ${escapeHtml(lessonWorld(lesson).title || "Parcours")} › ${escapeHtml(content.period)}</p><h1>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineById(disciplineIdForLesson(lesson.id)))} ${escapeHtml(content.title)}</h1></div></header>
+    <header class="topbar lesson-full-topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml((typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS.find(g => g.id === lessonWorld(lesson).group)?.title : "") || "Cours")} › ${escapeHtml(lessonWorld(lesson).title || "Parcours")} › ${escapeHtml(content.period)}</p><h1>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(content.title)}</h1></div></header>
     <article class="card reading-card two-speed-course lesson-tabbed-card lesson-full-page">
       ${renderLessonText(lesson, content)}
       ${footer}
@@ -7884,7 +7908,7 @@ function renderMystery() {
     </section>
     ${solved && lesson ? `<section class="card after-mystery">
       <div class="card-label">Après le mystère</div>
-      <h2>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</h2>
+      <h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(lesson.title)}</h2>
       <p>Tu as débloqué la porte d’entrée. Maintenant tu choisis : stop, résumé express, ou cours complet. Rien n’est imposé.</p>
       <div class="after-actions">
         <button class="ghost" data-home-stop>Je m’arrête là</button>
@@ -8949,6 +8973,7 @@ function treeGroupCard(group, active, disciplineId = activeDisciplineId()) {
   </article>`;
 }
 function treeWorldCard(world, active) {
+  const discipline = disciplineForWorldObject(world);
   const lessons = treeLessonsForWorld(world.id);
   const done = treeDoneCountForWorld(world.id);
   const mysteries = treeMysteryCountForWorld(world.id);
@@ -8964,6 +8989,7 @@ function treeWorldCard(world, active) {
   </article>`;
 }
 function treeLessonCard(lesson, index, world) {
+  const discipline = disciplineForWorldObject(world);
   const done = lessonDone(lesson.id);
   const content = buildLessonContent(lesson);
   const progress = quizProgressForLesson(lesson.id, normalizeQuizPack(content.quiz, lesson, content).length);
