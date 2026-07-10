@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.194",
-  assetsVersion: "1.0.0-beta.194",
+  version: "1.0.0-beta.195",
+  assetsVersion: "1.0.0-beta.195",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 194",
+    versionLabel: "beta 195",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Refonte ciblée des illustrations : économie, musique et cinéma gagnent des visuels plus soignés et plus lisibles.",
-      "Astronomie adopte une identité plus marquée, plus sombre et dorée, inspirée de l’imaginaire du trou noir.",
-      "Les palettes d’accent des cartes et icônes ont aussi été resserrées pour mieux coller aux disciplines."
+      "Agrandissement des illustrations : les cartes clés affichent désormais des visuels plus grands et plus lisibles.",
+      "Le cadrage des visuels a été corrigé pour limiter les décalages et les découpes sur mobile.",
+      "Les cartes de mode, les recommandations et les disciplines gagnent en présence visuelle sans alourdir l’app."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

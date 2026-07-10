@@ -12262,8 +12262,8 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
     <div class="home-discovery-grid">
       ${items.map((world, index) => {
         const group = groups.find(item => item.id === world.group) || {};
-        return `<article class="home-discovery-item mode-world-item hd192-world-card" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
-          <div class="hd192-world-hero">${HD_ART.discipline(discipline.id)}</div>
+        return `<article class="home-discovery-item mode-world-item hd195-world-card" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+          <div class="hd195-world-hero">${HD_ART.discipline(discipline.id)}</div>
           <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
           <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
           <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
@@ -16197,8 +16197,8 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
     <div class="home-discovery-grid">
       ${items.map((world, index) => {
         const group = groups.find(item => item.id === world.group) || {};
-        return `<article class="home-discovery-item mode-world-item hd192-world-card" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
-          <div class="hd192-world-hero">${HD_ART.discipline(discipline.id)}</div>
+        return `<article class="home-discovery-item mode-world-item hd195-world-card" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+          <div class="hd195-world-hero">${HD_ART.discipline(discipline.id)}</div>
           <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
           <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
           <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
@@ -19635,7 +19635,8 @@ disciplineHomeStats = function beta139DisciplineHomeStats(disciplineId = activeD
 modeSnapshotMarkup = function beta139ModeSnapshotMarkup(disciplineId = activeDisciplineId()) {
   const { discipline, progress, groups, worlds, readyLessons, mysteryCount } = disciplineHomeStats(disciplineId);
   const mode = disciplineModeCopy(discipline.id);
-  return `<section class="card home-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+  return `<section class="card home-mode-card hd195-editorial-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="hd195-editorial-hero">${HD_ART.hero(discipline.id)}</div>
     <div class="home-mode-card-main"><span class="mode-badge">${HD_ICONS.discipline(discipline)} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
     <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${readyLessons.length}</b><span>cours</span></div><div><b>${mysteryCount}</b><span>mystères</span></div></div>
   </section>`;
@@ -19653,7 +19654,8 @@ modeContinueMarkup = function beta139ModeContinueMarkup(disciplineId = activeDis
       <div class="home-card-footer"><span>Tu peux jouer le mystère du mode.</span><button type="button" data-home-mystery-button>Jouer</button></div>
     </section>`;
   }
-  return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+  return `<section class="card home-main-card home-continue-card mode-continue-card hd195-editorial-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="hd195-editorial-inline">${HD_ART.discipline(discipline.id)}</div>
     <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${HD_ICONS.world(first, discipline)} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
     <p>${escapeHtml(first.subtitle || group?.description || discipline.description)}</p>
     <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
@@ -19696,7 +19698,8 @@ modeRecommendationsMarkup = function beta139ModeRecommendationsMarkup(discipline
       ${items.map((world, index) => {
         const group = groups.find(item => item.id === world.group) || {};
         const count = treeLessonsForWorld(world.id).length;
-        return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+        return `<article class="home-discovery-item mode-world-item hd195-world-card" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+          <div class="hd195-world-hero">${HD_ART.discipline(discipline.id)}</div>
           <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · ${count} cours</span>
           <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
           <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>

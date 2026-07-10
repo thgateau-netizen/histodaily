@@ -2757,3 +2757,34 @@ body.hd184-premium::before{
   .discipline-card-art{margin-bottom:12px}
   .hd192-season-banner{max-width:360px}
 }
+
+
+/* beta 195 — illustrations plus grandes et mieux cadrées */
+.hd-art,.discipline-card-art,.hd195-editorial-hero,.hd195-editorial-inline,.hd195-world-hero,.hd192-season-banner{position:relative;overflow:hidden;border-radius:22px}
+.hd-art-svg{width:100%;height:auto;display:block;transform-origin:center center}
+.discipline-card{min-height:176px;padding:14px 14px 16px}
+.discipline-card-art{margin:-2px -2px 12px;min-height:98px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+.discipline-card-art .hd-art-svg{transform:scale(1.12)}
+.discipline-card .discipline-icon{top:16px;right:16px}
+.hd195-editorial-card{overflow:hidden}
+.hd195-editorial-hero{margin:-4px -4px 14px;min-height:128px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+.hd195-editorial-hero .hd-art-svg{transform:scale(1.12)}
+.hd195-editorial-inline{margin:-4px -4px 14px;min-height:116px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+.hd195-editorial-inline .hd-art-svg{transform:scale(1.11)}
+.hd195-world-card{overflow:hidden}
+.hd195-world-hero{margin:-2px -2px 12px;min-height:98px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+.hd195-world-hero .hd-art-svg{transform:scale(1.13)}
+.hd195-editorial-card .section-title-row,.hd195-editorial-card .home-card-footer,.hd195-editorial-card .mode-progress-line,.hd195-editorial-card p,.hd195-editorial-card .mode-stat-grid{position:relative;z-index:1}
+@media (max-width:520px){
+  .discipline-grid{grid-template-columns:1fr;gap:12px}
+  .discipline-card{min-height:186px}
+  .hd195-editorial-hero{min-height:138px}
+  .hd195-editorial-inline{min-height:122px}
+  .hd195-world-hero{min-height:106px}
+}
+@media (min-width:760px){
+  .discipline-card{min-height:194px}
+  .hd195-editorial-hero{min-height:150px}
+  .hd195-editorial-inline{min-height:128px}
+  .hd195-world-hero{min-height:112px}
+}
