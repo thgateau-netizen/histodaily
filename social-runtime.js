@@ -3,7 +3,7 @@
    les demandes par code et la sémantique des classements. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-beta.178";
+  const VERSION = "1.0.0-beta.196";
   const API_TIMEOUT_MS = 8000;
   const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
 
@@ -122,7 +122,13 @@
     const currentMe = Array.from(map.values()).find(row => row.me || sameIdentity(row, mine));
     if (currentMe) {
       currentMe.me = true;
-      currentMe.score = Math.max(Number(currentMe.score || 0), myScore);
+      // La ligne personnelle doit refléter exactement le même total local que le résumé.
+      // Un ancien score serveur corrompu (ex. XP totale envoyée comme score de mystère)
+      // ne doit plus prendre le dessus avec Math.max().
+      currentMe.score = myScore;
+      currentMe.daily = localScope === "daily" ? myScore : Number(currentMe.daily || 0);
+      currentMe.week = localScope === "week" ? myScore : Number(currentMe.week || 0);
+      currentMe.year = localScope === "year" ? myScore : Number(currentMe.year || 0);
       currentMe.xp = Math.max(Number(currentMe.xp || 0), Number(mine.xp || 0));
       map.set(code(currentMe.friendCode) || currentMe.playerId || mineKey, currentMe);
     } else if (myScore > 0 || !rows.length) {
@@ -191,6 +197,31 @@
     }
   };
 
+  const repairedScopeKeys = new Set();
+  function repairOwnScoresForScope(scope = "daily") {
+    const safeScope = VALID_SCOPES.has(scope) ? scope : "daily";
+    const localScope = safeScope === "friends" ? "daily" : safeScope;
+    if (!isOnline || typeof submitScoreToServer !== "function" || typeof scorePayloadForMystery !== "function") return;
+    const key = `${localScope}:${localDayKey()}:${playerIdMe()}`;
+    if (repairedScopeKeys.has(key)) return;
+    repairedScopeKeys.add(key);
+    const range = rangeForScope(localScope);
+    const ids = Object.entries(state.solvedMysteries || {})
+      .filter(([, solved]) => {
+        const at = Number(solved?.at || 0);
+        return at >= range.start && at < range.end;
+      })
+      .map(([id]) => id)
+      .filter(Boolean);
+    if (!ids.length) return;
+    Promise.all(ids.map(id => submitScoreToServer(scorePayloadForMystery(id)).catch(() => null)))
+      .then(() => fetchServerLeaderboard(safeScope, { force: true }).catch(() => null))
+      .then(() => {
+        if (state.tab === "rank" && state.rankScope === safeScope) render({ immediate: true });
+      })
+      .catch(() => {});
+  }
+
   function scoreLabel(scope) {
     if (scope === "week") return "Score de la semaine";
     if (scope === "year") return "Score de l’année";
@@ -232,6 +263,7 @@
     const scope = VALID_SCOPES.has(state.rankScope) ? state.rankScope : "daily";
     state.rankScope = scope;
     ensureServerLeaderboard(scope);
+    repairOwnScoresForScope(scope);
     if (scope === "friends") ensureServerFriends();
     const rows = leaderboardRows(scope);
     const me = rows.find(row => row.me);

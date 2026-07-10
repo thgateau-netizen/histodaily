@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.195",
-  assetsVersion: "1.0.0-beta.195",
+  version: "1.0.0-beta.196",
+  assetsVersion: "1.0.0-beta.196",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 195",
+    versionLabel: "beta 196",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Agrandissement des illustrations : les cartes clés affichent désormais des visuels plus grands et plus lisibles.",
-      "Le cadrage des visuels a été corrigé pour limiter les décalages et les découpes sur mobile.",
-      "Les cartes de mode, les recommandations et les disciplines gagnent en présence visuelle sans alourdir l’app."
+      "Correctif classement : le résumé et la ligne personnelle utilisent désormais exactement le même score de période.",
+      "Les mystères résolus le même jour sont additionnés correctement dans le classement en ligne.",
+      "Les anciens scores serveur impossibles issus de l’XP totale sont détectés et réparés automatiquement."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
