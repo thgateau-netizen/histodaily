@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.199",
-  assetsVersion: "1.0.0-beta.199",
+  version: "1.0.0-beta.200",
+  assetsVersion: "1.0.0-beta.200",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 199",
+    versionLabel: "beta 200",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Correctif classement : le résumé et la ligne personnelle utilisent désormais exactement le même score de période.",
-      "Les mystères résolus le même jour sont additionnés correctement dans le classement en ligne.",
-      "Les anciens scores serveur impossibles issus de l’XP totale sont détectés et réparés automatiquement."
+      "Accueil : le véritable sélecteur de disciplines a été corrigé, sans double carré ni icône décentrée.",
+      "Musique, cinéma et économie utilisent de nouveaux pictogrammes plus lisibles dans les petites cartes.",
+      "Les notes de version ont été nettoyées pour ne présenter que les changements de la beta 200."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

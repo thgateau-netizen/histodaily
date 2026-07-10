@@ -13,6 +13,7 @@ window.HD_ICONS = window.HD_ICONS || {
   world: () => "",
   lesson: () => "",
   action: () => "",
+  rawDiscipline: () => "",
   fromText: (_text, fallback = "lesson") => fallback
 };
 window.HD_ART = window.HD_ART || {
@@ -12203,7 +12204,7 @@ function modeSwitcherMarkup() {
     ${DISCIPLINES.map(item => {
       const active = item.id === activeDisciplineId();
       const stats = disciplineProgress(item.id);
-      return `<button type="button" class="mode-pill ${active ? "active" : ""}" data-home-discipline="${escapeHtml(item.id)}" style="--discipline-accent:${escapeHtml(item.accent)}"><span>${HD_ICONS.discipline(item)}</span><strong>${escapeHtml(disciplineModeCopy(item.id).shortLabel)}</strong><small>${stats.progress}%</small></button>`;
+      return `<button type="button" class="mode-pill ${active ? "active" : ""}" data-home-discipline="${escapeHtml(item.id)}" style="--discipline-accent:${escapeHtml(item.accent)}"><span class="mode-pill-icon">${HD_ICONS.rawDiscipline ? HD_ICONS.rawDiscipline(item) : HD_ICONS.discipline(item)}</span><strong>${escapeHtml(disciplineModeCopy(item.id).shortLabel)}</strong><small>${stats.progress}%</small></button>`;
     }).join("")}
   </section>`;
 }

@@ -2867,3 +2867,93 @@ body.hd184-premium::before{
 
 /* légère simplification des grosses icônes musique/cinéma/économie */
 .hd-art--music .hd-art-svg,.hd-art--cinema .hd-art-svg,.hd-art--economy .hd-art-svg{transform:scale(1.02)}
+
+
+/* beta 200 — vrai sélecteur de disciplines, sans double carré */
+.home-mode-switcher .mode-pill,
+.beta182-discipline-tabs button{
+  display:grid!important;
+  grid-template-columns:44px auto!important;
+  grid-template-rows:auto auto!important;
+  grid-template-areas:"icon title" "icon pct"!important;
+  column-gap:11px!important;
+  row-gap:1px!important;
+  align-items:center!important;
+  min-width:148px!important;
+  min-height:66px!important;
+  padding:10px 13px!important;
+  border-radius:22px!important;
+  text-align:left!important;
+}
+.home-mode-switcher .mode-pill>.mode-pill-icon,
+.beta182-discipline-tabs button>.mode-pill-icon{
+  grid-area:icon!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:44px!important;
+  height:44px!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:999px!important;
+  background:color-mix(in srgb,var(--discipline-accent,#f6c453) 18%,rgba(255,255,255,.035))!important;
+  border:1px solid color-mix(in srgb,var(--discipline-accent,#f6c453) 34%,rgba(255,255,255,.08))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08)!important;
+  overflow:hidden!important;
+}
+.home-mode-switcher .mode-pill>.mode-pill-icon .hd-icon,
+.beta182-discipline-tabs button>.mode-pill-icon .hd-icon{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:23px!important;
+  height:23px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#f8fbff!important;
+  transform:none!important;
+}
+.home-mode-switcher .mode-pill>.mode-pill-icon .hd-icon::before,
+.home-mode-switcher .mode-pill>.mode-pill-icon .hd-icon::after,
+.beta182-discipline-tabs button>.mode-pill-icon .hd-icon::before,
+.beta182-discipline-tabs button>.mode-pill-icon .hd-icon::after{
+  display:none!important;
+}
+.home-mode-switcher .mode-pill>.mode-pill-icon svg,
+.beta182-discipline-tabs button>.mode-pill-icon svg{
+  display:block!important;
+  width:23px!important;
+  height:23px!important;
+  margin:0!important;
+}
+.home-mode-switcher .mode-pill>strong,
+.beta182-discipline-tabs button>strong{
+  grid-area:title!important;
+  align-self:end!important;
+  margin:0!important;
+  font-size:.91rem!important;
+  line-height:1.08!important;
+  white-space:nowrap!important;
+}
+.home-mode-switcher .mode-pill>small,
+.beta182-discipline-tabs button>small{
+  grid-area:pct!important;
+  align-self:start!important;
+  margin:2px 0 0!important;
+  font-size:.76rem!important;
+  line-height:1!important;
+  text-align:left!important;
+}
+.home-mode-switcher .mode-pill.active>.mode-pill-icon,
+.beta182-discipline-tabs button.active>.mode-pill-icon{
+  background:color-mix(in srgb,var(--discipline-accent,#f6c453) 28%,rgba(255,255,255,.06))!important;
+  border-color:color-mix(in srgb,var(--discipline-accent,#f6c453) 58%,rgba(255,255,255,.12))!important;
+}
+@media(max-width:390px){
+  .home-mode-switcher .mode-pill,
+  .beta182-discipline-tabs button{min-width:140px!important;padding:9px 11px!important;}
+}
