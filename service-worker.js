@@ -1,13 +1,14 @@
-const CACHE_NAME = "histodaily-beta174-courses-v1";
-const APP_VERSION = "1.0.0-beta.174";
+const CACHE_NAME = "histodaily-beta175-editorial-v1";
+const APP_VERSION = "1.0.0-beta.175";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.174",
-  "/app-core.js?v=1.0.0-beta.174",
-  "/app-onboarding.js?v=1.0.0-beta.174",
-  "/app.js?v=1.0.0-beta.174",
-  "/lessons-lite.js?v=1.0.0-beta.174",
+  "/styles.css?v=1.0.0-beta.175",
+  "/app-core.js?v=1.0.0-beta.175",
+  "/app-onboarding.js?v=1.0.0-beta.175",
+  "/app.js?v=1.0.0-beta.175",
+  "/content-editorial.js?v=1.0.0-beta.175",
+  "/lessons-lite.js?v=1.0.0-beta.175",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
