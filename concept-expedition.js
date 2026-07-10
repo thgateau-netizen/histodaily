@@ -144,7 +144,7 @@
 
   function stageMarkup({ number, icon, title, text, done, current, action, disabled = false }){
     return `<button type="button" class="hd187-expedition-step ${done ? "done" : ""} ${current ? "current" : ""}" ${action ? `data-hd187-action="${esc(action)}"` : ""} ${disabled ? "disabled" : ""}>
-      <span class="hd187-step-number">${done ? "✓" : icon || number}</span>
+      <span class="hd187-step-number">${done ? HD_ICONS.action("check") : icon || number}</span>
       <span><b>${esc(title)}</b><small>${esc(text)}</small></span>
     </button>`;
   }
@@ -182,21 +182,21 @@
       {
         id: "solar-frontiers",
         title: "Aux frontières du Système solaire",
-        emoji: "🪐",
+        icon: "astronomy",
         description: "Planètes géantes, lunes océaniques, comètes et exploration des mondes lointains.",
         lessons: byIds(["astro-solar-system-formation", "astro-rocky-planets", "astro-giant-planets", "astro-ocean-moons", "astro-asteroids-comets", "astro-meteors-impacts", "astro-rockets-orbits", "astro-moon-mars-exploration"])
       },
       {
         id: "change-the-world",
         title: "Les idées qui ont changé le monde",
-        emoji: "💡",
+        icon: "science",
         description: "Découvertes, techniques et ruptures intellectuelles qui transforment notre façon de comprendre.",
         lessons: byTerms(["imprimerie", "radioactiv", "ordinateur", "galilee", "vaccin", "monnaie", "perspective"], 8)
       },
       {
         id: "images-and-power",
         title: "Images, récits et pouvoir",
-        emoji: "🎭",
+        icon: "art",
         description: "Art, cinéma, symboles et récits collectifs : comment les images façonnent une société.",
         lessons: byTerms(["cinema", "film", "art", "image", "propagande", "architecture", "cubisme", "street art"], 8)
       }
@@ -215,7 +215,7 @@
     if (!season) return "";
     const progress = seasonProgress(season);
     return `<section class="card hd187-season-card">
-      <div class="section-title-row"><div><span class="card-label">Saison éditoriale</span><h2>${season.emoji} ${esc(season.title)}</h2><p>${esc(season.description)}</p></div><strong>${progress.progress}%</strong></div>
+      <div class="section-title-row"><div><span class="card-label">Saison éditoriale</span><h2>${HD_ICONS.action(season.icon || HD_ICONS.fromText(season.title, "spark"))} ${esc(season.title)}</h2><p>${esc(season.description)}</p></div><strong>${progress.progress}%</strong></div>
       <div class="hd187-season-progress"><i style="width:${progress.progress}%"></i></div>
       <div class="hd187-season-footer"><span>${progress.done}/${progress.total} cours · tous restent accessibles dans le catalogue</span><div><button type="button" class="ghost" data-hd187-open-seasons>Voir la saison</button><button type="button" data-hd187-season-next="${esc(progress.next?.id || "")}">${progress.done >= progress.total ? "Revoir" : "Continuer"}</button></div></div>
     </section>`;
@@ -227,8 +227,8 @@
       <div class="section-title-row"><div><span class="card-label">Explorer librement</span><h2>Tu cherches un sujet précis ?</h2><p>${lessons.length} cours restent disponibles à tout moment, indépendamment de l’expédition et de la saison.</p></div><small>Accès libre</small></div>
       <div class="hd187-free-actions">
         <button type="button" data-hd187-open-search><span>⌕</span><b>Rechercher un cours</b><small>Titre, thème, discipline ou mot-clé</small></button>
-        <button type="button" data-hd187-open-map><span>✦</span><b>Carte du savoir</b><small>Voir les domaines et leurs connexions</small></button>
-        <button type="button" data-hd187-open-catalog><span>☰</span><b>Catalogue complet</b><small>Parcourir librement les chapitres</small></button>
+        <button type="button" data-hd187-open-map><span>${HD_ICONS.action("map")}</span><b>Carte du savoir</b><small>Voir les domaines et leurs connexions</small></button>
+        <button type="button" data-hd187-open-catalog><span>${HD_ICONS.action("catalog")}</span><b>Catalogue complet</b><small>Parcourir librement les chapitres</small></button>
       </div>
     </section>`;
   }
@@ -297,11 +297,11 @@
     const data = curiosityData();
     const favorite = data.favorites[0];
     return `<section class="card hd187-curiosity-card">
-      <div class="section-title-row"><div><span class="card-label">Profil de curiosité</span><h2>${favorite ? `${favorite.discipline.emoji} Ton univers personnel se dessine` : "Commence à construire ton profil"}</h2><p>Les recommandations combinent tes goûts, les notions à consolider et une part de découverte inattendue.</p></div><button type="button" class="ghost" data-hd187-open-map>Voir la carte</button></div>
+      <div class="section-title-row"><div><span class="card-label">Profil de curiosité</span><h2>${favorite ? `${HD_ICONS.discipline(favorite.discipline)} Ton univers personnel se dessine` : "Commence à construire ton profil"}</h2><p>Les recommandations combinent tes goûts, les notions à consolider et une part de découverte inattendue.</p></div><button type="button" class="ghost" data-hd187-open-map>Voir la carte</button></div>
       <div class="hd187-curiosity-grid">
-        <div><span>Affinités</span><b>${data.favorites.length ? data.favorites.map(row => `${row.discipline.emoji} ${row.discipline.title}`).join(" · ") : "Encore aucune tendance"}</b></div>
-        <div><span>À consolider</span><b>${data.weak ? `${data.weak.discipline.emoji} ${data.weak.discipline.title}${data.weak.reviews ? ` · ${data.weak.reviews} rappel${data.weak.reviews > 1 ? "s" : ""}` : ""}` : "Mémoire à jour"}</b></div>
-        <div><span>Découverte proposée</span><b>${data.unexplored ? `${data.unexplored.discipline.emoji} ${data.unexplored.discipline.title}` : "Explorer une connexion inattendue"}</b></div>
+        <div><span>Affinités</span><b>${data.favorites.length ? data.favorites.map(row => `${HD_ICONS.discipline(row.discipline)} ${row.discipline.title}`).join(" · ") : "Encore aucune tendance"}</b></div>
+        <div><span>À consolider</span><b>${data.weak ? `${HD_ICONS.discipline(data.weak.discipline)} ${data.weak.discipline.title}${data.weak.reviews ? ` · ${data.weak.reviews} rappel${data.weak.reviews > 1 ? "s" : ""}` : ""}` : "Mémoire à jour"}</b></div>
+        <div><span>Découverte proposée</span><b>${data.unexplored ? `${HD_ICONS.discipline(data.unexplored.discipline)} ${data.unexplored.discipline.title}` : "Explorer une connexion inattendue"}</b></div>
       </div>
     </section>`;
   }
@@ -376,13 +376,13 @@
   function searchResultsMarkup(query = "", disciplineId = searchDiscipline){
     const results = searchResults(query, disciplineId);
     if (!results.length) return `<div class="hd187-empty"><b>Aucun cours trouvé</b><p>Essaie un mot plus large, comme « étoile », « Rome », « inflation » ou « cubisme ».</p></div>`;
-    return `<div class="hd187-search-results">${results.map(item => `<button type="button" data-hd187-course="${esc(item.lesson.id)}" class="${lessonDone(item.lesson.id) ? "done" : ""}"><span>${item.lesson.emoji || item.world?.emoji || item.discipline?.emoji || "📚"}</span><div><b>${esc(item.lesson.title)}</b><small>${esc(item.discipline?.title || "Cours")} · ${esc(item.world?.title || "Parcours")}</small></div><em>${lessonDone(item.lesson.id) ? "Validé" : "Ouvrir"}</em></button>`).join("")}</div>`;
+    return `<div class="hd187-search-results">${results.map(item => `<button type="button" data-hd187-course="${esc(item.lesson.id)}" class="${lessonDone(item.lesson.id) ? "done" : ""}"><span>${HD_ICONS.lesson(item.lesson, item.world, item.discipline)}</span><div><b>${esc(item.lesson.title)}</b><small>${esc(item.discipline?.title || "Cours")} · ${esc(item.world?.title || "Parcours")}</small></div><em>${lessonDone(item.lesson.id) ? "Validé" : "Ouvrir"}</em></button>`).join("")}</div>`;
   }
 
   function openSearch(initial = ""){
     searchDiscipline = "all";
     const filters = [`<button type="button" data-hd187-search-discipline="all" class="active">Tout</button>`]
-      .concat(DISCIPLINES.map(d => `<button type="button" data-hd187-search-discipline="${esc(d.id)}">${d.emoji} ${esc(d.title)}</button>`)).join("");
+      .concat(DISCIPLINES.map(d => `<button type="button" data-hd187-search-discipline="${esc(d.id)}">${HD_ICONS.discipline(d)} ${esc(d.title)}</button>`)).join("");
     const overlay = layer("Rechercher un cours", "Tous les sujets restent accessibles librement.", `<div class="hd187-search-box"><span>⌕</span><input type="search" data-hd187-search-input value="${esc(initial)}" placeholder="Ex. trous noirs, Vikings, inflation…" autocomplete="off" /></div><div class="hd187-search-filters">${filters}</div><div data-hd187-search-output>${searchResultsMarkup(initial)}</div>`, "hd187-search-layer");
     const input = overlay.querySelector("[data-hd187-search-input]");
     const output = overlay.querySelector("[data-hd187-search-output]");
@@ -407,8 +407,8 @@
     const activeLessons = searchIndex().filter(item => item.disciplineId === active?.discipline.id);
     const nodes = activeLessons.filter(item => lessonDone(item.lesson.id)).slice(-3).concat(activeLessons.filter(item => !lessonDone(item.lesson.id)).slice(0, 4));
     return `<div class="hd187-map-intro"><b>Ta carte grandit avec chaque cours validé.</b><p>Les domaines restent des portes d’entrée libres ; les connexions servent seulement à te proposer le chemin suivant.</p></div>
-      <div class="hd187-map-domains">${rows.map(row => `<button type="button" data-hd187-map-discipline="${esc(row.discipline.id)}" class="${row.discipline.id === active?.discipline.id ? "active" : ""}" style="--node-accent:${esc(row.discipline.accent)}"><span>${row.discipline.emoji}</span><b>${esc(row.discipline.title)}</b><small>${row.completed}/${row.total} · ${pct(row.completed, row.total)}%</small></button>`).join("")}</div>
-      ${active ? `<section class="hd187-constellation" style="--node-accent:${esc(active.discipline.accent)}"><div class="hd187-constellation-core"><span>${active.discipline.emoji}</span><b>${esc(active.discipline.title)}</b></div><div class="hd187-constellation-nodes">${nodes.map((item, index) => `<button type="button" data-hd187-course="${esc(item.lesson.id)}" class="${lessonDone(item.lesson.id) ? "done" : ""}" style="--orbit:${index}"><span>${item.lesson.emoji || item.world?.emoji || "✦"}</span><b>${esc(item.lesson.title)}</b><small>${lessonDone(item.lesson.id) ? "Acquis" : "À explorer"}</small></button>`).join("")}</div></section>` : ""}`;
+      <div class="hd187-map-domains">${rows.map(row => `<button type="button" data-hd187-map-discipline="${esc(row.discipline.id)}" class="${row.discipline.id === active?.discipline.id ? "active" : ""}" style="--node-accent:${esc(row.discipline.accent)}"><span>${HD_ICONS.discipline(row.discipline)}</span><b>${esc(row.discipline.title)}</b><small>${row.completed}/${row.total} · ${pct(row.completed, row.total)}%</small></button>`).join("")}</div>
+      ${active ? `<section class="hd187-constellation" style="--node-accent:${esc(active.discipline.accent)}"><div class="hd187-constellation-core"><span>${HD_ICONS.discipline(active.discipline)}</span><b>${esc(active.discipline.title)}</b></div><div class="hd187-constellation-nodes">${nodes.map((item, index) => `<button type="button" data-hd187-course="${esc(item.lesson.id)}" class="${lessonDone(item.lesson.id) ? "done" : ""}" style="--orbit:${index}"><span>${HD_ICONS.lesson(item.lesson, item.world, active.discipline)}</span><b>${esc(item.lesson.title)}</b><small>${lessonDone(item.lesson.id) ? "Acquis" : "À explorer"}</small></button>`).join("")}</div></section>` : ""}`;
   }
 
   function openKnowledgeMap(){
@@ -420,7 +420,7 @@
   function seasonsMarkup(){
     return `<div class="hd187-season-list">${seasonDefinitions().map((season, index) => {
       const progress = seasonProgress(season);
-      return `<section class="hd187-season-detail ${index === 0 ? "current" : ""}"><div><span>${season.emoji}</span><div><small>${index === 0 ? "Saison actuelle" : "Collection éditoriale"}</small><h3>${esc(season.title)}</h3><p>${esc(season.description)}</p></div><strong>${progress.progress}%</strong></div><i><em style="width:${progress.progress}%"></em></i><div class="hd187-season-lessons">${season.lessons.map(lesson => `<button type="button" data-hd187-course="${esc(lesson.id)}" class="${lessonDone(lesson.id) ? "done" : ""}"><span>${lessonDone(lesson.id) ? "✓" : lesson.emoji || "📚"}</span><b>${esc(lesson.title)}</b></button>`).join("")}</div></section>`;
+      return `<section class="hd187-season-detail ${index === 0 ? "current" : ""}"><div><span>${HD_ICONS.action(season.icon || HD_ICONS.fromText(season.title, "spark"))}</span><div><small>${index === 0 ? "Saison actuelle" : "Collection éditoriale"}</small><h3>${esc(season.title)}</h3><p>${esc(season.description)}</p></div><strong>${progress.progress}%</strong></div><i><em style="width:${progress.progress}%"></em></i><div class="hd187-season-lessons">${season.lessons.map(lesson => `<button type="button" data-hd187-course="${esc(lesson.id)}" class="${lessonDone(lesson.id) ? "done" : ""}"><span>${lessonDone(lesson.id) ? HD_ICONS.action("check") : HD_ICONS.lesson(lesson, null, null)}</span><b>${esc(lesson.title)}</b></button>`).join("")}</div></section>`;
     }).join("")}</div>`;
   }
 

@@ -465,7 +465,7 @@ function applyDailyReward(mysteryId, score) {
   if (nextStreak >= 3) state.achievements.streak3 = true;
   if (nextStreak >= 7) state.achievements.streak7 = true;
   const bonusText = streakBonus ? ` dont ${streakBonus} de bonus série` : "";
-  return `+${gems} 💎${bonusText} · série ${nextStreak} jour${nextStreak > 1 ? "s" : ""}`;
+  return `+${gems} gemme${gems > 1 ? "s" : ""}${bonusText} · série ${nextStreak} jour${nextStreak > 1 ? "s" : ""}`;
 }
 function todayIndex() {
   const d = new Date();
@@ -756,7 +756,7 @@ function homeDiscoveryMarkup(lessons = homeDiscoveryLessons()) {
   if (!lessons.length) return "";
   return `<section class="card home-main-card home-discovery-card">
     <div class="section-title-row">
-      <div><span class="card-label">📚 À découvrir maintenant</span><h2>Choisis ce qui te donne envie</h2></div>
+      <div><span class="card-label">À découvrir maintenant</span><h2>Choisis ce qui te donne envie</h2></div>
       <small>renouvelé dans ${escapeHtml(timeToNextDiscovery())}</small>
     </div>
     <p>Trois portes d’entrée courtes, chacune dans une époque différente.</p>
@@ -766,7 +766,7 @@ function homeDiscoveryMarkup(lessons = homeDiscoveryLessons()) {
         const done = lessonDone(lesson.id);
         return `<article class="home-discovery-item ${done ? "done" : ""}" data-home-discovery="${escapeHtml(lesson.id)}" tabindex="0" role="button">
           <span class="home-discovery-kicker">${escapeHtml(preview.epoch)} · choix ${index + 1}</span>
-          <h3>${lesson.emoji || "📜"} ${escapeHtml(preview.question)}</h3>
+          <h3>${HD_ICONS.lesson(lesson)} ${escapeHtml(preview.question)}</h3>
           <p>${escapeHtml(preview.intro)}</p>
           <small>${escapeHtml(preview.subtitle)}</small>
           <button type="button" data-home-discovery-open="${escapeHtml(lesson.id)}">${done ? "Revoir" : "Commencer"}</button>
@@ -840,7 +840,7 @@ function homeContinueMarkup() {
     ? `${progress.correctCount}/${progress.total} bonnes réponses · validation à ${progress.threshold}/${progress.total}`
     : `${lessonEpochLabel(world)} · ${world.title || "Parcours"} · Express ou complet avant quiz`;
   return `<section class="card home-main-card home-continue-card">
-    <div class="section-title-row"><div><span class="card-label">▶️ Continuer</span><h2>${lesson.emoji || "📜"} ${escapeHtml(content.title || lesson.title)}</h2></div><small>${ratio}%</small></div>
+    <div class="section-title-row"><div><span class="card-label">Continuer</span><h2>${HD_ICONS.lesson(lesson)} ${escapeHtml(content.title || lesson.title)}</h2></div><small>${ratio}%</small></div>
     <p>${escapeHtml(short(content.hook || (content.express && content.express[0]) || "Reprends exactement là où tu en étais.", 175))}</p>
     <div class="progress"><i style="width:${ratio}%"></i></div>
     <div class="home-card-footer"><span>${escapeHtml(detail)}</span><button type="button" data-home-continue="${escapeHtml(lesson.id)}" data-home-continue-view="${escapeHtml(view)}">${escapeHtml(action)}</button></div>
@@ -1223,7 +1223,7 @@ function setPerformanceMode(mode) {
 function performanceSettingsMarkup() {
   const mode = performanceMode();
   const label = mode === "light" ? "Mode fluide" : "Animations visuelles";
-  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(label)}</h2><p>${mode === "light" ? "Navigation rapide et animations légères pour garder l’app fluide." : "Animations plus visibles. À garder si ton téléphone reste fluide."}</p></div><div class="performance-actions"><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">⚡ Fluide</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">✨ Visuel</button></div></section>`;
+  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(label)}</h2><p>${mode === "light" ? "Navigation rapide et animations légères pour garder l’app fluide." : "Animations plus visibles. À garder si ton téléphone reste fluide."}</p></div><div class="performance-actions"><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">Fluide</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">Visuel</button></div></section>`;
 }
 async function installApp() {
   if (!installPromptEvent) {
@@ -1258,11 +1258,11 @@ function renderShell(content) {
   applyPerformanceMode();
   const immersiveLesson = state.tab === "lesson";
   const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav">
-        ${navButton("home", "⌂", "Accueil")}
-        ${navButton("learn", "📖", "Cours")}
-        ${navButton("mystery", "🕵️", "Mystère")}
-        ${navButton("rank", "🏆", "Classement")}
-        ${navButton("profile", "👤", "Profil")}
+        ${navButton("home", "home", "Accueil")}
+        ${navButton("learn", "courses", "Cours")}
+        ${navButton("mystery", "mystery", "Mystère")}
+        ${navButton("rank", "ranking", "Classement")}
+        ${navButton("profile", "profile", "Profil")}
       </nav>`;
   app.innerHTML = `
     <main class="app-shell tab-${state.tab} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
@@ -1279,20 +1279,20 @@ function renderShell(content) {
   }));
   activateTextControls(app);
 }
-function navButton(tab, icon, label) { return `<button data-tab="${tab}" class="nav-item ${state.tab === tab ? "active" : ""}"><span>${icon}</span><small>${label}</small></button>`; }
+function navButton(tab, icon, label) { return `<button data-tab="${tab}" class="nav-item ${state.tab === tab ? "active" : ""}"><span>${HD_ICONS.action(icon)}</span><small>${label}</small></button>`; }
 
 function renderHome() {
   const mystery = dailyMystery();
   const reward = dailyRewardPreview();
   const discoveries = homeDiscoveryLessons();
   const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
-  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} 💎 si tu résous aujourd’hui`;
+  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} gemme${reward.gems > 1 ? "s" : ""} si tu résous aujourd’hui`;
   renderShell(`
     <header class="hero compact home-clean-hero">
       <div>
         <p class="eyebrow">HistoDaily</p>
         <h1>Un mystère par jour, puis le cours qui va avec.</h1>
-        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
+        <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
     </header>
 
@@ -1357,9 +1357,9 @@ function renderLearn() {
   const curatedInWorld = lessons.filter(isCuratedLesson);
   renderShell(`
     <header class="topbar"><button data-back-home>←</button><div><p class="eyebrow">Parcours</p><h1>${escapeHtml(world.title || "Histoire")}</h1></div></header>
-    <section class="chips">${worlds.map(w => `<button data-world="${w.id}" class="chip ${w.id === world.id ? "active" : ""}">${w.emoji || "📚"} ${escapeHtml(w.title)}</button>`).join("")}</section>
+    <section class="chips">${worlds.map(w => `<button data-world="${w.id}" class="chip ${w.id === world.id ? "active" : ""}">${HD_ICONS.world(w, disciplineById(currentDisciplineId || state.learnDiscipline || disciplineForWorld(w.id)?.id))} ${escapeHtml(w.title)}</button>`).join("")}</section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    ${curatedInWorld.length ? `<section class="card ready-strip"><div><span class="card-label">À commencer ici</span><h2>${curatedInWorld.length} cours à découvrir</h2><p>Une sélection pour entrer dans le chapitre sans se perdre.</p></div><div class="ready-mini-list">${curatedInWorld.slice(0,3).map(lesson => `<button data-ready-lesson="${lesson.id}">${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
+    ${curatedInWorld.length ? `<section class="card ready-strip"><div><span class="card-label">À commencer ici</span><h2>${curatedInWorld.length} cours à découvrir</h2><p>Une sélection pour entrer dans le chapitre sans se perdre.</p></div><div class="ready-mini-list">${curatedInWorld.slice(0,3).map(lesson => `<button data-ready-lesson="${lesson.id}">${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
     <section class="lesson-list">
       ${shownLessons.map((lesson, index) => lessonCard(lesson, index)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre chapitre ou reviens au parcours principal."}</p><button data-learn-filter="all">Voir tous les cours disponibles</button></div>`}
     </section>`);
@@ -1383,14 +1383,14 @@ function lessonCard(lesson, index) {
   const locked = lessonLockedByDailyMystery(lesson);
   if (locked) {
     return `<article class="card lesson-card locked" data-locked-lesson="${escapeHtml(lesson.id)}">
-      <span class="lesson-index">🔒</span>
-      <div><h2>Cours verrouillé anti-spoil</h2><p>Ce cours explique le mystère du jour. Résous le dossier pour l’ouvrir.</p><small>🕵️ mystère d’abord · 📚 cours après résolution</small></div>
+      <span class="lesson-index">${HD_ICONS.action("lock")}</span>
+      <div><h2>Cours verrouillé anti-spoil</h2><p>Ce cours explique le mystère du jour. Résous le dossier pour l’ouvrir.</p><small>Mystère d’abord · cours après résolution</small></div>
       <strong>bloqué</strong>
     </article>`;
   }
   return `<article class="card lesson-card ${done ? "done" : ""}" data-lesson="${escapeHtml(lesson.id)}">
     <span class="lesson-index">${done ? "✓" : index + 1}</span>
-    <div><h2>${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</h2><p>${escapeHtml(lesson.period || lesson.location || "Leçon courte")}</p><small>${mystery ? "🕵️ mystère lié · " : ""}⚡ express · 📚 complet · ✅ quiz</small></div>
+    <div><h2>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</h2><p>${escapeHtml(lesson.period || lesson.location || "Leçon courte")}</p><small>${mystery ? "Mystère lié · " : ""}Express · Complet · Quiz</small></div>
     <strong>${done ? "fait" : `${lesson.xp || 55} XP`}</strong>
   </article>`;
 }
@@ -1563,7 +1563,7 @@ function lessonLockedByDailyMystery(lesson = {}) {
 }
 function lessonLockMarkup(lesson) {
   const mystery = dailyMystery();
-  return `<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">Anti-spoil</p><h1>🔒 Cours verrouillé</h1></div></header>
+  return `<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">Anti-spoil</p><h1>${HD_ICONS.action("lock")} Cours verrouillé</h1></div></header>
     <section class="card locked-course-card"><span class="card-label">Mystère du jour d’abord</span><h2>Ce cours contient la réponse ou son explication.</h2><p>Pour garder le jeu intéressant, il ne s’ouvre qu’après résolution du mystère du jour. Tu peux tenter le dossier maintenant ou choisir un autre cours dans le parcours.</p><div class="after-actions"><button data-open-daily-mystery>Résoudre le mystère</button><button class="ghost" data-back-learn>Autre cours</button></div></section>`;
 }
 function mysteryPromptKernel(mystery = {}) {
@@ -7368,7 +7368,7 @@ function scrollLessonPart(focus) {
 }
 function renderCourseUnavailable(lesson = {}) {
   const world = lessonWorld(lesson);
-  renderShell(`<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(world.title || "Parcours")}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(lesson.title || "Cours")}</h1></div></header>
+  renderShell(`<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(world.title || "Parcours")}</p><h1>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineById(disciplineIdForLesson(lesson.id)))} ${escapeHtml(lesson.title || "Cours")}</h1></div></header>
     <section class="card locked-course-card"><span class="card-label">À venir</span><h2>Ce parcours sera ajouté plus tard.</h2><p>Reviens au chapitre pour choisir un cours disponible dès maintenant.</p><div class="after-actions"><button data-back-learn>Retour au parcours</button><button class="ghost" data-go-home>Accueil</button></div></section>`);
   document.querySelectorAll("[data-back-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn", currentWorld: lessonWorldId(lesson.id), lessonFocus: null, lessonView: "express" })));
   document.querySelectorAll("[data-go-home]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "home" })));
@@ -7395,10 +7395,10 @@ function renderLesson() {
   const quizPassed = lessonQuizPassed(lesson.id);
   const canComplete = lessonDone(lesson.id) || quizPassed;
   const footer = canComplete
-    ? `<div class="lesson-validation-done"><b>✅ Cours validé</b><span>${lessonDone(lesson.id) ? "Progression enregistrée." : "Quiz réussi : progression prise en compte."}</span></div>`
+    ? `<div class="lesson-validation-done"><b>${HD_ICONS.action("check")} Cours validé</b><span>${lessonDone(lesson.id) ? "Progression enregistrée." : "Quiz réussi : progression prise en compte."}</span></div>`
     : ``;
   renderShell(`
-    <header class="topbar lesson-full-topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml((typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS.find(g => g.id === lessonWorld(lesson).group)?.title : "") || "Cours")} › ${escapeHtml(lessonWorld(lesson).title || "Parcours")} › ${escapeHtml(content.period)}</p><h1>${lesson.emoji || "📜"} ${escapeHtml(content.title)}</h1></div></header>
+    <header class="topbar lesson-full-topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml((typeof HISTO_WORLD_GROUPS !== "undefined" && Array.isArray(HISTO_WORLD_GROUPS) ? HISTO_WORLD_GROUPS.find(g => g.id === lessonWorld(lesson).group)?.title : "") || "Cours")} › ${escapeHtml(lessonWorld(lesson).title || "Parcours")} › ${escapeHtml(content.period)}</p><h1>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineById(disciplineIdForLesson(lesson.id)))} ${escapeHtml(content.title)}</h1></div></header>
     <article class="card reading-card two-speed-course lesson-tabbed-card lesson-full-page">
       ${renderLessonText(lesson, content)}
       ${footer}
@@ -7450,13 +7450,13 @@ function lessonMemoMarkup(lesson, content, takeaways, quizItems) {
   const proof = takeaways.find(item => /trace|preuve|indice/i.test(item.label || "")) || takeaways[1] || takeaways[0];
   const trap = takeaways.find(item => /erreur|pi[eè]ge|nuance/i.test(item.label || "")) || takeaways[2] || takeaways[0];
   return `<section class="lesson-memo-card" aria-label="Fiche mémo">
-    <div class="section-title-row"><h2>🧠 Fiche mémo</h2><small>à relire avant le quiz</small></div>
+    <div class="section-title-row"><h2>${HD_ICONS.action("review")} Fiche mémo</h2><small>à relire avant le quiz</small></div>
     <div class="memo-grid">
       <div><b>Idée à maîtriser</b><span>${escapeHtml(proof?.text || proof || "Appuie ta réponse sur un élément du cours.")}</span></div>
       <div><b>Nuance importante</b><span>${escapeHtml(trap?.text || trap || "Garde une réponse située et précise.")}</span></div>
     </div>
     <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p>Retrouve la réponse dans le cours puis vérifie-toi avec le quiz final.</p></details>
-    ${mystery && isAccessibleMystery(mystery.id) ? `<button class="ghost wide" data-open-linked-mystery="${escapeHtml(mystery.id)}">🕵️ Revoir le mystère lié</button>` : ""}
+    ${mystery && isAccessibleMystery(mystery.id) ? `<button class="ghost wide" data-open-linked-mystery="${escapeHtml(mystery.id)}">Revoir le mystère lié</button>` : ""}
   </section>`;
 }
 
@@ -7792,21 +7792,21 @@ function renderLessonText(lesson, content) {
     ? `<section class="lesson-choice-panel quiz-flow-panel" aria-label="Quiz final">
       <div><span class="card-label">Étape finale</span><h2>Quiz final</h2><p>Réponds aux 5 questions. Le cours se valide automatiquement à ${progressForHeader.threshold}/${quizItems.length} bonnes réponses ou plus.</p></div>
       <div class="lesson-view-tabs">
-        ${lessonTabButton("express", "⚡ Relire express", "court")}
-        ${lessonTabButton("complete", "📚 Relire complet", "5 min")}
+        ${lessonTabButton("express", "Relire express", "court")}
+        ${lessonTabButton("complete", "Relire complet", "5 min")}
       </div>
     </section>`
     : `<section class="lesson-choice-panel" aria-label="Choisir le format du cours">
       <div><span class="card-label">Choisis ton format</span><h2>${view === "complete" ? "Cours complet" : "Cours express"}</h2><p>${view === "complete" ? "Une vraie lecture d’environ 5 minutes, avec contexte, acteurs, traces, pièges et synthèse." : "Le format court : dates, lieux, acteurs et exemple concret. Tu peux basculer vers le complet si tu veux plus d’infos."}</p></div>
       <div class="lesson-view-tabs">
-        ${lessonTabButton("express", "⚡ Express", "court")}
-        ${lessonTabButton("complete", "📚 Complet", "5 min")}
+        ${lessonTabButton("express", "Express", "court")}
+        ${lessonTabButton("complete", "Complet", "5 min")}
       </div>
     </section>`;
   const intro = `<section class="lesson-hook">
       <span class="card-label">${content.ready ? "⭐ Sélection" : fastLabel}</span>
       <p>${escapeHtml(content.hook)}</p>
-      <div class="lesson-meta"><span>${content.ready ? "⭐ sélection" : "🧭 repères"}</span><span>⚡ express court</span><span>📚 lecture complète</span><span>✅ quiz obligatoire</span></div>
+      <div class="lesson-meta"><span>${content.ready ? "Sélection" : "Repères"}</span><span>Express court</span><span>Lecture complète</span><span>Quiz obligatoire</span></div>
     </section>`;
   if (view === "complete") {
     const completeBlocks = expandedCompleteBlocks(lesson, content);
@@ -7814,11 +7814,11 @@ function renderLessonText(lesson, content) {
     return `${intro}${tabs}
       <section class="text-block express-block compact-reminder"><div class="section-title-row"><h2>Avant de creuser</h2><small>repères</small></div>${keyFactsMarkup || ""}<p>${escapeHtml(content.express[0] || content.hook)}</p></section>
       <section class="complete-course-panel" data-focus-target="complete">
-        <div class="section-title-row"><h2>📚 Cours complet</h2><small>${estimatedMinutes} min de lecture</small></div>
+        <div class="section-title-row"><h2>${HD_ICONS.action("lesson")} Cours complet</h2><small>${estimatedMinutes} min de lecture</small></div>
         ${completeBlocks.map(block => `<section class="text-block deep-reading-block"><h2>${escapeHtml(block.title)}</h2><div class="deep-reading-text">${paragraphMarkup(block.text)}</div></section>`).join("")}
       </section>
       ${lessonTakeawayMarkup(takeaways)}
-      <section class="lesson-next-choice"><button type="button" data-lesson-view="quiz">✅ Continuer vers le quiz</button></section>`;
+      <section class="lesson-next-choice"><button type="button" data-lesson-view="quiz">Continuer vers le quiz</button></section>`;
   }
   if (view === "quiz") {
     const progress = quizProgressForLesson(lesson.id, quizItems.length);
@@ -7831,7 +7831,7 @@ function renderLessonText(lesson, content) {
         ${quizItems.map((item, index) => quizItemMarkup(item, index, quizItems, lesson, content)).join("")}
         <div class="quiz-footer">
           <button type="button" class="ghost" data-reset-quiz>${progress.passed ? "Refaire pour réviser" : "Recommencer le quiz"}</button>
-          ${progress.passed ? `<span class="quiz-auto-valid">✅ Cours validé automatiquement</span>` : progress.answeredCount >= quizItems.length ? `<span>Score insuffisant : ${progress.correctCount}/${quizItems.length}. Recommence pour valider.</span>` : `<span>Encore ${quizItems.length - progress.answeredCount} question(s) à faire.</span>`}
+          ${progress.passed ? `<span class="quiz-auto-valid">Cours validé automatiquement</span>` : progress.answeredCount >= quizItems.length ? `<span>Score insuffisant : ${progress.correctCount}/${quizItems.length}. Recommence pour valider.</span>` : `<span>Encore ${quizItems.length - progress.answeredCount} question(s) à faire.</span>`}
         </div>
       </section>`;
   }
@@ -7847,11 +7847,11 @@ function renderLessonText(lesson, content) {
   const memoCard = "";
   return `${intro}${tabs}
     <section class="express-coach-card" data-focus-target="express">
-      <div class="section-title-row"><div><span class="card-label">⚡ Express</span><h2>Express</h2></div><small>utile et concret</small></div>
+      <div class="section-title-row"><div><span class="card-label">Format court</span><h2>Express</h2></div><small>utile et concret</small></div>
       ${keyFactsMarkup}
       <div class="express-steps clean-express">${expressCards}${memoCard}</div>
     </section>
-    <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">📚 Passer au cours complet</button><button type="button" data-lesson-view="quiz">✅ Continuer vers le quiz</button></section>`;
+    <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">Passer au cours complet</button><button type="button" data-lesson-view="quiz">Continuer vers le quiz</button></section>`;
 }
 
 function renderMystery() {
@@ -7872,11 +7872,11 @@ function renderMystery() {
   renderShell(`
     <header class="topbar"><button data-home>←</button><div><p class="eyebrow">Mystère ${today ? "du jour" : "d’archive"} · ${stats.solved}/${stats.total} résolus</p><h1>${escapeHtml(mysteryDisplayTitle(mystery))}</h1></div></header>
     <section class="card mystery-card big quick-mystery case-file-card">
-      <div class="card-label">${difficultyStars(mystery.difficulty)} · ${difficultyLabel(mystery.difficulty)} · ${today ? (solved ? "quotidien terminé" : `quotidien · +${reward.gems} 💎`) : "archive débloquée"}</div>
+      <div class="card-label">${difficultyStars(mystery.difficulty)} · ${difficultyLabel(mystery.difficulty)} · ${today ? (solved ? "quotidien terminé" : `quotidien · +${reward.gems} gemme${reward.gems > 1 ? "s" : ""}`) : "archive débloquée"}</div>
       ${mysteryBriefMarkup(mystery, lesson)}
       <p class="case-title-hidden">${escapeHtml(mystery.caseTitle || "Sujet à identifier")}</p>
       <p class="prompt">${escapeHtml(mysteryPublicPrompt(mystery))}</p>
-      <div class="mystery-meter"><span>🧠 réponse précise</span><span>💡 ${hints}/${Math.min(3, (mystery.clues || []).length)} indices choisis</span><span>🎯 ${tries} essai${tries > 1 ? "s" : ""}</span><span>⭐ ${mysteryScore(mystery.id)} XP possible</span></div>
+      <div class="mystery-meter"><span>Réponse précise</span><span>${hints}/${Math.min(3, (mystery.clues || []).length)} indices choisis</span><span>${tries} essai${tries > 1 ? "s" : ""}</span><span>${mysteryScore(mystery.id)} XP possible</span></div>
       ${!solved ? `<div class="score-explain"><b>Barème clair</b><span>indice choisi : -${SCORE_PENALTY_HINT} XP potentiel · essai supplémentaire : -${SCORE_PENALTY_EXTRA_TRY} XP · aucune aide donnée automatiquement</span></div>${scoreBreakdownMarkup(mystery.id)}` : ""}
       <div class="hints">${(mystery.clues || []).slice(0, hints).map((c, index) => `<p><b>${escapeHtml(mysteryHintLabels()[index] || `Indice ${index + 1}`)}</b> · ${escapeHtml(c)}</p>`).join("")}</div>
       ${feedback && !solved ? `<p class="guess-feedback">${escapeHtml(feedback)}</p>` : ""}
@@ -7884,12 +7884,12 @@ function renderMystery() {
     </section>
     ${solved && lesson ? `<section class="card after-mystery">
       <div class="card-label">Après le mystère</div>
-      <h2>${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</h2>
+      <h2>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</h2>
       <p>Tu as débloqué la porte d’entrée. Maintenant tu choisis : stop, résumé express, ou cours complet. Rien n’est imposé.</p>
       <div class="after-actions">
         <button class="ghost" data-home-stop>Je m’arrête là</button>
-        <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="express">⚡ Résumé 1 min</button>
-        <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="complete">📚 Cours complet</button>
+        <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="express">Résumé 1 min</button>
+        <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="complete">Cours complet</button>
       </div>
     </section>` : ""}
     <section class="card mystery-progress-card daily-loop-card">
@@ -7898,13 +7898,13 @@ function renderMystery() {
       <p>${solved && today ? `C’est volontaire : pas de binge. Nouveau dossier dans ${timeToNextDaily()}, avec une nouvelle chance de marquer fort.` : "Le mystère principal reste celui du jour. Les archives sont un rattrapage limité, pas un mode infini."}</p>
       <div class="mystery-progress-grid">
         <div><strong>${stats.solved}/${stats.total}</strong><span>mystères résolus</span></div>
-        <div><strong>${state.gems || 0} 💎</strong><span>gemmes dispo</span></div>
+        <div><strong>${state.gems || 0}</strong><span>gemmes dispo</span></div>
         <div><strong>${state.streak || 0}</strong><span>série quotidienne</span></div>
       </div>
     </section>
     ${archiveBacklogMarkup()}
     <section class="mystery-shelf archive-shelf" data-archive-shelf>
-      <div class="section-title-row"><h2>Archives récentes</h2><small>${archiveUnlockedCount()} ouverte(s) · ${ARCHIVE_UNLOCK_COST} 💎 par dossier</small></div>
+      <div class="section-title-row"><h2>Archives récentes</h2><small>${archiveUnlockedCount()} ouverte(s) · ${ARCHIVE_UNLOCK_COST} gemme${ARCHIVE_UNLOCK_COST > 1 ? "s" : ""} par dossier</small></div>
       ${state.archiveFeedback ? `<p class="archive-feedback">${escapeHtml(state.archiveFeedback)}</p>` : ""}
       ${archives.map(entry => archiveCard(entry)).join("")}
     </section>
@@ -7941,7 +7941,7 @@ function archiveCard({ mystery, offset }) {
   const label = solved ? "résolu" : unlocked ? "débloqué" : `J-${offset}`;
   return `<article class="card mystery-mini archive-mini tap-card ${solved ? "solved" : ""} ${!accessible ? "locked" : ""}">
     <div><span class="difficulty-pill">${difficultyStars(mystery.difficulty)} ${difficultyLabel(mystery.difficulty)} · ${label}</span><h3>${escapeHtml(accessible ? mysteryDisplayTitle(mystery) : (mystery.caseTitle || "Dossier verrouillé"))}</h3><small class="archive-type-line">${escapeHtml(mysterySubjectTypeLabel(mystery, relatedLessonForMystery(mystery) || {}))}</small><p>${escapeHtml(short(mysteryTeaser(mystery), 118))}</p></div>
-    ${accessible ? `<button data-open-mystery-id="${escapeHtml(mystery.id)}">${solved ? "Revoir" : "Ouvrir"}</button>` : `<button data-unlock-mystery="${escapeHtml(mystery.id)}">Débloquer · ${ARCHIVE_UNLOCK_COST} 💎</button>`}
+    ${accessible ? `<button data-open-mystery-id="${escapeHtml(mystery.id)}">${solved ? "Revoir" : "Ouvrir"}</button>` : `<button data-unlock-mystery="${escapeHtml(mystery.id)}">Débloquer · ${ARCHIVE_UNLOCK_COST} gemme${ARCHIVE_UNLOCK_COST > 1 ? "s" : ""}</button>`}
   </article>`;
 }
 function scopeLabel(scope = state.rankScope || "daily") {
@@ -8766,12 +8766,12 @@ function renderProfile() {
     ${installPromptMarkup()}
     ${profileSettingsMarkup()}
     <section class="achievement-grid achievement-modern">
-      ${achievement("🔥", "Série 3 jours", state.achievements.streak3)}
-      ${achievement("⚡", "Série 7 jours", state.achievements.streak7)}
-      ${achievement("📖", "Première leçon", state.achievements.firstLesson)}
-      ${achievement("🕵️", "Premier mystère", state.achievements.firstMystery)}
-      ${achievement("🎯", "Sans indice", state.achievements.noHint)}
-      ${achievement("🧠", "Mystère expert", state.achievements.expertMystery)}
+      ${achievement(HD_ICONS.action("spark"), "Série 3 jours", state.achievements.streak3)}
+      ${achievement(HD_ICONS.action("spark"), "Série 7 jours", state.achievements.streak7)}
+      ${achievement(HD_ICONS.action("lesson"), "Première leçon", state.achievements.firstLesson)}
+      ${achievement(HD_ICONS.action("mystery"), "Premier mystère", state.achievements.firstMystery)}
+      ${achievement(HD_ICONS.action("check"), "Sans indice", state.achievements.noHint)}
+      ${achievement(HD_ICONS.action("review"), "Mystère expert", state.achievements.expertMystery)}
     </section>`);
   $(`[data-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
   const pseudoForm = $(`[data-pseudo-form]`);
@@ -8898,7 +8898,7 @@ function disciplineCard(discipline, active) {
   const stats = disciplineProgress(discipline.id);
   const status = stats.ready ? `${stats.done}/${stats.total} cours · ${stats.progress}%` : (stats.planned ? `${stats.chapters} grands chapitres · bientôt` : "bientôt");
   return `<button class="discipline-card ${active ? "active" : ""}" data-discipline="${escapeHtml(discipline.id)}" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <span class="discipline-icon">${discipline.emoji}</span>
+    <span class="discipline-icon">${HD_ICONS.discipline(discipline)}</span>
     <strong>${escapeHtml(discipline.title)}</strong>
     <small>${escapeHtml(status)}</small>
     <em>${escapeHtml(discipline.description)}</em>
@@ -8926,7 +8926,7 @@ function selectDiscipline(disciplineId) {
 }
 function disciplineEmptyMarkup(discipline) {
   return `<section class="card discipline-empty-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="discipline-empty-icon">${discipline.emoji}</div>
+    <div class="discipline-empty-icon">${HD_ICONS.discipline(discipline)}</div>
     <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>La discipline est prête dans l’interface, pas encore remplie.</h2><p>On garde l’app légère : pas besoin d’ajouter cinquante cours vides. Dès qu’on écrira les contenus, ils apparaîtront ici avec le même système express, cours complet et quiz.</p></div>
   </section>`;
 }
@@ -8953,7 +8953,7 @@ function treeWorldCard(world, active) {
   const mysteries = treeMysteryCountForWorld(world.id);
   const progress = percent(done, lessons.length);
   return `<article class="tree-card theme-card ${active ? "active" : ""}" data-tree-world="${escapeHtml(world.id)}" tabindex="0" role="button">
-    <div class="theme-icon" style="--theme-accent:${escapeHtml(world.accent || "#fbbf24")}">${world.emoji || "📚"}</div>
+    <div class="theme-icon" style="--theme-accent:${escapeHtml(world.accent || "#fbbf24")}">${HD_ICONS.world(world, discipline)}</div>
     <div>
       <h2>${escapeHtml(world.title)}</h2>
       <p>${escapeHtml(world.subtitle || world.timeframe || "Parcours")}</p>
@@ -8970,7 +8970,7 @@ function treeLessonCard(lesson, index, world) {
   const locked = lessonLockedByDailyMystery(lesson);
   if (locked) {
     return `<article class="tree-lesson locked" data-locked-lesson="${escapeHtml(lesson.id)}" tabindex="0" role="button">
-      <span class="tree-lesson-number">🔒</span>
+      <span class="tree-lesson-number">${HD_ICONS.action("lock")}</span>
       <div><h3>Cours verrouillé anti-spoil</h3><p>Ce cours explique le mystère du jour. Résous le dossier pour l’ouvrir.</p><small>${escapeHtml(world.title)} · mystère d’abord</small></div>
       <strong>bloqué</strong>
     </article>`;
@@ -8978,7 +8978,7 @@ function treeLessonCard(lesson, index, world) {
   const status = done ? "Validé" : progress.passed ? "Quiz réussi" : progress.correctCount ? `${progress.correctCount}/5 quiz` : "À faire";
   return `<article class="tree-lesson ${done ? "done" : ""}" data-lesson="${escapeHtml(lesson.id)}" tabindex="0" role="button">
     <span class="tree-lesson-number">${done ? "✓" : index + 1}</span>
-    <div><h3>${lesson.emoji || "📜"} ${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.period || lesson.location || world.title)}</p><small>${escapeHtml(world.title)} · ⚡ express · 📚 complet · ✅ quiz${mystery ? " · 🕵️ mystère lié" : ""}</small></div>
+    <div><h3>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.period || lesson.location || world.title)}</p><small>${escapeHtml(world.title)} · Express · Complet · Quiz${mystery ? " · Mystère lié" : ""}</small></div>
     <strong>${status}</strong>
   </article>`;
 }
@@ -9010,7 +9010,7 @@ function disciplineWheelMarkup() {
   }).join("");
   const legend = allStats.map(({ discipline, stats }) => {
     const meta = stats.ready ? `${stats.done}/${stats.total} cours` : `${stats.chapters || 0} chapitres`; 
-    return `<div class="discipline-progress-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${discipline.emoji}</span><strong>${escapeHtml(discipline.title)}</strong><em>${escapeHtml(meta)}</em><b>${stats.progress}%</b></div>`;
+    return `<div class="discipline-progress-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${HD_ICONS.discipline(discipline)}</span><strong>${escapeHtml(discipline.title)}</strong><em>${escapeHtml(meta)}</em><b>${stats.progress}%</b></div>`;
   }).join("");
   return `<section class="card trivial-profile-card culture-profile-card">
     <div class="section-title-row"><div><span class="card-label">Profil culturel</span><h2>Ton camembert de progression</h2><p>Chaque domaine garde sa tranche. Les cours validés remplissent progressivement la couleur, sans mélanger les disciplines.</p></div><small>${average}% moyen</small></div>
@@ -9049,7 +9049,7 @@ function renderLearn() {
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">1 · Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === groupId, disciplineId)).join("")}</div></section>
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">Thèmes du chapitre</span><h2>${escapeHtml(chapterDisplayTitle(group.title, "Parcours"))}</h2></div><small>${worlds.length} thèmes</small></div><div class="tree-grid themes-grid">${worlds.map(item => treeWorldCard(item, item.id === world.id)).join("")}</div></section>
     ${learnFilterMarkup(lessons, shownLessons)}
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre thème ou reviens au parcours principal.") : "Explore un autre thème pour l’instant."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre thème ou reviens au parcours principal.") : "Explore un autre thème pour l’instant."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
   $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
   document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
   document.querySelectorAll("[data-tree-group]").forEach(card => {
@@ -12170,7 +12170,7 @@ function modeSwitcherMarkup() {
     ${DISCIPLINES.map(item => {
       const active = item.id === activeDisciplineId();
       const stats = disciplineProgress(item.id);
-      return `<button type="button" class="mode-pill ${active ? "active" : ""}" data-home-discipline="${escapeHtml(item.id)}" style="--discipline-accent:${escapeHtml(item.accent)}"><span>${item.emoji}</span><strong>${escapeHtml(disciplineModeCopy(item.id).shortLabel)}</strong><small>${stats.progress}%</small></button>`;
+      return `<button type="button" class="mode-pill ${active ? "active" : ""}" data-home-discipline="${escapeHtml(item.id)}" style="--discipline-accent:${escapeHtml(item.accent)}"><span>${HD_ICONS.discipline(item)}</span><strong>${escapeHtml(disciplineModeCopy(item.id).shortLabel)}</strong><small>${stats.progress}%</small></button>`;
     }).join("")}
   </section>`;
 }
@@ -12179,7 +12179,7 @@ function modeSnapshotMarkup(disciplineId = activeDisciplineId()) {
   const mode = disciplineModeCopy(discipline.id);
   const readyText = readyLessons.length ? `${readyLessons.length} cours` : `${worlds.length} thèmes posés`;
   return `<section class="card home-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="home-mode-card-main"><span class="mode-badge">${discipline.emoji} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
+    <div class="home-mode-card-main"><span class="mode-badge">${HD_ICONS.discipline(discipline)} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
     <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${groups.length}</b><span>grands chapitres</span></div><div><b>${readyText}</b><span>${readyLessons.length ? "contenu" : "structure"}</span></div></div>
   </section>`;
 }
@@ -12189,7 +12189,7 @@ function modeContinueMarkup(disciplineId = activeDisciplineId()) {
   const first = worlds[0] || null;
   const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
   return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${first.emoji || discipline.emoji} ${escapeHtml(first.title)}` : "Parcours"}</h2></div><small>${groups.length} chapitres</small></div>
+    <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${HD_ICONS.world(first, discipline)} ${escapeHtml(first.title)}` : "Parcours"}</h2></div><small>${groups.length} chapitres</small></div>
     <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} ${first?.planned ? "Explore les chapitres disponibles dans cette discipline." : ""}</p>
     <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
     <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les chapitres</button></div>
@@ -12222,14 +12222,14 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
   const groups = treeGroups(discipline.id);
   const items = modeRecommendationItems(discipline.id);
   return `<section class="card home-main-card home-discovery-card mode-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
+    <div class="section-title-row"><div><span class="card-label">${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
     <p>${escapeHtml(mode.discoveryIntro)}</p>
     <div class="home-discovery-grid">
       ${items.map((world, index) => {
         const group = groups.find(item => item.id === world.group) || {};
         return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
           <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
-          <h3>${world.emoji || discipline.emoji} ${escapeHtml(world.title)}</h3>
+          <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
           <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
           <small>${escapeHtml(world.timeframe || group.range || "parcours")}</small>
           <button type="button" data-open-mode-world="${escapeHtml(world.id)}">Ouvrir</button>
@@ -12246,13 +12246,13 @@ function renderHome() {
   const mystery = dailyMystery();
   const reward = dailyRewardPreview();
   const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
-  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} 💎 si tu résous aujourd’hui`;
+  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} gemme${reward.gems > 1 ? "s" : ""} si tu résous aujourd’hui`;
   renderShell(`
     <header class="hero compact home-clean-hero home-mode-hero" style="--discipline-accent:${escapeHtml(discipline.accent)}">
       <div>
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
-        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
+        <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
     </header>
 
@@ -12261,7 +12261,7 @@ function renderHome() {
 
     ${mystery ? `<section class="card home-main-card home-mystery-card mode-mystery-card" data-home-mystery role="button" tabindex="0" style="--discipline-accent:${escapeHtml(discipline.accent)}">
       <div class="section-title-row">
-        <div><span class="card-label">🕵️ Mystère ${escapeHtml(mode.noun)} du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
+        <div><span class="card-label">Mystère ${escapeHtml(mode.noun)} du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
         <small>${solvedToday ? "résolu" : difficultyStars(mystery.difficulty)}</small>
       </div>
       <p>${escapeHtml(short(mysteryTeaser(mystery), 205))}</p>
@@ -12337,7 +12337,7 @@ function disciplineWheelMarkup() {
   }).join("");
   const legend = allStats.map(({ discipline, stats }) => {
     const meta = stats.ready ? `${stats.done}/${stats.total} cours` : `${stats.chapters || 0} chapitres`; 
-    return `<div class="discipline-progress-row token-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${discipline.emoji}</span><strong>${escapeHtml(discipline.title)}</strong><em>${escapeHtml(meta)}</em><b>${stats.progress}%</b></div>`;
+    return `<div class="discipline-progress-row token-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${HD_ICONS.discipline(discipline)}</span><strong>${escapeHtml(discipline.title)}</strong><em>${escapeHtml(meta)}</em><b>${stats.progress}%</b></div>`;
   }).join("");
   return `<section class="card trivial-profile-card culture-profile-card culture-token-card">
     <div class="section-title-row"><div><span class="card-label">Profil culturel</span><h2>Ton jeton de culture</h2><p>Chaque tranche représente une discipline. Les pourcentages montent avec les cours réellement validés.</p></div><small>${average}% moyen</small></div>
@@ -12382,11 +12382,11 @@ function renderShell(content) {
   applyDisciplineTheme();
   const immersiveLesson = state.tab === "lesson";
   const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav">
-        ${navButton("home", "⌂", "Accueil")}
-        ${navButton("learn", "📖", "Cours")}
-        ${navButton("mystery", "🕵️", "Mystère")}
-        ${navButton("rank", "🏆", "Classement")}
-        ${navButton("profile", "👤", "Profil")}
+        ${navButton("home", "home", "Accueil")}
+        ${navButton("learn", "courses", "Cours")}
+        ${navButton("mystery", "mystery", "Mystère")}
+        ${navButton("rank", "ranking", "Classement")}
+        ${navButton("profile", "profile", "Profil")}
       </nav>`;
   app.innerHTML = `
     <main class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
@@ -16095,7 +16095,7 @@ function modeContinueMarkup(disciplineId = activeDisciplineId()) {
     const first = worlds[0] || null;
     const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
     return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${first.emoji || discipline.emoji} ${escapeHtml(first.title)}` : "Parcours"}</h2></div><small>${groups.length} chapitres</small></div>
+      <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${HD_ICONS.world(first, discipline)} ${escapeHtml(first.title)}` : "Parcours"}</h2></div><small>${groups.length} chapitres</small></div>
       <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} Explore les chapitres disponibles dans cette discipline.</p>
       <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
       <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les chapitres</button></div>
@@ -16109,7 +16109,7 @@ function modeContinueMarkup(disciplineId = activeDisciplineId()) {
   const action = progress.answeredCount && !progress.passed ? `Reprendre le quiz (${progress.answeredCount}/${progress.total})` : (lessonDone(lesson.id) ? "Revoir" : "Commencer");
   const view = progress.answeredCount && !progress.passed ? "quiz" : "express";
   return `<section class="card home-main-card home-continue-card mode-continue-card mode-course-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${lesson.emoji || discipline.emoji} ${escapeHtml(content.title || lesson.title)}</h2></div><small>${ratio}%</small></div>
+    <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${lesson.emoji || discipline.emoji} ${escapeHtml(content.title || lesson.title)}</h2></div><small>${ratio}%</small></div>
     <p>${escapeHtml(short(content.hook || content.express?.[0] || discipline.description, 190))}</p>
     <div class="mode-progress-line"><i style="width:${Math.max(5, ratio)}%"></i></div>
     <div class="home-card-footer"><span>${done}/${lessons.length} cours validés</span><button type="button" data-home-continue="${escapeHtml(lesson.id)}" data-home-continue-view="${escapeHtml(view)}">${escapeHtml(action)}</button></div>
@@ -16128,7 +16128,7 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
   const lessons = rotatedModeLessons(discipline.id, 3);
   if (lessons.length) {
     return `<section class="card home-main-card home-discovery-card mode-recommend-card mode-course-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>Les meilleurs points d’entrée</h2></div><small>${lessons.length} cours${lessons.length > 1 ? "s" : ""}</small></div>
+      <div class="section-title-row"><div><span class="card-label">${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>Les meilleurs points d’entrée</h2></div><small>${lessons.length} cours${lessons.length > 1 ? "s" : ""}</small></div>
       <p>Chaque proposition te donne un résumé rapide, une lecture plus posée et un quiz pour vérifier que tu as compris.</p>
       <div class="home-discovery-grid">
         ${lessons.map((lesson, index) => {
@@ -16150,14 +16150,14 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
   const groups = treeGroups(discipline.id);
   const items = modeRecommendationItems(discipline.id);
   return `<section class="card home-main-card home-discovery-card mode-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · pistes</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
+    <div class="section-title-row"><div><span class="card-label">${escapeHtml(mode.shortLabel)} · pistes</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
     <p>${escapeHtml(mode.discoveryIntro)}</p>
     <div class="home-discovery-grid">
       ${items.map((world, index) => {
         const group = groups.find(item => item.id === world.group) || {};
         return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
           <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
-          <h3>${world.emoji || discipline.emoji} ${escapeHtml(world.title)}</h3>
+          <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
           <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
           <small>${escapeHtml(world.timeframe || group.range || "parcours")}</small>
           <button type="button" data-open-mode-world="${escapeHtml(world.id)}">Ouvrir</button>
@@ -16215,7 +16215,7 @@ function performanceSettingsMarkup() {
       text: "Plus animé. À garder si ton téléphone reste fluide."
     }
   }[mode] || { label: "Fluide animé", text: "Mode recommandé." };
-  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(copy.label)}</h2><p>${escapeHtml(copy.text)}</p></div><div class="performance-actions three"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">⚡ Animé</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">🧊 Statique</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">✨ Visuel</button></div></section>`;
+  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(copy.label)}</h2><p>${escapeHtml(copy.text)}</p></div><div class="performance-actions three"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">Animé</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">Statique</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">Visuel</button></div></section>`;
 }
 function beta113ScreenChanged(previous, next, patch = {}) {
   if (!previous || !next) return true;
@@ -16248,11 +16248,11 @@ function renderShell(content) {
   const immersiveLesson = state.tab === "lesson";
   const motionClass = beta113ConsumeMotionClass();
   const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav" aria-label="Navigation principale">
-        ${navButton("home", "⌂", "Accueil")}
-        ${navButton("learn", "📖", "Cours")}
-        ${navButton("mystery", "🕵️", "Mystère")}
-        ${navButton("rank", "🏆", "Classement")}
-        ${navButton("profile", "👤", "Profil")}
+        ${navButton("home", "home", "Accueil")}
+        ${navButton("learn", "courses", "Cours")}
+        ${navButton("mystery", "mystery", "Mystère")}
+        ${navButton("rank", "ranking", "Classement")}
+        ${navButton("profile", "profile", "Profil")}
       </nav>`;
   app.innerHTML = `
     <main class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${motionClass} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
@@ -16795,7 +16795,7 @@ function beta117ChapterHero(group, discipline, groupId, disciplineId) {
 }
 function beta117PlannedWorldsMarkup(worlds) {
   if (!worlds.length) return "";
-  return `<section class="card beta117-planned-topics"><span class="card-label">Thèmes préparés</span><h2>Ce chapitre arrive bientôt.</h2><div class="beta117-topic-list">${worlds.map(world => `<span>${world.emoji || "📚"} ${escapeHtml(world.title)}</span>`).join("")}</div></section>`;
+  return `<section class="card beta117-planned-topics"><span class="card-label">Thèmes préparés</span><h2>Ce chapitre arrive bientôt.</h2><div class="beta117-topic-list">${worlds.map(world => `<span>${HD_ICONS.world(world, null)} ${escapeHtml(world.title)}</span>`).join("")}</div></section>`;
 }
 function beta117RenderLearnChapters(disciplineId, discipline, groups) {
   renderShell(`
@@ -16881,20 +16881,20 @@ renderHome = function beta117RenderHome() {
   const mystery = dailyMystery();
   const reward = dailyRewardPreview();
   const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
-  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} 💎 si tu résous aujourd’hui`;
+  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} gemme${reward.gems > 1 ? "s" : ""} si tu résous aujourd’hui`;
   renderShell(`
     <header class="hero compact home-clean-hero home-mode-hero" style="--discipline-accent:${escapeHtml(discipline.accent)}">
       <div>
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
-        <div class="hero-metrics"><span>🔥 ${state.streak || 0}</span><span>💎 ${state.gems || 0}</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
+        <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
     </header>
     ${modeSwitcherMarkup()}
     ${modeSnapshotMarkup(disciplineId)}
     ${mystery ? `<section class="card home-main-card home-mystery-card mode-mystery-card beta117-home-mystery-card" data-home-mystery role="button" tabindex="0" style="--discipline-accent:${escapeHtml(discipline.accent)}">
       <div class="section-title-row">
-        <div><span class="card-label">🕵️ Mystère ${escapeHtml(mode.noun)} du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
+        <div><span class="card-label">Mystère ${escapeHtml(mode.noun)} du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
         <small>${solvedToday ? "résolu" : difficultyStars(mystery.difficulty)}</small>
       </div>
       <p>${escapeHtml(short(mysteryTeaser(mystery), 205))}</p>
@@ -19593,7 +19593,7 @@ modeSnapshotMarkup = function beta139ModeSnapshotMarkup(disciplineId = activeDis
   const { discipline, progress, groups, worlds, readyLessons, mysteryCount } = disciplineHomeStats(disciplineId);
   const mode = disciplineModeCopy(discipline.id);
   return `<section class="card home-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="home-mode-card-main"><span class="mode-badge">${discipline.emoji} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
+    <div class="home-mode-card-main"><span class="mode-badge">${HD_ICONS.discipline(discipline)} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
     <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${readyLessons.length}</b><span>cours</span></div><div><b>${mysteryCount}</b><span>mystères</span></div></div>
   </section>`;
 };
@@ -19611,7 +19611,7 @@ modeContinueMarkup = function beta139ModeContinueMarkup(disciplineId = activeDis
     </section>`;
   }
   return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first.emoji || discipline.emoji} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
+    <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${first.emoji || discipline.emoji} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
     <p>${escapeHtml(first.subtitle || group?.description || discipline.description)}</p>
     <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
     <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les cours</button></div>
@@ -19647,7 +19647,7 @@ modeRecommendationsMarkup = function beta139ModeRecommendationsMarkup(discipline
   const items = modeRecommendationItems(discipline.id);
   if (!items.length) return "";
   return `<section class="card home-main-card home-discovery-card mode-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">📚 ${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} piste(s)</small></div>
+    <div class="section-title-row"><div><span class="card-label">${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} piste(s)</small></div>
     <p>${escapeHtml(mode.discoveryIntro)}</p>
     <div class="home-discovery-grid">
       ${items.map((world, index) => {
@@ -19655,7 +19655,7 @@ modeRecommendationsMarkup = function beta139ModeRecommendationsMarkup(discipline
         const count = treeLessonsForWorld(world.id).length;
         return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
           <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · ${count} cours</span>
-          <h3>${world.emoji || discipline.emoji} ${escapeHtml(world.title)}</h3>
+          <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
           <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
           <small>${escapeHtml(world.timeframe || group.range || "parcours")}</small>
           <button type="button" data-open-mode-world="${escapeHtml(world.id)}">Ouvrir</button>
@@ -19715,7 +19715,7 @@ renderLearn = function beta139RenderLearn() {
     const mystery = dailyMystery();
     return renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Les cours de cette discipline arrivent progressivement.</p></div></header>
       ${disciplineSelectorMarkup(disciplineId)}
-      <section class="card discipline-empty-card" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${discipline.emoji}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours jouable ici</h2><p>Tu peux déjà jouer le mystère de cette catégorie. Les cours seront ajoutés quand le parcours sera assez solide.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
+      <section class="card discipline-empty-card" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${HD_ICONS.discipline(discipline)}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours jouable ici</h2><p>Tu peux déjà jouer le mystère de cette catégorie. Les cours seront ajoutés quand le parcours sera assez solide.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
   }
   return beta139PreviousRenderLearn ? beta139PreviousRenderLearn() : null;
 };
@@ -21051,7 +21051,7 @@ if (typeof modeSnapshotMarkup === "function") {
       ? (groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).filter(Boolean).join(" · ") || discipline.description)
       : "Commence par le mystère du jour. Les cours de cette catégorie seront ajoutés progressivement.";
     return `<section class="card home-mode-card beta152-mode-summary" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="home-mode-card-main"><span class="mode-badge">${discipline.emoji} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(intro)}</p></div>
+      <div class="home-mode-card-main"><span class="mode-badge">${HD_ICONS.discipline(discipline)} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(intro)}</p></div>
       <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${readyLessons.length}</b><span>cours</span></div><div><b>${mysteryCount}</b><span>mystères</span></div></div>
     </section>`;
   };
@@ -21073,7 +21073,7 @@ if (typeof modeContinueMarkup === "function") {
       </section>`;
     }
     return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="section-title-row"><div><span class="card-label">▶️ Continuer en ${escapeHtml(discipline.title)}</span><h2>${first.emoji || discipline.emoji} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
+      <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${first.emoji || discipline.emoji} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
       <p>${escapeHtml(first.subtitle || group?.description || discipline.description)}</p>
       <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
       <div class="home-card-footer"><span>${escapeHtml(beta152ModeStateLine(id))}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les cours</button></div>
@@ -21103,7 +21103,7 @@ if (typeof renderLearn === "function") {
       const mystery = dailyMystery();
       renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Cette catégorie commence par les mystères. Les cours suivront progressivement.</p></div></header>
         ${disciplineSelectorMarkup(disciplineId)}
-        <section class="card discipline-empty-card beta152-discipline-empty" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${discipline.emoji}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours dans ce mode</h2><p>Tu peux déjà jouer le mystère du jour. Les cours seront ajoutés quand le parcours sera assez solide.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
+        <section class="card discipline-empty-card beta152-discipline-empty" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${HD_ICONS.discipline(discipline)}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours dans ce mode</h2><p>Tu peux déjà jouer le mystère du jour. Les cours seront ajoutés quand le parcours sera assez solide.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
       $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
       $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() }));
       document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
@@ -21867,7 +21867,7 @@ try {
   handleQuizChoice = function beta165HandleQuizChoice(lessonId, qi, ci){ const lesson=allLessons().find(l=>key(l.id)===key(lessonId)); if(!lesson) return false; const content=buildLessonContent(lesson), items=normalizeQuizPack(content.quiz,lesson,content), item=items[qi]; if(!item) return false; const k=key(lesson.id), p=lessonQuizState(k); if(Number.isInteger(p.answers?.[qi])||Number.isInteger(p.answers?.[String(qi)])||p.passed) return false; const choices=quizChoicesFor(item,items,lesson,content,qi), choice=choices[ci]; if(!choice) return false; const answers={...(p.answers||{}),[qi]:ci}, correct={...(p.correct||{}),[qi]:Boolean(choice.correct)}; const ccount=Object.values(correct).filter(Boolean).length, acount=Object.keys(answers).length, threshold=lessonQuizPassThreshold(items.length), passed=acount>=items.length&&ccount>=threshold, failed=acount>=items.length&&!passed; const quizProgress={...(state.quizProgress||{}),[k]:{...p,answers,correct,attempts:Number(p.attempts||0)+1,passed}}; const newly=passed&&!lessonDone(lesson.id), completedLessons=newly?{...(state.completedLessons||{}),[lesson.id]:true}:state.completedLessons, achievements=newly?{...(state.achievements||{}),firstLesson:true}:state.achievements, gain=newly?Number(lesson.xp||55):0; const quizFeedback={...(state.quizFeedback||{}),[k]:passed?`Quiz réussi : ${ccount}/${items.length}. Cours validé automatiquement.`:failed?`Score : ${ccount}/${items.length}. Il faut au moins ${threshold}/${items.length}.`:choice.correct?`Correct. ${ccount}/${items.length} bonne(s).`:`Réponse fausse. Continue : validation à ${threshold}/${items.length}.`}; setSafe({quizProgress,quizFeedback,quizStep:{...qmap("quizStep"),[k]:qi},completedLessons,achievements,xp:xpTotal()+gain,lessonView:"quiz",lessonFocus:null}); if(gain) try{showXPToast?.(gain,"leçon validée")}catch{}; return true; };
   resetLessonQuiz = function beta165ResetLessonQuiz(lessonId){ const k=key(lessonId), qp={...(state.quizProgress||{})}, qf={...(state.quizFeedback||{})}, qs={...qmap("quizStep")}; delete qp[k]; delete qf[k]; delete qs[k]; setSafe({quizProgress:qp,quizFeedback:qf,quizStep:qs,lessonView:"quiz",lessonFocus:null}); };
   const prevLessonText = typeof renderLessonText === "function" ? renderLessonText : null;
-  if (prevLessonText) renderLessonText = function beta165RenderLessonText(lesson,content){ if(typeof lessonView==="function"&&lessonView()!=="quiz") return prevLessonText(lesson,content); const items=normalizeQuizPack(content.quiz,lesson,content), rt=quizRuntime(lesson.id,items.length), facts=(typeof lessonKeyFacts==="function"?lessonKeyFacts(lesson,content):[]), feedback=state.quizFeedback?.[key(lesson.id)]||""; const intro=`<section class="lesson-hook beta165-lesson-hook"><span class="card-label">Quiz final</span><p>${esc(content.hook||lesson.title||"Réponds aux questions.")}</p></section>`, tabs=`<section class="lesson-choice-panel quiz-flow-panel beta165-quiz-tabs"><div><span class="card-label">Étape finale</span><h2>Quiz en ${items.length} étapes</h2><p>Une question à la fois : moins lourd, plus lisible.</p></div><div class="lesson-view-tabs">${lessonTabButton("express","⚡ Relire express","court")}${lessonTabButton("complete","📚 Relire complet","5 min")}</div><small>${rt.correct}/${items.length} bonnes · seuil ${rt.threshold}/${items.length}</small></section>`, factsHtml=facts.length?`<div class="key-facts beta165-quiz-facts"><b>Repères utiles</b>${facts.slice(0,4).map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:""; if(rt.finished||rt.passed) return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${rt.correct}/${items.length}</small></div><div class="beta165-score-panel ${rt.passed?"good":"bad"}"><b>${rt.passed?"✅ Cours validé":"Score insuffisant"}</b><span>${rt.passed?"L’XP du cours est prise en compte dans le classement total.":`Il faut ${rt.threshold}/${items.length}. Recommence pour valider.`}</span></div>${feedback?`<p class="quiz-global-feedback ${rt.passed?"good":""}">${esc(feedback)}</p>`:""}<div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="express">Relire le cours</button></div></section>`; const i=rt.step,item=items[i],choices=quizChoicesFor(item,items,lesson,content,i), selectedRaw=rt.p.answers?.[i]??rt.p.answers?.[String(i)], selected=Number.isInteger(selectedRaw)?selectedRaw:null, answered=Number.isInteger(selected), ok=Boolean(rt.p.correct?.[i]||rt.p.correct?.[String(i)]), selectedChoice=answered?choices[selected]:null; return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${i+1}/${items.length}</h2></div><small>${rt.correct}/${items.length} bonnes</small></div><div class="beta165-quiz-progress" aria-hidden="true">${items.map((_,n)=>`<i class="${Number.isInteger(rt.p.answers?.[n])||Number.isInteger(rt.p.answers?.[String(n)])?(rt.p.correct?.[n]||rt.p.correct?.[String(n)]?"ok":"ko"):n===i?"current":""}"></i>`).join("")}</div>${feedback?`<p class="quiz-global-feedback">${esc(feedback)}</p>`:""}<article class="quiz-card beta165-single-question ${answered?(ok?"correct":"wrong"):"open"}"><div class="quiz-question-head"><b>${i+1}</b><div>${item.kind?`<em>${esc(item.kind)}</em>`:""}<h3>${esc(item.q)}</h3></div></div><div class="quiz-choices" role="group" aria-label="Question ${i+1}">${choices.map((ch,n)=>`<button type="button" class="quiz-choice ${selected===n?(ch.correct?"selected correct":"selected wrong"):""}" data-quiz-choice="${i}" data-choice-index="${n}" ${answered?"disabled":""}><span>${String.fromCharCode(65+n)}</span>${esc(ch.text)}</button>`).join("")}</div>${answered?(ok?`<p class="quiz-result good"><b>Correct.</b> ${esc(item.a||"")}</p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"Cette réponse reprend précisément l’idée expliquée dans le cours.")}</p>${item.evidence?`<p class="quiz-evidence"><strong>À retrouver dans le cours :</strong> ${esc(item.evidence)}</p>`:""}`:`<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${esc(item.a||"")}</strong></p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"La correction reprend l’idée explicitement expliquée dans le cours.")}</p>${item.trap?`<p class="quiz-trap"><strong>Le piège :</strong> ${esc(item.trap)}</p>`:""}${item.evidence?`<p class="quiz-evidence"><strong>À revoir dans le cours :</strong> ${esc(item.evidence)}</p>`:""}`):`<p class="quiz-result neutral">Choisis la réponse la plus précise. La correction apparaîtra après ton choix.</p>`}</article><div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Recommencer</button>${answered?`<button type="button" data-quiz-next="${esc(lesson.id)}">${rt.answered>=items.length?"Voir le bilan":"Continuer"}</button>`:`<span>Réponds pour continuer.</span>`}</div></section>`; };
+  if (prevLessonText) renderLessonText = function beta165RenderLessonText(lesson,content){ if(typeof lessonView==="function"&&lessonView()!=="quiz") return prevLessonText(lesson,content); const items=normalizeQuizPack(content.quiz,lesson,content), rt=quizRuntime(lesson.id,items.length), facts=(typeof lessonKeyFacts==="function"?lessonKeyFacts(lesson,content):[]), feedback=state.quizFeedback?.[key(lesson.id)]||""; const intro=`<section class="lesson-hook beta165-lesson-hook"><span class="card-label">Quiz final</span><p>${esc(content.hook||lesson.title||"Réponds aux questions.")}</p></section>`, tabs=`<section class="lesson-choice-panel quiz-flow-panel beta165-quiz-tabs"><div><span class="card-label">Étape finale</span><h2>Quiz en ${items.length} étapes</h2><p>Une question à la fois : moins lourd, plus lisible.</p></div><div class="lesson-view-tabs">${lessonTabButton("express","Relire express","court")}${lessonTabButton("complete","Relire complet","5 min")}</div><small>${rt.correct}/${items.length} bonnes · seuil ${rt.threshold}/${items.length}</small></section>`, factsHtml=facts.length?`<div class="key-facts beta165-quiz-facts"><b>Repères utiles</b>${facts.slice(0,4).map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:""; if(rt.finished||rt.passed) return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${rt.correct}/${items.length}</small></div><div class="beta165-score-panel ${rt.passed?"good":"bad"}"><b>${rt.passed?"Cours validé":"Score insuffisant"}</b><span>${rt.passed?"L’XP du cours est prise en compte dans le classement total.":`Il faut ${rt.threshold}/${items.length}. Recommence pour valider.`}</span></div>${feedback?`<p class="quiz-global-feedback ${rt.passed?"good":""}">${esc(feedback)}</p>`:""}<div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="express">Relire le cours</button></div></section>`; const i=rt.step,item=items[i],choices=quizChoicesFor(item,items,lesson,content,i), selectedRaw=rt.p.answers?.[i]??rt.p.answers?.[String(i)], selected=Number.isInteger(selectedRaw)?selectedRaw:null, answered=Number.isInteger(selected), ok=Boolean(rt.p.correct?.[i]||rt.p.correct?.[String(i)]), selectedChoice=answered?choices[selected]:null; return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${i+1}/${items.length}</h2></div><small>${rt.correct}/${items.length} bonnes</small></div><div class="beta165-quiz-progress" aria-hidden="true">${items.map((_,n)=>`<i class="${Number.isInteger(rt.p.answers?.[n])||Number.isInteger(rt.p.answers?.[String(n)])?(rt.p.correct?.[n]||rt.p.correct?.[String(n)]?"ok":"ko"):n===i?"current":""}"></i>`).join("")}</div>${feedback?`<p class="quiz-global-feedback">${esc(feedback)}</p>`:""}<article class="quiz-card beta165-single-question ${answered?(ok?"correct":"wrong"):"open"}"><div class="quiz-question-head"><b>${i+1}</b><div>${item.kind?`<em>${esc(item.kind)}</em>`:""}<h3>${esc(item.q)}</h3></div></div><div class="quiz-choices" role="group" aria-label="Question ${i+1}">${choices.map((ch,n)=>`<button type="button" class="quiz-choice ${selected===n?(ch.correct?"selected correct":"selected wrong"):""}" data-quiz-choice="${i}" data-choice-index="${n}" ${answered?"disabled":""}><span>${String.fromCharCode(65+n)}</span>${esc(ch.text)}</button>`).join("")}</div>${answered?(ok?`<p class="quiz-result good"><b>Correct.</b> ${esc(item.a||"")}</p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"Cette réponse reprend précisément l’idée expliquée dans le cours.")}</p>${item.evidence?`<p class="quiz-evidence"><strong>À retrouver dans le cours :</strong> ${esc(item.evidence)}</p>`:""}`:`<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${esc(item.a||"")}</strong></p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"La correction reprend l’idée explicitement expliquée dans le cours.")}</p>${item.trap?`<p class="quiz-trap"><strong>Le piège :</strong> ${esc(item.trap)}</p>`:""}${item.evidence?`<p class="quiz-evidence"><strong>À revoir dans le cours :</strong> ${esc(item.evidence)}</p>`:""}`):`<p class="quiz-result neutral">Choisis la réponse la plus précise. La correction apparaîtra après ton choix.</p>`}</article><div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Recommencer</button>${answered?`<button type="button" data-quiz-next="${esc(lesson.id)}">${rt.answered>=items.length?"Voir le bilan":"Continuer"}</button>`:`<span>Réponds pour continuer.</span>`}</div></section>`; };
 
   function findMystery(id){ try { return mysteryById?.(id) || null; } catch { return null; } }
   function openMystery(id, feedback=""){ const m=findMystery(id); if(!m) return setSafe({tab:"mystery",archiveFeedback:"Mystère introuvable."}); let d="history"; try{d=mysteryDisciplineId?.(m)||activeDisciplineId?.()||"history"}catch{} setSafe({tab:"mystery",currentMysteryId:m.id,currentMysteryDiscipline:d,currentDiscipline:d,archiveFeedback:feedback}); topSoon(); }

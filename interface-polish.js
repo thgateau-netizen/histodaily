@@ -69,7 +69,7 @@
       try { world = lessonWorld(next) || {}; } catch {}
       const started = Number(state.quizProgress?.[next.id]?.answeredCount || 0) > 0;
       return `<section class="card beta182-next-card" style="--discipline-accent:${esc(discipline.accent)}">
-        <div class="beta182-next-icon">${next.emoji || world.emoji || discipline.emoji || "📚"}</div>
+        <div class="beta182-next-icon">${HD_ICONS.lesson(next, world, discipline)}</div>
         <div class="beta182-next-copy"><span class="card-label">À continuer · ${done}/${totalLessons.length || 0}</span><h2>${esc(lessonTitle(next))}</h2><p>${esc(world.title || discipline.title)} · ${progress}% du domaine validé</p></div>
         <button type="button" data-home-continue="${esc(next.id)}" data-home-continue-view="${started ? "quiz" : "express"}">${started ? "Reprendre" : "Commencer"}</button>
       </section>`;
@@ -95,7 +95,7 @@
           let world = {};
           try { world = lessonWorld(lesson) || {}; } catch {}
           return `<article class="beta182-discovery-item ${lessonIsDone(lesson) ? "done" : ""}" data-home-discovery="${esc(lesson.id)}" tabindex="0" role="button">
-            <span>${lesson.emoji || world.emoji || discipline.emoji || "📚"}</span>
+            <span>${HD_ICONS.lesson(lesson, world, discipline)}</span>
             <strong>${esc(lessonTitle(lesson))}</strong>
             <small>${lessonIsDone(lesson) ? "Déjà validé" : esc(world.title || discipline.title)}</small>
           </article>`;
@@ -108,11 +108,11 @@
     disciplineSelectorMarkup = function beta182DisciplineSelectorMarkup(selectedId = activeDisciplineId()) {
       const selected = disciplineById(selectedId);
       return `<section class="discipline-picker card beta182-discipline-picker" style="--discipline-accent:${esc(selected.accent)}">
-        <div class="beta182-picker-heading"><div><span class="card-label">Discipline</span><h2>${selected.emoji} ${esc(selected.title)}</h2></div><small>Glisse pour changer</small></div>
+        <div class="beta182-picker-heading"><div><span class="card-label">Discipline</span><h2>${HD_ICONS.discipline(selected)} ${esc(selected.title)}</h2></div><small>Glisse pour changer</small></div>
         <div class="beta182-discipline-tabs" role="list" aria-label="Disciplines">${DISCIPLINES.map(item => {
           const stats = disciplineProgress(item.id);
           const active = item.id === selected.id;
-          return `<button type="button" role="listitem" class="${active ? "active" : ""}" data-discipline="${esc(item.id)}" style="--discipline-accent:${esc(item.accent)}" aria-pressed="${active ? "true" : "false"}"><span>${item.emoji}</span><strong>${esc(disciplineModeCopy(item.id).shortLabel || item.title)}</strong><small>${stats.progress}%</small></button>`;
+          return `<button type="button" role="listitem" class="${active ? "active" : ""}" data-discipline="${esc(item.id)}" style="--discipline-accent:${esc(item.accent)}" aria-pressed="${active ? "true" : "false"}"><span>${HD_ICONS.discipline(item)}</span><strong>${esc(disciplineModeCopy(item.id).shortLabel || item.title)}</strong><small>${stats.progress}%</small></button>`;
         }).join("")}</div>
       </section>`;
     };
@@ -124,7 +124,7 @@
       if (!home) return previousReleaseNotesMarkup({ home });
       const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
       if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
-      return `<section class="card beta182-update-card"><details><summary><span>✨ Nouveautés de la ${esc(HISTODAILY_CORE.ui?.versionLabel || "mise à jour")}</span><small>Voir</small></summary><div><ul>${notes.map(note => `<li>${esc(note)}</li>`).join("")}</ul><button type="button" class="ghost wide" data-dismiss-release>J’ai compris</button></div></details></section>`;
+      return `<section class="card beta182-update-card"><details><summary><span>Nouveautés de la ${esc(HISTODAILY_CORE.ui?.versionLabel || "mise à jour")}</span><small>Voir</small></summary><div><ul>${notes.map(note => `<li>${esc(note)}</li>`).join("")}</ul><button type="button" class="ghost wide" data-dismiss-release>J’ai compris</button></div></details></section>`;
     };
   }
 
@@ -191,7 +191,7 @@
     const culture = directShellChildren(shell, [".culture-profile-card"]);
     makeFold(shell, culture, {
       id: "culture",
-      icon: "📊",
+      icon: HD_ICONS.action("ranking"),
       title: "Progression détaillée",
       subtitle: "Voir le jeton et les pourcentages par discipline"
     });
@@ -202,7 +202,7 @@
     ]);
     makeFold(shell, social, {
       id: "social",
-      icon: "👥",
+      icon: HD_ICONS.action("users"),
       title: "Social et classements",
       subtitle: "Pseudo, amis, invitations et comparaison des scores"
     });
@@ -212,7 +212,7 @@
     ]);
     makeFold(shell, settings, {
       id: "settings",
-      icon: "⚙️",
+      icon: HD_ICONS.action("settings"),
       title: "Réglages et données",
       subtitle: "Affichage, installation, sauvegarde et réparation"
     });

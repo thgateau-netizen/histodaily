@@ -1,4 +1,4 @@
-# HistoDaily beta 187 — Expédition guidée, accès totalement libre
+# HistoDaily beta 188 — Expédition guidée, accès totalement libre
 
 ## Principe
 

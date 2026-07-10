@@ -150,7 +150,7 @@
     status.log.bonusAt = now();
     state.xp = Number(state.xp || 0) + DAILY_PLAN_XP;
     updateTodayLearningLog(status.log);
-    if (notify) showProgressionToast(`✨ Programme du jour terminé · +${DAILY_PLAN_XP} XP`);
+    if (notify) showProgressionToast(`Programme du jour terminé · +${DAILY_PLAN_XP} XP`);
     return true;
   }
 
@@ -196,7 +196,7 @@
     };
     state.xp = Number(state.xp || 0) + WEEKLY_REWARD_XP;
     persistSoon();
-    if (notify) showProgressionToast(`🏆 Objectif hebdomadaire terminé · +${WEEKLY_REWARD_XP} XP`);
+    if (notify) showProgressionToast(`Objectif hebdomadaire terminé · +${WEEKLY_REWARD_XP} XP`);
     return true;
   }
 
@@ -333,44 +333,52 @@
   }
 
   const COLLECTION_NAMES = {
-    "art-avantgardes": ["⚡", "Avant-gardiste"],
-    "art-renaissance": ["🖼️", "Humaniste"],
-    "cinema-early": ["🎞️", "Pionnier du cinéma"],
-    "cinema-hollywood": ["⭐", "Cinéphile classique"],
-    "sci-astronomy": ["🪐", "Astronome amateur"],
-    "sci-evolution": ["🧬", "Naturaliste"],
-    "sci-vaccines-microbes": ["🦠", "Chasseur de microbes"],
-    "sci-computers-space": ["🛰️", "Explorateur numérique"],
-    "eco-money-banks": ["💳", "Apprenti banquier"],
-    "eco-crises": ["📉", "Analyste des crises"],
-    "geo-maps": ["🧭", "Cartographe"],
-    "geo-cities": ["🏙️", "Urbaniste"],
-    "geo-risks": ["🌋", "Expert des risques"],
-    "music-baroque": ["🎻", "Maître du baroque"],
-    "music-jazz-blues": ["🎷", "Oreille jazz"],
-    "music-rap-electronic": ["🎧", "Beatmaker curieux"],
-    "astro-scales": ["📏", "Mesureur du cosmos"],
-    "astro-cosmology": ["🌠", "Cosmologiste curieux"],
-    "astro-stellar-life": ["⭐", "Explorateur des étoiles"],
-    "astro-sun": ["☀️", "Veilleur solaire"],
-    "astro-formation-rocky": ["🪨", "Architecte des planètes"],
-    "astro-giants-moons": ["🪐", "Voyageur des mondes géants"],
-    "astro-small-bodies": ["☄️", "Chasseur de comètes"],
-    "astro-exoplanets-life": ["🌍", "Chercheur d’autres mondes"],
-    "astro-observation": ["🔭", "Observateur du ciel"],
-    "astro-spaceflight": ["🚀", "Navigateur spatial"]
+    "art-avantgardes": ["spark", "Avant-gardiste"],
+    "art-renaissance": ["art", "Humaniste"],
+    "cinema-early": ["cinema", "Pionnier du cinéma"],
+    "cinema-hollywood": ["trophy", "Cinéphile classique"],
+    "sci-astronomy": ["astronomy", "Astronome amateur"],
+    "sci-evolution": ["science", "Naturaliste"],
+    "sci-vaccines-microbes": ["science", "Chasseur de microbes"],
+    "sci-computers-space": ["astronomy", "Explorateur numérique"],
+    "eco-money-banks": ["economy", "Apprenti banquier"],
+    "eco-crises": ["ranking", "Analyste des crises"],
+    "geo-maps": ["map", "Cartographe"],
+    "geo-cities": ["geography", "Urbaniste"],
+    "geo-risks": ["warning", "Expert des risques"],
+    "music-baroque": ["music", "Maître du baroque"],
+    "music-jazz-blues": ["music", "Oreille jazz"],
+    "music-rap-electronic": ["music", "Beatmaker curieux"],
+    "astro-scales": ["science", "Mesureur du cosmos"],
+    "astro-cosmology": ["astronomy", "Cosmologiste curieux"],
+    "astro-stellar-life": ["astronomy", "Explorateur des étoiles"],
+    "astro-sun": ["astronomy", "Veilleur solaire"],
+    "astro-formation-rocky": ["science", "Architecte des planètes"],
+    "astro-giants-moons": ["astronomy", "Voyageur des mondes géants"],
+    "astro-small-bodies": ["astronomy", "Chasseur de comètes"],
+    "astro-exoplanets-life": ["astronomy", "Chercheur d’autres mondes"],
+    "astro-observation": ["astronomy", "Observateur du ciel"],
+    "astro-spaceflight": ["astronomy", "Navigateur spatial"]
   };
 
   const DISCIPLINE_MEDALS = {
-    history: ["🏛️", "Grand historien"],
-    art: ["🎨", "Œil de critique"],
-    cinema: ["🎬", "Cinéphile accompli"],
-    "science-inventions": ["🧪", "Esprit scientifique"],
-    economy: ["📈", "Économiste en herbe"],
-    geography: ["🗺️", "Géographe du monde"],
-    music: ["🎼", "Mélomane accompli"],
-    astronomy: ["🌌", "Astronome accompli"]
+    history: ["history", "Grand historien"],
+    art: ["art", "Œil de critique"],
+    cinema: ["cinema", "Cinéphile accompli"],
+    "science-inventions": ["science", "Esprit scientifique"],
+    economy: ["economy", "Économiste en herbe"],
+    geography: ["geography", "Géographe du monde"],
+    music: ["music", "Mélomane accompli"],
+    astronomy: ["astronomy", "Astronome accompli"]
   };
+
+
+
+  function progressionIcon(iconToken) {
+    if (!iconToken) return HD_ICONS.action("medal");
+    if (String(iconToken).includes('<span class="hd-icon')) return iconToken;
+    return HD_ICONS.action(String(iconToken));
+  }
 
   function collectionDefinitions() {
     const definitions = [];
@@ -381,13 +389,13 @@
       try { lessons = (treeLessonsForWorld?.(world.id) || []).filter(isCuratedLesson); } catch {}
       if (lessons.length < 2) return;
       const disciplineId = worldDisciplineId(world);
-      const custom = COLLECTION_NAMES[world.id] || [world.emoji || disciplineById(disciplineId).emoji || "🏅", world.title || "Thème maîtrisé"];
+      const custom = COLLECTION_NAMES[world.id] || [HD_ICONS.world(world, disciplineById(disciplineId)), world.title || "Thème maîtrisé"];
       definitions.push({
         id: `theme:${world.id}`,
         type: "theme",
         worldId: world.id,
         disciplineId,
-        icon: custom[0],
+        icon: progressionIcon(custom[0]),
         title: custom[1],
         description: `Terminer tous les cours du thème « ${world.title} ».`,
         lessonIds: lessons.map(lesson => lesson.id)
@@ -396,12 +404,12 @@
     DISCIPLINES.forEach(discipline => {
       const lessons = disciplineLessons(discipline.id);
       if (lessons.length < 4) return;
-      const custom = DISCIPLINE_MEDALS[discipline.id] || [discipline.emoji, `${discipline.title} accompli`];
+      const custom = DISCIPLINE_MEDALS[discipline.id] || [HD_ICONS.discipline(discipline), `${discipline.title} accompli`];
       definitions.push({
         id: `discipline:${discipline.id}`,
         type: "discipline",
         disciplineId: discipline.id,
-        icon: custom[0],
+        icon: progressionIcon(custom[0]),
         title: custom[1],
         description: `Valider tous les cours disponibles en ${discipline.title}.`,
         lessonIds: lessons.map(lesson => lesson.id)
@@ -517,13 +525,13 @@
   function openReviewSession(disciplineId = "") {
     const entries = validReviewEntries(disciplineId).slice(0, 10);
     const discipline = disciplineId ? disciplineById(disciplineId) : null;
-    const dialog = createProgressionModal("🧠 Révisions intelligentes", discipline ? `Consolider ta mémoire en ${discipline.title}` : "Consolider ta mémoire");
+    const dialog = createProgressionModal("Révisions intelligentes", discipline ? `Consolider ta mémoire en ${discipline.title}` : "Consolider ta mémoire");
     if (!entries.length) {
       const scheduled = allReviewEntries(disciplineId);
       const next = nextScheduledReview(disciplineId);
       dialog.content.innerHTML = scheduled.length
-        ? `<div class="beta179-empty-state"><b>⏳ Rien à revoir maintenant</b><p>${scheduled.length} question${scheduled.length > 1 ? "s sont programmées" : " est programmée"}. La prochaine reviendra ${next ? dueLabel(next.dueAt) : "plus tard"} afin de vérifier que l’idée reste en mémoire.</p><button type="button" data-beta179-finish>Fermer</button></div>`
-        : `<div class="beta179-empty-state"><b>✅ Mémoire à jour</b><p>Les questions ratées seront ajoutées ici. Elles reviendront ensuite à intervalles espacés jusqu’à être réellement maîtrisées.</p><button type="button" data-beta179-finish>Fermer</button></div>`;
+        ? `<div class="beta179-empty-state"><b>Rien à revoir maintenant</b><p>${scheduled.length} question${scheduled.length > 1 ? "s sont programmées" : " est programmée"}. La prochaine reviendra ${next ? dueLabel(next.dueAt) : "plus tard"} afin de vérifier que l’idée reste en mémoire.</p><button type="button" data-beta179-finish>Fermer</button></div>`
+        : `<div class="beta179-empty-state"><b>Mémoire à jour</b><p>Les questions ratées seront ajoutées ici. Elles reviendront ensuite à intervalles espacés jusqu’à être réellement maîtrisées.</p><button type="button" data-beta179-finish>Fermer</button></div>`;
       dialog.content.querySelector("[data-beta179-finish]")?.addEventListener("click", () => closeProgressionModal({ rerender: true }));
       return;
     }
@@ -547,7 +555,7 @@
       const stageLabel = Number(entry.stage || 0) === 0 ? "à corriger" : `niveau mémoire ${Number(entry.stage || 0)}/3`;
       dialog.content.innerHTML = `<div class="beta179-session-progress"><span>Question ${cursor + 1}/${entries.length}</span><div><i style="width:${pct(cursor, entries.length)}%"></i></div><b>${validReviewEntries(disciplineId).length} dues</b></div>
         <article class="beta179-question-card">
-          <small>${entry.lesson.emoji || "📚"} ${esc(entry.lesson.title)} · ${stageLabel}</small>
+          <small>${HD_ICONS.lesson(entry.lesson)} ${esc(entry.lesson.title)} · ${stageLabel}</small>
           <h3>${esc(record.item.q)}</h3>
           <div class="beta179-answer-grid">${record.choices.map((choice, index) => `<button type="button" data-beta179-answer="${index}"><span>${String.fromCharCode(65 + index)}</span>${esc(choice.text)}</button>`).join("")}</div>
           <div class="beta179-answer-feedback" aria-live="polite"></div>
@@ -576,7 +584,7 @@
       const due = validReviewEntries(disciplineId).length;
       const memory = allReviewEntries(disciplineId).length;
       const scheduled = Math.max(0, memory - due);
-      dialog.content.innerHTML = `<div class="beta179-session-summary"><div class="beta179-summary-icon">${due ? "🧠" : "✅"}</div><h3>${reinforced ? `${reinforced} notion${reinforced > 1 ? "s" : ""} consolidée${reinforced > 1 ? "s" : ""}` : "Session terminée"}</h3><p>${mastered ? `${mastered} question${mastered > 1 ? "s sont désormais maîtrisées" : " est désormais maîtrisée"}. ` : ""}${due ? `${due} question${due > 1 ? "s restent à revoir maintenant" : " reste à revoir maintenant"}.` : scheduled ? `${scheduled} question${scheduled > 1 ? "s reviendront" : " reviendra"} dans les prochains jours.` : "Ta mémoire est à jour."}</p><div class="beta179-summary-stats"><span>+${reinforced * REVIEW_XP} XP</span><span>${due} due${due > 1 ? "s" : ""} · ${scheduled} programmée${scheduled > 1 ? "s" : ""}</span></div><button type="button" data-beta179-finish>Retour au parcours</button></div>`;
+      dialog.content.innerHTML = `<div class="beta179-session-summary"><div class="beta179-summary-icon">${due ? HD_ICONS.action("review") : HD_ICONS.action("check")}</div><h3>${reinforced ? `${reinforced} notion${reinforced > 1 ? "s" : ""} consolidée${reinforced > 1 ? "s" : ""}` : "Session terminée"}</h3><p>${mastered ? `${mastered} question${mastered > 1 ? "s sont désormais maîtrisées" : " est désormais maîtrisée"}. ` : ""}${due ? `${due} question${due > 1 ? "s restent à revoir maintenant" : " reste à revoir maintenant"}.` : scheduled ? `${scheduled} question${scheduled > 1 ? "s reviendront" : " reviendra"} dans les prochains jours.` : "Ta mémoire est à jour."}</p><div class="beta179-summary-stats"><span>+${reinforced * REVIEW_XP} XP</span><span>${due} due${due > 1 ? "s" : ""} · ${scheduled} programmée${scheduled > 1 ? "s" : ""}</span></div><button type="button" data-beta179-finish>Retour au parcours</button></div>`;
       dialog.content.querySelector("[data-beta179-finish]")?.addEventListener("click", () => closeProgressionModal({ rerender: true }));
     }
 
@@ -589,7 +597,7 @@
     if (lessons.length < SYNTHESIS_SIZE) return;
     const questions = lessons.map(lesson => questionRecord(lesson, deterministicQuestionIndex(lesson, stage))).filter(Boolean);
     if (questions.length < SYNTHESIS_SIZE) return;
-    const dialog = createProgressionModal(`${discipline.emoji} Quiz de synthèse`, `Bilan ${stage} · ${discipline.title}`);
+    const dialog = createProgressionModal(`${HD_ICONS.discipline(discipline)} Quiz de synthèse`, `Bilan ${stage} · ${discipline.title}`);
     let cursor = 0;
     let score = 0;
     let answered = false;
@@ -600,7 +608,7 @@
       answered = false;
       dialog.content.innerHTML = `<div class="beta179-session-progress"><span>Question ${cursor + 1}/${questions.length}</span><div><i style="width:${pct(cursor, questions.length)}%"></i></div><b>${score} juste${score > 1 ? "s" : ""}</b></div>
         <article class="beta179-question-card synthesis">
-          <small>${record.lesson.emoji || "📚"} ${esc(record.lesson.title)}</small>
+          <small>${HD_ICONS.lesson(record.lesson)} ${esc(record.lesson.title)}</small>
           <h3>${esc(record.item.q)}</h3>
           <div class="beta179-answer-grid">${record.choices.map((choice, index) => `<button type="button" data-beta179-answer="${index}"><span>${String.fromCharCode(65 + index)}</span>${esc(choice.text)}</button>`).join("")}</div>
           <div class="beta179-answer-feedback" aria-live="polite"></div>
@@ -638,10 +646,10 @@
         trackDailyActivity("synthesis", { key });
       }
       persistSoon();
-      dialog.content.innerHTML = `<div class="beta179-session-summary ${passed ? "passed" : "failed"}"><div class="beta179-summary-icon">${passed ? "🏆" : "🔁"}</div><h3>${passed ? "Bilan validé" : "Encore un effort"}</h3><p>Tu obtiens ${score}/${questions.length}. Il faut ${SYNTHESIS_PASS}/${questions.length} pour valider ce quiz de synthèse.</p><div class="beta179-summary-stats"><span>${passed && !alreadyPassed ? `+${SYNTHESIS_XP} XP` : `${score}/${questions.length}`}</span><span>${passed ? "Maîtrise confirmée" : "Tu peux recommencer"}</span></div><div class="beta179-summary-actions">${passed ? `<button type="button" data-beta179-finish>Retour au parcours</button>` : `<button type="button" data-beta179-retry>Recommencer</button><button type="button" class="ghost" data-beta179-finish>Plus tard</button>`}</div></div>`;
+      dialog.content.innerHTML = `<div class="beta179-session-summary ${passed ? "passed" : "failed"}"><div class="beta179-summary-icon">${passed ? HD_ICONS.action("trophy") : HD_ICONS.action("review")}</div><h3>${passed ? "Bilan validé" : "Encore un effort"}</h3><p>Tu obtiens ${score}/${questions.length}. Il faut ${SYNTHESIS_PASS}/${questions.length} pour valider ce quiz de synthèse.</p><div class="beta179-summary-stats"><span>${passed && !alreadyPassed ? `+${SYNTHESIS_XP} XP` : `${score}/${questions.length}`}</span><span>${passed ? "Maîtrise confirmée" : "Tu peux recommencer"}</span></div><div class="beta179-summary-actions">${passed ? `<button type="button" data-beta179-finish>Retour au parcours</button>` : `<button type="button" data-beta179-retry>Recommencer</button><button type="button" class="ghost" data-beta179-finish>Plus tard</button>`}</div></div>`;
       dialog.content.querySelector("[data-beta179-finish]")?.addEventListener("click", () => closeProgressionModal({ rerender: true }));
       dialog.content.querySelector("[data-beta179-retry]")?.addEventListener("click", () => { closeProgressionModal(); openSynthesisQuiz(disciplineId, stage); });
-      if (passed && !alreadyPassed) showProgressionToast(`🏆 Bilan ${stage} validé · +${SYNTHESIS_XP} XP`);
+      if (passed && !alreadyPassed) showProgressionToast(`Bilan ${stage} validé · +${SYNTHESIS_XP} XP`);
     }
 
     renderQuestion();
@@ -652,7 +660,7 @@
       const progress = collectionProgress(definition);
       const unlocked = Boolean(state.collectionUnlocks?.[definition.id] || progress.complete);
       const action = interactive ? `<button type="button" class="ghost beta180-collection-open" data-beta180-open-collection="${esc(definition.id)}">${definition.type === "theme" ? "Ouvrir le thème" : "Voir le domaine"}</button>` : "";
-      return `<article class="beta179-collection-card ${unlocked ? "unlocked" : ""}" style="--collection-accent:${esc(disciplineById(definition.disciplineId).accent)}"><div class="beta179-medal">${unlocked ? definition.icon : "🔒"}</div><div><h3>${esc(definition.title)}</h3><p>${esc(definition.description)}</p><div class="beta179-mini-progress"><i style="width:${progress.progress}%"></i></div><small>${unlocked ? "Médaille débloquée" : `${progress.done}/${progress.total} cours · ${progress.progress}%`}</small>${action}</div></article>`;
+      return `<article class="beta179-collection-card ${unlocked ? "unlocked" : ""}" style="--collection-accent:${esc(disciplineById(definition.disciplineId).accent)}"><div class="beta179-medal">${unlocked ? definition.icon : HD_ICONS.action("lock")}</div><div><h3>${esc(definition.title)}</h3><p>${esc(definition.description)}</p><div class="beta179-mini-progress"><i style="width:${progress.progress}%"></i></div><small>${unlocked ? "Médaille débloquée" : `${progress.done}/${progress.total} cours · ${progress.progress}%`}</small>${action}</div></article>`;
     }).join("");
   }
 
@@ -668,7 +676,7 @@
   }
 
   function openCollectionsModal(initialFilter = "all") {
-    const dialog = createProgressionModal("🏅 Collections", "Toutes tes médailles");
+    const dialog = createProgressionModal("Collections", "Toutes tes médailles");
     let filter = initialFilter;
     function paint() {
       const definitions = prioritizedCollections();
@@ -694,7 +702,7 @@
   function masteryBarsMarkup() {
     return DISCIPLINES.map(discipline => {
       const stats = disciplineMastery(discipline.id);
-      return `<div class="beta179-mastery-row" style="--mastery-accent:${esc(discipline.accent)}"><span>${discipline.emoji}</span><div><div><strong>${esc(discipline.title)}</strong><b>${stats.score}%</b></div><div class="beta179-mastery-bar"><i style="width:${stats.score}%"></i></div><small>${stats.mastered}/${stats.total} cours pleinement maîtrisés${stats.reviews ? ` · ${stats.reviews} à revoir maintenant` : stats.memory ? ` · ${stats.memory} en mémorisation` : ""}</small></div></div>`;
+      return `<div class="beta179-mastery-row" style="--mastery-accent:${esc(discipline.accent)}"><span>${HD_ICONS.discipline(discipline)}</span><div><div><strong>${esc(discipline.title)}</strong><b>${stats.score}%</b></div><div class="beta179-mastery-bar"><i style="width:${stats.score}%"></i></div><small>${stats.mastered}/${stats.total} cours pleinement maîtrisés${stats.reviews ? ` · ${stats.reviews} à revoir maintenant` : stats.memory ? ` · ${stats.memory} en mémorisation` : ""}</small></div></div>`;
     }).join("");
   }
 
@@ -722,11 +730,11 @@
     const title = path.world?.title || disciplineById(disciplineId).title;
     if (!path.total) return "";
     if (path.complete) {
-      return `<div class="beta181-path-card complete"><div class="beta181-path-icon">🏁</div><div><span>Chapitre terminé</span><h3>${esc(title)}</h3><p>${path.done}/${path.total} cours validés · la collection associée peut être débloquée.</p></div><button type="button" class="ghost" data-beta180-collections-all>Voir les médailles</button></div>`;
+      return `<div class="beta181-path-card complete"><div class="beta181-path-icon">${HD_ICONS.action("check")}</div><div><span>Chapitre terminé</span><h3>${esc(title)}</h3><p>${path.done}/${path.total} cours validés · la collection associée peut être débloquée.</p></div><button type="button" class="ghost" data-beta180-collections-all>Voir les médailles</button></div>`;
     }
     const lesson = path.nextLesson;
-    if (!lesson) return `<div class="beta181-path-card"><div class="beta181-path-icon">🔒</div><div><span>Suite du chapitre</span><h3>${esc(title)}</h3><p>Le prochain cours est temporairement masqué pour protéger le mystère du jour.</p></div><button type="button" data-beta181-path="mystery">Jouer le mystère</button></div>`;
-    return `<div class="beta181-path-card"><div class="beta181-path-icon">${lesson.emoji || path.world?.emoji || "📚"}</div><div><span>Suite recommandée · ${path.done}/${path.total}</span><h3>${esc(lesson.title)}</h3><p>${esc(lesson.period || lesson.location || title)} · ${path.progress}% du chapitre validé</p></div><button type="button" data-beta181-path="${esc(lesson.id)}">Continuer</button></div>`;
+    if (!lesson) return `<div class="beta181-path-card"><div class="beta181-path-icon">${HD_ICONS.action("lock")}</div><div><span>Suite du chapitre</span><h3>${esc(title)}</h3><p>Le prochain cours est temporairement masqué pour protéger le mystère du jour.</p></div><button type="button" data-beta181-path="mystery">Jouer le mystère</button></div>`;
+    return `<div class="beta181-path-card"><div class="beta181-path-icon">${HD_ICONS.lesson(lesson, path.world, disciplineById(path.disciplineId || path.world?.disciplineId))}</div><div><span>Suite recommandée · ${path.done}/${path.total}</span><h3>${esc(lesson.title)}</h3><p>${esc(lesson.period || lesson.location || title)} · ${path.progress}% du chapitre validé</p></div><button type="button" data-beta181-path="${esc(lesson.id)}">Continuer</button></div>`;
   }
 
   function activeProgressionMarkup(disciplineId) {
@@ -743,13 +751,13 @@
         ? `${synth.completed.length} cours validés`
         : `${synth.checkpointProgress}/${SYNTHESIS_SIZE} vers le prochain bilan`;
     return `<section class="card beta179-learning-hub beta181-learning-hub" style="--progression-accent:${esc(discipline.accent)}">
-      <div class="section-title-row"><div><span class="card-label">Parcours guidé</span><h2>${discipline.emoji} Maîtrise ${esc(discipline.title)}</h2><p>Une prochaine étape claire, puis des rappels courts pour consolider.</p></div><strong class="beta179-big-percent">${mastery.score}%</strong></div>
+      <div class="section-title-row"><div><span class="card-label">Parcours guidé</span><h2>${HD_ICONS.discipline(discipline)} Maîtrise ${esc(discipline.title)}</h2><p>Une prochaine étape claire, puis des rappels courts pour consolider.</p></div><strong class="beta179-big-percent">${mastery.score}%</strong></div>
       <div class="beta179-master-bar"><i style="width:${mastery.score}%"></i></div>
       ${pathCardMarkup(disciplineId)}
       <div class="beta181-progress-actions">
-        <button type="button" data-beta179-review="${esc(disciplineId)}" class="${mastery.reviews ? "urgent" : ""}"><b>🧠 ${mastery.reviews ? `${mastery.reviews} à revoir` : "Mémoire à jour"}</b><span>${mastery.reviews ? "Réviser maintenant" : mastery.memory && nextReview ? `Prochaine ${dueLabel(nextReview.dueAt)}` : "Les erreurs reviendront ici"}</span></button>
-        <button type="button" ${synth.nextUnlocked ? `data-beta179-synthesis="${esc(disciplineId)}" data-beta179-stage="${synth.nextUnlocked}"` : "disabled"}><b>🏆 ${synthesisText}</b><span>${synth.nextUnlocked ? "Lancer le quiz de synthèse" : `${synth.passed} bilan${synth.passed > 1 ? "s" : ""} validé${synth.passed > 1 ? "s" : ""}`}</span></button>
-        <button type="button" data-beta180-collections-all><b>🏅 ${nextCollection ? esc(nextCollection.title) : "Collections"}</b><span>${nextCollectionProgress ? `${nextCollectionProgress.done}/${nextCollectionProgress.total} cours · ${nextCollectionProgress.progress}%` : "Voir les médailles"}</span></button>
+        <button type="button" data-beta179-review="${esc(disciplineId)}" class="${mastery.reviews ? "urgent" : ""}"><b>${HD_ICONS.action("review")} ${mastery.reviews ? `${mastery.reviews} à revoir` : "Mémoire à jour"}</b><span>${mastery.reviews ? "Réviser maintenant" : mastery.memory && nextReview ? `Prochaine ${dueLabel(nextReview.dueAt)}` : "Les erreurs reviendront ici"}</span></button>
+        <button type="button" ${synth.nextUnlocked ? `data-beta179-synthesis="${esc(disciplineId)}" data-beta179-stage="${synth.nextUnlocked}"` : "disabled"}><b>${HD_ICONS.action("trophy")} ${synthesisText}</b><span>${synth.nextUnlocked ? "Lancer le quiz de synthèse" : `${synth.passed} bilan${synth.passed > 1 ? "s" : ""} validé${synth.passed > 1 ? "s" : ""}`}</span></button>
+        <button type="button" data-beta180-collections-all><b>${HD_ICONS.action("medal")} ${nextCollection ? esc(nextCollection.title) : "Collections"}</b><span>${nextCollectionProgress ? `${nextCollectionProgress.done}/${nextCollectionProgress.total} cours · ${nextCollectionProgress.progress}%` : "Voir les médailles"}</span></button>
       </div>
     </section>`;
   }
@@ -788,9 +796,9 @@
           ? `${status.goals.consolidation.target - status.goals.consolidation.value} consolidation${status.goals.consolidation.target - status.goals.consolidation.value > 1 ? "s" : ""} à faire`
           : "Objectif terminé";
     if (compact) {
-      return `<div class="beta181-week-strip"><span>🏆 Semaine</span><div><i style="width:${pct(done, 3)}%"></i></div><b>${done}/3 objectifs</b><small>${status.claimed ? `+${WEEKLY_REWARD_XP} XP récupérés` : status.complete ? "Récompense prête" : unmet}</small></div>`;
+      return `<div class="beta181-week-strip"><span>${HD_ICONS.action("trophy")} Semaine</span><div><i style="width:${pct(done, 3)}%"></i></div><b>${done}/3 objectifs</b><small>${status.claimed ? `+${WEEKLY_REWARD_XP} XP récupérés` : status.complete ? "Récompense prête" : unmet}</small></div>`;
     }
-    return `<section class="card beta181-weekly-card"><div class="section-title-row"><div><span class="card-label">Objectif hebdomadaire</span><h2>🏆 ${done}/3 missions accomplies</h2><p>Le défi s’adapte aux activités utiles : apprendre, revenir plusieurs jours et consolider.</p></div><strong>+${WEEKLY_REWARD_XP} XP</strong></div><div class="beta181-week-goals">${weeklyGoalLine("Jours actifs", "🔥", status.goals.activeDays)}${weeklyGoalLine("Cours validés", "📚", status.goals.courses)}${weeklyGoalLine("Consolidations", "🧠", status.goals.consolidation)}</div><p class="beta181-week-note">${status.claimed ? "Objectif de la semaine déjà récompensé." : status.complete ? "Les trois missions sont terminées : la récompense est attribuée automatiquement." : "Une consolidation correspond à une révision, un bilan réussi ou un programme quotidien terminé."}</p></section>`;
+    return `<section class="card beta181-weekly-card"><div class="section-title-row"><div><span class="card-label">Objectif hebdomadaire</span><h2>${HD_ICONS.action("trophy")} ${done}/3 missions accomplies</h2><p>Le défi s’adapte aux activités utiles : apprendre, revenir plusieurs jours et consolider.</p></div><strong>+${WEEKLY_REWARD_XP} XP</strong></div><div class="beta181-week-goals">${weeklyGoalLine("Jours actifs", HD_ICONS.action("spark"), status.goals.activeDays)}${weeklyGoalLine("Cours validés", HD_ICONS.action("lesson"), status.goals.courses)}${weeklyGoalLine("Consolidations", HD_ICONS.action("review"), status.goals.consolidation)}</div><p class="beta181-week-note">${status.claimed ? "Objectif de la semaine déjà récompensé." : status.complete ? "Les trois missions sont terminées : la récompense est attribuée automatiquement." : "Une consolidation correspond à une révision, un bilan réussi ou un programme quotidien terminé."}</p></section>`;
   }
 
   function dailyPlanMarkup() {
@@ -803,7 +811,7 @@
     const practiceLabel = log.planType === "review" ? `Consolider ${reviewTarget} erreur${reviewTarget > 1 ? "s" : ""}` : "Valider un deuxième cours";
     const practiceMeta = log.planType === "review" ? `${Math.min(reviewCount, reviewTarget)}/${reviewTarget} bonne${reviewTarget > 1 ? "s" : ""} réponse${reviewTarget > 1 ? "s" : ""}` : `${Math.min(courseCount, 2)}/2 cours`;
     const nextTask = !status.mysteryDone ? "mystery" : !status.courseDone ? "course" : !status.practiceDone ? (log.planType === "review" ? "review" : "course") : "done";
-    return `<section class="card beta179-home-progress beta180-daily-plan"><div class="beta180-plan-head"><div><span class="card-label">Programme du jour</span><h2>${status.done}/3 étapes accomplies</h2><p>Une courte boucle pour jouer, apprendre puis consolider.</p></div><strong>+${DAILY_PLAN_XP} XP</strong></div><div class="beta180-plan-meter"><i style="width:${pct(status.done, 3)}%"></i></div><div class="beta180-plan-steps"><button type="button" data-beta180-task="mystery" class="${status.mysteryDone ? "done" : nextTask === "mystery" ? "current" : ""}"><b>${status.mysteryDone ? "✓" : "1"}</b><span>Résoudre le mystère<small>${status.mysteryDone ? "Rendez-vous quotidien validé" : "Jouer le dossier du jour"}</small></span></button><button type="button" data-beta180-task="course" class="${status.courseDone ? "done" : nextTask === "course" ? "current" : ""}"><b>${status.courseDone ? "✓" : "2"}</b><span>Valider un cours<small>${Math.min(courseCount, courseTarget)}/${courseTarget} cours aujourd’hui</small></span></button><button type="button" data-beta180-task="${log.planType === "review" ? "review" : "course"}" class="${status.practiceDone ? "done" : nextTask === (log.planType === "review" ? "review" : "course") ? "current" : ""}"><b>${status.practiceDone ? "✓" : "3"}</b><span>${practiceLabel}<small>${practiceMeta}</small></span></button></div><div class="beta180-plan-footer">${status.complete ? `<span>${log.bonusClaimed ? "✨ Bonus quotidien récupéré" : "Bonus prêt"}</span>` : `<span>Prochaine étape : ${nextTask === "mystery" ? "le mystère" : nextTask === "review" ? "une révision" : "un cours"}</span>`}<button type="button" data-beta180-task="${nextTask}" ${nextTask === "done" ? "disabled" : ""}>${nextTask === "mystery" ? "Jouer" : nextTask === "review" ? "Réviser" : nextTask === "course" ? "Continuer" : "Terminé"}</button></div>${weeklyProgressMarkup({ compact: true })}</section>`;
+    return `<section class="card beta179-home-progress beta180-daily-plan"><div class="beta180-plan-head"><div><span class="card-label">Programme du jour</span><h2>${status.done}/3 étapes accomplies</h2><p>Une courte boucle pour jouer, apprendre puis consolider.</p></div><strong>+${DAILY_PLAN_XP} XP</strong></div><div class="beta180-plan-meter"><i style="width:${pct(status.done, 3)}%"></i></div><div class="beta180-plan-steps"><button type="button" data-beta180-task="mystery" class="${status.mysteryDone ? "done" : nextTask === "mystery" ? "current" : ""}"><b>${status.mysteryDone ? "✓" : "1"}</b><span>Résoudre le mystère<small>${status.mysteryDone ? "Rendez-vous quotidien validé" : "Jouer le dossier du jour"}</small></span></button><button type="button" data-beta180-task="course" class="${status.courseDone ? "done" : nextTask === "course" ? "current" : ""}"><b>${status.courseDone ? "✓" : "2"}</b><span>Valider un cours<small>${Math.min(courseCount, courseTarget)}/${courseTarget} cours aujourd’hui</small></span></button><button type="button" data-beta180-task="${log.planType === "review" ? "review" : "course"}" class="${status.practiceDone ? "done" : nextTask === (log.planType === "review" ? "review" : "course") ? "current" : ""}"><b>${status.practiceDone ? "✓" : "3"}</b><span>${practiceLabel}<small>${practiceMeta}</small></span></button></div><div class="beta180-plan-footer">${status.complete ? `<span>${log.bonusClaimed ? "Bonus quotidien récupéré" : "Bonus prêt"}</span>` : `<span>Prochaine étape : ${nextTask === "mystery" ? "le mystère" : nextTask === "review" ? "une révision" : "un cours"}</span>`}<button type="button" data-beta180-task="${nextTask}" ${nextTask === "done" ? "disabled" : ""}>${nextTask === "mystery" ? "Jouer" : nextTask === "review" ? "Réviser" : nextTask === "course" ? "Continuer" : "Terminé"}</button></div>${weeklyProgressMarkup({ compact: true })}</section>`;
   }
 
   function bindProgressionActions(root = document) {
@@ -889,7 +897,7 @@
     const unlockedCount = collections.filter(definition => state.collectionUnlocks?.[definition.id] || collectionProgress(definition).complete).length;
     const collectionSection = document.createElement("section");
     collectionSection.className = "card beta179-profile-collections";
-    collectionSection.innerHTML = `<div class="section-title-row"><div><span class="card-label">Collections</span><h2>🏅 ${unlockedCount} médaille${unlockedCount > 1 ? "s" : ""} débloquée${unlockedCount > 1 ? "s" : ""}</h2><p>Chaque médaille correspond à un thème réellement terminé, pas à un achat ni à un simple niveau.</p></div><button type="button" class="ghost" data-beta180-collections-all>Voir les ${collections.length}</button></div><div class="beta179-collection-grid">${collectionCardsMarkup(collections, 4)}</div>`;
+    collectionSection.innerHTML = `<div class="section-title-row"><div><span class="card-label">Collections</span><h2>${HD_ICONS.action("medal")} ${unlockedCount} médaille${unlockedCount > 1 ? "s" : ""} débloquée${unlockedCount > 1 ? "s" : ""}</h2><p>Chaque médaille correspond à un thème réellement terminé, pas à un achat ni à un simple niveau.</p></div><button type="button" class="ghost" data-beta180-collections-all>Voir les ${collections.length}</button></div><div class="beta179-collection-grid">${collectionCardsMarkup(collections, 4)}</div>`;
 
     const weeklyWrapper = document.createElement("div");
     weeklyWrapper.innerHTML = weeklyProgressMarkup();
@@ -942,7 +950,7 @@
     if (!related.length) return;
     const section = document.createElement("section");
     section.className = "card beta179-related-courses";
-    section.innerHTML = `<div class="section-title-row"><div><span class="card-label">Cours connexes</span><h2>Tu as aimé ce sujet ?</h2><p>Poursuis avec une notion proche, dans le même thème ou le même grand chapitre.</p></div><small>${related.length} suggestions</small></div><div class="beta179-related-grid">${related.map(candidate => { const world = lessonWorld(candidate); return `<button type="button" data-beta179-related="${esc(candidate.id)}" class="${lessonDone(candidate.id) ? "done" : ""}"><span>${candidate.emoji || world.emoji || "📚"}</span><strong>${esc(candidate.title)}</strong><small>${esc(world.title)} · ${lessonDone(candidate.id) ? "validé" : "à découvrir"}</small></button>`; }).join("")}</div>`;
+    section.innerHTML = `<div class="section-title-row"><div><span class="card-label">Cours connexes</span><h2>Tu as aimé ce sujet ?</h2><p>Poursuis avec une notion proche, dans le même thème ou le même grand chapitre.</p></div><small>${related.length} suggestions</small></div><div class="beta179-related-grid">${related.map(candidate => { const world = lessonWorld(candidate); return `<button type="button" data-beta179-related="${esc(candidate.id)}" class="${lessonDone(candidate.id) ? "done" : ""}"><span>${HD_ICONS.lesson(candidate, world, null)}</span><strong>${esc(candidate.title)}</strong><small>${esc(world.title)} · ${lessonDone(candidate.id) ? "validé" : "à découvrir"}</small></button>`; }).join("")}</div>`;
     const target = root.querySelector(".reading-card");
     target?.insertAdjacentElement("afterend", section);
     bindProgressionActions(section);

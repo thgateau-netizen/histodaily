@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.187",
-  assetsVersion: "1.0.0-beta.187",
+  version: "1.0.0-beta.189",
+  assetsVersion: "1.0.0-beta.189",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 186",
+    versionLabel: "beta 189",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Astronomie devient une discipline autonome avec 20 cours, 5 chapitres et 10 thèmes complets.",
-      "Dix mystères astronomiques rejoignent la rotation quotidienne avec le cours de secours associé.",
-      "Progression dédiée : collections thématiques, médaille Astronome accompli et deux quiz de synthèse."
+      "Nettoyage avancé de l’interface : davantage d’emojis visibles sont remplacés par des icônes et libellés sobres.",
+      "Les vues cours, mystère, profil, progression et archives utilisent des repères visuels plus homogènes.",
+      "Le rendu garde une logique légère : SVG inline, peu de surcoût, et moins de bruit visuel."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

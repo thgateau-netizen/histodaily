@@ -179,18 +179,18 @@
     const lesson = rescueLesson(mystery);
     const entry = rescueEntry(mystery.id);
     if (!lesson) {
-      return `<section class="mystery-rescue-panel beta178-course-rescue unavailable"><div class="mystery-rescue-head"><span>📚 Dernier recours</span><strong>Cours en préparation</strong></div><p>Le cours correspondant n’est pas encore publié pour ce dossier.</p></section>`;
+      return `<section class="mystery-rescue-panel beta178-course-rescue unavailable"><div class="mystery-rescue-head"><span>Dernier recours</span><strong>Cours en préparation</strong></div><p>Le cours correspondant n’est pas encore publié pour ce dossier.</p></section>`;
     }
     if (!entry?.active) {
       return `<section class="mystery-rescue-panel beta178-course-rescue">
-        <div class="mystery-rescue-head"><span>📚 Dernier indice</span><strong>Apprendre plutôt que révéler</strong></div>
+        <div class="mystery-rescue-head"><span>Dernier indice</span><strong>Apprendre plutôt que révéler</strong></div>
         <p>Ouvre le cours correspondant : <b>${escapeHtml(lesson.title)}</b>. La solution deviendra évidente, mais le mystère ne sera validé qu’après le quiz du cours.</p>
         <button type="button" class="wide mystery-rescue-open" data-start-course-rescue>Étudier le cours et sauver ma série</button>
         <p class="microcopy rescue-note">Récompense réduite à ${RESCUE_SCORE} XP. La série quotidienne peut être prolongée, mais le classement distingue clairement ce sauvetage d’une résolution normale.</p>
       </section>`;
     }
     return `<section class="mystery-rescue-panel beta178-course-rescue active">
-      <div class="mystery-rescue-head"><span>📖 Cours de secours en cours</span><strong>${escapeHtml(lesson.title)}</strong></div>
+      <div class="mystery-rescue-head"><span>Cours de secours en cours</span><strong>${escapeHtml(lesson.title)}</strong></div>
       <p>Lis le cours complet puis réussis à nouveau son quiz, même si tu l’avais déjà validé auparavant. Le mystère sera alors sauvé automatiquement.</p>
       <button type="button" class="wide" data-resume-course-rescue>Reprendre le cours</button>
       <p class="microcopy rescue-note">Tant que ce nouveau quiz n’est pas réussi, la réponse directe est désactivée.</p>
@@ -245,7 +245,7 @@
     if (!appRoot || appRoot.querySelector(".beta178-lesson-rescue-banner")) return;
     const banner = document.createElement("section");
     banner.className = "card beta178-lesson-rescue-banner";
-    banner.innerHTML = `<span class="card-label">📚 Cours de secours</span><h2>Ce cours remplace le dernier indice</h2><p>Lis le contenu puis réussis le quiz complet pour sauver le mystère <b>${escapeHtml(mystery.caseTitle || "du jour")}</b>. Récompense du mystère : ${RESCUE_SCORE} XP, sans gemme.</p><small>Le simple fait d’ouvrir ou de relire le cours ne valide rien, même si tu l’avais déjà terminé.</small>`;
+    banner.innerHTML = `<span class="card-label">Cours de secours</span><h2>Ce cours remplace le dernier indice</h2><p>Lis le contenu puis réussis le quiz complet pour sauver le mystère <b>${escapeHtml(mystery.caseTitle || "du jour")}</b>. Récompense du mystère : ${RESCUE_SCORE} XP, sans gemme.</p><small>Le simple fait d’ouvrir ou de relire le cours ne valide rien, même si tu l’avais déjà terminé.</small>`;
     const header = appRoot.querySelector(".topbar");
     if (header) header.insertAdjacentElement("afterend", banner);
     else appRoot.prepend(banner);
