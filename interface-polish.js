@@ -59,7 +59,7 @@
 
       if (!next) {
         return `<section class="card beta182-next-card complete" style="--discipline-accent:${esc(discipline.accent)}">
-          <div class="beta182-next-icon">✓</div>
+          <div class="beta182-next-icon">${HD_ICONS.action("check")}</div>
           <div><span class="card-label">Parcours</span><h2>${esc(discipline.title)} terminé</h2><p>Tout le contenu disponible est validé.</p></div>
           <button type="button" data-open-mode-learn="${esc(discipline.id)}">Revoir</button>
         </section>`;

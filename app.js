@@ -889,7 +889,7 @@ function dailyRoadmapMarkup() {
     if (!mystery) return "";
     const label = offset === 0 ? "Aujourd’hui" : offset === 1 ? "Hier" : offset === 2 ? "Avant-hier" : `J-${offset}`;
     const stateLabel = offset === 0 ? (todaySolved ? "validé" : "à jouer") : (mysterySolved(mystery.id) ? "résolu" : "manqué");
-    const reward = offset === 0 ? `${dailyRewardPreview().gems} 💎` : "archive";
+    const reward = offset === 0 ? `${dailyRewardPreview().gems} gemme${dailyRewardPreview().gems > 1 ? "s" : ""}` : "archive";
     return `<div class="roadmap-day ${offset === 0 ? "today" : "past"}"><b>${escapeHtml(label)}</b><span>${difficultyStars(mystery.difficulty)} ${difficultyLabel(mystery.difficulty)}</span><small>${escapeHtml(stateLabel)} · ${escapeHtml(reward)}</small></div>`;
   }).join("");
   return `<section class="card daily-roadmap-card soft-panel"><div class="section-title-row"><div><span class="card-label">Rythme quotidien</span><h2>Les derniers dossiers disponibles.</h2></div><small>prochain dans ${timeToNextDaily()}</small></div><div class="roadmap-grid">${rows}</div></section>`;
@@ -1298,7 +1298,7 @@ function renderHome() {
 
     ${mystery ? `<section class="card home-main-card home-mystery-card" data-home-mystery role="button" tabindex="0">
       <div class="section-title-row">
-        <div><span class="card-label">🕵️ Mystère du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
+        <div><span class="card-label">${HD_ICONS.action("mystery")} Mystère du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
         <small>${solvedToday ? "résolu" : difficultyStars(mystery.difficulty)}</small>
       </div>
       <p>${escapeHtml(short(mysteryTeaser(mystery), 190))}</p>
@@ -1384,7 +1384,7 @@ function lessonCard(lesson, index) {
   if (locked) {
     return `<article class="card lesson-card locked" data-locked-lesson="${escapeHtml(lesson.id)}">
       <span class="lesson-index">${HD_ICONS.action("lock")}</span>
-      <div><h2>Cours verrouillé anti-spoil</h2><p>Ce cours explique le mystère du jour. Résous le dossier pour l’ouvrir.</p><small>Mystère d’abord · cours après résolution</small></div>
+      <div><h2>Cours verrouillé anti-spoil</h2><p>Ce cours explique le mystère du jour. Résous le dossier pour l’ouvrir.</p><small>Commence par le mystère, puis ouvre le cours.</small></div>
       <strong>bloqué</strong>
     </article>`;
   }
@@ -8898,6 +8898,7 @@ function disciplineCard(discipline, active) {
   const stats = disciplineProgress(discipline.id);
   const status = stats.ready ? `${stats.done}/${stats.total} cours · ${stats.progress}%` : (stats.planned ? `${stats.chapters} grands chapitres · bientôt` : "bientôt");
   return `<button class="discipline-card ${active ? "active" : ""}" data-discipline="${escapeHtml(discipline.id)}" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="discipline-card-art">${HD_ART.discipline(discipline.id)}</div>
     <span class="discipline-icon">${HD_ICONS.discipline(discipline)}</span>
     <strong>${escapeHtml(discipline.title)}</strong>
     <small>${escapeHtml(status)}</small>
@@ -8996,6 +8997,12 @@ function ringSlicePath(index, total, innerRadius, outerRadius, gapDeg = 1.2) {
   const large = end - start > 180 ? 1 : 0;
   return `M ${outerStart.x.toFixed(2)} ${outerStart.y.toFixed(2)} A ${outerRadius} ${outerRadius} 0 ${large} 1 ${outerEnd.x.toFixed(2)} ${outerEnd.y.toFixed(2)} L ${innerEnd.x.toFixed(2)} ${innerEnd.y.toFixed(2)} A ${innerRadius} ${innerRadius} 0 ${large} 0 ${innerStart.x.toFixed(2)} ${innerStart.y.toFixed(2)} Z`;
 }
+
+function disciplineWheelGlyph(discipline) {
+  const map = { history: 'HI', art: 'AR', cinema: 'CI', 'science-inventions': 'SC', economy: 'EC', geography: 'GE', music: 'MU', astronomy: 'AS' };
+  return map[discipline?.id] || String(discipline?.title || '?').slice(0, 2).toUpperCase();
+}
+
 function disciplineWheelMarkup() {
   const total = DISCIPLINES.length;
   const allStats = DISCIPLINES.map(discipline => ({ discipline, stats: disciplineProgress(discipline.id) }));
@@ -9003,10 +9010,10 @@ function disciplineWheelMarkup() {
   const slices = allStats.map(({ discipline, stats }, index) => {
     const mid = (index + 0.5) * 360 / total;
     const percentLabel = polarPoint(50, 50, 37, mid);
-    const emojiLabel = polarPoint(50, 50, 27, mid);
+    const glyphLabel = polarPoint(50, 50, 27, mid);
     const fillOuter = 22 + (26 * stats.progress / 100);
     const fill = stats.progress > 0.5 ? `<path class="wheel-fill" d="${ringSlicePath(index, total, 22, fillOuter, 1.7)}" fill="${escapeHtml(discipline.accent)}"></path>` : "";
-    return `<g class="wheel-segment" style="--discipline-accent:${escapeHtml(discipline.accent)}"><path class="wheel-back" d="${ringSlicePath(index, total, 22, 48, 1.7)}" fill="${escapeHtml(discipline.accent)}"></path>${fill}<text class="wheel-emoji" x="${emojiLabel.x.toFixed(1)}" y="${emojiLabel.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${discipline.emoji}</text><text class="wheel-percent" x="${percentLabel.x.toFixed(1)}" y="${percentLabel.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${stats.progress}%</text></g>`;
+    return `<g class="wheel-segment" style="--discipline-accent:${escapeHtml(discipline.accent)}"><path class="wheel-back" d="${ringSlicePath(index, total, 22, 48, 1.7)}" fill="${escapeHtml(discipline.accent)}"></path>${fill}<text class="wheel-emoji" x="${glyphLabel.x.toFixed(1)}" y="${glyphLabel.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${disciplineWheelGlyph(discipline)}</text><text class="wheel-percent" x="${percentLabel.x.toFixed(1)}" y="${percentLabel.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${stats.progress}%</text></g>`;
   }).join("");
   const legend = allStats.map(({ discipline, stats }) => {
     const meta = stats.ready ? `${stats.done}/${stats.total} cours` : `${stats.chapters || 0} chapitres`; 
@@ -12178,7 +12185,8 @@ function modeSnapshotMarkup(disciplineId = activeDisciplineId()) {
   const { discipline, progress, groups, worlds, readyLessons } = disciplineHomeStats(disciplineId);
   const mode = disciplineModeCopy(discipline.id);
   const readyText = readyLessons.length ? `${readyLessons.length} cours` : `${worlds.length} thèmes posés`;
-  return `<section class="card home-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+  return `<section class="card home-mode-card hd192-editorial-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="hd192-editorial-hero">${HD_ART.hero(discipline.id)}</div>
     <div class="home-mode-card-main"><span class="mode-badge">${HD_ICONS.discipline(discipline)} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).join(" · ") || discipline.description)}</p></div>
     <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${groups.length}</b><span>grands chapitres</span></div><div><b>${readyText}</b><span>${readyLessons.length ? "contenu" : "structure"}</span></div></div>
   </section>`;
@@ -12188,7 +12196,8 @@ function modeContinueMarkup(disciplineId = activeDisciplineId()) {
   const { discipline, groups, worlds } = disciplineHomeStats(disciplineId);
   const first = worlds[0] || null;
   const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
-  return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+  return `<section class="card home-main-card home-continue-card mode-continue-card hd192-editorial-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="hd192-editorial-side">${HD_ART.discipline(discipline.id)}</div>
     <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${HD_ICONS.world(first, discipline)} ${escapeHtml(first.title)}` : "Parcours"}</h2></div><small>${groups.length} chapitres</small></div>
     <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} ${first?.planned ? "Explore les chapitres disponibles dans cette discipline." : ""}</p>
     <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
@@ -12227,7 +12236,8 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
     <div class="home-discovery-grid">
       ${items.map((world, index) => {
         const group = groups.find(item => item.id === world.group) || {};
-        return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+        return `<article class="home-discovery-item mode-world-item hd192-world-card" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+          <div class="hd192-world-hero">${HD_ART.discipline(discipline.id)}</div>
           <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
           <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
           <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
@@ -12317,6 +12327,12 @@ function renderHome() {
   $(`[data-home-rank]`)?.addEventListener("click", () => setState({ tab: "rank" }));
   $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
   $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
+}
+
+
+function disciplineWheelGlyph(discipline) {
+  const map = { history: 'HI', art: 'AR', cinema: 'CI', 'science-inventions': 'SC', economy: 'EC', geography: 'GE', music: 'MU', astronomy: 'AS' };
+  return map[discipline?.id] || String(discipline?.title || '?').slice(0, 2).toUpperCase();
 }
 
 function disciplineWheelMarkup() {
@@ -16109,7 +16125,7 @@ function modeContinueMarkup(disciplineId = activeDisciplineId()) {
   const action = progress.answeredCount && !progress.passed ? `Reprendre le quiz (${progress.answeredCount}/${progress.total})` : (lessonDone(lesson.id) ? "Revoir" : "Commencer");
   const view = progress.answeredCount && !progress.passed ? "quiz" : "express";
   return `<section class="card home-main-card home-continue-card mode-continue-card mode-course-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${lesson.emoji || discipline.emoji} ${escapeHtml(content.title || lesson.title)}</h2></div><small>${ratio}%</small></div>
+    <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), discipline)} ${escapeHtml(content.title || lesson.title)}</h2></div><small>${ratio}%</small></div>
     <p>${escapeHtml(short(content.hook || content.express?.[0] || discipline.description, 190))}</p>
     <div class="mode-progress-line"><i style="width:${Math.max(5, ratio)}%"></i></div>
     <div class="home-card-footer"><span>${done}/${lessons.length} cours validés</span><button type="button" data-home-continue="${escapeHtml(lesson.id)}" data-home-continue-view="${escapeHtml(view)}">${escapeHtml(action)}</button></div>
@@ -16137,9 +16153,9 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
           const done = lessonDone(lesson.id);
           return `<article class="home-discovery-item ${done ? "done" : ""} mode-lesson-item" data-home-discovery="${escapeHtml(lesson.id)}" tabindex="0" role="button">
             <span class="home-discovery-kicker">${escapeHtml(world.title || discipline.title)} · cours ${index + 1}</span>
-            <h3>${lesson.emoji || discipline.emoji} ${escapeHtml(content.title || lesson.title)}</h3>
+            <h3>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(content.title || lesson.title)}</h3>
             <p>${escapeHtml(short(content.hook || content.express?.[0] || "Un sujet à découvrir avant le quiz.", 165))}</p>
-            <small>⚡ express · 📚 complet · ✅ quiz</small>
+            <small>Express · Complet · Quiz</small>
             <button type="button" data-home-discovery-open="${escapeHtml(lesson.id)}">${done ? "Revoir" : "Commencer"}</button>
           </article>`;
         }).join("")}
@@ -16155,7 +16171,8 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
     <div class="home-discovery-grid">
       ${items.map((world, index) => {
         const group = groups.find(item => item.id === world.group) || {};
-        return `<article class="home-discovery-item mode-world-item" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+        return `<article class="home-discovery-item mode-world-item hd192-world-card" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
+          <div class="hd192-world-hero">${HD_ART.discipline(discipline.id)}</div>
           <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
           <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
           <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
@@ -19611,7 +19628,7 @@ modeContinueMarkup = function beta139ModeContinueMarkup(disciplineId = activeDis
     </section>`;
   }
   return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${first.emoji || discipline.emoji} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
+    <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${HD_ICONS.world(first, discipline)} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
     <p>${escapeHtml(first.subtitle || group?.description || discipline.description)}</p>
     <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
     <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les cours</button></div>
@@ -21073,7 +21090,7 @@ if (typeof modeContinueMarkup === "function") {
       </section>`;
     }
     return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${first.emoji || discipline.emoji} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
+      <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${HD_ICONS.world(first, discipline)} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
       <p>${escapeHtml(first.subtitle || group?.description || discipline.description)}</p>
       <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
       <div class="home-card-footer"><span>${escapeHtml(beta152ModeStateLine(id))}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les cours</button></div>

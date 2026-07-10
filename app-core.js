@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.189",
-  assetsVersion: "1.0.0-beta.189",
+  version: "1.0.0-beta.192",
+  assetsVersion: "1.0.0-beta.192",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 189",
+    versionLabel: "beta 192",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Nettoyage avancé de l’interface : davantage d’emojis visibles sont remplacés par des icônes et libellés sobres.",
-      "Les vues cours, mystère, profil, progression et archives utilisent des repères visuels plus homogènes.",
-      "Le rendu garde une logique légère : SVG inline, peu de surcoût, et moins de bruit visuel."
+      "Direction artistique renforcée : arrivée de mini-illustrations éditoriales pour les disciplines et les saisons.",
+      "Les cartes de discipline, les recommandations et les saisons gagnent en chaleur et en identité visuelle.",
+      "Le rendu reste léger : uniquement des SVG inline, sans dépendance externe et avec un coût limité."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

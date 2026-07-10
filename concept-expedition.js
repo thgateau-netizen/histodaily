@@ -214,7 +214,8 @@
     const season = currentSeason();
     if (!season) return "";
     const progress = seasonProgress(season);
-    return `<section class="card hd187-season-card">
+    return `<section class="card hd187-season-card hd192-season-card">
+      <div class="hd192-season-banner">${HD_ART.season(season.icon || HD_ICONS.fromText(season.title, "spark"))}</div>
       <div class="section-title-row"><div><span class="card-label">Saison éditoriale</span><h2>${HD_ICONS.action(season.icon || HD_ICONS.fromText(season.title, "spark"))} ${esc(season.title)}</h2><p>${esc(season.description)}</p></div><strong>${progress.progress}%</strong></div>
       <div class="hd187-season-progress"><i style="width:${progress.progress}%"></i></div>
       <div class="hd187-season-footer"><span>${progress.done}/${progress.total} cours · tous restent accessibles dans le catalogue</span><div><button type="button" class="ghost" data-hd187-open-seasons>Voir la saison</button><button type="button" data-hd187-season-next="${esc(progress.next?.id || "")}">${progress.done >= progress.total ? "Revoir" : "Continuer"}</button></div></div>
@@ -226,7 +227,7 @@
     return `<section class="card hd187-free-card">
       <div class="section-title-row"><div><span class="card-label">Explorer librement</span><h2>Tu cherches un sujet précis ?</h2><p>${lessons.length} cours restent disponibles à tout moment, indépendamment de l’expédition et de la saison.</p></div><small>Accès libre</small></div>
       <div class="hd187-free-actions">
-        <button type="button" data-hd187-open-search><span>⌕</span><b>Rechercher un cours</b><small>Titre, thème, discipline ou mot-clé</small></button>
+        <button type="button" data-hd187-open-search><span>${HD_ICONS.action("search")}</span><b>Rechercher un cours</b><small>Titre, thème, discipline ou mot-clé</small></button>
         <button type="button" data-hd187-open-map><span>${HD_ICONS.action("map")}</span><b>Carte du savoir</b><small>Voir les domaines et leurs connexions</small></button>
         <button type="button" data-hd187-open-catalog><span>${HD_ICONS.action("catalog")}</span><b>Catalogue complet</b><small>Parcourir librement les chapitres</small></button>
       </div>
@@ -420,7 +421,7 @@
   function seasonsMarkup(){
     return `<div class="hd187-season-list">${seasonDefinitions().map((season, index) => {
       const progress = seasonProgress(season);
-      return `<section class="hd187-season-detail ${index === 0 ? "current" : ""}"><div><span>${HD_ICONS.action(season.icon || HD_ICONS.fromText(season.title, "spark"))}</span><div><small>${index === 0 ? "Saison actuelle" : "Collection éditoriale"}</small><h3>${esc(season.title)}</h3><p>${esc(season.description)}</p></div><strong>${progress.progress}%</strong></div><i><em style="width:${progress.progress}%"></em></i><div class="hd187-season-lessons">${season.lessons.map(lesson => `<button type="button" data-hd187-course="${esc(lesson.id)}" class="${lessonDone(lesson.id) ? "done" : ""}"><span>${lessonDone(lesson.id) ? HD_ICONS.action("check") : HD_ICONS.lesson(lesson, null, null)}</span><b>${esc(lesson.title)}</b></button>`).join("")}</div></section>`;
+      return `<section class="hd187-season-detail hd192-season-detail ${index === 0 ? "current" : ""}"><div class="hd192-season-banner compact">${HD_ART.season(season.icon || HD_ICONS.fromText(season.title, "spark"))}</div><div><span>${HD_ICONS.action(season.icon || HD_ICONS.fromText(season.title, "spark"))}</span><div><small>${index === 0 ? "Saison actuelle" : "Collection éditoriale"}</small><h3>${esc(season.title)}</h3><p>${esc(season.description)}</p></div><strong>${progress.progress}%</strong></div><i><em style="width:${progress.progress}%"></em></i><div class="hd187-season-lessons">${season.lessons.map(lesson => `<button type="button" data-hd187-course="${esc(lesson.id)}" class="${lessonDone(lesson.id) ? "done" : ""}"><span>${lessonDone(lesson.id) ? HD_ICONS.action("check") : HD_ICONS.lesson(lesson, null, null)}</span><b>${esc(lesson.title)}</b></button>`).join("")}</div></section>`;
     }).join("")}</div>`;
   }
 
