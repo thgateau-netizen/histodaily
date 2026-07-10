@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.168",
-  assetsVersion: "1.0.0-beta.168",
+  version: "1.0.0-beta.171",
+  assetsVersion: "1.0.0-beta.171",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "mise à jour",
+    versionLabel: "beta 171",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Préparation test privé : nouveau contrôle final en ligne, sans modifier les données.",
-      "Stabilité renforcée : l’app détecte mieux les anciens caches et états locaux incohérents.",
-      "Interface plus propre : assistance repliée, messages plus clairs et moins de bruit technique."
+      "Navigation stabilisée : Sciences, Géographie et les autres disciplines gardent maintenant leur vrai contexte.",
+      "Performance améliorée : un seul système de clics, moins de rendus inutiles et fin des boucles réseau du profil.",
+      "PWA plus rapide : les fichiers versionnés s’ouvrent depuis le cache pendant que la mise à jour se fait en arrière-plan."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

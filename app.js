@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.168";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.171";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -173,8 +173,6 @@ window.addEventListener("beforeinstallprompt", (event) => {
   installPromptEvent = event;
   if (state?.tab === "home" || state?.tab === "profile") render();
 });
-window.addEventListener("online", () => { isOnline = true; render(); });
-window.addEventListener("offline", () => { isOnline = false; render(); });
 
 const defaultState = {
   tab: "home",
@@ -348,7 +346,25 @@ function normalize(value = "") { return String(value).toLowerCase().normalize("N
 function percent(done, total) { return total ? Math.round((done / total) * 100) : 0; }
 function level() { return Math.floor(state.xp / 250) + 1; }
 function levelProgress() { return Math.round(((state.xp % 250) / 250) * 100); }
-function allLessons() { return Object.values(data.lessons).flat(); }
+let lessonIndexCache = null;
+function lessonIndex() {
+  const signature = Object.entries(data.lessons).reduce((sum, [, lessons]) => sum + (Array.isArray(lessons) ? lessons.length : 0), 0);
+  if (lessonIndexCache?.signature === signature) return lessonIndexCache;
+  const all = [];
+  const byId = new Map();
+  const worldByLessonId = new Map();
+  Object.entries(data.lessons).forEach(([worldId, lessons]) => {
+    (Array.isArray(lessons) ? lessons : []).forEach(lesson => {
+      all.push(lesson);
+      if (!byId.has(lesson.id)) byId.set(lesson.id, lesson);
+      if (!worldByLessonId.has(lesson.id)) worldByLessonId.set(lesson.id, worldId);
+    });
+  });
+  lessonIndexCache = { signature, all, byId, worldByLessonId };
+  return lessonIndexCache;
+}
+function allLessons() { return lessonIndex().all; }
+function lessonById(id) { return lessonIndex().byId.get(id) || null; }
 function lessonsFor(worldId) { return data.lessons[worldId] || []; }
 function lessonDone(id) { return Boolean(state.completedLessons[id]); }
 function activeWorld() { return data.worlds.find(w => w.id === state.currentWorld) || data.worlds[0] || {}; }
@@ -742,10 +758,15 @@ function openLessonFromHome(lessonId, view = "express") {
     setState({ tab: "learn", lessonFocus: null, lessonView: "express" });
     return;
   }
+  const worldId = lessonWorldId(lesson.id);
+  const world = allDisciplineWorlds().find(item => item.id === worldId) || {};
+  const disciplineId = worldDisciplineId(world);
   setState({
     tab: "lesson",
     currentLessonId: lesson.id,
-    currentWorld: lessonWorldId(lesson.id),
+    currentDiscipline: disciplineId,
+    currentGroup: world.group || state.currentGroup,
+    currentWorld: worldId,
     lessonFocus: view,
     lessonView: view
   });
@@ -1208,9 +1229,6 @@ function activateTextControls(root = document) {
     control.addEventListener("click", event => { event.stopPropagation(); event.currentTarget.focus(); }, true);
   });
 }
-document.addEventListener("pointerdown", event => { if (isTextControl(event.target)) event.stopPropagation(); }, true);
-document.addEventListener("mousedown", event => { if (isTextControl(event.target)) event.stopPropagation(); }, true);
-document.addEventListener("click", event => { if (isTextControl(event.target)) event.stopPropagation(); }, true);
 
 function renderShell(content) {
   applyPerformanceMode();
@@ -1330,8 +1348,8 @@ function renderLearn() {
     setState({ learnSearch: String(input?.value || "").trim() });
   });
   $(`[data-clear-learn-search]`)?.addEventListener("click", () => setState({ learnSearch: "" }));
-  document.querySelectorAll("[data-ready-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: btn.dataset.readyLesson, lessonFocus: "express", lessonView: "express" })));
-  document.querySelectorAll("[data-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: btn.dataset.lesson, lessonFocus: "express", lessonView: "express" })));
+  document.querySelectorAll("[data-ready-lesson]").forEach(btn => btn.addEventListener("click", () => beta118OpenLessonById(btn.dataset.readyLesson, { source: "ready-lesson" })));
+  document.querySelectorAll("[data-lesson]").forEach(btn => btn.addEventListener("click", () => beta118OpenLessonById(btn.dataset.lesson, { source: "lesson-list" })));
   document.querySelectorAll("[data-locked-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() })));
 }
 function lessonCard(lesson, index) {
@@ -1354,12 +1372,11 @@ function lessonCard(lesson, index) {
 }
 
 function lessonWorldId(lessonId) {
-  const entry = Object.entries(data.lessons).find(([, lessons]) => lessons.some(lesson => lesson.id === lessonId));
-  return entry ? entry[0] : state.currentWorld;
+  return lessonIndex().worldByLessonId.get(lessonId) || state.currentWorld;
 }
 function lessonWorld(lesson) {
   const id = lessonWorldId(lesson.id);
-  return data.worlds.find(world => world.id === id) || activeWorld() || {};
+  return allDisciplineWorlds().find(world => world.id === id) || activeWorld() || {};
 }
 function relatedMysteryForLesson(lessonId) {
   return data.mysteries.find(mystery => mystery.lessonId === lessonId);
@@ -6646,6 +6663,11 @@ function renderLesson() {
     handleQuizChoice(lesson.id, Number(btn.dataset.quizChoice), Number(btn.dataset.choiceIndex));
   }));
   $("[data-reset-quiz]")?.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); resetLessonQuiz(lesson.id); });
+  $("[data-quiz-next]")?.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    window.HistoDailyQuizAdvance?.(event.currentTarget.dataset.quizNext || lesson.id);
+  });
   document.querySelectorAll("[data-lesson-view]").forEach(btn => btn.addEventListener("click", event => {
     event.preventDefault();
     event.stopPropagation();
@@ -7143,11 +7165,6 @@ function renderMystery() {
   $("[data-home-stop]")?.addEventListener("click", () => setState({ tab: "home" }));
   const guessForm = $("[data-guess]");
   guessForm?.addEventListener("submit", submitGuess);
-  $("[data-guess-submit]")?.addEventListener("click", event => {
-    event.stopPropagation();
-    if (guessForm?.requestSubmit) guessForm.requestSubmit();
-    else submitGuess({ preventDefault() {}, stopPropagation() {}, currentTarget: guessForm });
-  });
   const guessInput = $("[data-guess-input]");
   if (guessInput) {
     ["pointerdown", "mousedown", "click", "touchstart"].forEach(type => guessInput.addEventListener(type, event => event.stopPropagation(), { passive: true }));
@@ -7408,6 +7425,10 @@ function renderRank() {
   document.querySelectorAll("[data-view-profile]").forEach(btn => btn.addEventListener("click", () => viewProfile(btn.dataset.viewProfile)));
   document.querySelectorAll("[data-remove-friend]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); removeFriend(btn.dataset.removeFriend); }));
   $(`[data-add-friend]`)?.addEventListener("submit", addFriend);
+  $(`[data-friend-code-input]`)?.addEventListener("input", event => {
+    state.friendCodeDraft = event.currentTarget.value || "";
+    try { localStorage.setItem(`${STORAGE_KEY}_friend_draft`, state.friendCodeDraft); } catch {}
+  });
   $(`[data-share-invite]`)?.addEventListener("click", shareInviteCode);
   $(`[data-copy-invite-link]`)?.addEventListener("click", copyInviteLink);
   $(`[data-refresh-social]`)?.addEventListener("click", () => { fetchServerFriends({ force: true }).catch(() => {}); ["daily", "week", "year", "friends"].forEach(scope => fetchServerLeaderboard(scope, { force: true }).catch(() => {})); });
@@ -8019,7 +8040,7 @@ function renderProfile() {
   document.querySelectorAll("[data-view-profile]").forEach(btn => btn.addEventListener("click", () => viewProfile(btn.dataset.viewProfile)));
   document.querySelectorAll("[data-remove-friend]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); removeFriend(btn.dataset.removeFriend); }));
   document.querySelectorAll("[data-profile-rank]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "rank", rankScope: btn.dataset.profileRank })));
-  document.querySelectorAll("[data-performance-mode]").forEach(btn => btn.addEventListener("click", () => setPerformanceMode(btn.dataset.performanceMode)));
+  document.querySelectorAll("button[data-performance-mode]").forEach(btn => btn.addEventListener("click", () => setPerformanceMode(btn.dataset.performanceMode)));
   $(`[data-export-save]`)?.addEventListener("click", exportLocalSave);
   $(`[data-download-save]`)?.addEventListener("click", downloadLocalSave);
   $(`[data-import-save]`)?.addEventListener("click", importLocalSave);
@@ -8192,7 +8213,8 @@ function treeWorldCard(world, active) {
 }
 function treeLessonCard(lesson, index, world) {
   const done = lessonDone(lesson.id);
-  const progress = quizProgressForLesson(lesson.id, normalizeQuizPack(buildLessonContent(lesson).quiz, lesson, buildLessonContent(lesson)).length);
+  const content = buildLessonContent(lesson);
+  const progress = quizProgressForLesson(lesson.id, normalizeQuizPack(content.quiz, lesson, content).length);
   const mystery = relatedMysteryForLesson(lesson.id);
   const locked = lessonLockedByDailyMystery(lesson);
   if (locked) {
@@ -8253,7 +8275,7 @@ function renderLearn() {
       ${disciplineSelectorMarkup(disciplineId)}
       ${disciplineEmptyMarkup(discipline)}`);
     $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
-    document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
+    document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
     return;
   }
   const groupId = treeActiveGroupId(disciplineId);
@@ -8278,7 +8300,7 @@ function renderLearn() {
     ${learnFilterMarkup(lessons, shownLessons)}
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre thème ou reviens au parcours principal.") : "Explore un autre thème pour l’instant."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
   $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
-  document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
+  document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
   document.querySelectorAll("[data-tree-group]").forEach(card => {
     const open = () => {
       const nextGroup = card.dataset.treeGroup;
@@ -9615,7 +9637,8 @@ function disciplineHomeStats(disciplineId = activeDisciplineId()) {
   return { discipline, progress, groups, worlds, readyLessons };
 }
 function firstWorldForDiscipline(disciplineId = activeDisciplineId()) {
-  return treeAvailableWorlds(disciplineId)[0] || null;
+  const worlds = treeAvailableWorlds(disciplineId);
+  return worlds.find(world => treeLessonsForWorld(world.id).length > 0) || worlds[0] || null;
 }
 function switchHomeDiscipline(disciplineId) {
   const discipline = disciplineById(disciplineId);
@@ -13376,7 +13399,6 @@ render = function beta113ScheduledRender(options = {}) {
 };
 
 applyVisibleStateGuard({ save: false });
-window.addEventListener("DOMContentLoaded", render);
 
 /* =========================================================
    Beta 114 — robustesse mobile et profil
@@ -13428,6 +13450,24 @@ function beta114NormalizeState() {
   state.streak = Number.isFinite(Number(state.streak)) ? Math.max(0, Number(state.streak)) : 0;
   state.pseudo = sanitizePseudo(state.pseudo || beta114SavedPseudo() || defaultState.pseudo || "Invité") || "Invité";
 
+  if (state.tab === "lesson" && state.currentLessonId) {
+    const lesson = typeof beta118LessonById === "function"
+      ? beta118LessonById(state.currentLessonId)
+      : (typeof lessonById === "function" ? lessonById(state.currentLessonId) : null);
+    if (!lesson) {
+      state.tab = "learn";
+      state.currentLessonId = null;
+      state.lessonView = "express";
+      state.lessonFocus = null;
+    } else {
+      const world = typeof lessonWorld === "function" ? lessonWorld(lesson) : null;
+      const disciplineId = world ? beta114ValidDisciplineId(worldDisciplineId(world)) : state.currentDiscipline;
+      state.currentDiscipline = disciplineId;
+      if (world?.id) state.currentWorld = world.id;
+      if (world?.group) state.currentGroup = world.group;
+    }
+  }
+
   const groups = treeGroups(state.currentDiscipline);
   if (groups.length) {
     if (!groups.some(group => group.id === state.currentGroup)) state.currentGroup = beta114FirstGroupForDiscipline(state.currentDiscipline);
@@ -13478,14 +13518,24 @@ render = function beta114ScheduledRender(options = {}) {
   });
 };
 
+function beta171ScheduleTabDataRefresh(previousTab, nextTab) {
+  if (previousTab === nextTab || !["rank", "profile", "publicProfile"].includes(nextTab)) return;
+  queueMicrotask(() => {
+    if (state.tab !== nextTab) return;
+    try { beta171ScheduleConnectivityRefresh(`tab-${nextTab}`); } catch {}
+  });
+}
 function setState(patch, options = {}) {
   if (!patch || typeof patch !== "object") return;
+  const normalizedPatch = { ...patch };
+  if (normalizedPatch.tab && !BETA114_ALLOWED_TABS.has(normalizedPatch.tab)) normalizedPatch.tab = "home";
   const previous = state;
-  state = { ...state, ...patch };
+  state = { ...state, ...normalizedPatch };
   beta114NormalizeState();
-  beta113MarkMotion(previous, state, patch);
-  if (options.save !== false && patchNeedsPersistentSave(patch)) queueSaveState();
+  beta113MarkMotion(previous, state, normalizedPatch);
+  if (options.save !== false && patchNeedsPersistentSave(normalizedPatch)) queueSaveState();
   render(options.renderImmediate ? { immediate: true } : {});
+  beta171ScheduleTabDataRefresh(previous.tab, state.tab);
 }
 
 function beta114PseudoInput(start) {
@@ -13546,14 +13596,6 @@ function beta114HandlePseudoAction(event) {
   if (saveButton) updatePseudo(event);
   else promptPseudoEdit();
 }
-document.addEventListener("click", beta114HandlePseudoAction, true);
-document.addEventListener("pointerup", beta114HandlePseudoAction, true);
-document.addEventListener("submit", event => {
-  if (event.target?.matches?.("[data-pseudo-form]")) updatePseudo(event);
-}, true);
-document.addEventListener("keydown", event => {
-  if (event.key === "Enter" && event.target?.matches?.("[data-pseudo-input]")) updatePseudo(event);
-}, true);
 
 window.addEventListener("error", event => {
   if (!event?.error) return;
@@ -13561,13 +13603,22 @@ window.addEventListener("error", event => {
   if (!String(event.error?.message || "").includes(beta114LastError)) {
     beta114LastError = String(event.error?.message || event.message || "Erreur");
   }
+  if (state?.tab === "rank") {
+    state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [state.rankScope || "daily"]: { loading: false, mode: "error", note: "Erreur interceptée : classement en mode sécurisé." } };
+    queueSaveState(50);
+  }
+  try { if (typeof beta153RecordClientIssue === "function") beta153RecordClientIssue("front", event?.message || event?.error?.message || "Erreur interface"); } catch {}
 });
 window.addEventListener("unhandledrejection", event => {
   console.error("HistoDaily promise error", event.reason);
+  if (state?.tab === "rank") {
+    state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [state.rankScope || "daily"]: { loading: false, mode: "error", note: "Erreur réseau interceptée : classement en mode sécurisé." } };
+    queueSaveState(50);
+  }
+  try { if (typeof beta153RecordClientIssue === "function") beta153RecordClientIssue("async", event?.reason?.message || event?.reason || "Erreur asynchrone"); } catch {}
 });
 
 try { beta114NormalizeState(); } catch {}
-if (document.readyState !== "loading") render({ immediate: true });
 
 
 /* =========================================================
@@ -13585,7 +13636,6 @@ const BETA115_ALLOWED_PERFORMANCE = new Set(["smart", "static", "balanced", "lig
 const beta115PreviousNormalizeState = beta114NormalizeState;
 let beta115LastHealthyRender = 0;
 let beta115LastRenderSignature = "";
-let beta115TapLock = 0;
 
 function beta115ReadHealth() {
   try { return JSON.parse(localStorage.getItem(BETA115_SESSION_KEY) || "{}"); }
@@ -13715,17 +13765,6 @@ beta114DirectRender = function beta115DirectRender() {
   }
 };
 
-const beta115PreviousSetState = setState;
-setState = function beta115SetState(patch, options = {}) {
-  if (!patch || typeof patch !== "object") return;
-  const now = Date.now();
-  const onlyTab = Object.keys(patch).length === 1 && Object.prototype.hasOwnProperty.call(patch, "tab");
-  if (onlyTab && now - beta115TapLock < 80) return;
-  if (onlyTab) beta115TapLock = now;
-  const normalizedPatch = { ...patch };
-  if (normalizedPatch.tab && !BETA114_ALLOWED_TABS.has(normalizedPatch.tab)) normalizedPatch.tab = "home";
-  beta115PreviousSetState(normalizedPatch, options);
-};
 
 function beta115SoftRepairState({ goHome = false, feedback = "Affichage réparé. Progression conservée." } = {}) {
   const pseudo = sanitizePseudo(state?.pseudo || beta114SavedPseudo() || "Invité") || "Invité";
@@ -13771,25 +13810,13 @@ function beta115HandleRepairActions(event) {
   saveState();
   render({ immediate: true });
 }
-document.addEventListener("click", beta115HandleRepairActions, true);
 
-window.addEventListener("pageshow", () => {
+window.addEventListener("pageshow", event => {
   try {
     beta115NormalizeDeepState();
+    if (event?.persisted && typeof beta156ReleaseLocalCleanup === "function") beta156ReleaseLocalCleanup();
     if (beta115BlankApp() || Date.now() - beta115LastHealthyRender > 600000) render({ immediate: true });
   } catch {}
-});
-window.addEventListener("visibilitychange", () => {
-  if (document.visibilityState !== "visible") return;
-  try {
-    applyDisciplineTheme();
-    if (beta115BlankApp()) render({ immediate: true });
-  } catch {}
-});
-window.addEventListener("orientationchange", () => {
-  window.setTimeout(() => {
-    try { render({ immediate: true }); } catch {}
-  }, 180);
 });
 
 window.HistoDailyDebug = {
@@ -13803,7 +13830,6 @@ try {
   beta115NormalizeDeepState();
   beta115WriteHealth({ bootAt: Date.now(), lastBootVersion: BETA115_VERSION });
 } catch {}
-if (document.readyState !== "loading") render({ immediate: true });
 
 /* =========================================================
    Beta 117 — outils de bêta + navigation cours allégée
@@ -13896,10 +13922,7 @@ function beta117RenderLearnChapters(disciplineId, discipline, groups) {
     <section class="tree-section beta117-chapter-list"><div class="section-title-row"><div><span class="card-label">Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === treeActiveGroupId(disciplineId), disciplineId)).join("")}</div></section>
   `);
   $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
-  document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => {
-    selectDiscipline(btn.dataset.discipline);
-    setState({ learnDrill: "chapters" }, { save: false });
-  }));
+  document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
   document.querySelectorAll("[data-tree-group]").forEach(card => {
     const open = () => {
       const nextGroup = card.dataset.treeGroup;
@@ -13930,7 +13953,7 @@ function beta117RenderLearnCourses(disciplineId, discipline, groupId, group) {
     setState({ learnSearch: String(input?.value || "").trim() });
   });
   $(`[data-clear-learn-search]`)?.addEventListener("click", () => setState({ learnSearch: "" }));
-  document.querySelectorAll("[data-lesson]").forEach(card => card.addEventListener("click", () => setState({ tab: "lesson", currentLessonId: card.dataset.lesson, lessonFocus: "express", lessonView: "express" })));
+  document.querySelectorAll("[data-lesson]").forEach(card => card.addEventListener("click", () => beta118OpenLessonById(card.dataset.lesson, { source: "course-card-direct" })));
   document.querySelectorAll("[data-locked-lesson]").forEach(card => card.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() })));
 }
 
@@ -13959,7 +13982,7 @@ renderLearn = function beta117RenderLearn() {
   if (!groups.length) {
     renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Les premiers cours de cette discipline arrivent progressivement.</p></div></header>${disciplineSelectorMarkup(disciplineId)}${disciplineEmptyMarkup(discipline)}`);
     $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
-    document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
+    document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
     return;
   }
   const groupId = treeActiveGroupId(disciplineId);
@@ -14044,7 +14067,6 @@ window.HistoDailyBeta117 = {
 };
 
 try { beta114NormalizeState(); } catch {}
-if (document.readyState !== "loading") render({ immediate: true });
 
 
 /* =========================================================
@@ -14211,8 +14233,6 @@ function beta118LearnDelegatedKeydown(event) {
   event.preventDefault();
   actionable.click();
 }
-document.addEventListener("click", beta118LearnDelegatedClick, true);
-document.addEventListener("keydown", beta118LearnDelegatedKeydown, true);
 
 const beta118PreviousNormalizeState = beta114NormalizeState;
 beta114NormalizeState = function beta118NormalizeState() {
@@ -14233,7 +14253,6 @@ window.HistoDailyBeta118 = {
 };
 
 try { beta114NormalizeState(); } catch {}
-if (document.readyState !== "loading") render({ immediate: true });
 
 
 /* =========================================================
@@ -14453,16 +14472,6 @@ function beta124HandleRefreshClick(event) {
   beta124RefreshSocialData({ force: true, reason: "button" }).catch(() => {});
 }
 
-document.addEventListener("click", beta124HandleRefreshClick, true);
-window.addEventListener("online", () => beta124RefreshSocialData({ force: true, reason: "online" }).catch(() => {}));
-window.addEventListener("focus", () => {
-  if (Date.now() - beta124LastFocusRefresh < 15000) return;
-  beta124LastFocusRefresh = Date.now();
-  beta124RefreshSocialData({ force: false, reason: "focus" }).catch(() => {});
-});
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") beta124RefreshSocialData({ force: false, reason: "visible" }).catch(() => {});
-});
 
 try {
   const changed = beta124HydrateProfileFromIdentity();
@@ -14477,7 +14486,6 @@ window.HistoDailyBeta124 = {
   refreshSocial: beta124RefreshSocialData
 };
 
-try { render({ immediate: true }); } catch {}
 
 
 /* =========================================================
@@ -14567,6 +14575,7 @@ async function beta125FetchFriendRequests({ force = false } = {}) {
     state.serverFriendRequestsStatus = { loading: false, loadedAt: Date.now(), mode: "error", message: "Demandes indisponibles." };
   } finally {
     beta125RequestFetchInFlight = false;
+    beta125LastRequestFetch = Date.now();
     queueSaveState(250);
     if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
   }
@@ -14692,7 +14701,6 @@ profileById = function beta125ProfileById(id) {
 
 const beta125PreviousRenderPublicProfile = renderPublicProfile;
 renderPublicProfile = function beta125RenderPublicProfile() {
-  beta125FetchFriendRequests({ force: false }).catch(() => {});
   const player = profileById(state.selectedProfileId);
   renderShell(`<header class="topbar"><button data-back-social>←</button><div><p class="eyebrow">Profil joueur</p><h1>${escapeHtml(player.name)}</h1></div></header>
     ${publicProfileMarkup(player)}
@@ -14713,14 +14721,12 @@ function beta125InjectRequestsCard() {
 }
 const beta125PreviousRenderRank = renderRank;
 renderRank = function beta125RenderRank() {
-  beta125FetchFriendRequests({ force: false }).catch(() => {});
   const out = beta125PreviousRenderRank();
   beta125InjectRequestsCard();
   return out;
 };
 const beta125PreviousRenderProfile = renderProfile;
 renderProfile = function beta125RenderProfile() {
-  beta125FetchFriendRequests({ force: false }).catch(() => {});
   const out = beta125PreviousRenderProfile();
   beta125InjectRequestsCard();
   return out;
@@ -14743,31 +14749,23 @@ if (beta125PreviousBeta124RefreshSocialData) {
   };
 }
 
-document.addEventListener("click", event => {
+function beta125HandleFriendRequestAction(event) {
   const sendBtn = event.target?.closest?.("[data-send-friend-request]");
   if (sendBtn) {
-    event.preventDefault();
     const player = profileById(sendBtn.dataset.sendFriendRequest);
     beta125SendFriendRequest(player).catch(() => {});
-    return;
+    return true;
   }
   const respondBtn = event.target?.closest?.("[data-respond-friend-request]");
   if (respondBtn) {
-    event.preventDefault();
     beta125RespondFriendRequest({ response: respondBtn.dataset.respondFriendRequest, requesterPlayerId: respondBtn.dataset.requestPlayer || "", requesterFriendCode: respondBtn.dataset.requestCode || "" }).catch(() => {});
-    return;
+    return true;
   }
-  const refreshBtn = event.target?.closest?.("[data-refresh-requests]");
-  if (refreshBtn) {
-    event.preventDefault();
-    beta125FetchFriendRequests({ force: true }).catch(() => {});
-  }
-}, true);
+  return false;
+}
 
 try {
-  beta125FetchFriendRequests({ force: true }).catch(() => {});
   window.HistoDailyBeta125 = { version: BETA125_VERSION, fetchFriendRequests: beta125FetchFriendRequests };
-  render({ immediate: true });
 } catch {}
 
 
@@ -14910,7 +14908,10 @@ socialBackendMarkup = function beta126SocialBackendMarkup() {
   if (!count) return html;
   return html.replace("</section>", `<div class="beta126-social-alert"><strong>${count}</strong><span>demande${count > 1 ? "s" : ""} d’ami à valider</span></div></section>`);
 };
-try { beta125FetchFriendRequests?.({ force: true }).catch(() => {}); window.HistoDailyBeta126 = { version: BETA126_VERSION, fetchProfile: beta126FetchPublicProfile, requests: beta125FriendRequestsState }; render({ immediate: true }); } catch {}
+try {
+  beta125FetchFriendRequests?.({ force: true }).catch(() => {});
+  window.HistoDailyBeta126 = { version: BETA126_VERSION, fetchProfile: beta126FetchPublicProfile, requests: beta125FriendRequestsState };
+} catch {}
 
 
 /* =========================================================
@@ -15160,13 +15161,6 @@ async function beta128CancelFriendRequest(target = {}) {
   if (state.tab === "profile" || state.tab === "rank" || state.tab === "publicProfile") render({ immediate: true });
 }
 
-document.addEventListener("click", event => {
-  const cancelBtn = event.target?.closest?.("[data-cancel-friend-request]");
-  if (!cancelBtn) return;
-  event.preventDefault();
-  event.stopPropagation();
-  beta128CancelFriendRequest({ targetPlayerId: cancelBtn.dataset.requestPlayer || "", targetFriendCode: cancelBtn.dataset.requestCode || "" }).catch(() => {});
-}, true);
 
 const beta128PreviousDeleteFriendFromServer = typeof deleteFriendFromServer === "function" ? deleteFriendFromServer : null;
 if (beta128PreviousDeleteFriendFromServer) {
@@ -15208,14 +15202,10 @@ if (beta128PreviousFetchPublicProfile) {
   };
 }
 
-window.addEventListener("online", () => beta128FlushOutgoingRequests({ force: true }).catch(() => {}));
-window.addEventListener("focus", () => beta128FlushOutgoingRequests({ force: false }).catch(() => {}));
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") beta128FlushOutgoingRequests({ force: false }).catch(() => {}); });
 try {
   beta128Outbox();
   beta128FlushOutgoingRequests({ force: false }).catch(() => {});
   window.HistoDailyBeta127 = { version: BETA127_VERSION, outbox: beta128Outbox, flush: beta128FlushOutgoingRequests, relation: beta128Relation };
-  render({ immediate: true });
 } catch {}
 
 
@@ -15556,14 +15546,6 @@ savePseudoValue = function beta128SavePseudoValue(rawValue, options = {}) {
   beta128MirrorIdentity();
   return ok;
 };
-window.addEventListener("online", () => {
-  isOnline = true;
-  beta128RefreshLive({ force: true, reason: "online" });
-});
-window.addEventListener("focus", () => beta128RefreshLive({ force: false, reason: "focus" }));
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") beta128RefreshLive({ force: false, reason: "visible" });
-});
 try {
   beta128RecoverIdentity();
   Object.entries(state.solvedMysteries || {}).forEach(([mysteryId, solved]) => {
@@ -15575,7 +15557,6 @@ try {
   beta128MirrorIdentity();
   beta128FlushScoreOutbox({ force: false, reason: "startup" }).catch(() => {});
   window.HistoDailyBeta128 = { version: BETA128_HARDENING_VERSION, scoreOutbox: beta128ReadScoreOutbox, flushScores: beta128FlushScoreOutbox, identity: beta128IdentitySnapshot };
-  render({ immediate: true });
 } catch {}
 
 
@@ -15703,7 +15684,6 @@ try {
     scoreOutbox: typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox : () => [],
     requestOutbox: typeof beta128Outbox === "function" ? beta128Outbox : () => []
   };
-  render({ immediate: true });
 } catch {}
 
 
@@ -15788,7 +15768,6 @@ try {
   window.HistoDaily = { version: BETA130_PRODUCT_CLEAN_VERSION };
 } catch {}
 
-try { render({ immediate: true }); } catch {}
 
 
 /* =========================================================
@@ -15842,9 +15821,6 @@ function beta131NavigationHandler(event) {
 function beta131InstallNavigationDelegation() {
   if (window.__histodailyBeta131NavDelegation) return;
   window.__histodailyBeta131NavDelegation = true;
-  document.addEventListener("click", beta131NavigationHandler, true);
-  document.addEventListener("touchend", beta131NavigationHandler, { capture: true, passive: false });
-  document.addEventListener("pointerup", beta131NavigationHandler, true);
 }
 
 function beta131RepairStartupTab() {
@@ -15903,7 +15879,6 @@ function beta131InstallNavLayerFix() {
 const beta131PreviousRenderShell = renderShell;
 renderShell = function beta131RenderShell(content) {
   const output = beta131PreviousRenderShell(content);
-  beta131InstallNavigationDelegation();
   beta131InstallNavLayerFix();
   return output;
 };
@@ -15915,11 +15890,9 @@ performanceSettingsMarkup = function beta131PerformanceSettingsMarkup() {
 };
 
 try {
-  beta131InstallNavigationDelegation();
   beta131InstallNavLayerFix();
   beta131RepairStartupTab();
   window.HistoDaily = { version: BETA131_NAV_FIX_VERSION, navFix: true };
-  render({ immediate: true });
 } catch {}
 
 
@@ -16013,9 +15986,6 @@ function beta133CriticalTap(event) {
 function beta133InstallGlobalCriticalNavigation() {
   if (window.__histodailyBeta132CriticalNav) return;
   window.__histodailyBeta132CriticalNav = true;
-  document.addEventListener("touchend", beta133CriticalTap, { capture: true, passive: false });
-  document.addEventListener("pointerup", beta133CriticalTap, true);
-  document.addEventListener("click", beta133CriticalTap, true);
 }
 
 async function beta133FetchLeaderboard(scope = "daily", { force = false } = {}) {
@@ -16087,29 +16057,10 @@ function beta133InstallStyle() {
   document.head.appendChild(style);
 }
 
-window.addEventListener("error", () => {
-  try {
-    if (state.tab === "rank") {
-      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [state.rankScope || "daily"]: { loading: false, mode: "error", note: "Erreur interceptée : classement en mode sécurisé." } };
-      queueSaveState(50);
-    }
-  } catch {}
-});
-window.addEventListener("unhandledrejection", () => {
-  try {
-    if (state.tab === "rank") {
-      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [state.rankScope || "daily"]: { loading: false, mode: "error", note: "Erreur réseau interceptée : classement en mode sécurisé." } };
-      queueSaveState(50);
-    }
-  } catch {}
-});
-
 try {
   beta133NormalizeStartup();
-  beta133InstallGlobalCriticalNavigation();
   beta133InstallStyle();
   window.HistoDaily = { version: BETA132_SAFE_VERSION, safeLeaderboard: true };
-  render({ immediate: true });
 } catch {}
 
 
@@ -16183,9 +16134,6 @@ function beta133HandleDisciplineTap(event) {
 function beta133InstallDisciplineDelegation() {
   if (window.__histodailyBeta133DisciplineDelegation) return;
   window.__histodailyBeta133DisciplineDelegation = true;
-  document.addEventListener("touchend", beta133HandleDisciplineTap, { capture: true, passive: false });
-  document.addEventListener("pointerup", beta133HandleDisciplineTap, true);
-  document.addEventListener("click", beta133HandleDisciplineTap, true);
 }
 
 function beta133InstallDisciplineStyle() {
@@ -16235,7 +16183,6 @@ try {
   state.beta133DisciplineVersion = BETA133_DISCIPLINE_VERSION;
   queueSaveState(50);
   window.HistoDaily = { version: BETA133_DISCIPLINE_VERSION, disciplineSwitchFix: true, safeLeaderboard: true };
-  render({ immediate: true });
 } catch {}
 
 
@@ -16352,9 +16299,6 @@ function beta134HandleSocialTap(event) {
 function beta134InstallSocialDelegation() {
   if (window.__histodailyBeta134SocialDelegation) return;
   window.__histodailyBeta134SocialDelegation = true;
-  document.addEventListener("touchend", beta134HandleSocialTap, { capture: true, passive: false });
-  document.addEventListener("pointerup", beta134HandleSocialTap, true);
-  document.addEventListener("click", beta134HandleSocialTap, true);
 }
 
 function beta134DecorateClickableLeaderboard() {
@@ -16456,7 +16400,6 @@ try {
   if (state.beta135CopyCleanVersion !== BETA135_COPY_CLEAN_VERSION) {
     state.beta135CopyCleanVersion = BETA135_COPY_CLEAN_VERSION;
     saveState();
-    render({ immediate: true });
   }
 } catch {}
 
@@ -16502,9 +16445,6 @@ function beta136HandleMysteryAction(event) {
 function beta136InstallHintTapFix() {
   if (window.__histodailyBeta136HintTapFix) return;
   window.__histodailyBeta136HintTapFix = true;
-  document.addEventListener("touchend", beta136HandleMysteryAction, { capture: true, passive: false });
-  document.addEventListener("pointerup", beta136HandleMysteryAction, true);
-  document.addEventListener("click", beta136HandleMysteryAction, true);
 }
 
 function beta136InstallMysteryActionStyle() {
@@ -16536,7 +16476,6 @@ try {
   state.beta136HintTapVersion = BETA136_HINT_TAP_VERSION;
   queueSaveState(50);
   window.HistoDaily = { version: BETA136_HINT_TAP_VERSION, hintTapFix: true, disciplineSwitchFix: true, safeLeaderboard: true, profileTapFix: true };
-  if (state.tab === "mystery") render({ immediate: true });
 } catch {}
 
 
@@ -16631,15 +16570,6 @@ function beta139InstallModeSwipeGuard() {
   if (window.__histodailyBeta138ModeSwipeGuard) return;
   window.__histodailyBeta138ModeSwipeGuard = true;
   // Window capture passe avant les délégations document ajoutées dans les patchs précédents.
-  window.addEventListener("touchstart", beta139StartModeGesture, { capture: true, passive: true });
-  window.addEventListener("touchmove", beta139MoveModeGesture, { capture: true, passive: true });
-  window.addEventListener("touchend", beta139EndModeGesture, { capture: true, passive: false });
-  window.addEventListener("touchcancel", beta139EndModeGesture, { capture: true, passive: false });
-  window.addEventListener("pointerdown", beta139StartModeGesture, true);
-  window.addEventListener("pointermove", beta139MoveModeGesture, true);
-  window.addEventListener("pointerup", beta139EndModeGesture, true);
-  window.addEventListener("pointercancel", beta139EndModeGesture, true);
-  window.addEventListener("click", beta139BlockGhostModeClick, true);
 }
 
 function beta139InstallModeSwipeStyle() {
@@ -16914,7 +16844,6 @@ try {
   state.beta139DisciplineContentVersion = BETA139_DISCIPLINE_CONTENT_VERSION;
   queueSaveState(50);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA139_DISCIPLINE_CONTENT_VERSION, disciplineContentFix: true };
-  render({ immediate: true });
 } catch {}
 
 
@@ -17065,9 +16994,6 @@ function beta140HandleCancelTap(event) {
 }
 
 try {
-  window.addEventListener("pointerup", beta140HandleCancelTap, true);
-  window.addEventListener("touchend", beta140HandleCancelTap, { capture: true, passive: false });
-  window.addEventListener("click", beta140HandleCancelTap, true);
   const style = document.createElement("style");
   style.id = "beta140-cancel-request-style";
   style.textContent = `.beta140-cancel-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.beta140-cancel-card .danger-action{touch-action:manipulation;}`;
@@ -17075,7 +17001,6 @@ try {
   state.beta140CancelRequestVersion = BETA140_CANCEL_REQUEST_VERSION;
   queueSaveState(50);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA140_CANCEL_REQUEST_VERSION, friendRequestCancelFix: true };
-  render({ immediate: true });
 } catch {}
 
 
@@ -17246,9 +17171,6 @@ function beta141HandleRefreshTap(event) {
   beta141HardSocialRefresh().catch(() => {});
 }
 try {
-  window.addEventListener("pointerup", beta141HandleRefreshTap, true);
-  window.addEventListener("touchend", beta141HandleRefreshTap, { capture: true, passive: false });
-  window.addEventListener("click", beta141HandleRefreshTap, true);
   state.beta141SocialResetVersion = BETA141_SOCIAL_RESET_VERSION;
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA141_SOCIAL_RESET_VERSION, socialResetFix: true };
   queueSaveState(50);
@@ -17487,9 +17409,6 @@ function beta142HandleRepairTap(event) {
   beta142RepairOnlineSync({ silent: false }).catch(() => {});
 }
 try {
-  window.addEventListener("pointerup", beta142HandleRepairTap, true);
-  window.addEventListener("touchend", beta142HandleRepairTap, { capture: true, passive: false });
-  window.addEventListener("click", beta142HandleRepairTap, true);
   const style = document.createElement("style");
   style.id = "beta142-online-hardening-style";
   style.textContent = `.beta142-online-tools{margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}.beta142-diagnostic{margin-top:10px}.beta142-diagnostic summary{cursor:pointer;color:var(--muted);font-weight:800}.beta142-diagnostic-grid{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:10px;font-size:.88rem}.beta142-diagnostic-grid span{color:var(--muted)}.beta142-diagnostic-grid strong{font-weight:800;overflow-wrap:anywhere}`;
@@ -17866,10 +17785,6 @@ function beta147ScheduleSilentRepair(source = "startup") {
   window.setTimeout(() => beta147RunSilentRepair({ source }).catch(() => {}), delay);
 }
 try {
-  window.addEventListener("online", () => beta147ScheduleSilentRepair("online"));
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") beta147ScheduleSilentRepair("visible");
-  });
   beta147ScheduleSilentRepair("startup");
   const style = document.createElement("style");
   style.id = "beta147-release-hardening-style";
@@ -18024,8 +17939,6 @@ function beta148HandlePreflightTap(event) {
 }
 try {
   beta148LocalPreflightCleanup();
-  document.addEventListener("click", beta148HandlePreflightTap, true);
-  window.setTimeout(() => beta148RunOnlinePreflight({ silent: true }).catch(() => {}), 3500);
   const style = document.createElement("style");
   style.id = "beta148-preflight-clean-style";
   style.textContent = `.beta148-support-card details{border:0}.beta148-support-card summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}.beta148-support-card summary::-webkit-details-marker{display:none}.beta148-support-card summary strong{display:block;font-size:1rem;margin-top:2px}.beta148-support-card summary small{color:var(--muted);font-size:.78rem}.beta148-preflight-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta148-preflight-line span{color:var(--muted)}.beta148-preflight-line strong{font-weight:800}.beta148-actions button{min-height:38px}`;
@@ -18182,8 +18095,6 @@ try {
     };
   }
   beta149RunRegressionGuard({ silent: true }).catch(() => {});
-  window.setTimeout(() => beta149RunServerSelftest({ silent: true }).catch(() => {}), 5200);
-  document.addEventListener("click", beta149HandleRegressionTap, true);
   const style = document.createElement("style");
   style.id = "beta149-regression-guard-style";
   style.textContent = `.beta149-regression-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta149-regression-line span{color:var(--muted)}.beta149-regression-line strong{font-weight:800}.beta149-actions{margin-top:10px}.beta149-actions button{min-height:38px}`;
@@ -18303,7 +18214,7 @@ if (typeof renderLearn === "function") {
         <section class="card discipline-empty-card beta152-discipline-empty" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${discipline.emoji}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours dans ce mode</h2><p>Tu peux déjà jouer le mystère du jour. Les cours seront ajoutés quand le parcours sera assez solide.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
       $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
       $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() }));
-      document.querySelectorAll("[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
+      document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
       return;
     }
     return beta152PreviousRenderLearn();
@@ -18412,30 +18323,6 @@ function beta153RecordClientIssue(source, detail) {
   } catch {}
 }
 
-function beta153InstallClientIssueCapture() {
-  if (window.__HISTODAILY_BETA153_CLIENT_CAPTURE__) return;
-  window.__HISTODAILY_BETA153_CLIENT_CAPTURE__ = true;
-  window.addEventListener("error", event => beta153RecordClientIssue("front", event?.message || event?.error?.message || "Erreur interface"));
-  window.addEventListener("unhandledrejection", event => beta153RecordClientIssue("async", event?.reason?.message || event?.reason || "Erreur asynchrone"));
-}
-
-function beta153HandleGlobalSimpleAction(event) {
-  const target = event.target?.closest?.("[data-home-profile],[data-open-daily-mystery]");
-  if (!target || !app?.contains?.(target)) return;
-  // Ne pas voler les taps déjà consommés par les correctifs de swipe/navigation.
-  if (event.defaultPrevented) return;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-  if (target.matches("[data-home-profile]")) return setState({ tab: "profile" }, { save: true });
-  if (target.matches("[data-open-daily-mystery]")) return setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() }, { save: true });
-}
-
-function beta153InstallGlobalSimpleActions() {
-  if (window.__HISTODAILY_BETA153_GLOBAL_ACTIONS__) return;
-  window.__HISTODAILY_BETA153_GLOBAL_ACTIONS__ = true;
-  document.addEventListener("click", beta153HandleGlobalSimpleAction, true);
-}
 
 async function beta153CheckServiceWorkerVersion() {
   try {
@@ -18474,9 +18361,6 @@ if (typeof beta142OnlineDiagnosticMarkup === "function") {
 
 try {
   beta153RepairReleaseCandidateState();
-  beta153InstallClientIssueCapture();
-  beta153InstallGlobalSimpleActions();
-  window.setTimeout(() => beta153CheckServiceWorkerVersion().catch(() => {}), 1800);
   const style = document.createElement("style");
   style.id = "beta153-release-candidate-style";
   style.textContent = `.beta153-rc-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta153-rc-line span{color:var(--muted)}.beta153-rc-line strong{font-weight:800}.warning-note{color:#fde68a}`;
@@ -18670,9 +18554,7 @@ try {
   beta154InstallStyle();
   if (!window.__HISTODAILY_BETA154_ACTIONS__) {
     window.__HISTODAILY_BETA154_ACTIONS__ = true;
-    document.addEventListener("click", beta154GlobalAction, true);
   }
-  window.setTimeout(() => beta154CheckAppReadiness().catch(() => {}), 2600);
   state.beta154CacheRecoveryVersion = BETA154_CACHE_RECOVERY_VERSION;
   queueSaveState(150);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA154_CACHE_RECOVERY_VERSION, cacheRecovery: true, publicReadinessGuard: true };
@@ -18820,9 +18702,7 @@ try {
   beta155InstallStyle();
   if (!window.__HISTODAILY_BETA155_ACTIONS__) {
     window.__HISTODAILY_BETA155_ACTIONS__ = true;
-    document.addEventListener("click", beta155GlobalAction, true);
     window.addEventListener("beforeunload", () => { try { beta155SaveIdentitySnapshot(); } catch {} });
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) { try { beta155SaveIdentitySnapshot(); } catch {} } });
   }
   state.beta155FinalGuardVersion = BETA155_FINAL_GUARD_VERSION;
   queueSaveState(150);
@@ -18977,9 +18857,6 @@ try {
   beta156InstallStyle();
   if (!window.__HISTODAILY_BETA156_ACTIONS__) {
     window.__HISTODAILY_BETA156_ACTIONS__ = true;
-    document.addEventListener("click", beta156GlobalAction, true);
-    window.addEventListener("online", () => { try { beta156ReleaseLocalCleanup(); } catch {} });
-    window.addEventListener("pageshow", event => { if (event.persisted) { try { beta156ReleaseLocalCleanup(); } catch {} } });
   }
   state.beta156ReleaseReadinessVersion = BETA156_RELEASE_READINESS_VERSION;
   queueSaveState?.(150);
@@ -19094,6 +18971,7 @@ try {
   const firstOpen = (p,total) => { const a=p?.answers||{}; for(let i=0;i<total;i++) if(!Number.isInteger(a[i])&&!Number.isInteger(a[String(i)])) return i; return Math.max(0,total-1); };
   function quizRuntime(lessonId,total){ const k=key(lessonId), p=lessonQuizState(k), answered=Object.keys(p.answers||{}).length, correct=Object.values(p.correct||{}).filter(Boolean).length, threshold=lessonQuizPassThreshold(total), finished=total>0&&answered>=total, passed=Boolean(p.passed||(finished&&correct>=threshold)); let step=Number(qmap("quizStep")[k]); if(!Number.isInteger(step)||step<0||step>=total) step=firstOpen(p,total); return {k,p,answered,correct,threshold,finished,passed,step:Math.max(0,Math.min(step,Math.max(0,total-1)))}; }
   function advanceQuiz(lessonId){ const lesson=allLessons().find(l=>key(l.id)===key(lessonId)); if(!lesson) return; const content=buildLessonContent(lesson), items=normalizeQuizPack(content.quiz,lesson,content), p=lessonQuizState(key(lesson.id)); setSafe({quizStep:{...qmap("quizStep"),[key(lesson.id)]:firstOpen(p,items.length)},lessonView:"quiz",lessonFocus:null}); window.setTimeout(()=>{try{document.querySelector("[data-beta165-current-question]")?.scrollIntoView({behavior:"smooth",block:"start"})}catch{}},40); }
+  window.HistoDailyQuizAdvance = advanceQuiz;
   handleQuizChoice = function beta165HandleQuizChoice(lessonId, qi, ci){ const lesson=allLessons().find(l=>key(l.id)===key(lessonId)); if(!lesson) return false; const content=buildLessonContent(lesson), items=normalizeQuizPack(content.quiz,lesson,content), item=items[qi]; if(!item) return false; const k=key(lesson.id), p=lessonQuizState(k); if(Number.isInteger(p.answers?.[qi])||Number.isInteger(p.answers?.[String(qi)])||p.passed) return false; const choices=quizChoicesFor(item,items,lesson,content,qi), choice=choices[ci]; if(!choice) return false; const answers={...(p.answers||{}),[qi]:ci}, correct={...(p.correct||{}),[qi]:Boolean(choice.correct)}; const ccount=Object.values(correct).filter(Boolean).length, acount=Object.keys(answers).length, threshold=lessonQuizPassThreshold(items.length), passed=acount>=items.length&&ccount>=threshold, failed=acount>=items.length&&!passed; const quizProgress={...(state.quizProgress||{}),[k]:{...p,answers,correct,attempts:Number(p.attempts||0)+1,passed}}; const newly=passed&&!lessonDone(lesson.id), completedLessons=newly?{...(state.completedLessons||{}),[lesson.id]:true}:state.completedLessons, achievements=newly?{...(state.achievements||{}),firstLesson:true}:state.achievements, gain=newly?Number(lesson.xp||55):0; const quizFeedback={...(state.quizFeedback||{}),[k]:passed?`Quiz réussi : ${ccount}/${items.length}. Cours validé automatiquement.`:failed?`Score : ${ccount}/${items.length}. Il faut au moins ${threshold}/${items.length}.`:choice.correct?`Correct. ${ccount}/${items.length} bonne(s).`:`Réponse fausse. Continue : validation à ${threshold}/${items.length}.`}; setSafe({quizProgress,quizFeedback,quizStep:{...qmap("quizStep"),[k]:qi},completedLessons,achievements,xp:xpTotal()+gain,lessonView:"quiz",lessonFocus:null}); if(gain) try{showXPToast?.(gain,"leçon validée")}catch{}; return true; };
   resetLessonQuiz = function beta165ResetLessonQuiz(lessonId){ const k=key(lessonId), qp={...(state.quizProgress||{})}, qf={...(state.quizFeedback||{})}, qs={...qmap("quizStep")}; delete qp[k]; delete qf[k]; delete qs[k]; setSafe({quizProgress:qp,quizFeedback:qf,quizStep:qs,lessonView:"quiz",lessonFocus:null}); };
   const prevLessonText = typeof renderLessonText === "function" ? renderLessonText : null;
@@ -19104,10 +18982,6 @@ try {
   unlockPastMystery = function beta165UnlockPastMystery(id){ const m=findMystery(id); if(!m) return openMystery(id,"Mystère introuvable."); let accessible=false; try{accessible=Boolean(isAccessibleMystery(m.id))}catch{} if(!accessible){ const cost=Number(typeof ARCHIVE_UNLOCK_COST!=="undefined"?ARCHIVE_UNLOCK_COST:2)||2; if(Number(state.gems||0)<cost) return setSafe({tab:"mystery",archiveFeedback:`Il te faut ${cost} gemmes pour ouvrir cette archive. Tu en as ${Number(state.gems||0)}.`}); state.gems=Math.max(0,Number(state.gems||0)-cost); state.unlockedMysteries={...(state.unlockedMysteries||{}),[m.id]:{at:Date.now(),cost}}; state.achievements={...(state.achievements||{}),firstArchive:true}; try{saveState()}catch{} } openMystery(m.id,accessible?"":"Archive débloquée : dossier ouvert."); };
 
   function bindStableActions(){ try{document.querySelectorAll("[data-rank-scope]").forEach(b=>b.onclick=()=>setSafe({tab:"rank",rankScope:b.dataset.rankScope||"daily"}))}catch{} try{document.querySelectorAll("[data-view-profile]").forEach(b=>b.onclick=()=>viewProfile?.(b.dataset.viewProfile))}catch{} try{document.querySelectorAll("[data-open-profile]").forEach(b=>b.onclick=()=>setSafe({tab:"profile"}))}catch{} try{document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>setSafe({tab:"home"}))}catch{} }
-  document.addEventListener("input",e=>{ const input=e.target?.closest?.("[data-friend-code-input]"); if(!input) return; state.friendCodeDraft=input.value||""; try{localStorage.setItem(FRIEND_DRAFT_KEY,state.friendCodeDraft)}catch{} },true);
-  document.addEventListener("submit",e=>{ const form=e.target?.closest?.("[data-add-friend]"); if(!form) return; e.preventDefault?.(); e.stopPropagation?.(); addFriendValue(form.querySelector("[data-friend-code-input],input[name='friendCode'],input")?.value||""); },true);
-  document.addEventListener("click",e=>{ const choice=e.target?.closest?.("[data-quiz-choice]"), next=e.target?.closest?.("[data-quiz-next]"), reset=e.target?.closest?.("[data-reset-quiz]"); if(!choice&&!next&&!reset) return; e.preventDefault?.(); e.stopPropagation?.(); e.stopImmediatePropagation?.(); if(choice) return handleQuizChoice(state.currentLessonId,Number(choice.dataset.quizChoice),Number(choice.dataset.choiceIndex)); if(next) return advanceQuiz(next.dataset.quizNext||state.currentLessonId); if(reset) return resetLessonQuiz(state.currentLessonId); },true);
-  document.addEventListener("click",e=>{ if(e.target?.closest?.("input,textarea,select,[contenteditable='true']")) return; const add=e.target?.closest?.("[data-add-friend-button]"); if(add){ e.preventDefault?.(); e.stopPropagation?.(); const form=add.closest("[data-add-friend]"); return addFriendValue(form?.querySelector("[data-friend-code-input],input[name='friendCode'],input")?.value||""); } const rank=e.target?.closest?.("[data-rank-scope]"); if(rank){ const scope=VALID_SCOPES.has(rank.dataset.rankScope)?rank.dataset.rankScope:"daily"; e.preventDefault?.(); e.stopPropagation?.(); e.stopImmediatePropagation?.(); setSafe({tab:"rank",rankScope:scope}); topSoon(); return; } const nav=e.target?.closest?.("[data-home],[data-back-home],[data-go-home],[data-back-learn],[data-back-chapters],[data-back-social],[data-profile-rank],[data-open-rank],[data-unlock-mystery],[data-open-mystery-id],[data-open-daily-mystery]"); if(!nav) return; e.preventDefault?.(); e.stopPropagation?.(); if(nav.matches("[data-unlock-mystery]")) return unlockPastMystery(nav.dataset.unlockMystery); if(nav.matches("[data-open-mystery-id]")) return openMystery(nav.dataset.openMysteryId); if(nav.matches("[data-open-daily-mystery]")){let d=null;try{d=dailyMystery?.()}catch{} return d?.id?openMystery(d.id):setSafe({tab:"mystery"});} if(nav.matches("[data-back-learn]")) return setSafe({tab:"learn",lessonFocus:null,lessonView:"express"}); if(nav.matches("[data-back-chapters]")) return setSafe({tab:"learn",learnDrill:"chapters",learnSearch:"",learnFilter:"all"}); if(nav.matches("[data-back-social]")) return setSafe({tab:"rank",rankScope:state.rankScope||"daily"}); if(nav.matches("[data-profile-rank]")) return setSafe({tab:"rank",rankScope:nav.dataset.profileRank||"daily"}); if(nav.matches("[data-open-rank]")) return setSafe({tab:"rank",rankScope:nav.dataset.openRank||"daily"}); return setSafe({tab:"home"}); },true);
   const oldSave = typeof saveState === "function" ? saveState : null; if(oldSave) saveState=function beta165SaveState(){ repairSocial(); saveProfile("save"); return oldSave(); };
   const oldSet = typeof setState === "function" ? setState : null; if(oldSet) setState=function beta165SetState(patch={},options={}){ if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"rankScope")) patch={...patch,rankScope:VALID_SCOPES.has(patch.rankScope)?patch.rankScope:"daily"}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"friends")) patch={...patch,friends:normalizeFriends(patch.friends)}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"pseudo")) patch={...patch,pseudo:str(patch.pseudo).slice(0,18)||state.pseudo||"Invité"}; const r=oldSet(patch,options); try{if(repairSocial()) queueSaveState?.(120)}catch{} try{saveProfile("setState")}catch{} return r; };
   try { repairSocial(); saveProfile("startup"); const style=document.createElement("style"); style.id="beta165-stabilisation-style"; style.textContent=`[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase}.beta165-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px}.beta165-friend-add-form button{min-height:52px}.rank-tabs [data-rank-scope]{pointer-events:auto!important;touch-action:manipulation!important;position:relative;z-index:3}.beta165-rank-summary{grid-template-columns:repeat(4,minmax(0,1fr))}.beta165-leaderboard .rank-row{touch-action:manipulation;pointer-events:auto}.beta165-quiz-runner{content-visibility:auto;contain-intrinsic-size:620px;overflow:clip}.beta165-quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 16px}.beta165-quiz-progress i{height:8px;border-radius:999px;background:rgba(255,255,255,.14)}.beta165-quiz-progress i.current{background:rgba(246,196,83,.82)}.beta165-quiz-progress i.ok{background:rgba(72,213,151,.85)}.beta165-quiz-progress i.ko{background:rgba(251,113,133,.82)}.beta165-single-question .quiz-choice{touch-action:manipulation;pointer-events:auto;min-height:54px}.beta165-quiz-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px}.beta165-quiz-footer button{min-height:48px}.beta165-score-panel{display:grid;gap:4px;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055)}.beta165-score-panel.good{border-color:rgba(72,213,151,.45);background:rgba(72,213,151,.12)}.complete-course-panel,.leaderboard-modern,.friends-list-card{content-visibility:auto;contain-intrinsic-size:900px}.skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important}@media(max-width:520px){.beta165-rank-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.beta165-friend-add-form,.beta165-quiz-footer{grid-template-columns:1fr;display:grid}.beta165-friend-add-form button,.beta165-quiz-footer button{width:100%}}`; if(!document.getElementById(style.id)) document.head.appendChild(style); state.beta165StabilisationVersion=BETA165_VERSION; window.HistoDaily={...(window.HistoDaily||{}),version:BETA165_VERSION,beta165Stabilisation:true,quizFlow:true,leaderboardTotalXp:true}; queueSaveState?.(150); if(["rank","profile","lesson","mystery","publicProfile"].includes(state.tab)) renderSoon(); } catch(e){ try{console.warn("beta165",e)}catch{} }
@@ -19307,36 +19181,10 @@ try {
     }
     try { render?.({ immediate: true }); } catch {}
   }
-  document.addEventListener("submit", event => {
-    const form = event.target?.closest?.("[data-add-friend]");
-    if (!form) return;
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    event.stopImmediatePropagation?.();
-    const input = form.querySelector("[data-friend-code-input],input[name='friendCode'],input");
-    addFriendByRawValue(input?.value || state.friendCodeDraft || "");
-  }, true);
-  document.addEventListener("click", event => {
-    const btn = event.target?.closest?.("[data-add-friend-button]");
-    if (!btn) return;
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    event.stopImmediatePropagation?.();
-    const form = btn.closest("[data-add-friend]") || document.querySelector("[data-add-friend]");
-    const input = form?.querySelector("[data-friend-code-input],input[name='friendCode'],input");
-    addFriendByRawValue(input?.value || state.friendCodeDraft || "");
-  }, true);
-  document.addEventListener("input", event => {
-    const input = event.target?.closest?.("[data-friend-code-input]");
-    if (!input) return;
-    state.friendCodeDraft = input.value || "";
-    try { localStorage.setItem(DRAFT_KEY, state.friendCodeDraft); } catch {}
-  }, true);
   try {
     state.beta166FriendRequestsFixVersion = BETA166_VERSION;
     window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA166_VERSION, beta166FriendRequestsFix: true };
     setTimeout(() => convertBeta165LocalFriends().catch(() => {}), 900);
-    if (state.tab === "profile" || state.tab === "rank") setTimeout(() => { try { render?.({ immediate: true }); } catch {} }, 80);
   } catch (error) { try { console.warn("beta166 friend request fix", error); } catch {} }
 })();
 
@@ -19464,57 +19312,6 @@ try {
     }
   } catch {}
 
-  let gesture = { x: 0, y: 0, moved: false, downAt: 0, active: false };
-  const point = event => {
-    const t = event.touches?.[0] || event.changedTouches?.[0] || event;
-    return { x: Number(t.clientX || 0), y: Number(t.clientY || 0) };
-  };
-  const begin = event => {
-    const inRank = event.target?.closest?.(".leaderboard-modern, .rank-tabs, .social-rank-hero");
-    if (!inRank) return;
-    const p = point(event);
-    gesture = { x: p.x, y: p.y, moved: false, downAt: Date.now(), active: true };
-  };
-  const move = event => {
-    if (!gesture.active) return;
-    const p = point(event);
-    if (Math.abs(p.x - gesture.x) > 8 || Math.abs(p.y - gesture.y) > 8) gesture.moved = true;
-  };
-  const end = event => {
-    const btn = event.target?.closest?.(".rank-profile-btn[data-view-profile]");
-    const socialAction = event.target?.closest?.("[data-send-friend-request],[data-back-social],[data-open-rank]");
-    if (!btn && !socialAction) return;
-    if (gesture.active && gesture.moved) {
-      event.preventDefault?.();
-      event.stopPropagation?.();
-      event.stopImmediatePropagation?.();
-      gesture.active = false;
-      return;
-    }
-    if (btn) {
-      event.preventDefault?.();
-      event.stopPropagation?.();
-      event.stopImmediatePropagation?.();
-      const id = btn.dataset.viewProfile || "";
-      gesture.active = false;
-      openProfile(id);
-      return;
-    }
-  };
-  document.addEventListener("pointerdown", begin, true);
-  document.addEventListener("pointermove", move, true);
-  document.addEventListener("touchstart", begin, { capture: true, passive: true });
-  document.addEventListener("touchmove", move, { capture: true, passive: true });
-  document.addEventListener("touchend", end, { capture: true, passive: false });
-  document.addEventListener("click", event => {
-    const row = event.target?.closest?.(".beta167-rank-row");
-    const btn = event.target?.closest?.(".rank-profile-btn[data-view-profile]");
-    if (row && !btn) {
-      event.preventDefault?.();
-      event.stopPropagation?.();
-      event.stopImmediatePropagation?.();
-    }
-  }, true);
 
   function installStyle(){
     if (document.getElementById("beta167-scroll-safe-style")) return;
@@ -19539,168 +19336,98 @@ try {
     state.beta167LeaderboardScrollSafeVersion = BETA167_VERSION;
     window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA167_VERSION, beta167LeaderboardScrollSafe: true };
     try { queueSaveState?.(120); } catch {}
-    if (state.tab === "rank") setTimeout(() => { try { render?.({ immediate: true }); } catch {} }, 40);
   } catch (error) { try { console.warn("beta167 leaderboard scroll safe", error); } catch {} }
 })();
 
 
-/* =========================================================
-   BETA168 — correctif navigation cours/quiz
-   Symptôme : sur iPhone, les boutons "Passer au cours complet"
-   et "Continuer vers le quiz" pouvaient ne rien faire après les
-   handlers globaux ajoutés pour le classement et le quiz.
-   Correctif : délégation prioritaire et sobre sur data-lesson-view,
-   active aussi sur touchend/pointerup, avec dédoublonnage.
-   ========================================================= */
-(function beta168LessonViewNavigationFix(){
-  const BETA168_VERSION = "1.0.0-beta.168";
-  const VALID_LESSON_VIEWS = new Set(["express", "complete", "quiz"]);
-  let lastTapAt = 0;
-  let lastTapView = "";
-  let touchStart = null;
 
-  const isTextInput = target => Boolean(target?.closest?.("input,textarea,select,[contenteditable='true']"));
-  const appRoot = () => document.getElementById("app");
-  const inCurrentApp = node => {
-    const root = appRoot();
-    return Boolean(root && node && root.contains(node));
-  };
-  const nearestLessonButton = target => {
-    if (!target?.closest || isTextInput(target)) return null;
-    const button = target.closest("[data-lesson-view]");
-    if (!button || button.disabled || !inCurrentApp(button)) return null;
-    const view = button.dataset.lessonView || "";
-    if (!VALID_LESSON_VIEWS.has(view)) return null;
-    return button;
-  };
-  const currentLesson = () => {
+
+/* Actions dynamiques centralisées : un seul écouteur global au lieu des correctifs concurrents. */
+function beta171GlobalActionRouter(event) {
+  const target = event.target?.closest?.(
+    "[data-beta115-repaint],[data-beta115-go-home],[data-beta115-soft-repair],[data-beta115-static],[data-send-friend-request],[data-respond-friend-request],[data-cancel-friend-request],[data-refresh-social],[data-refresh-requests],[data-repair-social],[data-beta148-preflight],[data-beta149-regression-check],[data-beta154-check],[data-beta154-clean-reload],[data-beta155-save-identity],[data-beta156-release-check]"
+  );
+  if (!target || !document.body.contains(target)) return;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+  event.stopImmediatePropagation?.();
+
+  if (target.matches("[data-beta115-repaint],[data-beta115-go-home],[data-beta115-soft-repair],[data-beta115-static]")) return beta115HandleRepairActions(event);
+  if (target.matches("[data-send-friend-request],[data-respond-friend-request]")) return beta125HandleFriendRequestAction(event);
+  if (target.matches("[data-cancel-friend-request]")) return beta140HandleCancelTap(event);
+  if (target.matches("[data-refresh-social],[data-refresh-requests]")) return beta141HandleRefreshTap(event);
+  if (target.matches("[data-repair-social]")) return beta142HandleRepairTap(event);
+  if (target.matches("[data-beta148-preflight]")) return beta148HandlePreflightTap(event);
+  if (target.matches("[data-beta149-regression-check]")) return beta149HandleRegressionTap(event);
+  if (target.matches("[data-beta154-check],[data-beta154-clean-reload]")) return beta154GlobalAction(event);
+  if (target.matches("[data-beta155-save-identity]")) return beta155GlobalAction(event);
+  if (target.matches("[data-beta156-release-check]")) return beta156GlobalAction(event);
+}
+document.addEventListener("click", beta171GlobalActionRouter, true);
+
+/* =========================================================
+   Beta 171 — architecture stabilisée
+   - un seul rendu initial après l'installation de toutes les extensions
+   - interactions principales liées dans l'écran qui les affiche
+   - aucun fallback touchend/pointerup concurrent avec click
+   - contexte discipline/chapitre normalisé à la source
+   ========================================================= */
+let beta171ConnectivityTimer = 0;
+let beta171LastConnectivityRun = 0;
+function beta171ScheduleConnectivityRefresh(reason = "visible", { force = false } = {}) {
+  const now = Date.now();
+  if (!force && now - beta171LastConnectivityRun < 12000) return;
+  window.clearTimeout(beta171ConnectivityTimer);
+  beta171ConnectivityTimer = window.setTimeout(async () => {
+    beta171LastConnectivityRun = Date.now();
+    try { isOnline = navigator.onLine !== false; } catch {}
+    try { beta156ReleaseLocalCleanup?.(); } catch {}
+    try { beta128FlushOutgoingRequests?.({ force }).catch?.(() => {}); } catch {}
+    try { beta128FlushScoreOutbox?.({ force, reason }).catch?.(() => {}); } catch {}
     try {
-      const id = String(state?.currentLessonId ?? "");
-      return (typeof allLessons === "function" ? allLessons() : []).find(l => String(l.id) === id) || null;
-    } catch { return null; }
-  };
-  const saveAndRender = view => {
-    try {
-      const lesson = currentLesson();
-      const patch = { tab: "lesson", lessonView: view, lessonFocus: null };
-      if (lesson?.id != null) patch.currentLessonId = lesson.id;
-      if (typeof setState === "function") setState(patch, { save: true });
-      else {
-        state.lessonView = view;
-        state.lessonFocus = null;
-        state.tab = "lesson";
-        try { saveState?.(); } catch {}
-        try { render?.({ immediate: true }); } catch { try { render?.(); } catch {} }
+      if (force || ["rank", "profile", "publicProfile"].includes(state.tab)) {
+        beta124RefreshSocialData?.({ force, reason }).catch?.(() => {});
       }
-      window.setTimeout(() => {
-        try {
-          const target = view === "quiz"
-            ? document.querySelector("[data-beta165-current-question], .final-quiz, [data-focus-target='quiz']")
-            : view === "complete"
-              ? document.querySelector("[data-focus-target='complete'], .complete-course-panel")
-              : document.querySelector("[data-focus-target='express'], .express-block, .lesson-hook");
-          (target || document.querySelector(".lesson-full-page") || document.getElementById("app"))?.scrollIntoView?.({ behavior: "smooth", block: "start" });
-        } catch {}
-      }, 60);
-      return true;
-    } catch (error) {
-      try { console.warn("beta168 lesson navigation", error); } catch {}
-      return false;
-    }
-  };
-  const consume = event => {
-    event?.preventDefault?.();
-    event?.stopPropagation?.();
-    event?.stopImmediatePropagation?.();
-  };
-  const point = event => {
-    const t = event?.touches?.[0] || event?.changedTouches?.[0] || event;
-    return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
-  };
-  const onStart = event => {
-    const btn = nearestLessonButton(event.target);
-    if (!btn) return;
-    const p = point(event);
-    touchStart = { x: p.x, y: p.y, at: Date.now(), view: btn.dataset.lessonView || "" };
-  };
-  const movedTooMuch = event => {
-    if (!touchStart) return false;
-    const p = point(event);
-    return Math.abs(p.x - touchStart.x) > 10 || Math.abs(p.y - touchStart.y) > 10;
-  };
-  const onActivate = event => {
-    const btn = nearestLessonButton(event.target);
-    if (!btn) return;
-    if ((event.type === "touchend" || event.type === "pointerup") && movedTooMuch(event)) return;
-    const view = btn.dataset.lessonView || "";
-    const now = Date.now();
-    if (lastTapView === view && now - lastTapAt < 260) {
-      consume(event);
-      return;
-    }
-    lastTapView = view;
-    lastTapAt = now;
-    consume(event);
-    saveAndRender(view);
-  };
-  const bindVisibleButtons = () => {
-    try {
-      document.querySelectorAll("[data-lesson-view]").forEach(button => {
-        button.setAttribute("type", "button");
-        button.style.pointerEvents = "auto";
-        button.style.touchAction = "manipulation";
-        button.onclick = event => {
-          const btn = nearestLessonButton(event.target);
-          if (!btn) return;
-          consume(event);
-          saveAndRender(btn.dataset.lessonView || "express");
-        };
-      });
     } catch {}
-  };
-  const previousRenderLesson = typeof renderLesson === "function" ? renderLesson : null;
-  if (previousRenderLesson && !window.__histodailyBeta168RenderLessonWrapped) {
-    window.__histodailyBeta168RenderLessonWrapped = true;
-    renderLesson = function beta168RenderLesson(){
-      const out = previousRenderLesson.apply(this, arguments);
-      bindVisibleButtons();
-      return out;
-    };
-  }
-  function installStyle(){
-    if (document.getElementById("beta168-lesson-nav-style")) return;
-    const style = document.createElement("style");
-    style.id = "beta168-lesson-nav-style";
-    style.textContent = `
-      .lesson-view-tabs button,
-      .lesson-next-choice button,
-      .quiz-footer [data-lesson-view]{
-        position:relative!important;
-        z-index:2147481!important;
-        pointer-events:auto!important;
-        touch-action:manipulation!important;
-        -webkit-tap-highlight-color:rgba(86,214,255,.18)!important;
-      }
-      .lesson-next-choice,
-      .lesson-view-tabs,
-      .quiz-footer{position:relative!important;z-index:2147480!important;}
-    `;
-    document.head.appendChild(style);
-  }
+    try { beta147ScheduleSilentRepair?.(reason); } catch {}
+  }, 220);
+}
+window.addEventListener("online", () => {
+  isOnline = true;
+  beta171ScheduleConnectivityRefresh("online", { force: true });
+  try { render(); } catch {}
+});
+window.addEventListener("offline", () => {
+  isOnline = false;
+  try { render(); } catch {}
+});
+window.addEventListener("focus", () => beta171ScheduleConnectivityRefresh("focus"));
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
   try {
-    if (!window.__histodailyBeta168LessonNav) {
-      window.__histodailyBeta168LessonNav = true;
-      document.addEventListener("pointerdown", onStart, true);
-      document.addEventListener("touchstart", onStart, { capture: true, passive: true });
-      document.addEventListener("pointerup", onActivate, true);
-      document.addEventListener("touchend", onActivate, { capture: true, passive: false });
-      document.addEventListener("click", onActivate, true);
+    applyDisciplineTheme();
+    beta115NormalizeDeepState?.();
+    if (typeof beta155SaveIdentitySnapshot === "function") beta155SaveIdentitySnapshot();
+    if (beta115BlankApp?.()) render({ immediate: true });
+  } catch {}
+  beta171ScheduleConnectivityRefresh("visible");
+});
+
+(function histodailyBeta171Bootstrap(){
+  const VERSION = "1.0.0-beta.171";
+  let booted = false;
+  function boot(){
+    if (booted) return;
+    booted = true;
+    try { beta114NormalizeState(); } catch {}
+    try {
+      state.beta171ArchitectureVersion = VERSION;
+      window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, architectureStable: true };
+    } catch {}
+    try { render({ immediate: true }); } catch (error) {
+      try { console.error("HistoDaily beta171 boot", error); } catch {}
     }
-    installStyle();
-    bindVisibleButtons();
-    state.beta168LessonNavigationVersion = BETA168_VERSION;
-    try { queueSaveState?.(120); } catch {}
-    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA168_VERSION, beta168LessonNavigation: true };
-    if (state.tab === "lesson") { try { render?.({ immediate: true }); } catch { try { render?.(); } catch {} } }
-  } catch (error) { try { console.warn("beta168 install", error); } catch {} }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else queueMicrotask(boot);
 })();

@@ -1,14 +1,19 @@
-const CACHE_NAME = "histodaily-beta168-lesson-nav-v1";
-const APP_VERSION = "1.0.0-beta.168";
+const CACHE_NAME = "histodaily-beta171-stable-v2";
+const APP_VERSION = "1.0.0-beta.171";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.168",
-  "/app-core.js?v=1.0.0-beta.168",
-  "/app-onboarding.js?v=1.0.0-beta.168",
-  "/app.js?v=1.0.0-beta.168",
-  "/lessons-lite.js?v=1.0.0-beta.168",
-  "/manifest.webmanifest"
+  "/styles.css?v=1.0.0-beta.171",
+  "/app-core.js?v=1.0.0-beta.171",
+  "/app-onboarding.js?v=1.0.0-beta.171",
+  "/app.js?v=1.0.0-beta.171",
+  "/lessons-lite.js?v=1.0.0-beta.171",
+  "/manifest.webmanifest",
+  "/icon.svg",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/apple-touch-icon.png",
+  "/favicon.ico"
 ];
 
 self.addEventListener("install", event => {
@@ -49,17 +54,20 @@ self.addEventListener("fetch", event => {
   }
 
   event.respondWith((async () => {
-    try {
-      const response = await fetch(event.request);
+    const cached = await caches.match(event.request);
+    const update = fetch(event.request).then(async response => {
       if (response && response.ok) {
         const cache = await caches.open(CACHE_NAME);
-        cache.put(event.request, response.clone()).catch(() => {});
+        await cache.put(event.request, response.clone());
       }
       return response;
-    } catch {
-      const cached = await caches.match(event.request);
-      return cached || caches.match("/index.html");
+    }).catch(() => null);
+
+    if (cached) {
+      event.waitUntil(update);
+      return cached;
     }
+    return (await update) || Response.error();
   })());
 });
 
