@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.171";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.174";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -227,6 +227,14 @@ const defaultState = {
   discoverOffset: 0
 };
 
+const TRANSIENT_STATE_KEYS = new Set([
+  "quizFeedback", "mysteryFeedback", "rewardFeedback", "shareFeedback",
+  "profileFeedback", "archiveFeedback", "installFeedback", "backupFeedback",
+  "inviteFeedback", "friendFeedback", "socialSubmitFeedback", "friendRequestFeedback",
+  "serverLeaderboards", "serverLeaderboardStatus", "serverFriendsStatus", "serverFriendRequestsStatus",
+  "selectedProfileId", "onlineDiagnostic", "betaLastCourseOpen", "betaMysteryShift"
+]);
+
 function applyStartupMaintenanceActions() {
   try {
     const params = new URLSearchParams(window.location.search);
@@ -277,8 +285,24 @@ function cleanStoredFriendsMap(raw = {}) {
   });
   return out;
 }
+function sanitizeStoredState(raw = {}) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const clean = {};
+  Object.entries(raw).forEach(([key, value]) => {
+    if (TRANSIENT_STATE_KEYS.has(key)) return;
+    // Les anciens marqueurs de migration ne sont pas des données utilisateur.
+    if (/^beta\d+.*(?:Version|CleanupAt|RepairAt|RepairKey|RepairStartedAt)$/i.test(key)) return;
+    clean[key] = value;
+  });
+  clean.storageSchemaVersion = 2;
+  return clean;
+}
+function stateForStorage() {
+  return sanitizeStoredState(state);
+}
 function mergeState(base, stored) {
-  const merged = { ...base, ...(stored || {}) };
+  stored = sanitizeStoredState(stored || {});
+  const merged = { ...base, ...stored };
   merged.completedLessons = { ...base.completedLessons, ...(stored?.completedLessons || {}) };
   merged.quizProgress = typeof stored?.quizProgress === "object" && stored.quizProgress ? { ...base.quizProgress, ...stored.quizProgress } : { ...base.quizProgress };
   merged.quizFeedback = typeof stored?.quizFeedback === "object" && stored.quizFeedback ? { ...base.quizFeedback, ...stored.quizFeedback } : { ...base.quizFeedback };
@@ -318,7 +342,7 @@ const NAVIGATION_ONLY_STATE_KEYS = new Set([
 ]);
 function saveState() {
   try {
-    const serialized = JSON.stringify(state);
+    const serialized = JSON.stringify(stateForStorage());
     if (HISTODAILY_CORE.storage?.safeWrite) HISTODAILY_CORE.storage.safeWrite(STORAGE_KEY, `${STORAGE_KEY}_backup`, serialized);
     else {
       localStorage.setItem(STORAGE_KEY, serialized);
@@ -1824,7 +1848,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "piège",
         "q": "Pourquoi la frise “du singe à l’homme” est-elle mauvaise ?",
-        "a": "Parce qu’elle suggère une progression linéaire alors que l’évolution humaine ressemble à un buisson de lignées.",
+        "a": "Parce qu’elle suggère une progression linéaire alors que l’évolution humaine ressemble à un buisson de lignées.", choices: ["Parce qu’elle suppose que les espèces actuelles descendent directement les unes des autres.", "Parce qu’elle classe seulement les espèces selon leur taille et non selon leur ancienneté.", "Parce qu’elle oublie que tous les hominidés ont vécu exactement à la même époque."],
         "why": "C’est l’idée centrale pour éviter un récit téléologique.",
         "trap": "Croire que tout mène forcément à Sapiens.",
         "evidence": "Le cours oppose frise simpliste et lignées multiples."
@@ -1832,7 +1856,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "concept",
         "q": "La bipédie signifie-t-elle immédiatement langage et outils complexes ?",
-        "a": "Non, elle est un changement important du corps, mais les autres capacités se développent séparément et progressivement.",
+        "a": "Non, elle est un changement important du corps, mais les autres capacités se développent séparément et progressivement.", choices: ["Oui, la marche sur deux jambes entraîne automatiquement le langage articulé.", "Oui, tous les bipèdes fabriquent nécessairement des outils complexes.", "Non, mais uniquement parce que les premiers bipèdes vivaient encore dans les arbres."],
         "why": "Cela oblige à distinguer plusieurs critères d’hominisation.",
         "trap": "Tout mettre dans un seul “progrès”.",
         "evidence": "Le bloc sur la bipédie ne fait pas tout."
@@ -1840,7 +1864,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "source",
         "q": "Quelles traces permettent d’étudier ces périodes très anciennes ?",
-        "a": "Ossements, empreintes, couches géologiques, outils associés et parfois données génétiques pour les périodes récentes.",
+        "a": "Ossements, empreintes, couches géologiques, outils associés et parfois données génétiques pour les périodes récentes.", choices: ["Des récits écrits laissés par les premiers hominidés et des cartes anciennes.", "Uniquement des outils de pierre, car les os et les sols ne donnent aucune information.", "Seulement des comparaisons avec les grands singes actuels, sans traces fossiles."],
         "why": "La préhistoire se construit sur des traces fragmentaires.",
         "trap": "Imaginer qu’on dispose de récits écrits.",
         "evidence": "Le cours parle de preuves fragmentaires."
@@ -1848,7 +1872,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "nuance",
         "q": "Pourquoi parler de plusieurs humanités ?",
-        "a": "Parce que plusieurs espèces humaines ont coexisté, notamment Sapiens, Néandertal et Denisova pour les périodes récentes.",
+        "a": "Parce que plusieurs espèces humaines ont coexisté, notamment Sapiens, Néandertal et Denisova pour les périodes récentes.", choices: ["Parce que Sapiens a remplacé une seule espèce humaine présente partout.", "Parce que Néandertal, Denisova et Sapiens sont seulement trois noms pour la même espèce.", "Parce que toutes les lignées humaines ont vécu séparément sans jamais se rencontrer."],
         "why": "Cela casse l’idée d’une humanité unique apparue d’un bloc.",
         "trap": "Confondre humanité biologique et notre seule espèce actuelle.",
         "evidence": "Le bloc “Plusieurs humanités”."
@@ -1856,7 +1880,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle méthode faut-il retenir ?",
-        "a": "Chercher des adaptations et des lignées plutôt qu’un ancêtre unique et une progression simple.",
+        "a": "Chercher des adaptations et des lignées plutôt qu’un ancêtre unique et une progression simple.", choices: ["Identifier une espèce unique qui serait l’ancêtre direct de toutes les autres.", "Classer les espèces de la moins intelligente à la plus intelligente.", "Chercher le moment précis où un animal serait devenu soudainement humain."],
         "why": "C’est le réflexe historique utile pour tout le chapitre.",
         "trap": "Raconter une légende d’origine trop nette.",
         "evidence": "Le dernier bloc du cours."
@@ -1931,7 +1955,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "preuve",
         "q": "Pourquoi un éclat de pierre peut-il être une trace historique ?",
-        "a": "Parce qu’il garde les traces d’un geste volontaire : choix de matière, percussion, forme coupante et usage possible.",
+        "a": "Parce qu’il garde les traces d’un geste volontaire : choix de matière, percussion, forme coupante et usage possible.", choices: ["Parce que tout caillou trouvé près d’un fossile humain a forcément servi d’outil.", "Parce que sa forme suffit à connaître avec certitude l’animal qu’il a permis de chasser.", "Parce qu’un éclat est une œuvre symbolique comparable à une peinture rupestre."],
         "why": "Cela permet de reconstruire une action à partir d’un objet très simple.",
         "trap": "Voir seulement un caillou sans lire les impacts.",
         "evidence": "Blocs 1 et 2."
@@ -1939,7 +1963,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "concept",
         "q": "Que signifie chaîne opératoire ?",
-        "a": "La suite des gestes qui va du choix de la matière à la fabrication puis à l’usage de l’outil.",
+        "a": "La suite des gestes qui va du choix de la matière à la fabrication puis à l’usage de l’outil.", choices: ["La succession chronologique des différentes espèces du genre Homo.", "L’ensemble des outils rangés dans un même site archéologique.", "La manière dont les aliments passent de la chasse à la cuisson."],
         "why": "Le cours insiste sur les gestes plutôt que sur l’objet isolé.",
         "trap": "Répondre seulement “outil en pierre”.",
         "evidence": "Bloc 2."
@@ -1947,7 +1971,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "nuance",
         "q": "Pourquoi faut-il éviter de dire qu’Homo habilis est le premier inventeur des outils ?",
-        "a": "Parce que les preuves conservées sont surtout en pierre et que d’autres objets ou hominines ont pu exister.",
+        "a": "Parce que les preuves conservées sont surtout en pierre et que d’autres objets ou hominines ont pu exister.", choices: ["Parce qu’Homo habilis n’a jamais été associé à des pierres taillées.", "Parce que les outils les plus anciens ont tous été fabriqués par Sapiens.", "Parce que le mot habilis désigne seulement une technique et non une espèce."],
         "why": "La préhistoire ancienne repose sur des traces très incomplètes.",
         "trap": "Transformer une hypothèse en certitude héroïque.",
         "evidence": "Bloc 1 et erreur fréquente."
@@ -1955,7 +1979,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "source",
         "q": "Quelle trace peut relier outil et alimentation ?",
-        "a": "Des os portant des marques de découpe ou de percussion associés aux pierres taillées.",
+        "a": "Des os portant des marques de découpe ou de percussion associés aux pierres taillées.", choices: ["La présence d’un foyer à proximité, même sans os ni marque de découpe.", "La forme pointue d’une pierre isolée, sans contexte archéologique.", "Un squelette humain enterré avec plusieurs galets non taillés."],
         "why": "Cette association relie l’objet à un usage possible.",
         "trap": "Déduire l’usage seulement de la forme de l’outil.",
         "evidence": "Bloc 3."
@@ -1963,7 +1987,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle idée retenir sur Homo habilis ?",
-        "a": "Il sert surtout à comprendre l’émergence de gestes techniques transmis, pas à raconter un génie isolé.",
+        "a": "Il sert surtout à comprendre l’émergence de gestes techniques transmis, pas à raconter un génie isolé.", choices: ["Il prouve qu’une seule invention soudaine a créé toutes les techniques humaines.", "Il montre qu’un individu exceptionnel a enseigné les outils à toute l’humanité.", "Il représente une étape où les outils étaient déjà aussi variés que ceux de Sapiens."],
         "why": "C’est la synthèse du cours.",
         "trap": "Le présenter comme un Sapiens miniature.",
         "evidence": "Conclusion."
@@ -2016,23 +2040,23 @@ const READY_LESSON_PACKS = {
     "quiz": [
       {
         "q": "Pourquoi “découvrir le feu” est-il une mauvaise formulation ?",
-        "a": "Parce que le vrai enjeu est la maîtrise régulière : conserver, entretenir, transporter ou produire un feu, pas seulement le voir dans la nature."
+        "a": "Parce que le vrai enjeu est la maîtrise régulière : conserver, entretenir, transporter ou produire un feu, pas seulement le voir dans la nature.", choices: ["Parce que les humains ont inventé le feu avant qu’il existe dans la nature.", "Parce que voir un incendie naturel suffit déjà à parler de maîtrise technique.", "Parce que le feu n’a eu d’effet que sur la cuisson des aliments."], why: "La maîtrise suppose une pratique répétée et contrôlée, pas la simple rencontre d’un phénomène naturel.", trap: "Confondre présence naturelle du feu et maîtrise humaine.", evidence: "Cours complet, blocs 1 et 2."
       },
       {
         "q": "Cite deux traces archéologiques possibles d’un foyer.",
-        "a": "Charbons, os brûlés, sol rubéfié, pierres chauffées ou concentration de cendres."
+        "a": "Charbons, os brûlés, sol rubéfié, pierres chauffées ou concentration de cendres.", choices: ["Des silex polis et des poteries intactes.", "Des os non brûlés et des outils dispersés sans cendres.", "Des pollens et des coquillages sans modification thermique."], why: "Un foyer se reconnaît par un faisceau de traces thermiques et leur organisation dans le site.", trap: "Choisir un objet sans rapport avec la combustion.", evidence: "Cours complet, bloc sur les traces du feu."
       },
       {
         "q": "Quel changement social le feu rend-il possible ?",
-        "a": "Il prolonge les activités après la nuit et peut favoriser les rassemblements autour du foyer."
+        "a": "Il prolonge les activités après la nuit et peut favoriser les rassemblements autour du foyer.", choices: ["Il rend immédiatement les groupes sédentaires et agricoles.", "Il supprime les besoins de coopération pour se protéger ou se nourrir.", "Il permet surtout de travailler plus vite le métal dès le Paléolithique."], why: "Le foyer modifie aussi le temps social en créant lumière, chaleur et espace de rassemblement.", trap: "Réduire le feu à la cuisson.", evidence: "Cours complet, bloc sur les effets sociaux."
       },
       {
         "q": "Pourquoi une trace brûlée ne suffit-elle pas toujours ?",
-        "a": "Parce qu’un incendie naturel ou accidentel peut aussi produire du brûlé."
+        "a": "Parce qu’un incendie naturel ou accidentel peut aussi produire du brûlé.", choices: ["Parce que le charbon disparaît toujours quelques jours après un feu.", "Parce que toutes les traces de chaleur sont produites par la cuisson humaine.", "Parce qu’un os brûlé indique forcément un foyer entretenu pendant des années."], why: "Une trace de chaleur doit être replacée dans son contexte pour distinguer feu naturel, accidentel ou entretenu.", trap: "Prendre toute matière brûlée pour une preuve de maîtrise.", evidence: "Cours complet, bloc sur l’interprétation archéologique."
       },
       {
         "q": "Quelle idée faut-il retenir ?",
-        "a": "La maîtrise du feu est progressive, inégale et révélée par plusieurs indices concordants."
+        "a": "La maîtrise du feu est progressive, inégale et révélée par plusieurs indices concordants.", choices: ["Le feu apparaît une seule fois puis se diffuse partout au même rythme.", "Un charbon isolé suffit toujours à prouver un foyer humain maîtrisé.", "La maîtrise du feu est complète dès la première rencontre avec un incendie naturel."], why: "La conclusion repose sur la progression et le croisement de plusieurs indices, non sur une invention instantanée.", trap: "Chercher une date et un inventeur uniques.", evidence: "Conclusion du cours."
       }
     ]
   },
@@ -2104,7 +2128,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "piège",
         "q": "Pourquoi l’expression “survie primitive” est-elle mauvaise ?",
-        "a": "Parce qu’elle efface les savoirs précis, les coopérations, les règles et les choix techniques des groupes chasseurs-cueilleurs.",
+        "a": "Parce qu’elle efface les savoirs précis, les coopérations, les règles et les choix techniques des groupes chasseurs-cueilleurs.", choices: ["Parce que ces groupes pratiquaient déjà partout l’agriculture et l’élevage.", "Parce qu’ils vivaient sans mobilité et dépendaient d’une seule espèce chassée.", "Parce que leurs techniques étaient simples mais leurs croyances très élaborées."],
         "why": "Le cours insiste sur la connaissance des milieux.",
         "trap": "Croire que sans agriculture, il n’y a ni organisation ni culture.",
         "evidence": "Express 1 et conclusion."
@@ -2112,7 +2136,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "source",
         "q": "Quelles traces peuvent renseigner sur l’alimentation ?",
-        "a": "Os marqués, foyers, outils, pollens, charbons, restes végétaux et organisation du site.",
+        "a": "Os marqués, foyers, outils, pollens, charbons, restes végétaux et organisation du site.", choices: ["Uniquement les pointes de projectile et les os de grands mammifères.", "Les récits écrits des chasseurs et leurs calendriers agricoles.", "Seulement la forme des grottes, sans restes animaux ni végétaux."],
         "why": "Il faut croiser plusieurs indices.",
         "trap": "Ne regarder que les armes de chasse.",
         "evidence": "Bloc 3."
@@ -2120,7 +2144,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "nuance",
         "q": "Pourquoi la cueillette est-elle parfois sous-estimée ?",
-        "a": "Parce que beaucoup de restes végétaux ou objets périssables se conservent moins bien que les os et la pierre.",
+        "a": "Parce que beaucoup de restes végétaux ou objets périssables se conservent moins bien que les os et la pierre.", choices: ["Parce que les groupes préhistoriques ne consommaient presque jamais de plantes.", "Parce que la cueillette était réservée aux périodes après l’invention de l’agriculture.", "Parce que les archéologues étudient volontairement seulement les activités masculines."],
         "why": "La conservation influence ce que l’on croit voir.",
         "trap": "Confondre absence de trace et absence de pratique.",
         "evidence": "Bloc 2."
@@ -2128,7 +2152,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "société",
         "q": "Pourquoi la coopération est-elle centrale ?",
-        "a": "Parce que partage, apprentissage, soin et mémoire des lieux conditionnent la survie du groupe.",
+        "a": "Parce que partage, apprentissage, soin et mémoire des lieux conditionnent la survie du groupe.", choices: ["Parce que chaque chasseur doit pouvoir vivre seul loin du groupe pendant plusieurs années.", "Parce que le partage empêche toute transmission des techniques entre générations.", "Parce que la coopération sert seulement lors de la chasse aux très grands animaux."],
         "why": "Le sujet n’est pas seulement alimentaire, il est social.",
         "trap": "Imaginer des chasseurs isolés et autonomes.",
         "evidence": "Bloc 4."
@@ -2136,7 +2160,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle idée faut-il retenir ?",
-        "a": "Avant l’agriculture, il existe déjà des sociétés complexes par leurs savoirs, leurs gestes et leurs relations aux milieux.",
+        "a": "Avant l’agriculture, il existe déjà des sociétés complexes par leurs savoirs, leurs gestes et leurs relations aux milieux.", choices: ["Ces sociétés n’ont ni règles ni techniques avant l’apparition des premiers villages.", "La chasse suffit à expliquer toute leur alimentation et leur organisation.", "Leur mobilité montre qu’elles n’avaient aucune connaissance durable des territoires."],
         "why": "C’est la thèse du cours.",
         "trap": "Faire commencer l’histoire avec les villages.",
         "evidence": "Conclusion."
@@ -2196,7 +2220,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "concept",
         "q": "Pourquoi le mot révolution est-il à manier avec prudence ?",
-        "a": "Parce que les changements néolithiques sont progressifs, régionaux et étalés dans le temps.",
+        "a": "Parce que les changements néolithiques sont progressifs, régionaux et étalés dans le temps.", choices: ["Parce que l’agriculture apparaît partout à la même date mais avec des plantes différentes.", "Parce que les sociétés abandonnent immédiatement chasse et cueillette dès les premières cultures.", "Parce que le mot révolution ne convient qu’aux changements politiques violents."],
         "why": "Cela évite de penser un basculement instantané.",
         "trap": "Imaginer une date unique de naissance de l’agriculture.",
         "evidence": "Le cours parle d’une révolution très lente."
@@ -2204,7 +2228,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "preuve",
         "q": "Pourquoi les stocks sont-ils politiquement importants ?",
-        "a": "Parce qu’ils doivent être comptés, protégés, redistribués et peuvent créer des hiérarchies.",
+        "a": "Parce qu’ils doivent être comptés, protégés, redistribués et peuvent créer des hiérarchies.", choices: ["Parce qu’ils rendent inutile toute autorité et garantissent une distribution égale.", "Parce qu’ils servent seulement à nourrir les animaux pendant l’hiver.", "Parce qu’ils empêchent les échanges et la spécialisation des activités."],
         "why": "Le stockage relie économie et pouvoir.",
         "trap": "Voir les stocks comme un simple garde-manger.",
         "evidence": "Le bloc sur les stocks."
@@ -2212,7 +2236,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "nuance",
         "q": "Cite deux coûts possibles de l’agriculture.",
-        "a": "Travail plus lourd, alimentation parfois moins variée, maladies liées aux animaux, conflits sur les terres ou inégalités.",
+        "a": "Travail plus lourd, alimentation parfois moins variée, maladies liées aux animaux, conflits sur les terres ou inégalités.", choices: ["Une mobilité accrue et une alimentation toujours plus diversifiée.", "La disparition des maladies infectieuses et des conflits fonciers.", "Moins de travail régulier et une dépendance plus faible aux récoltes."],
         "why": "Un progrès technique peut avoir des effets ambivalents.",
         "trap": "Dire que l’agriculture améliore forcément la vie de tous.",
         "evidence": "Le bloc sur le coût humain."
@@ -2220,7 +2244,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "carte",
         "q": "Pourquoi faut-il parler de plusieurs foyers agricoles ?",
-        "a": "Parce que l’agriculture apparaît indépendamment dans plusieurs régions du monde.",
+        "a": "Parce que l’agriculture apparaît indépendamment dans plusieurs régions du monde.", choices: ["Parce que toutes les plantes cultivées viennent d’Europe avant de se diffuser ailleurs.", "Parce que le Croissant fertile adopte l’agriculture après l’Amérique et la Chine.", "Parce que chaque région invente exactement les mêmes plantes et les mêmes animaux."],
         "why": "Cela rend le récit moins eurocentré et moins simpliste.",
         "trap": "Tout faire venir du seul Croissant fertile.",
         "evidence": "Le bloc “Foyers multiples”."
@@ -2228,7 +2252,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle idée générale retenir ?",
-        "a": "L’agriculture crée possibilités, dépendances et inégalités : c’est une mutation sociale autant que technique.",
+        "a": "L’agriculture crée possibilités, dépendances et inégalités : c’est une mutation sociale autant que technique.", choices: ["L’agriculture améliore partout et immédiatement la santé et l’égalité.", "Le Néolithique est surtout l’invention d’un nouvel outil pour planter des graines.", "La sédentarité précède toujours l’agriculture et supprime toute mobilité."],
         "why": "C’est le sens historique du cours.",
         "trap": "Résumer le Néolithique à “on plante des graines”.",
         "evidence": "Le dernier bloc."
@@ -2303,7 +2327,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "concept",
         "q": "Pourquoi Homo sapiens ne doit-il pas être présenté comme le point final de l’évolution ?",
-        "a": "Parce que plusieurs humanités ont coexisté et que l’évolution humaine ressemble à un buisson de lignées.",
+        "a": "Parce que plusieurs humanités ont coexisté et que l’évolution humaine ressemble à un buisson de lignées.", choices: ["Parce que Sapiens est la première espèce à marcher debout.", "Parce que toutes les autres humanités disparaissent avant son apparition.", "Parce que son cerveau est nécessairement plus gros que celui de toutes les autres espèces."],
         "why": "Cela évite un récit téléologique où tout mènerait naturellement à nous.",
         "trap": "Dire que Sapiens était simplement plus évolué.",
         "evidence": "Le cours insiste sur Néandertaliens, Denisoviens et coexistences."
@@ -2311,7 +2335,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "preuve",
         "q": "Quelle preuve a profondément changé notre vision des rencontres entre humanités ?",
-        "a": "L’ADN ancien, qui montre des héritages néandertaliens ou denisoviens dans certaines populations actuelles.",
+        "a": "L’ADN ancien, qui montre des héritages néandertaliens ou denisoviens dans certaines populations actuelles.", choices: ["Les peintures rupestres, qui prouvent à elles seules tous les métissages.", "La taille des crânes, qui permet d’identifier directement les croisements.", "Les récits oraux conservés depuis le Paléolithique jusqu’à aujourd’hui."],
         "why": "Il révèle des croisements que les objets seuls ne prouvent pas toujours.",
         "trap": "S’appuyer seulement sur la forme des outils.",
         "evidence": "Bloc sur l’ADN ancien."
@@ -2319,7 +2343,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "carte",
         "q": "Où replacer l’apparition ancienne de Sapiens ?",
-        "a": "En Afrique, vers -300 000 ans, avant des diffusions progressives vers d’autres continents.",
+        "a": "En Afrique, vers -300 000 ans, avant des diffusions progressives vers d’autres continents.", choices: ["En Europe vers -40 000 ans, avant toute présence humaine en Afrique.", "Au Proche-Orient vers -10 000 ans, avec les premiers villages agricoles.", "En Asie centrale vers -1 million d’années, avant Homo erectus."],
         "why": "Le cadre spatial empêche de raconter une origine vague.",
         "trap": "Imaginer une sortie unique et simple.",
         "evidence": "Express et premier bloc."
@@ -2327,7 +2351,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "piège",
         "q": "Pourquoi chercher un seul signe de modernité est-il risqué ?",
-        "a": "Parce que les comportements techniques et symboliques apparaissent progressivement et différemment selon les lieux.",
+        "a": "Parce que les comportements techniques et symboliques apparaissent progressivement et différemment selon les lieux.", choices: ["Parce que l’art apparaît partout avant les outils élaborés.", "Parce que toutes les innovations culturelles naissent au même endroit puis se diffusent.", "Parce qu’un comportement symbolique unique suffit à classer une population comme moderne."],
         "why": "La culture matérielle ne bascule pas d’un coup partout.",
         "trap": "Chercher un bouton magique : art, langage ou outil unique.",
         "evidence": "Bloc techniques et cultures matérielles."
@@ -2335,7 +2359,7 @@ const READY_LESSON_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle formule résume le mieux le cours ?",
-        "a": "Sapiens devient dominant par mobilités, coopérations, transmissions et circonstances, pas par supériorité naturelle simple.",
+        "a": "Sapiens devient dominant par mobilités, coopérations, transmissions et circonstances, pas par supériorité naturelle simple.", choices: ["Sapiens domine grâce à une supériorité biologique simple et constante.", "Sapiens remplace les autres humanités sans contact ni métissage.", "Sapiens réussit surtout parce qu’il reste isolé et conserve partout les mêmes techniques."],
         "why": "C’est l’idée forte à retenir.",
         "trap": "Transformer l’histoire humaine en compétition sportive.",
         "evidence": "Dernier bloc."
@@ -2343,97 +2367,149 @@ const READY_LESSON_PACKS = {
     ]
   },
   "civilizations-fertile-crescent": {
-    "hook": "Le Croissant fertile n’est pas un décor de carte : c’est un ensemble de milieux où l’eau, les céréales, les villages puis les villes rendent possibles des sociétés très organisées.",
-    "keyFacts": [
-      "Quand : surtout du Néolithique aux premières cités",
-      "Où : Levant, Mésopotamie, piémonts et vallées du Proche-Orient",
-      "Acteurs : agriculteurs, éleveurs, communautés villageoises, temples, palais",
-      "Enjeu : comprendre le lien entre milieux, surplus et organisation sociale"
-    ],
-    "express": [
-      "Le Croissant fertile désigne une zone du Proche-Orient où plusieurs transformations majeures se concentrent : domestication de plantes et d’animaux, villages, irrigation, surplus, puis villes et écritures.",
-      "Il ne faut pas l’imaginer comme un paradis uniforme. Les milieux sont variés : vallées, piémonts, zones arides, espaces irrigués. Les sociétés doivent s’adapter à l’eau disponible et aux contraintes agricoles.",
-      "Son intérêt historique est de montrer comment des choix techniques et sociaux peuvent produire de nouvelles formes de pouvoir, sans réduire tout à une cause naturelle."
-    ],
-    "complete": [
-      {
-        "title": "1. Un espace, pas une civilisation unique",
-        "text": "Le Croissant fertile regroupe plusieurs régions du Proche-Orient. On y trouve des trajectoires différentes : villages du Levant, cités mésopotamiennes, zones d’élevage, vallées irriguées. Le terme aide à situer, mais ne doit pas écraser la diversité."
-      },
-      {
-        "title": "2. L’eau comme contrainte et ressource",
-        "text": "Dans certaines zones, l’agriculture dépend fortement de l’irrigation. Organiser l’eau suppose des travaux, des calendriers, des conflits, des accords et parfois des autorités capables de coordonner."
-      },
-      {
-        "title": "3. Surplus et spécialisation",
-        "text": "Quand la production permet des surplus, certaines personnes peuvent se spécialiser : artisans, administrateurs, prêtres, marchands. Cela ne veut pas dire que tout le monde devient plus riche, mais que la société se différencie."
-      },
-      {
-        "title": "4. Vers les villes et les États",
-        "text": "Les cités mésopotamiennes ne naissent pas seulement parce que le sol est fertile. Elles résultent aussi d’organisation, d’échanges, de croyances, de conflits et de gestion des ressources."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Le Croissant fertile montre que l’histoire naît de l’interaction entre environnement, techniques, pouvoir et société. Ce n’est ni un miracle géographique ni une simple suite naturelle."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Pourquoi ce nom ?",
-        "text": "La forme de la zone évoque un croissant sur les cartes modernes, mais le terme est une construction d’historien et de géographe."
-      },
-      {
-        "title": "Piège déterministe",
-        "text": "Dire “la géographie crée la civilisation” est trop simple : les sociétés font des choix et entrent en conflit."
-      },
-      {
-        "title": "À relier",
-        "text": "Ce cours prépare Uruk, l’écriture, les temples, les rois et les premières lois."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "carte",
-        "q": "Pourquoi le Croissant fertile n’est-il pas une civilisation unique ?",
-        "a": "Parce qu’il regroupe plusieurs régions et trajectoires différentes du Proche-Orient.",
-        "why": "Le terme situe un espace, pas un peuple homogène.",
-        "trap": "Parler du Croissant fertile comme d’un État.",
-        "evidence": "Le premier bloc du cours."
-      },
-      {
-        "kind": "mécanisme",
-        "q": "Pourquoi l’eau peut-elle favoriser l’organisation politique ?",
-        "a": "Parce que l’irrigation demande coordination, entretien, règles et arbitrages.",
-        "why": "La ressource devient un problème social.",
-        "trap": "Dire seulement “il y a de l’eau donc ça pousse”.",
-        "evidence": "Le bloc sur l’eau."
-      },
-      {
-        "kind": "concept",
-        "q": "Que permet le surplus agricole ?",
-        "a": "Il permet la spécialisation de certains métiers et le développement d’administrations ou de pouvoirs.",
-        "why": "Le surplus est un moteur de différenciation sociale.",
-        "trap": "Croire que surplus signifie égalité et abondance pour tous.",
-        "evidence": "Le bloc sur surplus et spécialisation."
-      },
-      {
-        "kind": "nuance",
-        "q": "Pourquoi faut-il éviter le déterminisme géographique ?",
-        "a": "Parce que les sociétés ne subissent pas seulement leur milieu : elles l’organisent, le transforment et se disputent ses ressources.",
-        "why": "C’est une nuance historique essentielle.",
-        "trap": "Faire de la géographie une cause automatique.",
-        "evidence": "Le bloc “Piège déterministe”."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Quelle grande interaction retenir ?",
-        "a": "Environnement, techniques, pouvoir et société se combinent pour produire de nouvelles formes d’organisation.",
-        "why": "C’est le fil conducteur du cours.",
-        "trap": "Réduire le sujet à une carte fertile.",
-        "evidence": "Le dernier bloc."
-      }
-    ]
-  },
+  "hook": "Le Croissant fertile n’est pas un décor de carte : c’est un ensemble de milieux où l’eau, les céréales, les villages puis les villes rendent possibles des sociétés très organisées.",
+  "keyFacts": [
+    "Quand : surtout du Néolithique aux premières cités",
+    "Où : Levant, Mésopotamie, piémonts et vallées du Proche-Orient",
+    "Acteurs : agriculteurs, éleveurs, communautés villageoises, temples, palais",
+    "Enjeu : comprendre le lien entre milieux, surplus et organisation sociale"
+  ],
+  "express": [
+    "Le Croissant fertile désigne une zone du Proche-Orient où plusieurs transformations majeures se concentrent : domestication de plantes et d’animaux, villages, irrigation, surplus, puis villes et écritures.",
+    "Il ne faut pas l’imaginer comme un paradis uniforme. Les milieux sont variés : vallées, piémonts, zones arides, espaces irrigués. Les sociétés doivent s’adapter à l’eau disponible et aux contraintes agricoles.",
+    "Son intérêt historique est de montrer comment des choix techniques et sociaux peuvent produire de nouvelles formes de pouvoir, sans réduire tout à une cause naturelle."
+  ],
+  "complete": [
+    {
+      "title": "1. Un espace, pas une civilisation unique",
+      "text": "Le Croissant fertile regroupe plusieurs régions du Proche-Orient. On y trouve des trajectoires différentes : villages du Levant, cités mésopotamiennes, zones d’élevage, vallées irriguées. Le terme aide à situer, mais ne doit pas écraser la diversité."
+    },
+    {
+      "title": "2. L’eau comme contrainte et ressource",
+      "text": "Dans certaines zones, l’agriculture dépend fortement de l’irrigation. Organiser l’eau suppose des travaux, des calendriers, des conflits, des accords et parfois des autorités capables de coordonner."
+    },
+    {
+      "title": "3. Surplus et spécialisation",
+      "text": "Quand la production permet des surplus, certaines personnes peuvent se spécialiser : artisans, administrateurs, prêtres, marchands. Cela ne veut pas dire que tout le monde devient plus riche, mais que la société se différencie."
+    },
+    {
+      "title": "4. Vers les villes et les États",
+      "text": "Les cités mésopotamiennes ne naissent pas seulement parce que le sol est fertile. Elles résultent aussi d’organisation, d’échanges, de croyances, de conflits et de gestion des ressources."
+    },
+    {
+      "title": "5. Un croissant composé de milieux différents",
+      "text": "Le terme réunit la vallée du Jourdain, le Levant, le sud de l’Anatolie et la Mésopotamie. Ces régions ne forment pas un paysage uniforme : certaines reçoivent assez de pluie pour cultiver, d’autres dépendent de l’irrigation. Les plantes, les techniques et les formes d’habitat circulent entre ces zones sans suivre une progression simple."
+    },
+    {
+      "title": "6. L’eau est une ressource et un danger",
+      "text": "Le Tigre et l’Euphrate rendent possible une agriculture abondante, mais leurs crues sont moins régulières que celles du Nil. Creuser et entretenir des canaux exige du travail collectif ; une mauvaise gestion peut saliniser les sols ou provoquer des conflits. L’irrigation favorise donc la production tout en renforçant les besoins d’organisation."
+    },
+    {
+      "title": "7. Des réseaux avant les grands États",
+      "text": "Bien avant les empires, l’obsidienne, les coquillages, les pierres et certaines techniques voyagent sur de longues distances. Ces échanges montrent que les premiers villages ne sont pas isolés. Les routes relient des régions complémentaires : céréales dans une zone, bois ou métal dans une autre, savoir-faire ailleurs."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Le Croissant fertile montre que l’histoire naît de l’interaction entre environnement, techniques, pouvoir et société. Ce n’est ni un miracle géographique ni une simple suite naturelle."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Pourquoi ce nom ?",
+      "text": "La forme de la zone évoque un croissant sur les cartes modernes, mais le terme est une construction d’historien et de géographe."
+    },
+    {
+      "title": "Piège déterministe",
+      "text": "Dire “la géographie crée la civilisation” est trop simple : les sociétés font des choix et entrent en conflit."
+    },
+    {
+      "title": "À relier",
+      "text": "Ce cours prépare Uruk, l’écriture, les temples, les rois et les premières lois."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "carte",
+      "q": "Pourquoi le Croissant fertile n’est-il pas une civilisation unique ?",
+      "a": "Parce qu’il regroupe plusieurs régions et trajectoires différentes du Proche-Orient.",
+      "choices": [
+        "Parce qu’il désigne uniquement la Mésopotamie gouvernée par une même dynastie.",
+        "Parce qu’il correspond à un peuple unique parlant une seule langue.",
+        "Parce qu’il forme un État continu dirigé depuis Uruk pendant toute l’Antiquité."
+      ],
+      "why": "Le terme situe un espace, pas un peuple homogène.",
+      "trap": "Parler du Croissant fertile comme d’un État.",
+      "evidence": "Le premier bloc du cours."
+    },
+    {
+      "kind": "mécanisme",
+      "q": "Pourquoi l’eau peut-elle favoriser l’organisation politique ?",
+      "a": "Parce que l’irrigation demande coordination, entretien, règles et arbitrages.",
+      "choices": [
+        "Parce que la présence d’un fleuve crée automatiquement un roi et une administration.",
+        "Parce que l’irrigation supprime les conflits autour de la terre et de l’eau.",
+        "Parce que seules les crues naturelles, sans travail collectif, déterminent les récoltes."
+      ],
+      "why": "La ressource devient un problème social.",
+      "trap": "Dire seulement “il y a de l’eau donc ça pousse”.",
+      "evidence": "Le bloc sur l’eau."
+    },
+    {
+      "kind": "concept",
+      "q": "Que permet le surplus agricole ?",
+      "a": "Il permet la spécialisation de certains métiers et le développement d’administrations ou de pouvoirs.",
+      "choices": [
+        "Il permet à tous les habitants de cesser de travailler dans l’agriculture.",
+        "Il garantit une répartition égale des richesses entre les familles.",
+        "Il rend inutiles les échanges, les stocks et les prélèvements."
+      ],
+      "why": "Le surplus est un moteur de différenciation sociale.",
+      "trap": "Croire que surplus signifie égalité et abondance pour tous.",
+      "evidence": "Le bloc sur surplus et spécialisation."
+    },
+    {
+      "kind": "nuance",
+      "q": "Pourquoi faut-il éviter le déterminisme géographique ?",
+      "a": "Parce que les sociétés ne subissent pas seulement leur milieu : elles l’organisent, le transforment et se disputent ses ressources.",
+      "choices": [
+        "Parce que le relief et le climat n’ont aucun effet sur les sociétés.",
+        "Parce que toutes les sociétés placées près d’un fleuve deviennent identiques.",
+        "Parce que les techniques humaines ne peuvent jamais modifier les milieux."
+      ],
+      "why": "C’est une nuance historique essentielle.",
+      "trap": "Faire de la géographie une cause automatique.",
+      "evidence": "Le bloc “Piège déterministe”."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle grande interaction retenir ?",
+      "a": "Environnement, techniques, pouvoir et société se combinent pour produire de nouvelles formes d’organisation.",
+      "choices": [
+        "La fertilité naturelle suffit à créer villes et États sans choix politiques.",
+        "Les techniques expliquent tout, indépendamment des ressources et des rapports de pouvoir.",
+        "Le pouvoir apparaît seulement après l’écriture, sans lien avec les stocks ni l’irrigation."
+      ],
+      "why": "C’est le fil conducteur du cours.",
+      "trap": "Réduire le sujet à une carte fertile.",
+      "evidence": "Le dernier bloc."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "Le terme réunit la vallée du Jourdain, le Levant, le sud de l’Anatolie et la Mésopotamie."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Le Tigre et l’Euphrate rendent possible une agriculture abondante, mais leurs crues sont moins régulières que celles du Nil."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Bien avant les empires, l’obsidienne, les coquillages, les pierres et certaines techniques voyagent sur de longues distances."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "aegean-mediterranean-minoens-crete": {
     "hook": "Avant les cités grecques classiques, la Crète minoenne montre un autre visage du monde égéen : palais, fresques, routes maritimes et pouvoir sans armée monumentale évidente.",
     "keyFacts": [
@@ -2504,9 +2580,9 @@ const READY_LESSON_PACKS = {
         "q": "À quelle période appartient surtout la Crète minoenne ?",
         "a": "À l’âge du Bronze égéen, avant la Grèce classique des cités.",
         "choices": [
-          "À la période des royaumes francs médiévaux.",
-          "À l’époque de la République romaine tardive.",
-          "Au temps des États industriels du XIXe siècle."
+          "À l’époque archaïque, au moment de la naissance des premières cités grecques.",
+          "À l’époque classique, pendant la rivalité entre Athènes et Sparte.",
+          "À la période hellénistique, après les conquêtes d’Alexandre."
         ],
         "why": "Le cours situe les Minoens avant Athènes et Sparte classiques.",
         "trap": "Faire de Cnossos une cité grecque classique.",
@@ -2517,9 +2593,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi le palais minoen n’est-il pas seulement une résidence ?",
         "a": "Parce qu’il concentre stockage, ateliers, rituels, circulation de biens et prestige politique.",
         "choices": [
-          "Parce qu’il sert uniquement de forteresse frontalière.",
-          "Parce qu’il remplace toute activité artisanale.",
-          "Parce qu’il interdit tout échange maritime."
+          "Parce qu’il sert surtout de résidence fortifiée à une dynastie guerrière.",
+          "Parce qu’il accueille uniquement les cérémonies religieuses sans activité économique.",
+          "Parce qu’il regroupe les habitants de l’île dans une assemblée politique permanente."
         ],
         "why": "Le palais est un centre d’organisation sociale et économique.",
         "trap": "Le réduire à un logement monumental.",
@@ -2530,9 +2606,9 @@ const READY_LESSON_PACKS = {
         "q": "Que montrent les objets importés et les influences artistiques ?",
         "a": "Que la Crète minoenne participe à des réseaux maritimes égéens et méditerranéens.",
         "choices": [
-          "Que l’île est totalement coupée des routes de mer.",
-          "Que les palais ne contrôlent aucun objet.",
-          "Que les échanges apparaissent seulement après Alexandre."
+          "Que la Crète domine militairement toute la Méditerranée orientale.",
+          "Que les palais importent les objets mais n’échangent aucune production locale.",
+          "Que les influences viennent uniquement de l’Égypte, sans réseaux égéens."
         ],
         "why": "La mer relie la Crète à d’autres espaces.",
         "trap": "Confondre île et isolement.",
@@ -2543,9 +2619,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi faut-il rester prudent avec les Minoens ?",
         "a": "Parce que le linéaire A n’est pas vraiment déchiffré et que beaucoup d’informations viennent de l’archéologie.",
         "choices": [
-          "Parce que toutes les archives politiques sont parfaitement lisibles.",
-          "Parce que les palais ont disparu sans aucune trace matérielle.",
-          "Parce que les fresques suffisent à connaître chaque roi par son nom."
+          "Parce que les fouilles de Cnossos ont détruit toutes les traces matérielles.",
+          "Parce que les récits d’Homère sont la seule source disponible sur cette période.",
+          "Parce que le linéaire A est déchiffré mais ne contient que des textes mythologiques."
         ],
         "why": "L’état des sources limite les certitudes.",
         "trap": "Inventer une histoire trop précise.",
@@ -2556,9 +2632,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle idée résume le mieux le cours ?",
         "a": "La Crète minoenne montre un monde égéen complexe avant la polis grecque classique.",
         "choices": [
-          "La Crète minoenne est déjà une démocratie athénienne.",
-          "Les Minoens ne connaissent ni ateliers, ni stockage, ni échanges.",
-          "L’âge du Bronze égéen n’a aucun lien avec la Méditerranée."
+          "La Crète minoenne est une première forme de démocratie grecque organisée autour des palais.",
+          "La civilisation minoenne est surtout un empire militaire fermé aux échanges maritimes.",
+          "Les palais crétois annoncent directement les institutions de la polis classique."
         ],
         "why": "Le cours relie complexité palatiale et chronologie.",
         "trap": "Coller trop vite le modèle classique à une période plus ancienne.",
@@ -2636,9 +2712,9 @@ const READY_LESSON_PACKS = {
         "q": "À quelle période appartiennent surtout les Mycéniens ?",
         "a": "À la fin de l’âge du Bronze égéen, avant les cités grecques classiques.",
         "choices": [
-          "À la période de l’empire carolingien.",
-          "À l’époque des monarchies absolues modernes.",
-          "Au lendemain de la guerre froide."
+          "Au début de l’âge du Fer, après la formation des cités classiques.",
+          "Au Ve siècle av. J.-C., pendant les guerres médiques.",
+          "À l’époque hellénistique, après la mort d’Alexandre."
         ],
         "why": "La chronologie évite de confondre palais mycéniens et cité classique.",
         "trap": "Mettre Mycènes au temps de Périclès.",
@@ -2649,9 +2725,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi le linéaire B est-il essentiel ?",
         "a": "Parce qu’il note une forme ancienne de grec et donne accès à des comptes palatiaux.",
         "choices": [
-          "Parce qu’il décrit les débats de l’assemblée athénienne.",
-          "Parce qu’il est une écriture inventée par les empereurs romains.",
-          "Parce qu’il est uniquement une décoration murale sans texte."
+          "Parce qu’il raconte les guerres de Troie dans une version contemporaine des événements.",
+          "Parce qu’il traduit les textes religieux minoens écrits en linéaire A.",
+          "Parce qu’il constitue le premier alphabet grec utilisé dans les assemblées civiques."
         ],
         "why": "Il rend l’administration mycénienne partiellement lisible.",
         "trap": "Ignorer les archives au profit des seuls héros.",
@@ -2662,9 +2738,9 @@ const READY_LESSON_PACKS = {
         "q": "Que fait le palais mycénien dans l’économie ?",
         "a": "Il collecte, stocke, commande des productions et redistribue des biens.",
         "choices": [
-          "Il sert seulement de théâtre public.",
-          "Il supprime toutes les terres agricoles.",
-          "Il interdit la présence de scribes et d’artisans."
+          "Il protège les guerriers mais laisse production et échanges aux villages indépendants.",
+          "Il centralise uniquement les cérémonies religieuses sans gérer de stocks.",
+          "Il redistribue les terres à égalité entre tous les habitants du royaume."
         ],
         "why": "Le palais est une machine de gestion.",
         "trap": "Le voir seulement comme décor militaire.",
@@ -2675,9 +2751,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi ne pas lire Homère comme un reportage direct ?",
         "a": "Parce que les poèmes sont plus tardifs et transforment la mémoire de l’âge du Bronze en récit héroïque.",
         "choices": [
-          "Parce que les poèmes sont des tablettes comptables du palais de Pylos.",
-          "Parce que les récits héroïques donnent tous les impôts exacts.",
-          "Parce que les tombes remplacent entièrement toute tradition orale."
+          "Parce que les poèmes ont été composés avant les palais mycéniens.",
+          "Parce qu’Homère décrit uniquement la vie politique des cités classiques.",
+          "Parce que les tablettes en linéaire B confirment chaque détail des récits héroïques."
         ],
         "why": "Il faut distinguer mémoire, poésie et sources contemporaines.",
         "trap": "Confondre mythe et archive.",
@@ -2688,9 +2764,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle formule résume le mieux les Mycéniens ?",
         "a": "Des sociétés palatiales grecques de l’âge du Bronze, connues par palais, tombes, objets et tablettes.",
         "choices": [
-          "Une cité démocratique classique centrée sur l’assemblée.",
-          "Un peuple sans écriture, sans palais et sans réseaux.",
-          "Une province romaine administrée depuis le Sénat."
+          "Des cités grecques classiques déjà organisées autour de l’assemblée des citoyens.",
+          "Des royaumes guerriers connus presque uniquement grâce aux poèmes d’Homère.",
+          "Une civilisation crétoise utilisant le linéaire A et centrée sur Cnossos."
         ],
         "why": "La réponse combine chronologie, organisation et sources.",
         "trap": "Les réduire aux guerriers de légende.",
@@ -2768,9 +2844,9 @@ const READY_LESSON_PACKS = {
         "q": "Quand situe-t-on la grande crise du monde égéen de l’âge du Bronze ?",
         "a": "Autour de -1200, surtout entre environ -1250 et -1100.",
         "choices": [
-          "Au Ve siècle avec la guerre du Péloponnèse.",
-          "Au temps de l’Empire napoléonien.",
-          "Après la décolonisation du XXe siècle."
+          "Autour de -1600, au moment de l’essor des premiers palais crétois.",
+          "Autour de -800, au début de la période archaïque grecque.",
+          "Autour de -500, pendant les guerres médiques."
         ],
         "why": "Le cours donne un repère chronologique central.",
         "trap": "Mélanger l’âge du Bronze et l’époque classique.",
@@ -2781,9 +2857,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi faut-il éviter l’explication par une seule cause ?",
         "a": "Parce que guerres, réseaux fragiles, tensions internes, climat possible et crise des palais peuvent se combiner.",
         "choices": [
-          "Parce qu’aucune trace de changement n’existe.",
-          "Parce que les palais sont tous plus solides après la crise.",
-          "Parce que la Méditerranée orientale est sans échanges."
+          "Parce que les sources ne montrent aucune destruction ni abandon de palais.",
+          "Parce que les peuples de la mer sont une invention moderne sans aucune source antique.",
+          "Parce que toutes les régions suivent exactement la même trajectoire au même moment."
         ],
         "why": "La crise est un enchaînement de fragilités.",
         "trap": "Chercher une cause miracle.",
@@ -2794,9 +2870,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle prudence faut-il avoir avec les peuples de la mer ?",
         "a": "Ils sont mentionnés dans des sources, mais leurs origines et leurs rôles restent discutés.",
         "choices": [
-          "Ils expliquent seuls chaque abandon et chaque transformation.",
-          "Ils sont les magistrats réguliers des cités classiques.",
-          "Ils remplacent toutes les autres preuves archéologiques."
+          "Ils forment une coalition clairement identifiée, responsable de toutes les destructions.",
+          "Ils désignent uniquement les Mycéniens qui quittent leurs palais pour devenir marins.",
+          "Ils sont connus par des archives détaillées qui permettent de suivre chaque groupe."
         ],
         "why": "La formule est utile mais insuffisante.",
         "trap": "Transformer un nom en explication totale.",
@@ -2807,9 +2883,9 @@ const READY_LESSON_PACKS = {
         "q": "Que se passe-t-il après la disparition des grands palais ?",
         "a": "Des formes plus locales de pouvoir et d’habitat se développent dans plusieurs régions.",
         "choices": [
-          "Toute présence humaine disparaît définitivement de l’Égée.",
-          "Les cités classiques apparaissent immédiatement sans transition.",
-          "Les tablettes administratives deviennent plus nombreuses partout."
+          "Les populations disparaissent et l’Égée reste presque vide pendant plusieurs siècles.",
+          "Les cités classiques et la démocratie athénienne apparaissent immédiatement.",
+          "Les anciens palais sont reconstruits à l’identique sous les mêmes dynasties."
         ],
         "why": "La crise entraîne recomposition, pas vide absolu.",
         "trap": "Confondre effondrement d’un système et fin des populations.",
@@ -2820,9 +2896,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi cette crise est-elle importante pour la Grèce ?",
         "a": "Parce qu’elle aide à comprendre le passage entre monde palatial de l’âge du Bronze et monde grec archaïque.",
         "choices": [
-          "Parce qu’elle fonde directement la démocratie athénienne en un jour.",
-          "Parce qu’elle n’a aucun lien avec l’évolution du monde égéen.",
-          "Parce qu’elle transforme tous les palais en royaumes médiévaux."
+          "Parce qu’elle marque le passage direct de la civilisation minoenne à l’Empire perse.",
+          "Parce qu’elle explique seule la naissance des cités grecques, sans autres transformations.",
+          "Parce qu’elle met fin à toute circulation en Méditerranée jusqu’à l’époque romaine."
         ],
         "why": "Elle éclaire une transition de longue durée.",
         "trap": "Sauter directement des héros à Athènes.",
@@ -2831,86 +2907,142 @@ const READY_LESSON_PACKS = {
     ]
   },
   "egypt-nile": {
-    "hook": "Sans le Nil, l’Égypte n’est pas un décor de pyramides : c’est un couloir de vie, de pouvoir et de calcul où l’eau organise presque tout.",
-    "express": [
-      "Le Nil n’est pas seulement un fleuve utile. Il structure l’espace égyptien : une vallée étroite fertile, des déserts protecteurs et une circulation nord-sud qui donne au royaume une colonne vertébrale politique.",
-      "La crue annuelle dépose du limon et rend possible une agriculture très productive, mais elle exige aussi des mesures, des stocks, des prélèvements et une administration. Le fleuve nourrit donc à la fois les paysans et l’État.",
-      "Le piège est de dire “le Nil rend l’Égypte riche” comme si tout était automatique. Il faut comprendre l’articulation entre environnement, travail humain, fiscalité, transport et pouvoir pharaonique."
-    ],
-    "complete": [
-      {
-        "title": "1. Un pays linéaire",
-        "text": "L’Égypte ancienne se développe dans une vallée longue et étroite. Cette géographie facilite certaines communications, concentre les terres cultivables et rend les contrastes très forts entre le monde fertile du fleuve et les marges désertiques."
-      },
-      {
-        "title": "2. La crue, ressource et incertitude",
-        "text": "La crue du Nil apporte l’eau et le limon nécessaires aux cultures. Mais une crue trop faible ou trop forte peut provoquer famine, désorganisation et tensions. Le fleuve est donc une ressource, pas une garantie magique."
-      },
-      {
-        "title": "3. Mesurer pour gouverner",
-        "text": "Pour taxer, stocker et redistribuer, il faut connaître les terres, les récoltes, les calendriers et les obligations. Le Nil nourrit ainsi le développement d’une administration de scribes et de contrôles."
-      },
-      {
-        "title": "4. Circuler et unir",
-        "text": "Le fleuve est aussi une route. Il permet de transporter pierres, céréales, hommes, ordres et marchandises. Cette circulation contribue à maintenir un royaume relativement intégré malgré sa longueur."
-      },
-      {
-        "title": "5. Un environnement transformé",
-        "text": "Les Égyptiens n’attendent pas passivement la nature : ils creusent, entretiennent, répartissent, stockent et ritualisent la crue. Le Nil est un milieu travaillé par une société organisée."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Repère",
-        "text": "Limon : dépôt fertile laissé par la crue, essentiel à l’agriculture avant les grands aménagements modernes."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Présenter l’Égypte comme un miracle naturel. Le fleuve compte énormément, mais l’organisation sociale et politique transforme cette ressource en puissance."
-      },
-      {
-        "title": "Question d’historien",
-        "text": "Qui contrôle l’eau, les stocks et les mesures ? Cette question relie directement environnement et pouvoir."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi le Nil est-il plus qu’une ressource agricole ?",
-        "a": "Parce qu’il organise aussi les transports, la fiscalité, les stocks, l’administration et l’unité du royaume.",
-        "why": "Le fleuve structure l’économie autant que le pouvoir.",
-        "trap": "Dire seulement “il permet de cultiver”.",
-        "evidence": "L’express parle de colonne vertébrale politique."
-      },
-      {
-        "q": "Pourquoi la crue n’est-elle pas une garantie magique ?",
-        "a": "Parce qu’elle peut être trop faible ou trop forte et exige une organisation humaine.",
-        "why": "Une ressource naturelle devient utile grâce au travail et à la gestion.",
-        "trap": "Imaginer une Égypte automatiquement prospère.",
-        "evidence": "Le bloc “La crue, ressource et incertitude”."
-      },
-      {
-        "q": "Quel groupe rend possible la mesure et le contrôle ?",
-        "a": "Les scribes et l’administration.",
-        "why": "Ils enregistrent terres, récoltes, prélèvements et obligations.",
-        "trap": "Oublier l’administration derrière les monuments.",
-        "evidence": "Le bloc “Mesurer pour gouverner”."
-      },
-      {
-        "q": "Pourquoi la forme longue de l’Égypte compte-t-elle ?",
-        "a": "Elle fait du fleuve une route centrale pour relier le royaume.",
-        "why": "La circulation nord-sud est essentielle à l’intégration politique.",
-        "trap": "Voir la carte comme un simple décor.",
-        "evidence": "Le bloc “Circuler et unir”."
-      },
-      {
-        "q": "Quelle idée faut-il retenir ?",
-        "a": "Le Nil est un milieu travaillé : nature, agriculture, transport et État se combinent.",
-        "why": "C’est cette combinaison qui explique la durée égyptienne.",
-        "trap": "Opposer nature et société comme si elles étaient séparées.",
-        "evidence": "Le dernier bloc du cours complet."
-      }
-    ]
-  },
+  "hook": "Sans le Nil, l’Égypte n’est pas un décor de pyramides : c’est un couloir de vie, de pouvoir et de calcul où l’eau organise presque tout.",
+  "express": [
+    "Le Nil n’est pas seulement un fleuve utile. Il structure l’espace égyptien : une vallée étroite fertile, des déserts protecteurs et une circulation nord-sud qui donne au royaume une colonne vertébrale politique.",
+    "La crue annuelle dépose du limon et rend possible une agriculture très productive, mais elle exige aussi des mesures, des stocks, des prélèvements et une administration. Le fleuve nourrit donc à la fois les paysans et l’État.",
+    "Le piège est de dire “le Nil rend l’Égypte riche” comme si tout était automatique. Il faut comprendre l’articulation entre environnement, travail humain, fiscalité, transport et pouvoir pharaonique."
+  ],
+  "complete": [
+    {
+      "title": "1. Un pays linéaire",
+      "text": "L’Égypte ancienne se développe dans une vallée longue et étroite. Cette géographie facilite certaines communications, concentre les terres cultivables et rend les contrastes très forts entre le monde fertile du fleuve et les marges désertiques."
+    },
+    {
+      "title": "2. La crue, ressource et incertitude",
+      "text": "La crue du Nil apporte l’eau et le limon nécessaires aux cultures. Mais une crue trop faible ou trop forte peut provoquer famine, désorganisation et tensions. Le fleuve est donc une ressource, pas une garantie magique."
+    },
+    {
+      "title": "3. Mesurer pour gouverner",
+      "text": "Pour taxer, stocker et redistribuer, il faut connaître les terres, les récoltes, les calendriers et les obligations. Le Nil nourrit ainsi le développement d’une administration de scribes et de contrôles."
+    },
+    {
+      "title": "4. Circuler et unir",
+      "text": "Le fleuve est aussi une route. Il permet de transporter pierres, céréales, hommes, ordres et marchandises. Cette circulation contribue à maintenir un royaume relativement intégré malgré sa longueur."
+    },
+    {
+      "title": "5. Un environnement transformé",
+      "text": "Les Égyptiens n’attendent pas passivement la nature : ils creusent, entretiennent, répartissent, stockent et ritualisent la crue. Le Nil est un milieu travaillé par une société organisée."
+    },
+    {
+      "title": "6. La crue structure le calendrier",
+      "text": "L’année agricole est traditionnellement pensée autour de l’inondation, de la remise en culture puis de la récolte. La hauteur de l’eau n’est jamais parfaitement garantie : une crue trop faible menace les récoltes, une crue excessive peut détruire. Mesurer, prévoir et répartir les terres devient donc un enjeu économique et politique."
+    },
+    {
+      "title": "7. Le fleuve est aussi une route",
+      "text": "Le courant porte vers le nord tandis que les vents dominants permettent souvent de remonter vers le sud à la voile. Cette combinaison facilite les transports entre Haute et Basse-Égypte. Des blocs de pierre, des céréales, des soldats, des fonctionnaires et des messages circulent le long d’un axe bien plus efficace que les pistes désertiques."
+    },
+    {
+      "title": "8. Un couloir ouvert sur l’extérieur",
+      "text": "Le Nil relie l’Égypte à la Nubie et à l’Afrique intérieure, tandis que son delta donne accès à la Méditerranée et que des pistes conduisent vers la mer Rouge. L’Égypte est protégée par des déserts, mais elle n’est pas isolée. Son fleuve l’insère dans des échanges de métaux, bois, pierres, or et produits de prestige."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Sans le Nil, l’Égypte n’est pas un décor de pyramides : c’est un couloir de vie, de pouvoir et de calcul où l’eau organise presque tout."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Limon : dépôt fertile laissé par la crue, essentiel à l’agriculture avant les grands aménagements modernes."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Présenter l’Égypte comme un miracle naturel. Le fleuve compte énormément, mais l’organisation sociale et politique transforme cette ressource en puissance."
+    },
+    {
+      "title": "Question d’historien",
+      "text": "Qui contrôle l’eau, les stocks et les mesures ? Cette question relie directement environnement et pouvoir."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi le Nil est-il plus qu’une ressource agricole ?",
+      "a": "Parce qu’il organise aussi les transports, la fiscalité, les stocks, l’administration et l’unité du royaume.",
+      "choices": [
+        "Parce qu’il sert seulement de frontière militaire entre Haute et Basse-Égypte.",
+        "Parce qu’il permet de construire les temples mais pas de transporter les hommes.",
+        "Parce que toute l’administration égyptienne fonctionne indépendamment des récoltes."
+      ],
+      "why": "Le fleuve structure l’économie autant que le pouvoir.",
+      "trap": "Dire seulement “il permet de cultiver”.",
+      "evidence": "L’express parle de colonne vertébrale politique."
+    },
+    {
+      "q": "Pourquoi la crue n’est-elle pas une garantie magique ?",
+      "a": "Parce qu’elle peut être trop faible ou trop forte et exige une organisation humaine.",
+      "choices": [
+        "Parce que la crue arrive à une date totalement imprévisible chaque année.",
+        "Parce qu’une crue forte détruit toujours le royaume alors qu’une crue faible l’enrichit.",
+        "Parce que les Égyptiens ne peuvent ni mesurer ni organiser l’usage de l’eau."
+      ],
+      "why": "Une ressource naturelle devient utile grâce au travail et à la gestion.",
+      "trap": "Imaginer une Égypte automatiquement prospère.",
+      "evidence": "Le bloc “La crue, ressource et incertitude”."
+    },
+    {
+      "q": "Quel groupe rend possible la mesure et le contrôle ?",
+      "a": "Les scribes et l’administration.",
+      "choices": [
+        "Les prêtres seuls, sans scribes ni agents du pouvoir.",
+        "Les paysans réunis en assemblées démocratiques locales.",
+        "Les soldats étrangers chargés de mesurer les terres après la crue."
+      ],
+      "why": "Ils enregistrent terres, récoltes, prélèvements et obligations.",
+      "trap": "Oublier l’administration derrière les monuments.",
+      "evidence": "Le bloc “Mesurer pour gouverner”."
+    },
+    {
+      "q": "Pourquoi la forme longue de l’Égypte compte-t-elle ?",
+      "a": "Elle fait du fleuve une route centrale pour relier le royaume.",
+      "choices": [
+        "Elle empêche toute communication entre le nord et le sud du royaume.",
+        "Elle oblige les transports à passer principalement par le désert occidental.",
+        "Elle rend chaque région indépendante et limite l’autorité du pharaon."
+      ],
+      "why": "La circulation nord-sud est essentielle à l’intégration politique.",
+      "trap": "Voir la carte comme un simple décor.",
+      "evidence": "Le bloc “Circuler et unir”."
+    },
+    {
+      "q": "Quelle idée faut-il retenir ?",
+      "a": "Le Nil est un milieu travaillé : nature, agriculture, transport et État se combinent.",
+      "choices": [
+        "Le Nil est une richesse naturelle qui fonctionne sans travail ni organisation.",
+        "L’État égyptien se construit malgré le fleuve et non grâce à son utilisation.",
+        "Le fleuve explique seul toute l’histoire égyptienne, sans acteurs ni techniques."
+      ],
+      "why": "C’est cette combinaison qui explique la durée égyptienne.",
+      "trap": "Opposer nature et société comme si elles étaient séparées.",
+      "evidence": "Le dernier bloc du cours complet."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "L’année agricole est traditionnellement pensée autour de l’inondation, de la remise en culture puis de la récolte."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Le courant porte vers le nord tandis que les vents dominants permettent souvent de remonter vers le sud à la voile."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Le Nil relie l’Égypte à la Nubie et à l’Afrique intérieure, tandis que son delta donne accès à la Méditerranée et que des pistes conduisent vers la mer Rouge."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "egypt-two-lands": {
     "hook": "Avant les pyramides, il faut comprendre comment l’Égypte devient un royaume : l’unification des Deux Terres transforme une vallée en État pharaonique.",
     "keyFacts": [
@@ -2981,9 +3113,9 @@ const READY_LESSON_PACKS = {
         "q": "Que désignent les Deux Terres ?",
         "a": "La Haute-Égypte au sud et la Basse-Égypte dans le delta, réunies symboliquement sous l’autorité du roi.",
         "choices": [
-          "Deux empires séparés entre Rome et Athènes.",
-          "Deux pyramides construites par le même architecte.",
-          "Deux routes commerciales entre Chine et Méditerranée."
+          "La vallée du Nil et la Nubie, deux royaumes gouvernés conjointement.",
+          "L’Égypte et le Levant, réunis après les conquêtes du Nouvel Empire.",
+          "Le monde des vivants et le monde des morts dans la religion égyptienne."
         ],
         "why": "L’expression résume l’unité politique égyptienne.",
         "trap": "Croire qu’il s’agit seulement d’une formule poétique.",
@@ -2994,9 +3126,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi faut-il être prudent avec l’unification autour de -3100 ?",
         "a": "Parce qu’elle désigne un processus de formation de l’État plus qu’un événement unique parfaitement connu.",
         "choices": [
-          "Parce que l’Égypte n’existe qu’après Alexandre.",
-          "Parce que les pyramides sont déjà détruites à cette date.",
-          "Parce que cette date correspond à la fin de l’Empire romain."
+          "Parce que la date correspond uniquement au règne précisément documenté de Narmer.",
+          "Parce que l’unification se produit plusieurs siècles après les premières pyramides.",
+          "Parce que Haute et Basse-Égypte restent deux États totalement séparés après -3100."
         ],
         "why": "Les débuts sont reconstruits à partir de traces partielles.",
         "trap": "Transformer une chronologie utile en scène simple.",
@@ -3007,9 +3139,9 @@ const READY_LESSON_PACKS = {
         "q": "Que montre surtout la palette de Narmer ?",
         "a": "Une mise en scène cérémonielle de la victoire et de l’idéologie royale.",
         "choices": [
-          "Un contrat fiscal complet avec les paysans du delta.",
-          "Une carte précise de toutes les provinces égyptiennes.",
-          "Un récit neutre écrit par un témoin extérieur."
+          "Le déroulement exact d’une bataille décisive raconté par un témoin direct.",
+          "Un accord administratif entre les gouverneurs de Haute et Basse-Égypte.",
+          "Une carte du royaume indiquant les frontières et les provinces de Narmer."
         ],
         "why": "L’objet est précieux, mais il met en scène le pouvoir.",
         "trap": "La lire comme un reportage moderne.",
@@ -3020,9 +3152,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi l’unification n’est-elle pas seulement militaire ?",
         "a": "Parce qu’elle implique aussi administration, rites, prélèvements, sanctuaires et symboles royaux.",
         "choices": [
-          "Parce qu’aucune élite locale n’existe dans la vallée du Nil.",
-          "Parce que l’écriture remplace entièrement le pouvoir royal.",
-          "Parce que les temples n’ont aucun rôle politique."
+          "Parce qu’elle repose uniquement sur des mariages entre dynasties régionales.",
+          "Parce que l’administration et les rites apparaissent seulement après le Nouvel Empire.",
+          "Parce que la victoire militaire rend inutiles prélèvements, sanctuaires et symboles."
         ],
         "why": "Un État durable doit organiser plus que des batailles.",
         "trap": "Réduire l’État à la guerre.",
@@ -3033,9 +3165,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle idée reste durable dans la monarchie pharaonique ?",
         "a": "Le pharaon est celui qui tient ensemble la Haute et la Basse-Égypte.",
         "choices": [
-          "Le roi égyptien refuse tous les symboles religieux.",
-          "La Basse-Égypte gouverne seule tout le royaume sans roi.",
-          "L’unification est oubliée dès l’Ancien Empire."
+          "Le pharaon gouverne deux royaumes restés juridiquement indépendants.",
+          "Le delta domine durablement la vallée et impose ses rois au sud.",
+          "L’unification est un épisode ancien sans rôle dans l’idéologie royale ultérieure."
         ],
         "why": "Les Deux Terres deviennent un langage permanent du pouvoir.",
         "trap": "Croire que les débuts ne comptent plus ensuite.",
@@ -3044,152 +3176,275 @@ const READY_LESSON_PACKS = {
     ]
   },
   "egypt-pharaoh-maat": {
-    "hook": "Pharaon ne règne pas seulement parce qu’il commande : il doit maintenir Maât, c’est-à-dire l’ordre juste du monde, contre le chaos.",
-    "express": [
-      "Maât désigne à la fois l’ordre, la justice, l’équilibre cosmique et la vérité. Le pharaon est présenté comme celui qui garantit cet ordre entre les hommes, les dieux et la nature.",
-      "Cette idée donne au pouvoir royal une dimension religieuse très forte. Gouverner, rendre la justice, construire des temples, vaincre les ennemis ou organiser les récoltes peuvent être présentés comme des manières de préserver Maât.",
-      "Le piège est de croire que Maât est seulement une croyance abstraite. C’est aussi un langage politique : il justifie le pouvoir du roi et fixe ce qu’un bon souverain est censé accomplir."
-    ],
-    "complete": [
-      {
-        "title": "1. Un mot difficile à traduire",
-        "text": "Maât n’est pas simplement la loi ou la morale. Le terme associe ordre du monde, vérité, justice, stabilité sociale et harmonie avec les dieux. C’est une notion religieuse et politique à la fois."
-      },
-      {
-        "title": "2. Pharaon comme garant",
-        "text": "Le roi est censé maintenir Maât. Cette fonction dépasse la gestion administrative : elle donne au pouvoir royal une place cosmique, comme si la stabilité du monde dépendait aussi de l’action royale."
-      },
-      {
-        "title": "3. Le chaos comme menace",
-        "text": "Les ennemis, les famines, les troubles, les mensonges ou les désordres peuvent être pensés comme des formes d’Isfet, le désordre. La propagande royale montre donc souvent pharaon vainqueur du chaos."
-      },
-      {
-        "title": "4. Une idée dans les gestes concrets",
-        "text": "Rendre la justice, financer des temples, organiser l’irrigation, protéger les frontières ou célébrer les rites sont autant de gestes qui peuvent être reliés à Maât. La théologie rejoint la pratique du gouvernement."
-      },
-      {
-        "title": "5. Pourquoi c’est important",
-        "text": "Comprendre Maât évite de séparer artificiellement religion et politique. En Égypte pharaonique, gouverner le royaume, honorer les dieux et maintenir l’ordre social sont profondément liés."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Mot opposé",
-        "text": "Isfet désigne le désordre, le chaos ou l’injustice, souvent présenté comme ce que le pouvoir royal doit repousser."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Décrire pharaon comme un simple roi absolu. Son autorité est pensée dans un système religieux où il a des devoirs d’ordre cosmique."
-      },
-      {
-        "title": "Indice visuel",
-        "text": "Les scènes où le roi terrasse des ennemis ne sont pas seulement militaires : elles mettent en image la victoire de l’ordre sur le chaos."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Que signifie Maât dans ce cours ?",
-        "a": "L’ordre juste du monde : vérité, justice, stabilité sociale et équilibre cosmique.",
-        "why": "Le mot dépasse une simple règle juridique.",
-        "trap": "Le traduire seulement par “loi”.",
-        "evidence": "Le premier bloc explique la difficulté de traduction."
-      },
-      {
-        "q": "Pourquoi pharaon est-il plus qu’un administrateur ?",
-        "a": "Parce qu’il est présenté comme le garant religieux et politique de Maât.",
-        "why": "Son pouvoir a une fonction cosmique.",
-        "trap": "Le réduire à un chef d’État moderne.",
-        "evidence": "Le bloc “Pharaon comme garant”."
-      },
-      {
-        "q": "Que représente Isfet ?",
-        "a": "Le désordre, le chaos ou l’injustice que le roi doit repousser.",
-        "why": "L’opposition Maât/Isfet structure la propagande royale.",
-        "trap": "Croire que les ennemis sont seulement des adversaires militaires.",
-        "evidence": "Le bloc “Le chaos comme menace”."
-      },
-      {
-        "q": "Cite un geste concret lié à Maât.",
-        "a": "Rendre la justice, financer des temples, organiser l’irrigation ou protéger les frontières.",
-        "why": "Maât s’incarne dans des pratiques de gouvernement.",
-        "trap": "En faire une idée abstraite sans effet politique.",
-        "evidence": "Le quatrième bloc."
-      },
-      {
-        "q": "Quelle séparation moderne faut-il éviter ?",
-        "a": "Séparer trop nettement religion et politique.",
-        "why": "Dans l’Égypte pharaonique, les deux sont fortement liés.",
-        "trap": "Appliquer nos catégories actuelles sans nuance.",
-        "evidence": "Le dernier bloc."
-      }
-    ]
-  },
+  "hook": "Pharaon ne règne pas seulement parce qu’il commande : il doit maintenir Maât, c’est-à-dire l’ordre juste du monde, contre le chaos.",
+  "express": [
+    "Maât désigne à la fois l’ordre, la justice, l’équilibre cosmique et la vérité. Le pharaon est présenté comme celui qui garantit cet ordre entre les hommes, les dieux et la nature.",
+    "Cette idée donne au pouvoir royal une dimension religieuse très forte. Gouverner, rendre la justice, construire des temples, vaincre les ennemis ou organiser les récoltes peuvent être présentés comme des manières de préserver Maât.",
+    "Le piège est de croire que Maât est seulement une croyance abstraite. C’est aussi un langage politique : il justifie le pouvoir du roi et fixe ce qu’un bon souverain est censé accomplir."
+  ],
+  "complete": [
+    {
+      "title": "1. Un mot difficile à traduire",
+      "text": "Maât n’est pas simplement la loi ou la morale. Le terme associe ordre du monde, vérité, justice, stabilité sociale et harmonie avec les dieux. C’est une notion religieuse et politique à la fois."
+    },
+    {
+      "title": "2. Pharaon comme garant",
+      "text": "Le roi est censé maintenir Maât. Cette fonction dépasse la gestion administrative : elle donne au pouvoir royal une place cosmique, comme si la stabilité du monde dépendait aussi de l’action royale."
+    },
+    {
+      "title": "3. Le chaos comme menace",
+      "text": "Les ennemis, les famines, les troubles, les mensonges ou les désordres peuvent être pensés comme des formes d’Isfet, le désordre. La propagande royale montre donc souvent pharaon vainqueur du chaos."
+    },
+    {
+      "title": "4. Une idée dans les gestes concrets",
+      "text": "Rendre la justice, financer des temples, organiser l’irrigation, protéger les frontières ou célébrer les rites sont autant de gestes qui peuvent être reliés à Maât. La théologie rejoint la pratique du gouvernement."
+    },
+    {
+      "title": "5. Pourquoi c’est important",
+      "text": "Comprendre Maât évite de séparer artificiellement religion et politique. En Égypte pharaonique, gouverner le royaume, honorer les dieux et maintenir l’ordre social sont profondément liés."
+    },
+    {
+      "title": "6. Maât : un ordre à entretenir",
+      "text": "Maât désigne à la fois la vérité, la justice, l’équilibre et l’ordre du monde. Le pharaon doit la préserver contre le désordre, mais cette mission se traduit concrètement : rendre la justice, protéger les temples, nourrir les dieux par les rites et défendre les frontières. Le langage religieux donne ainsi une légitimité aux fonctions politiques."
+    },
+    {
+      "title": "7. Le roi gouverne par des intermédiaires",
+      "text": "Le pharaon n’administre pas personnellement chaque village. Vizir, scribes, gouverneurs provinciaux, prêtres et intendants mettent en œuvre les décisions, collectent des ressources et contrôlent les travaux. Étudier le pouvoir égyptien consiste donc à observer une chaîne administrative, pas seulement les statues du souverain."
+    },
+    {
+      "title": "8. Une image idéale, pas un portrait du quotidien",
+      "text": "Les reliefs montrent souvent le roi triomphant seul de ses ennemis ou offrant aux dieux. Ces scènes expriment ce que le pouvoir doit être : fort, juste et victorieux. Elles ne prouvent pas que chaque règne est paisible ou efficace. Les famines, rivalités de cour et pertes de contrôle révèlent l’écart possible entre idéal et réalité."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Pharaon ne règne pas seulement parce qu’il commande : il doit maintenir Maât, c’est-à-dire l’ordre juste du monde, contre le chaos."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Mot opposé",
+      "text": "Isfet désigne le désordre, le chaos ou l’injustice, souvent présenté comme ce que le pouvoir royal doit repousser."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Décrire pharaon comme un simple roi absolu. Son autorité est pensée dans un système religieux où il a des devoirs d’ordre cosmique."
+    },
+    {
+      "title": "Indice visuel",
+      "text": "Les scènes où le roi terrasse des ennemis ne sont pas seulement militaires : elles mettent en image la victoire de l’ordre sur le chaos."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Que signifie Maât dans ce cours ?",
+      "a": "L’ordre juste du monde : vérité, justice, stabilité sociale et équilibre cosmique.",
+      "choices": [
+        "Une loi écrite unique appliquée de la même manière à tous les habitants.",
+        "Le nom de l’administration chargée de collecter les impôts.",
+        "Une déesse de la guerre qui protège uniquement les frontières du royaume."
+      ],
+      "why": "Le mot dépasse une simple règle juridique.",
+      "trap": "Le traduire seulement par “loi”.",
+      "evidence": "Le premier bloc explique la difficulté de traduction."
+    },
+    {
+      "q": "Pourquoi pharaon est-il plus qu’un administrateur ?",
+      "a": "Parce qu’il est présenté comme le garant religieux et politique de Maât.",
+      "choices": [
+        "Parce qu’il est élu par les scribes pour une durée limitée.",
+        "Parce qu’il doit seulement appliquer des lois religieuses fixées par les prêtres.",
+        "Parce qu’il sépare strictement son rôle politique de toute fonction religieuse."
+      ],
+      "why": "Son pouvoir a une fonction cosmique.",
+      "trap": "Le réduire à un chef d’État moderne.",
+      "evidence": "Le bloc “Pharaon comme garant”."
+    },
+    {
+      "q": "Que représente Isfet ?",
+      "a": "Le désordre, le chaos ou l’injustice que le roi doit repousser.",
+      "choices": [
+        "L’ordre parfait installé une fois pour toutes par les premiers pharaons.",
+        "La justice rendue par les tribunaux locaux au nom des scribes.",
+        "Le monde des morts, sans rapport avec le pouvoir ou la société des vivants."
+      ],
+      "why": "L’opposition Maât/Isfet structure la propagande royale.",
+      "trap": "Croire que les ennemis sont seulement des adversaires militaires.",
+      "evidence": "Le bloc “Le chaos comme menace”."
+    },
+    {
+      "q": "Cite un geste concret lié à Maât.",
+      "a": "Rendre la justice, financer des temples, organiser l’irrigation ou protéger les frontières.",
+      "choices": [
+        "Organiser une assemblée de citoyens pour voter les lois du royaume.",
+        "Renoncer aux temples afin de séparer religion et administration.",
+        "Laisser chaque province fixer seule les prélèvements et les frontières."
+      ],
+      "why": "Maât s’incarne dans des pratiques de gouvernement.",
+      "trap": "En faire une idée abstraite sans effet politique.",
+      "evidence": "Le quatrième bloc."
+    },
+    {
+      "q": "Quelle séparation moderne faut-il éviter ?",
+      "a": "Séparer trop nettement religion et politique.",
+      "choices": [
+        "La séparation entre le roi et l’administration.",
+        "La séparation entre la vallée du Nil et le delta.",
+        "La séparation entre pouvoir militaire et pouvoir fiscal uniquement."
+      ],
+      "why": "Dans l’Égypte pharaonique, les deux sont fortement liés.",
+      "trap": "Appliquer nos catégories actuelles sans nuance.",
+      "evidence": "Le dernier bloc."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "Maât désigne à la fois la vérité, la justice, l’équilibre et l’ordre du monde."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Le pharaon n’administre pas personnellement chaque village."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Les reliefs montrent souvent le roi triomphant seul de ses ennemis ou offrant aux dieux."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "egypt-pyramids": {
-    "hook": "Une pyramide n’est pas seulement une tombe spectaculaire : c’est le point visible d’un système politique capable de mobiliser terres, travailleurs, scribes, ressources et croyances.",
-    "express": [
-      "Les pyramides d’Égypte appartiennent surtout à l’Ancien Empire. Elles sont liées au pouvoir du pharaon, à la religion funéraire et à l’idée que l’ordre du monde dépend aussi du roi.",
-      "Elles demandent une organisation énorme : carrières, transport, nourriture, spécialistes, scribes, équipes de travail. Ce n’est pas seulement une prouesse architecturale, c’est une preuve d’État.",
-      "Le piège est de les expliquer par le mystère ou par des clichés. L’intérêt historique est plus fort : elles montrent comment religion, administration, agriculture du Nil et autorité royale se combinent."
-    ],
-    "complete": [
-      {
-        "title": "1. Une tombe royale, mais pas seulement",
-        "text": "La pyramide est un monument funéraire destiné au roi. Mais sa construction implique bien plus que la mort : elle affirme le pouvoir royal, l’ordre religieux et la capacité du royaume à organiser des ressources sur une longue durée."
-      },
-      {
-        "title": "2. Le Nil et l’administration",
-        "text": "L’Égypte vit au rythme du Nil. Les crues, les récoltes, l’impôt et les stocks donnent à l’État les moyens de mobiliser des travailleurs et des spécialistes. Sans administration, pas de chantier monumental durable."
-      },
-      {
-        "title": "3. Les scribes rendent le chantier possible",
-        "text": "Les scribes comptent, enregistrent, répartissent et contrôlent. Ils sont essentiels pour transformer une idée royale en chantier réel : matériaux, équipes, rations, temps de travail, transport."
-      },
-      {
-        "title": "4. Une croyance rendue visible",
-        "text": "Les pyramides matérialisent une vision du monde : le roi, la mort, l’éternité, le soleil, les dieux et la stabilité du royaume. L’architecture donne une forme durable à une croyance politique."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Les pyramides impressionnent parce qu’elles sont grandes ; elles intéressent l’historien parce qu’elles révèlent un État, une économie, une religion et une administration."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Pourquoi éviter le faux mystère ?",
-        "text": "Plus une explication invoque le miracle ou l’énigme absolue, moins elle aide à comprendre les ouvriers, les techniques, les carrières, les rampes, les rations et l’administration."
-      },
-      {
-        "title": "Repère",
-        "text": "Ancien Empire : période majeure de l’Égypte pharaonique, associée aux grandes pyramides."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Réduire l’Égypte aux pyramides : le vrai sujet est l’articulation entre fleuve, État, scribes et religion."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi une pyramide est-elle aussi une preuve d’État ?",
-        "a": "Parce qu’elle suppose une mobilisation organisée de ressources, travailleurs, scribes et matériaux."
-      },
-      {
-        "q": "Quel rôle joue le Nil dans ce système ?",
-        "a": "Il structure l’agriculture, les crues, les récoltes, les stocks et donc les ressources mobilisables."
-      },
-      {
-        "q": "Pourquoi les scribes sont-ils indispensables ?",
-        "a": "Ils comptent, enregistrent, répartissent et contrôlent le chantier et les ressources."
-      },
-      {
-        "q": "Quel piège faut-il éviter ?",
-        "a": "Présenter les pyramides comme un mystère inexplicable plutôt que comme un fait historique organisé."
-      },
-      {
-        "q": "Quelle dimension religieuse porte la pyramide ?",
-        "a": "Elle est liée à la mort royale, à l’éternité, au soleil, aux dieux et à l’ordre du monde."
-      }
-    ]
-  },
+  "hook": "Une pyramide n’est pas seulement une tombe spectaculaire : c’est le point visible d’un système politique capable de mobiliser terres, travailleurs, scribes, ressources et croyances.",
+  "express": [
+    "Les pyramides d’Égypte appartiennent surtout à l’Ancien Empire. Elles sont liées au pouvoir du pharaon, à la religion funéraire et à l’idée que l’ordre du monde dépend aussi du roi.",
+    "Elles demandent une organisation énorme : carrières, transport, nourriture, spécialistes, scribes, équipes de travail. Ce n’est pas seulement une prouesse architecturale, c’est une preuve d’État.",
+    "Le piège est de les expliquer par le mystère ou par des clichés. L’intérêt historique est plus fort : elles montrent comment religion, administration, agriculture du Nil et autorité royale se combinent."
+  ],
+  "complete": [
+    {
+      "title": "1. Une tombe royale, mais pas seulement",
+      "text": "La pyramide est un monument funéraire destiné au roi. Mais sa construction implique bien plus que la mort : elle affirme le pouvoir royal, l’ordre religieux et la capacité du royaume à organiser des ressources sur une longue durée."
+    },
+    {
+      "title": "2. Le Nil et l’administration",
+      "text": "L’Égypte vit au rythme du Nil. Les crues, les récoltes, l’impôt et les stocks donnent à l’État les moyens de mobiliser des travailleurs et des spécialistes. Sans administration, pas de chantier monumental durable."
+    },
+    {
+      "title": "3. Les scribes rendent le chantier possible",
+      "text": "Les scribes comptent, enregistrent, répartissent et contrôlent. Ils sont essentiels pour transformer une idée royale en chantier réel : matériaux, équipes, rations, temps de travail, transport."
+    },
+    {
+      "title": "4. Une croyance rendue visible",
+      "text": "Les pyramides matérialisent une vision du monde : le roi, la mort, l’éternité, le soleil, les dieux et la stabilité du royaume. L’architecture donne une forme durable à une croyance politique."
+    },
+    {
+      "title": "5. Une évolution architecturale",
+      "text": "La pyramide à degrés de Djéser, à Saqqarah, transforme l’ancien mastaba en monument superposé. À Dahchour, les changements d’angle de la pyramide rhomboïdale montrent des essais techniques. Les grandes pyramides de Gizeh ne surgissent donc pas d’un coup : elles sont l’aboutissement de décennies d’expérimentation."
+    },
+    {
+      "title": "6. Un chantier organisé par l’État",
+      "text": "Extraire, transporter et poser des millions de blocs exige des carrières, des rampes, des outils, des équipes et un ravitaillement régulier. Les villages d’ouvriers et les traces alimentaires montrent des travailleurs encadrés et nourris, pas seulement une masse d’esclaves enchaînés. Le chantier révèle la capacité fiscale et logistique du royaume."
+    },
+    {
+      "title": "7. La pyramide appartient à un complexe funéraire",
+      "text": "Autour du monument principal se trouvent temples, chaussées, pyramides secondaires, fosses à barques et cimetières de proches ou de responsables. L’ensemble organise le culte du roi mort et inscrit la cour dans le paysage. Réduire Gizeh à trois volumes géométriques fait disparaître cette ville rituelle et administrative."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Les pyramides impressionnent parce qu’elles sont grandes ; elles intéressent l’historien parce qu’elles révèlent un État, une économie, une religion et une administration."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Pourquoi éviter le faux mystère ?",
+      "text": "Plus une explication invoque le miracle ou l’énigme absolue, moins elle aide à comprendre les ouvriers, les techniques, les carrières, les rampes, les rations et l’administration."
+    },
+    {
+      "title": "Repère",
+      "text": "Ancien Empire : période majeure de l’Égypte pharaonique, associée aux grandes pyramides."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Réduire l’Égypte aux pyramides : le vrai sujet est l’articulation entre fleuve, État, scribes et religion."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi une pyramide est-elle aussi une preuve d’État ?",
+      "a": "Parce qu’elle suppose une mobilisation organisée de ressources, travailleurs, scribes et matériaux.",
+      "choices": [
+        "Parce qu’elle est construite spontanément par des paysans pendant la crue.",
+        "Parce qu’elle prouve surtout l’existence d’esclaves étrangers travaillant sans organisation.",
+        "Parce que sa taille suffit à montrer que le pharaon disposait de techniques inconnues."
+      ],
+      "why": "Le monument révèle la capacité du pouvoir à prévoir, compter, nourrir, transporter et coordonner.",
+      "trap": "Expliquer le chantier uniquement par la force physique.",
+      "evidence": "Cours complet, blocs sur le chantier et l’administration."
+    },
+    {
+      "q": "Quel rôle joue le Nil dans ce système ?",
+      "a": "Il structure l’agriculture, les crues, les récoltes, les stocks et donc les ressources mobilisables.",
+      "choices": [
+        "Il fournit uniquement l’eau bue par les ouvriers du chantier.",
+        "Il empêche le transport des blocs et oblige à tout déplacer par le désert.",
+        "Il intervient seulement dans les rites funéraires, sans lien avec les ressources."
+      ],
+      "why": "Les ressources agricoles et la circulation sur le fleuve rendent possible une mobilisation à grande échelle.",
+      "trap": "Limiter le Nil à un décor ou à l’eau potable.",
+      "evidence": "Cours complet, bloc sur le Nil et les ressources."
+    },
+    {
+      "q": "Pourquoi les scribes sont-ils indispensables ?",
+      "a": "Ils comptent, enregistrent, répartissent et contrôlent le chantier et les ressources.",
+      "choices": [
+        "Ils dessinent les décorations mais ne participent ni aux comptes ni aux rations.",
+        "Ils commandent directement les équipes de tailleurs de pierre à la place du pharaon.",
+        "Ils rédigent les mythes après le chantier mais n’interviennent pas dans son organisation."
+      ],
+      "why": "Un chantier aussi vaste dépend de comptes, de rations, d’équipes et d’un suivi administratif.",
+      "trap": "Réduire les scribes à la rédaction de textes religieux.",
+      "evidence": "Cours complet, bloc sur l’organisation du chantier."
+    },
+    {
+      "q": "Quel piège faut-il éviter ?",
+      "a": "Présenter les pyramides comme un mystère inexplicable plutôt que comme un fait historique organisé.",
+      "choices": [
+        "Penser que les pyramides ont une fonction funéraire et religieuse.",
+        "Étudier les carrières, les équipes de travail et les traces de transport.",
+        "Comparer les monuments selon leur époque et les moyens de l’État."
+      ],
+      "why": "Les techniques et l’organisation sont difficiles à reconstituer, mais elles peuvent être étudiées historiquement.",
+      "trap": "Transformer une difficulté documentaire en énigme surnaturelle.",
+      "evidence": "Cours complet, bloc sur les méthodes de construction."
+    },
+    {
+      "q": "Quelle dimension religieuse porte la pyramide ?",
+      "a": "Elle est liée à la mort royale, à l’éternité, au soleil, aux dieux et à l’ordre du monde.",
+      "choices": [
+        "Elle est uniquement une forteresse destinée à protéger la capitale.",
+        "Elle commémore une victoire militaire remportée par le roi sur ses voisins.",
+        "Elle sert d’observatoire astronomique indépendant des croyances funéraires."
+      ],
+      "why": "La pyramide appartient à un complexe funéraire et à une conception religieuse de la royauté.",
+      "trap": "La réduire à une démonstration de puissance matérielle.",
+      "evidence": "Cours complet, bloc sur la fonction funéraire."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "La pyramide à degrés de Djéser, à Saqqarah, transforme l’ancien mastaba en monument superposé."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Extraire, transporter et poser des millions de blocs exige des carrières, des rampes, des outils, des équipes et un ravitaillement régulier."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Autour du monument principal se trouvent temples, chaussées, pyramides secondaires, fosses à barques et cimetières de proches ou de responsables."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "egypt-ramses": {
     "hook": "Ramsès II est célèbre pour ses colosses, ses temples et Qadesh. Mais le plus intéressant n’est pas seulement sa gloire : c’est la fabrication politique de cette gloire.",
     "keyFacts": [
@@ -3260,9 +3515,9 @@ const READY_LESSON_PACKS = {
         "q": "À quelle période appartient Ramsès II ?",
         "a": "Au Nouvel Empire, au XIIIe siècle av. J.-C.",
         "choices": [
-          "À l’époque de la Révolution française.",
-          "Au temps de la République romaine tardive.",
-          "Au Moyen Âge scandinave."
+          "À l’Ancien Empire, au temps des grandes pyramides de Gizeh.",
+          "Au Moyen Empire, plusieurs siècles avant l’affrontement avec les Hittites.",
+          "À l’époque ptolémaïque, peu avant le règne de Cléopâtre."
         ],
         "why": "Le cadre chronologique évite de mélanger les périodes.",
         "trap": "Traiter Ramsès comme un pharaon hors du temps.",
@@ -3273,9 +3528,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi Qadesh est-elle importante ?",
         "a": "Parce qu’elle oppose l’Égypte aux Hittites et devient un grand récit de propagande royale.",
         "choices": [
-          "Parce qu’elle marque la construction de la première pyramide.",
-          "Parce qu’elle fonde la démocratie athénienne.",
-          "Parce qu’elle met fin à l’Empire romain d’Occident."
+          "Parce qu’elle donne à l’Égypte une victoire totale et détruit définitivement l’Empire hittite.",
+          "Parce qu’elle marque la première conquête de la Nubie par un pharaon.",
+          "Parce qu’elle entraîne immédiatement la signature du traité de paix le jour suivant."
         ],
         "why": "Qadesh relie guerre, rivalité de puissances et mémoire officielle.",
         "trap": "La réduire à une simple bataille gagnée.",
@@ -3286,9 +3541,9 @@ const READY_LESSON_PACKS = {
         "q": "Comment lire les inscriptions de Qadesh ?",
         "a": "Comme des récits officiels qui mettent en scène le courage du roi et organisent la mémoire de l’événement.",
         "choices": [
-          "Comme des journaux neutres écrits par les soldats hittites.",
-          "Comme des documents sans intention politique.",
-          "Comme des preuves que la diplomatie n’existe pas."
+          "Comme des comptes militaires neutres donnant les pertes exactes des deux camps.",
+          "Comme des récits hittites repris sans modification par les scribes égyptiens.",
+          "Comme des textes religieux sans lien avec la mémoire politique du règne."
         ],
         "why": "La source royale est précieuse mais orientée.",
         "trap": "Confondre inscription royale et reportage.",
@@ -3299,9 +3554,9 @@ const READY_LESSON_PACKS = {
         "q": "Que montre le traité avec les Hittites ?",
         "a": "Que la puissance de Ramsès II passe aussi par la diplomatie et la stabilisation des relations internationales.",
         "choices": [
-          "Que l’Égypte ne connaît aucun voisin puissant.",
-          "Que tous les conflits se règlent par des pyramides.",
-          "Que les Hittites sont des scribes du delta."
+          "Que Ramsès renonce à toute ambition au Levant après une défaite reconnue publiquement.",
+          "Que les Hittites deviennent des vassaux administrés directement depuis Pi-Ramsès.",
+          "Que les deux puissances fusionnent leurs armées et leurs territoires."
         ],
         "why": "Le traité nuance l’image du roi uniquement guerrier.",
         "trap": "Opposer guerre et diplomatie.",
@@ -3312,9 +3567,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi les monuments de Ramsès II sont-ils politiques ?",
         "a": "Ils rendent visible une version officielle du pouvoir, de la protection divine et de la victoire royale.",
         "choices": [
-          "Ils servent seulement d’abris agricoles pour la crue.",
-          "Ils prouvent que les scribes dirigent seuls l’armée.",
-          "Ils effacent tout lien entre roi et religion."
+          "Ils décrivent uniquement les rites funéraires du roi sans référence à son règne.",
+          "Ils servent de documents techniques pour les ouvriers et les architectes.",
+          "Ils conservent une mémoire privée destinée à la famille royale plutôt qu’au public."
         ],
         "why": "Les monuments fixent la mémoire royale dans l’espace.",
         "trap": "Les voir comme de simples décorations.",
@@ -3392,9 +3647,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi l’Égypte n’est-elle pas isolée ?",
         "a": "Parce qu’elle est reliée à la Nubie, au Sinaï, au Levant et à la Méditerranée par des routes et des contacts variés.",
         "choices": [
-          "Parce qu’elle se situe au centre de l’Europe médiévale.",
-          "Parce que ses pyramides servent de ports maritimes.",
-          "Parce qu’elle refuse tout échange avec ses voisins."
+          "Parce que les déserts empêchent les invasions mais pas les échanges commerciaux organisés par le roi.",
+          "Parce que le Nil relie directement l’Égypte à la Mésopotamie sans passer par d’autres régions.",
+          "Parce que l’Égypte contrôle en permanence toutes les routes de Méditerranée orientale."
         ],
         "why": "La géographie protège mais permet aussi des passages.",
         "trap": "Confondre protection et isolement total.",
@@ -3405,9 +3660,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la Nubie est-elle importante pour l’Égypte ?",
         "a": "Elle est liée à l’or, aux routes du Nil, aux soldats, aux forteresses et à des royaumes africains puissants.",
         "choices": [
-          "Elle est une cité grecque inventée par Alexandre.",
-          "Elle est le quartier central de Rome.",
-          "Elle est uniquement une légende funéraire sans territoire."
+          "Elle est surtout une zone agricole égyptienne sans royaumes ni pouvoirs propres.",
+          "Elle fournit uniquement des mercenaires, sans or ni rôle dans les routes du Nil.",
+          "Elle constitue une frontière fermée où les échanges sont rares et interdits."
         ],
         "why": "La Nubie est un espace réel d’échanges et de rivalités.",
         "trap": "La réduire à une marge passive.",
@@ -3418,9 +3673,9 @@ const READY_LESSON_PACKS = {
         "q": "Que montre le Levant dans l’histoire égyptienne ?",
         "a": "L’intégration de l’Égypte à des guerres, alliances et échanges avec les puissances du Proche-Orient.",
         "choices": [
-          "L’absence totale de voisins au nord-est.",
-          "La fin immédiate de toute monarchie pharaonique.",
-          "La naissance des chasseurs-cueilleurs paléolithiques."
+          "Que l’Égypte domine constamment toutes les cités du Proche-Orient.",
+          "Que les contacts extérieurs commencent seulement avec Alexandre le Grand.",
+          "Que le Levant sert uniquement de route commerciale sans rivalités politiques."
         ],
         "why": "Le Levant connecte l’Égypte aux grands équilibres régionaux.",
         "trap": "Raconter l’Égypte seulement depuis la vallée du Nil.",
@@ -3431,9 +3686,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle idée corrigent les emprunts techniques ou artistiques ?",
         "a": "Les sociétés anciennes changent aussi par circulation d’objets, de techniques, de styles et d’idées.",
         "choices": [
-          "Une civilisation ne change jamais au contact d’une autre.",
-          "Tous les objets étrangers sont automatiquement sans valeur.",
-          "Le commerce supprime toutes les identités politiques."
+          "Que les Égyptiens abandonnent leur culture dès qu’ils adoptent une technique étrangère.",
+          "Que les influences circulent dans un seul sens, de l’Égypte vers ses voisins.",
+          "Que seuls les peuples conquis empruntent des styles ou des objets aux vainqueurs."
         ],
         "why": "Les contacts transforment sans effacer l’originalité locale.",
         "trap": "Opposer pureté et influence.",
@@ -3444,9 +3699,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle formule résume le mieux le cours ?",
         "a": "L’Égypte est une puissance nilotique originale, mais connectée à des réseaux extérieurs.",
         "choices": [
-          "L’Égypte est un monde fermé, sans échanges ni diplomatie.",
-          "L’Égypte est seulement une copie des royaumes hittites.",
-          "L’Égypte n’existe qu’à travers les récits grecs tardifs."
+          "L’Égypte est un empire méditerranéen dont le Nil joue un rôle secondaire.",
+          "L’Égypte reste isolée politiquement même si quelques objets étrangers circulent.",
+          "L’identité égyptienne disparaît progressivement sous l’effet des échanges extérieurs."
         ],
         "why": "La bonne réponse combine originalité et connexions.",
         "trap": "Choisir entre isolement total et absence d’identité propre.",
@@ -3455,233 +3710,412 @@ const READY_LESSON_PACKS = {
     ]
   },
   "greece-athens-democracy": {
-    "hook": "Athènes invente une forme célèbre de démocratie, mais elle oblige surtout à poser une question gênante : qui a vraiment le droit d’être le peuple ?",
-    "express": [
-      "La démocratie athénienne concerne les citoyens masculins adultes nés de parents citoyens. Cela exclut les femmes, les esclaves, les métèques et une grande partie des habitants.",
-      "Le pouvoir se joue dans l’assemblée, les magistratures, les tribunaux et le tirage au sort. La participation directe est centrale : on ne vote pas seulement pour des représentants comme dans beaucoup de démocraties modernes.",
-      "Le sujet est donc double : Athènes invente des pratiques politiques puissantes, mais dans une société profondément inégalitaire. C’est ce contraste qui rend le thème intéressant."
-    ],
-    "complete": [
-      {
-        "title": "1. Le peuple, mais lequel ?",
-        "text": "Demos ne signifie pas tous les habitants. À Athènes, le citoyen est un statut limité. Les femmes, esclaves et étrangers résidents participent à la vie de la cité, mais pas à la décision politique comme citoyens."
-      },
-      {
-        "title": "2. Une démocratie directe",
-        "text": "L’assemblée permet aux citoyens de voter directement certaines décisions. Le tirage au sort limite la confiscation du pouvoir par une élite permanente. Les tribunaux populaires participent aussi à la vie politique."
-      },
-      {
-        "title": "3. Une culture du débat",
-        "text": "La parole publique, la rhétorique, la persuasion et le conflit d’opinions sont essentiels. La démocratie athénienne est autant une pratique sociale qu’un ensemble d’institutions."
-      },
-      {
-        "title": "4. Une cité impériale",
-        "text": "Athènes n’est pas seulement une démocratie interne : elle domine aussi des alliés et tire profit de son empire maritime. La liberté des citoyens peut donc coexister avec la domination extérieure."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Athènes est importante parce qu’elle invente des formes de participation politique, mais elle ne doit jamais être idéalisée : sa démocratie repose sur des exclusions fortes."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Repère",
-        "text": "Métèque : étranger libre vivant à Athènes, intégré économiquement mais exclu de la citoyenneté politique."
-      },
-      {
-        "title": "Comparaison utile",
-        "text": "La démocratie athénienne est directe et civique ; les démocraties modernes sont souvent représentatives et fondées sur une citoyenneté beaucoup plus large."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Dire “les Grecs ont inventé la démocratie” sans préciser Athènes, les citoyens et les exclusions."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Qui est exclu de la citoyenneté athénienne ?",
-        "a": "Les femmes, les esclaves, les métèques et les non-citoyens."
-      },
-      {
-        "q": "Pourquoi parle-t-on de démocratie directe ?",
-        "a": "Parce que les citoyens participent directement à certaines décisions dans l’assemblée."
-      },
-      {
-        "q": "Quel mécanisme limite la professionnalisation du pouvoir ?",
-        "a": "Le tirage au sort de certaines charges."
-      },
-      {
-        "q": "Pourquoi Athènes ne doit-elle pas être idéalisée ?",
-        "a": "Parce que la participation politique repose sur des exclusions sociales et civiques fortes."
-      },
-      {
-        "q": "Quel contraste rend le sujet intéressant ?",
-        "a": "Une innovation politique majeure dans une société très inégalitaire."
-      }
-    ]
-  },
+  "hook": "Athènes invente une forme célèbre de démocratie, mais elle oblige surtout à poser une question gênante : qui a vraiment le droit d’être le peuple ?",
+  "express": [
+    "La démocratie athénienne concerne les citoyens masculins adultes nés de parents citoyens. Cela exclut les femmes, les esclaves, les métèques et une grande partie des habitants.",
+    "Le pouvoir se joue dans l’assemblée, les magistratures, les tribunaux et le tirage au sort. La participation directe est centrale : on ne vote pas seulement pour des représentants comme dans beaucoup de démocraties modernes.",
+    "Le sujet est donc double : Athènes invente des pratiques politiques puissantes, mais dans une société profondément inégalitaire. C’est ce contraste qui rend le thème intéressant."
+  ],
+  "complete": [
+    {
+      "title": "1. Le peuple, mais lequel ?",
+      "text": "Demos ne signifie pas tous les habitants. À Athènes, le citoyen est un statut limité. Les femmes, esclaves et étrangers résidents participent à la vie de la cité, mais pas à la décision politique comme citoyens."
+    },
+    {
+      "title": "2. Une démocratie directe",
+      "text": "L’assemblée permet aux citoyens de voter directement certaines décisions. Le tirage au sort limite la confiscation du pouvoir par une élite permanente. Les tribunaux populaires participent aussi à la vie politique."
+    },
+    {
+      "title": "3. Une culture du débat",
+      "text": "La parole publique, la rhétorique, la persuasion et le conflit d’opinions sont essentiels. La démocratie athénienne est autant une pratique sociale qu’un ensemble d’institutions."
+    },
+    {
+      "title": "4. Une cité impériale",
+      "text": "Athènes n’est pas seulement une démocratie interne : elle domine aussi des alliés et tire profit de son empire maritime. La liberté des citoyens peut donc coexister avec la domination extérieure."
+    },
+    {
+      "title": "5. Qui peut réellement participer ?",
+      "text": "La démocratie athénienne repose sur les citoyens masculins adultes, nés de parents athéniens selon les périodes. Les femmes, les esclaves et les métèques — étrangers résidents — sont exclus des droits politiques. Le système est donc très participatif pour une minorité, mais ne correspond pas au suffrage universel moderne."
+    },
+    {
+      "title": "6. Assemblée, Conseil et tribunaux",
+      "text": "L’Ecclésia vote les lois, la guerre ou certains choix diplomatiques. La Boulè, composée de cinq cents citoyens tirés au sort, prépare les décisions et contrôle une partie de l’administration. De grands jurys populaires jugent les procès. La démocratie athénienne ne se limite donc pas à une réunion sur la colline de la Pnyx : elle forme un ensemble d’institutions."
+    },
+    {
+      "title": "7. Le tirage au sort et la méfiance envers les professionnels du pouvoir",
+      "text": "Beaucoup de charges sont attribuées par tirage au sort pour éviter qu’une petite élite monopolise le pouvoir. Les magistrats sont généralement contrôlés avant et après leur mandat. Les Athéniens distinguent toutefois les fonctions qui exigent une compétence particulière, comme les stratèges, élus et rééligibles."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Athènes est importante parce qu’elle invente des formes de participation politique, mais elle ne doit jamais être idéalisée : sa démocratie repose sur des exclusions fortes."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Métèque : étranger libre vivant à Athènes, intégré économiquement mais exclu de la citoyenneté politique."
+    },
+    {
+      "title": "Comparaison utile",
+      "text": "La démocratie athénienne est directe et civique ; les démocraties modernes sont souvent représentatives et fondées sur une citoyenneté beaucoup plus large."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Dire “les Grecs ont inventé la démocratie” sans préciser Athènes, les citoyens et les exclusions."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Qui est exclu de la citoyenneté athénienne ?",
+      "a": "Les femmes, les esclaves, les métèques et les non-citoyens.",
+      "choices": [
+        "Tous les hommes libres vivant à Athènes, y compris les métèques.",
+        "Seulement les esclaves et les étrangers de passage, mais pas les femmes.",
+        "Les citoyens pauvres, qui ne peuvent ni voter ni siéger à l’assemblée."
+      ],
+      "why": "La citoyenneté est réservée à une minorité masculine née de parents athéniens.",
+      "trap": "Confondre habitants d’Athènes et citoyens.",
+      "evidence": "Cours complet, bloc sur le corps civique."
+    },
+    {
+      "q": "Pourquoi parle-t-on de démocratie directe ?",
+      "a": "Parce que les citoyens participent directement à certaines décisions dans l’assemblée.",
+      "choices": [
+        "Parce que les citoyens élisent un président qui décide ensuite seul.",
+        "Parce que toutes les lois sont votées par l’ensemble des habitants, femmes et esclaves compris.",
+        "Parce que les magistrats héréditaires représentent directement chaque quartier."
+      ],
+      "why": "Les citoyens présents décident eux-mêmes dans l’Ecclésia au lieu d’élire des représentants permanents.",
+      "trap": "Projeter notre démocratie représentative sur Athènes.",
+      "evidence": "Cours complet, bloc sur l’assemblée."
+    },
+    {
+      "q": "Quel mécanisme limite la professionnalisation du pouvoir ?",
+      "a": "Le tirage au sort de certaines charges.",
+      "choices": [
+        "L’élection à vie des principaux magistrats.",
+        "L’hérédité des charges dans les grandes familles.",
+        "La nomination des magistrats par les généraux de l’armée."
+      ],
+      "why": "Le tirage au sort répartit de nombreuses charges entre citoyens et limite les carrières politiques permanentes.",
+      "trap": "Croire que toutes les fonctions sont élues ou héréditaires.",
+      "evidence": "Cours complet, bloc sur les institutions."
+    },
+    {
+      "q": "Pourquoi Athènes ne doit-elle pas être idéalisée ?",
+      "a": "Parce que la participation politique repose sur des exclusions sociales et civiques fortes.",
+      "choices": [
+        "Parce que les citoyens ne prennent jamais part aux décisions militaires.",
+        "Parce que le tirage au sort exclut les citoyens les plus pauvres.",
+        "Parce que l’assemblée ne peut discuter que des affaires religieuses."
+      ],
+      "why": "La démocratie athénienne donne un pouvoir réel aux citoyens, mais exclut la majorité des habitants.",
+      "trap": "Confondre participation citoyenne et égalité universelle.",
+      "evidence": "Cours complet, bloc sur les exclusions."
+    },
+    {
+      "q": "Quel contraste rend le sujet intéressant ?",
+      "a": "Une innovation politique majeure dans une société très inégalitaire.",
+      "choices": [
+        "Une égalité sociale complète dans un régime sans esclavage.",
+        "Une monarchie puissante cachée derrière des assemblées sans pouvoir.",
+        "Une participation ouverte à tous les habitants mais limitée aux questions locales."
+      ],
+      "why": "L’intérêt du cas athénien vient précisément de la coexistence entre participation politique et fortes inégalités.",
+      "trap": "Transformer Athènes en modèle démocratique identique au nôtre.",
+      "evidence": "Conclusion du cours."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "La démocratie athénienne repose sur les citoyens masculins adultes, nés de parents athéniens selon les périodes."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "L’Ecclésia vote les lois, la guerre ou certains choix diplomatiques."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Beaucoup de charges sont attribuées par tirage au sort pour éviter qu’une petite élite monopolise le pouvoir."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "greece-persian-wars": {
-    "hook": "Une poignée de cités grecques face au plus vaste empire de leur temps : les guerres médiques sont moins une légende héroïque qu’un laboratoire de choix politiques, de logistique et de mémoire.",
-    "express": [
-      "Les guerres médiques opposent au début du Ve siècle av. J.-C. l’Empire perse achéménide à plusieurs cités grecques, notamment Athènes et Sparte. Elles ne sont pas une guerre de “la Grèce entière” contre “l’Orient” : les cités grecques sont divisées, certaines résistent, d’autres composent avec les Perses.",
-      "Marathon, les Thermopyles, Salamine et Platées deviennent des épisodes célèbres parce qu’ils combinent stratégie, propagande et mémoire politique. Marathon montre la capacité athénienne à se défendre ; Salamine révèle l’importance de la flotte et du choix du terrain ; les Thermopyles deviennent un récit de sacrifice.",
-      "Le piège est de raconter cela comme une opposition simple entre liberté grecque et despotisme perse. C’est une lecture construite en partie par les vainqueurs. Le vrai intérêt historique est de comprendre comment les cités utilisent la guerre pour fabriquer une mémoire commune et renforcer certains régimes, surtout Athènes."
-    ],
-    "complete": [
-      {
-        "title": "1. Une guerre née d’un monde connecté",
-        "text": "Les cités grecques d’Asie Mineure vivent déjà au contact de l’Empire perse. Les révoltes ioniennes, les alliances, les expéditions punitives et les rivalités entre cités expliquent mieux le conflit qu’une opposition abstraite entre deux civilisations."
-      },
-      {
-        "title": "2. Marathon : victoire militaire et capital politique",
-        "text": "En 490 av. J.-C., Marathon devient pour Athènes une victoire fondatrice. Militairement, c’est une bataille terrestre. Politiquement, elle nourrit l’idée que les citoyens-soldats peuvent défendre la cité sans attendre un sauveur extérieur."
-      },
-      {
-        "title": "3. Salamine : l’intelligence du terrain",
-        "text": "En 480 av. J.-C., les Grecs attirent la flotte perse dans un espace resserré. La bataille montre que la supériorité numérique ne suffit pas toujours : le terrain, la coordination et la connaissance maritime peuvent inverser le rapport de force."
-      },
-      {
-        "title": "4. Les Thermopyles : défaite transformée en mémoire",
-        "text": "Les Thermopyles sont une défaite grecque, mais deviennent un récit de courage. C’est un bon exemple de fabrication mémorielle : un événement perdu peut devenir symboliquement victorieux s’il sert une identité politique."
-      },
-      {
-        "title": "5. Après la guerre : Athènes en sort renforcée",
-        "text": "La victoire grecque ne produit pas une Grèce unie. Elle ouvre au contraire une période de rivalités où Athènes construit sa puissance maritime autour de la ligue de Délos, bientôt perçue par beaucoup comme un empire athénien."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Nuance utile",
-        "text": "Des Grecs combattent ou négocient avec les Perses. Le monde grec est fragmenté : cité, alliance et intérêt local comptent autant que l’identité culturelle."
-      },
-      {
-        "title": "Repère",
-        "text": "Médiser : soutenir ou accepter la domination perse. Le mot montre que les Grecs eux-mêmes ne sont pas tous dans le même camp."
-      },
-      {
-        "title": "Trace durable",
-        "text": "Les récits d’Hérodote donnent une source majeure, mais il faut les lire comme une enquête antique, pas comme un reportage neutre."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi faut-il éviter de parler d’une Grèce totalement unie ?",
-        "a": "Parce que les cités grecques sont divisées et certaines composent avec les Perses.",
-        "why": "La cité reste l’échelle politique principale.",
-        "trap": "Imaginer une nation grecque moderne avant l’heure.",
-        "evidence": "Le cours insiste sur les cités divisées et le verbe “médiser”."
-      },
-      {
-        "q": "Pourquoi Salamine est-elle plus qu’une simple bataille navale ?",
-        "a": "Elle montre le rôle du terrain, de la flotte et de la stratégie face à une puissance plus nombreuse.",
-        "why": "La supériorité perse n’empêche pas une défaite dans un espace mal choisi.",
-        "trap": "Réduire la bataille à du courage abstrait.",
-        "evidence": "Le passage sur l’espace resserré de Salamine."
-      },
-      {
-        "q": "Quel épisode est une défaite transformée en victoire mémorielle ?",
-        "a": "Les Thermopyles, une défaite grecque devenue symbole de résistance.",
-        "why": "La bataille est perdue, mais elle devient un récit de sacrifice.",
-        "trap": "Croire que tous les épisodes célèbres sont des victoires militaires.",
-        "evidence": "Le bloc “défaite transformée en mémoire”."
-      },
-      {
-        "q": "Que gagne Athènes après les guerres médiques ?",
-        "a": "Un prestige et une puissance maritime qui favorisent la ligue de Délos puis l’empire athénien.",
-        "why": "La victoire sert à construire une domination politique.",
-        "trap": "Penser que la paix grecque suit automatiquement la victoire.",
-        "evidence": "Le cinquième bloc du cours complet."
-      },
-      {
-        "q": "Quelle source majeure faut-il lire avec prudence ?",
-        "a": "Hérodote, source majeure mais à lire comme une enquête antique située.",
-        "why": "C’est une source précieuse mais construite par une enquête et une tradition grecques.",
-        "trap": "Le lire comme un journal moderne neutre.",
-        "evidence": "Le bloc “Trace durable”."
-      }
-    ]
-  },
+  "hook": "Une poignée de cités grecques face au plus vaste empire de leur temps : les guerres médiques sont moins une légende héroïque qu’un laboratoire de choix politiques, de logistique et de mémoire.",
+  "express": [
+    "Les guerres médiques opposent au début du Ve siècle av. J.-C. l’Empire perse achéménide à plusieurs cités grecques, notamment Athènes et Sparte. Elles ne sont pas une guerre de “la Grèce entière” contre “l’Orient” : les cités grecques sont divisées, certaines résistent, d’autres composent avec les Perses.",
+    "Marathon, les Thermopyles, Salamine et Platées deviennent des épisodes célèbres parce qu’ils combinent stratégie, propagande et mémoire politique. Marathon montre la capacité athénienne à se défendre ; Salamine révèle l’importance de la flotte et du choix du terrain ; les Thermopyles deviennent un récit de sacrifice.",
+    "Le piège est de raconter cela comme une opposition simple entre liberté grecque et despotisme perse. C’est une lecture construite en partie par les vainqueurs. Le vrai intérêt historique est de comprendre comment les cités utilisent la guerre pour fabriquer une mémoire commune et renforcer certains régimes, surtout Athènes."
+  ],
+  "complete": [
+    {
+      "title": "1. Une guerre née d’un monde connecté",
+      "text": "Les cités grecques d’Asie Mineure vivent déjà au contact de l’Empire perse. Les révoltes ioniennes, les alliances, les expéditions punitives et les rivalités entre cités expliquent mieux le conflit qu’une opposition abstraite entre deux civilisations."
+    },
+    {
+      "title": "2. Marathon : victoire militaire et capital politique",
+      "text": "En 490 av. J.-C., Marathon devient pour Athènes une victoire fondatrice. Militairement, c’est une bataille terrestre. Politiquement, elle nourrit l’idée que les citoyens-soldats peuvent défendre la cité sans attendre un sauveur extérieur."
+    },
+    {
+      "title": "3. Salamine : l’intelligence du terrain",
+      "text": "En 480 av. J.-C., les Grecs attirent la flotte perse dans un espace resserré. La bataille montre que la supériorité numérique ne suffit pas toujours : le terrain, la coordination et la connaissance maritime peuvent inverser le rapport de force."
+    },
+    {
+      "title": "4. Les Thermopyles : défaite transformée en mémoire",
+      "text": "Les Thermopyles sont une défaite grecque, mais deviennent un récit de courage. C’est un bon exemple de fabrication mémorielle : un événement perdu peut devenir symboliquement victorieux s’il sert une identité politique."
+    },
+    {
+      "title": "5. Après la guerre : Athènes en sort renforcée",
+      "text": "La victoire grecque ne produit pas une Grèce unie. Elle ouvre au contraire une période de rivalités où Athènes construit sa puissance maritime autour de la ligue de Délos, bientôt perçue par beaucoup comme un empire athénien."
+    },
+    {
+      "title": "6. Une révolte qui déclenche l’affrontement",
+      "text": "Au début du Ve siècle av. J.-C., plusieurs cités grecques d’Asie Mineure se révoltent contre l’Empire perse et reçoivent un soutien limité d’Athènes. La répression perse puis les expéditions contre la Grèce continentale s’inscrivent dans cette histoire. Les guerres médiques ne tombent donc pas du ciel : elles prolongent des tensions impériales et régionales."
+    },
+    {
+      "title": "7. Marathon, Thermopyles, Salamine : trois logiques différentes",
+      "text": "Marathon met en valeur la bataille terrestre et la capacité des hoplites athéniens. Aux Thermopyles, une force grecque retarde l’armée de Xerxès sans l’arrêter. À Salamine, la flotte grecque profite des détroits pour réduire l’avantage numérique perse. Ces épisodes célèbres ne sont pas interchangeables : chacun montre une stratégie et un rapport de force distincts."
+    },
+    {
+      "title": "8. Une victoire qui renforce Athènes",
+      "text": "Après la guerre, Athènes dirige la ligue de Délos, officiellement destinée à poursuivre la lutte contre les Perses. Les contributions des alliés alimentent progressivement une puissance navale et financière athénienne. La défense collective se transforme en domination, ce qui prépare les tensions avec Sparte et d’autres cités."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Une poignée de cités grecques face au plus vaste empire de leur temps : les guerres médiques sont moins une légende héroïque qu’un laboratoire de choix politiques, de logistique et de mémoire."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Nuance utile",
+      "text": "Des Grecs combattent ou négocient avec les Perses. Le monde grec est fragmenté : cité, alliance et intérêt local comptent autant que l’identité culturelle."
+    },
+    {
+      "title": "Repère",
+      "text": "Médiser : soutenir ou accepter la domination perse. Le mot montre que les Grecs eux-mêmes ne sont pas tous dans le même camp."
+    },
+    {
+      "title": "Trace durable",
+      "text": "Les récits d’Hérodote donnent une source majeure, mais il faut les lire comme une enquête antique, pas comme un reportage neutre."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi faut-il éviter de parler d’une Grèce totalement unie ?",
+      "a": "Parce que les cités grecques sont divisées et certaines composent avec les Perses.",
+      "choices": [
+        "Parce que toutes les cités refusent de combattre et laissent Sparte agir seule.",
+        "Parce qu’Athènes et Sparte appartiennent déjà à deux empires ennemis.",
+        "Parce que les cités n’ont aucun intérêt commun face à l’expansion perse."
+      ],
+      "why": "La cité reste l’échelle politique principale.",
+      "trap": "Imaginer une nation grecque moderne avant l’heure.",
+      "evidence": "Le cours insiste sur les cités divisées et le verbe “médiser”."
+    },
+    {
+      "q": "Pourquoi Salamine est-elle plus qu’une simple bataille navale ?",
+      "a": "Elle montre le rôle du terrain, de la flotte et de la stratégie face à une puissance plus nombreuse.",
+      "choices": [
+        "Elle prouve que les hoplites sont toujours supérieurs à une flotte.",
+        "Elle montre qu’une armée plus nombreuse gagne nécessairement en mer.",
+        "Elle est surtout décisive parce qu’elle se déroule loin des routes maritimes grecques."
+      ],
+      "why": "La supériorité perse n’empêche pas une défaite dans un espace mal choisi.",
+      "trap": "Réduire la bataille à du courage abstrait.",
+      "evidence": "Le passage sur l’espace resserré de Salamine."
+    },
+    {
+      "q": "Quel épisode est une défaite transformée en victoire mémorielle ?",
+      "a": "Les Thermopyles, une défaite grecque devenue symbole de résistance.",
+      "choices": [
+        "Marathon, victoire perse transformée plus tard en récit grec.",
+        "Platées, bataille perdue par les Grecs mais célébrée comme un sacrifice.",
+        "Salamine, défaite navale athénienne devenue symbole de résistance."
+      ],
+      "why": "La bataille est perdue, mais elle devient un récit de sacrifice.",
+      "trap": "Croire que tous les épisodes célèbres sont des victoires militaires.",
+      "evidence": "Le bloc “défaite transformée en mémoire”."
+    },
+    {
+      "q": "Que gagne Athènes après les guerres médiques ?",
+      "a": "Un prestige et une puissance maritime qui favorisent la ligue de Délos puis l’empire athénien.",
+      "choices": [
+        "Le contrôle immédiat de tout l’Empire perse et de ses provinces.",
+        "Une domination terrestre sur Sparte et la disparition des autres cités.",
+        "La fin de sa flotte, devenue inutile après la victoire contre les Perses."
+      ],
+      "why": "La victoire sert à construire une domination politique.",
+      "trap": "Penser que la paix grecque suit automatiquement la victoire.",
+      "evidence": "Le cinquième bloc du cours complet."
+    },
+    {
+      "q": "Quelle source majeure faut-il lire avec prudence ?",
+      "a": "Hérodote, source majeure mais à lire comme une enquête antique située.",
+      "choices": [
+        "Les inscriptions perses, qui racontent seules toutes les batailles en détail.",
+        "Thucydide, témoin direct de Marathon et des Thermopyles.",
+        "Homère, dont les poèmes décrivent les guerres médiques comme un reportage."
+      ],
+      "why": "C’est une source précieuse mais construite par une enquête et une tradition grecques.",
+      "trap": "Le lire comme un journal moderne neutre.",
+      "evidence": "Le bloc “Trace durable”."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "Au début du Ve siècle av."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Marathon met en valeur la bataille terrestre et la capacité des hoplites athéniens."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Après la guerre, Athènes dirige la ligue de Délos, officiellement destinée à poursuivre la lutte contre les Perses."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "greece-peloponnesian-war": {
-    "hook": "Athènes a vaincu les Perses, puis s’est épuisée contre d’autres Grecs : la guerre du Péloponnèse montre comment une démocratie peut devenir impériale et fragile.",
-    "express": [
-      "La guerre du Péloponnèse oppose surtout Athènes et ses alliés à Sparte et à la ligue du Péloponnèse entre 431 et 404 av. J.-C. Ce n’est pas un duel simple entre démocratie et oligarchie : c’est une guerre de puissances, d’alliances, de peur et de ressources.",
-      "Athènes dispose d’une flotte, de murs, d’un empire maritime et de tributs. Sparte domine militairement sur terre. La guerre alterne sièges, raids, épidémie, expéditions lointaines et retournements diplomatiques.",
-      "Le piège est de raconter seulement la chute d’Athènes comme une punition morale. Le conflit révèle surtout les tensions d’un monde de cités : autonomie proclamée, dépendances réelles, propagande et violence entre Grecs."
-    ],
-    "complete": [
-      {
-        "title": "1. Une guerre entre Grecs divisés",
-        "text": "Après les guerres médiques, Athènes transforme la ligue de Délos en instrument de domination. Sparte et d’autres cités craignent cette puissance. La guerre naît donc d’un équilibre instable entre alliances et peur."
-      },
-      {
-        "title": "2. Deux forces différentes",
-        "text": "Athènes mise sur la mer, les Longs Murs et les ressources de son empire. Sparte s’appuie sur sa supériorité terrestre et son réseau péloponnésien. La stratégie de chaque camp dépend de son modèle de puissance."
-      },
-      {
-        "title": "3. La démocratie en guerre",
-        "text": "À Athènes, les décisions militaires se discutent dans les institutions civiques. Cela permet la mobilisation mais aussi les emballements, les procès politiques et les choix risqués, comme l’expédition de Sicile."
-      },
-      {
-        "title": "4. Une violence politique grecque",
-        "text": "Le conflit touche les alliés, les cités neutres, les prisonniers et les civils. Thucydide montre comment la guerre dégrade le langage politique, radicalise les factions et rend la nécessité plus forte que la justice proclamée."
-      },
-      {
-        "title": "5. 404 av. J.-C. : une défaite qui ne clôt pas tout",
-        "text": "Athènes perd son empire et doit accepter une domination spartiate. Mais la cité ne disparaît pas. La guerre marque surtout la fin d’un moment de suprématie athénienne et ouvre d’autres rivalités grecques."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Source majeure",
-        "text": "Thucydide est essentiel pour le conflit, mais il construit une analyse politique et rhétorique : il ne faut pas le lire comme une caméra neutre."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Opposer Athènes libre et Sparte autoritaire de manière trop simple. Athènes défend sa démocratie tout en imposant un empire à ses alliés."
-      },
-      {
-        "title": "Épisode à retenir",
-        "text": "L’expédition de Sicile montre le danger d’une décision ambitieuse, lointaine et mal maîtrisée : elle affaiblit gravement Athènes."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi la guerre n’est-elle pas seulement démocratie contre oligarchie ?",
-        "a": "Parce qu’elle oppose aussi des puissances, des alliances, des intérêts et des ressources.",
-        "why": "Les régimes comptent, mais ne suffisent pas à expliquer le conflit.",
-        "trap": "Transformer la guerre en fable politique simpliste.",
-        "evidence": "L’express insiste sur puissances et alliances."
-      },
-      {
-        "q": "Quel est l’avantage stratégique principal d’Athènes ?",
-        "a": "La flotte, les Longs Murs et les ressources de l’empire maritime.",
-        "why": "Athènes pense la guerre depuis la mer.",
-        "trap": "Imaginer une guerre uniquement terrestre.",
-        "evidence": "Le bloc “Deux forces différentes”."
-      },
-      {
-        "q": "Pourquoi l’expédition de Sicile est-elle importante ?",
-        "a": "Elle montre un choix lointain et risqué qui affaiblit fortement Athènes.",
-        "why": "La démocratie peut produire de grands débats mais aussi des décisions dangereuses.",
-        "trap": "Croire que toutes les défaites viennent seulement de la force spartiate.",
-        "evidence": "Le bloc “La démocratie en guerre”."
-      },
-      {
-        "q": "Que montre Thucydide sur la guerre ?",
-        "a": "Qu’elle radicalise le langage politique, les factions et la violence.",
-        "why": "Le conflit abîme les normes de la cité.",
-        "trap": "Réduire Thucydide à un chroniqueur de batailles.",
-        "evidence": "Le quatrième bloc."
-      },
-      {
-        "q": "Que signifie la défaite de 404 ?",
-        "a": "La fin de la suprématie athénienne, pas la disparition d’Athènes.",
-        "why": "La cité continue d’exister politiquement et culturellement.",
-        "trap": "Voir 404 comme une fin totale de l’histoire grecque.",
-        "evidence": "Le dernier bloc."
-      }
-    ]
-  },
+  "hook": "Athènes a vaincu les Perses, puis s’est épuisée contre d’autres Grecs : la guerre du Péloponnèse montre comment une démocratie peut devenir impériale et fragile.",
+  "express": [
+    "La guerre du Péloponnèse oppose surtout Athènes et ses alliés à Sparte et à la ligue du Péloponnèse entre 431 et 404 av. J.-C. Ce n’est pas un duel simple entre démocratie et oligarchie : c’est une guerre de puissances, d’alliances, de peur et de ressources.",
+    "Athènes dispose d’une flotte, de murs, d’un empire maritime et de tributs. Sparte domine militairement sur terre. La guerre alterne sièges, raids, épidémie, expéditions lointaines et retournements diplomatiques.",
+    "Le piège est de raconter seulement la chute d’Athènes comme une punition morale. Le conflit révèle surtout les tensions d’un monde de cités : autonomie proclamée, dépendances réelles, propagande et violence entre Grecs."
+  ],
+  "complete": [
+    {
+      "title": "1. Une guerre entre Grecs divisés",
+      "text": "Après les guerres médiques, Athènes transforme la ligue de Délos en instrument de domination. Sparte et d’autres cités craignent cette puissance. La guerre naît donc d’un équilibre instable entre alliances et peur."
+    },
+    {
+      "title": "2. Deux forces différentes",
+      "text": "Athènes mise sur la mer, les Longs Murs et les ressources de son empire. Sparte s’appuie sur sa supériorité terrestre et son réseau péloponnésien. La stratégie de chaque camp dépend de son modèle de puissance."
+    },
+    {
+      "title": "3. La démocratie en guerre",
+      "text": "À Athènes, les décisions militaires se discutent dans les institutions civiques. Cela permet la mobilisation mais aussi les emballements, les procès politiques et les choix risqués, comme l’expédition de Sicile."
+    },
+    {
+      "title": "4. Une violence politique grecque",
+      "text": "Le conflit touche les alliés, les cités neutres, les prisonniers et les civils. Thucydide montre comment la guerre dégrade le langage politique, radicalise les factions et rend la nécessité plus forte que la justice proclamée."
+    },
+    {
+      "title": "5. 404 av. J.-C. : une défaite qui ne clôt pas tout",
+      "text": "Athènes perd son empire et doit accepter une domination spartiate. Mais la cité ne disparaît pas. La guerre marque surtout la fin d’un moment de suprématie athénienne et ouvre d’autres rivalités grecques."
+    },
+    {
+      "title": "6. Deux systèmes d’alliances",
+      "text": "Athènes contrôle une puissance maritime soutenue par la ligue de Délos ; Sparte dirige une alliance surtout terrestre dans le Péloponnèse. La guerre oppose donc des cités, mais aussi deux réseaux d’alliés aux ressources et stratégies différentes. Beaucoup de communautés sont entraînées dans le conflit sans disposer d’une pleine liberté de choix."
+    },
+    {
+      "title": "7. La peste et la stratégie de Périclès",
+      "text": "Périclès évite d’affronter directement l’armée spartiate et rassemble la population derrière les Longs Murs reliant Athènes au Pirée. La concentration humaine favorise une épidémie dévastatrice, souvent appelée peste d’Athènes, qui tue une partie importante des habitants et Périclès lui-même. Un plan militaire rationnel peut donc être bouleversé par un facteur sanitaire."
+    },
+    {
+      "title": "8. L’expédition de Sicile, tournant catastrophique",
+      "text": "En 415 av. J.-C., Athènes envoie une immense expédition contre Syracuse. Mauvais choix politiques, commandement divisé et résistance locale conduisent à la destruction de la flotte et à la capture de milliers d’hommes. Cette défaite n’achève pas immédiatement la guerre, mais elle affaiblit durablement la puissance athénienne."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Athènes a vaincu les Perses, puis s’est épuisée contre d’autres Grecs : la guerre du Péloponnèse montre comment une démocratie peut devenir impériale et fragile."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Source majeure",
+      "text": "Thucydide est essentiel pour le conflit, mais il construit une analyse politique et rhétorique : il ne faut pas le lire comme une caméra neutre."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Opposer Athènes libre et Sparte autoritaire de manière trop simple. Athènes défend sa démocratie tout en imposant un empire à ses alliés."
+    },
+    {
+      "title": "Épisode à retenir",
+      "text": "L’expédition de Sicile montre le danger d’une décision ambitieuse, lointaine et mal maîtrisée : elle affaiblit gravement Athènes."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi la guerre n’est-elle pas seulement démocratie contre oligarchie ?",
+      "a": "Parce qu’elle oppose aussi des puissances, des alliances, des intérêts et des ressources.",
+      "choices": [
+        "Parce qu’Athènes et Sparte ont le même régime politique pendant tout le conflit.",
+        "Parce que les alliances ne jouent aucun rôle entre les deux cités principales.",
+        "Parce que la guerre oppose seulement des citoyens athéniens à leurs propres dirigeants."
+      ],
+      "why": "Les régimes comptent, mais ne suffisent pas à expliquer le conflit.",
+      "trap": "Transformer la guerre en fable politique simpliste.",
+      "evidence": "L’express insiste sur puissances et alliances."
+    },
+    {
+      "q": "Quel est l’avantage stratégique principal d’Athènes ?",
+      "a": "La flotte, les Longs Murs et les ressources de l’empire maritime.",
+      "choices": [
+        "Une armée terrestre plus nombreuse que celle de Sparte.",
+        "Le contrôle direct de toutes les terres agricoles du Péloponnèse.",
+        "Une alliance permanente avec la Perse dès le début du conflit."
+      ],
+      "why": "Athènes pense la guerre depuis la mer.",
+      "trap": "Imaginer une guerre uniquement terrestre.",
+      "evidence": "Le bloc “Deux forces différentes”."
+    },
+    {
+      "q": "Pourquoi l’expédition de Sicile est-elle importante ?",
+      "a": "Elle montre un choix lointain et risqué qui affaiblit fortement Athènes.",
+      "choices": [
+        "Elle permet à Athènes de conquérir rapidement la Sicile et de terminer la guerre.",
+        "Elle montre que la flotte athénienne est inutile en dehors de l’Attique.",
+        "Elle renforce durablement les ressources d’Athènes sans pertes importantes."
+      ],
+      "why": "La démocratie peut produire de grands débats mais aussi des décisions dangereuses.",
+      "trap": "Croire que toutes les défaites viennent seulement de la force spartiate.",
+      "evidence": "Le bloc “La démocratie en guerre”."
+    },
+    {
+      "q": "Que montre Thucydide sur la guerre ?",
+      "a": "Qu’elle radicalise le langage politique, les factions et la violence.",
+      "choices": [
+        "Qu’elle maintient les règles politiques et morales inchangées malgré la durée.",
+        "Qu’elle réduit les conflits internes en unissant durablement chaque cité.",
+        "Qu’elle reste limitée aux soldats sans toucher les civils ni les institutions."
+      ],
+      "why": "Le conflit abîme les normes de la cité.",
+      "trap": "Réduire Thucydide à un chroniqueur de batailles.",
+      "evidence": "Le quatrième bloc."
+    },
+    {
+      "q": "Que signifie la défaite de 404 ?",
+      "a": "La fin de la suprématie athénienne, pas la disparition d’Athènes.",
+      "choices": [
+        "La destruction définitive de la ville et la fin de toute vie culturelle.",
+        "La transformation immédiate d’Athènes en province perse.",
+        "La disparition de la démocratie grecque dans toutes les cités."
+      ],
+      "why": "La cité continue d’exister politiquement et culturellement.",
+      "trap": "Voir 404 comme une fin totale de l’histoire grecque.",
+      "evidence": "Le dernier bloc."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "Athènes contrôle une puissance maritime soutenue par la ligue de Délos ; Sparte dirige une alliance surtout terrestre dans le Péloponnèse."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Périclès évite d’affronter directement l’armée spartiate et rassemble la population derrière les Longs Murs reliant Athènes au Pirée."
+    },
+    {
+      "label": "Conséquence",
+      "text": "En 415 av."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "rome-foundation-kings": {
     "hook": "Rome ne naît pas comme une grande capitale impériale. Elle commence comme un ensemble de communautés du Latium, autour du Tibre, puis transforme des récits de fondation en mémoire politique.",
     "keyFacts": [
@@ -3752,9 +4186,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi 753 av. J.-C. doit-elle être utilisée avec prudence ?",
         "a": "Parce que c’est une date traditionnelle de fondation, pas une preuve directe de naissance soudaine de la ville.",
         "choices": [
-          "Parce que c’est la date de la destruction de Carthage.",
-          "Parce que Rome existe déjà comme empire chrétien.",
-          "Parce que cette date concerne Athènes et non le Latium."
+          "Parce qu’elle est calculée à partir des premières traces d’écriture découvertes au Forum.",
+          "Parce qu’elle correspond au début certain du règne du premier roi étrusque.",
+          "Parce qu’elle marque l’unification documentée de tous les villages du Latium."
         ],
         "why": "Le cours distingue date mémorielle et formation progressive.",
         "trap": "Lire la date comme une certitude archéologique.",
@@ -3765,9 +4199,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi le Tibre est-il important dans les débuts de Rome ?",
         "a": "Parce qu’il facilite passage, échanges et circulation entre l’intérieur du Latium et les réseaux voisins.",
         "choices": [
-          "Parce qu’il isole Rome de tous les échanges méditerranéens.",
-          "Parce qu’il remplace toute organisation politique.",
-          "Parce qu’il prouve à lui seul l’existence de Romulus."
+          "Parce qu’il protège Rome de tout contact avec les peuples voisins.",
+          "Parce qu’il fournit uniquement l’eau nécessaire aux habitants des collines.",
+          "Parce qu’il impose naturellement la naissance d’une grande ville sur ses rives."
         ],
         "why": "Le site donne des possibilités que les sociétés exploitent.",
         "trap": "Faire de la géographie une cause automatique.",
@@ -3778,9 +4212,9 @@ const READY_LESSON_PACKS = {
         "q": "Que peut apprendre la légende de Romulus et Rémus ?",
         "a": "Elle renseigne surtout la mémoire politique romaine et la manière dont Rome raconte ses origines.",
         "choices": [
-          "Elle fournit un compte rendu neutre du VIIIe siècle av. J.-C.",
-          "Elle remplace toutes les traces archéologiques.",
-          "Elle prouve que les Étrusques n’ont joué aucun rôle."
+          "Elle décrit précisément les institutions et la population de Rome au VIIIe siècle.",
+          "Elle prouve que la ville est fondée en une seule journée par un groupe de guerriers.",
+          "Elle confirme l’absence d’influences sabines ou étrusques dans la formation de Rome."
         ],
         "why": "Une légende peut être utile sans être un reportage.",
         "trap": "Opposer naïvement vrai et faux.",
@@ -3791,9 +4225,9 @@ const READY_LESSON_PACKS = {
         "q": "Quels peuples faut-il garder en tête autour des débuts de Rome ?",
         "a": "Latins, Sabins et Étrusques, dans un espace de contacts et d’influences.",
         "choices": [
-          "Francs, Vikings et Normands du XIe siècle.",
-          "Aztèques, Incas et Mayas des Amériques.",
-          "Huns, Mongols et Ottomans de l’époque médiévale."
+          "Latins, Grecs et Carthaginois, qui fondent ensemble la ville.",
+          "Étrusques, Gaulois et Samnites, déjà réunis dans une confédération romaine.",
+          "Sabins, Phéniciens et Perses, attirés par le commerce du Tibre."
         ],
         "why": "Rome se construit dans un environnement régional précis.",
         "trap": "Imaginer Rome isolée dès l’origine.",
@@ -3804,9 +4238,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle idée faut-il retenir sur la fondation de Rome ?",
         "a": "La ville se forme progressivement, tandis que les récits de fondation construisent une identité civique.",
         "choices": [
-          "Rome devient capitale impériale dès le premier jour.",
-          "La fondation est seulement une fable inutile pour l’historien.",
-          "L’archéologie confirme chaque détail du récit de la louve."
+          "La ville est créée soudainement par un fondateur, puis ses légendes conservent les faits exacts.",
+          "La ville se développe sans contacts extérieurs, tandis que ses légendes sont purement décoratives.",
+          "La fondation légendaire est sans intérêt historique, seule l’archéologie compte."
         ],
         "why": "La bonne réponse combine formation urbaine et mémoire politique.",
         "trap": "Choisir tout vrai ou tout faux.",
@@ -3884,9 +4318,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la conquête de l’Italie ne se résume-t-elle pas à des batailles ?",
         "a": "Parce que Rome combine guerre, alliances, colonies, statuts juridiques et obligations militaires.",
         "choices": [
-          "Parce que Rome évite totalement la guerre en Italie.",
-          "Parce que les cités grecques du Sud contrôlent directement le Sénat.",
-          "Parce que les Samnites deviennent empereurs de Rome."
+          "Parce que Rome annexe immédiatement tous les territoires et accorde le même statut à chacun.",
+          "Parce que les alliances remplacent presque toujours les campagnes militaires.",
+          "Parce que les colonies sont seulement commerciales et ne participent pas au contrôle politique."
         ],
         "why": "La domination repose sur un réseau politique et militaire.",
         "trap": "Raconter uniquement une suite de victoires.",
@@ -3897,9 +4331,9 @@ const READY_LESSON_PACKS = {
         "q": "Quel adversaire montre que la conquête italienne est difficile ?",
         "a": "Les Samnites, notamment dans les espaces montagneux d’Italie centrale.",
         "choices": [
-          "Les Vikings de la mer du Nord.",
-          "Les califes abbassides de Bagdad.",
-          "Les armées napoléoniennes du XIXe siècle."
+          "Les Étrusques, vaincus en une seule bataille décisive dès le début de la République.",
+          "Les Grecs de Sicile, qui empêchent Rome d’entrer en Italie du Sud.",
+          "Les Carthaginois, principaux adversaires de Rome dans les montagnes du Latium."
         ],
         "why": "Les Samnites obligent Rome à s’adapter.",
         "trap": "Imaginer une expansion automatique.",
@@ -3910,9 +4344,9 @@ const READY_LESSON_PACKS = {
         "q": "Que signifie intégrer pour dominer dans le cas romain ?",
         "a": "Traiter différemment les vaincus pour obtenir fidélité, soldats, ressources et contrôle durable.",
         "choices": [
-          "Accorder immédiatement la même égalité politique à toute l’Italie.",
-          "Détruire chaque cité vaincue pour éviter toute alliance.",
-          "Refuser toute obligation militaire aux communautés italiennes."
+          "Accorder la citoyenneté complète à tous les vaincus dès leur soumission.",
+          "Laisser chaque cité indépendante sans soldats, tribut ni obligation envers Rome.",
+          "Remplacer les élites locales par des gouverneurs romains dans toute l’Italie."
         ],
         "why": "Rome varie les statuts au lieu d’uniformiser tout le monde.",
         "trap": "Confondre intégration et égalité.",
@@ -3923,9 +4357,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi cette conquête prépare-t-elle les guerres méditerranéennes ?",
         "a": "Elle donne à Rome une base italienne de soldats, ressources et alliés mobilisables.",
         "choices": [
-          "Elle rend Rome définitivement pacifique.",
-          "Elle supprime le besoin d’institutions politiques.",
-          "Elle transforme immédiatement Rome en monarchie chrétienne."
+          "Elle permet à Rome de construire immédiatement une flotte supérieure à Carthage.",
+          "Elle lui donne des provinces riches déjà administrées hors d’Italie.",
+          "Elle élimine toute révolte italienne et garantit une fidélité sans conditions."
         ],
         "why": "La profondeur italienne permet de tenir les conflits longs.",
         "trap": "Séparer conquête italienne et expansion impériale.",
@@ -3936,9 +4370,9 @@ const READY_LESSON_PACKS = {
         "q": "Quel piège faut-il éviter ?",
         "a": "Croire que Rome domine l’Italie seulement par une supériorité militaire simple.",
         "choices": [
-          "Chercher des alliances et des statuts dans l’explication.",
-          "Situer la conquête avant les guerres puniques.",
-          "Distinguer citoyens, alliés et cités dépendantes."
+          "Croire que Rome gagne uniquement grâce à une politique généreuse envers les vaincus.",
+          "Croire que les peuples italiens acceptent volontairement l’autorité romaine sans guerre.",
+          "Croire que Rome transforme immédiatement l’Italie en territoire uniforme et centralisé."
         ],
         "why": "La conquête romaine est aussi juridique et politique.",
         "trap": "Rendre Rome invincible par nature.",
@@ -4016,9 +4450,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la Sicile est-elle importante dans la première guerre punique ?",
         "a": "Parce qu’elle contrôle des ports, routes maritimes et ressources entre l’Italie et l’Afrique du Nord.",
         "choices": [
-          "Parce qu’elle est le centre politique du Sénat romain.",
-          "Parce qu’elle est déjà une province chrétienne de l’Empire tardif.",
-          "Parce qu’elle empêche Rome de construire des routes terrestres."
+          "Parce qu’elle est la principale source de blé de Rome avant le début du conflit.",
+          "Parce qu’elle sert de capitale politique à Carthage et contrôle directement l’Afrique.",
+          "Parce qu’elle abrite la seule flotte capable de traverser la Méditerranée occidentale."
         ],
         "why": "La Sicile oblige Rome à changer d’échelle maritime.",
         "trap": "La voir comme un simple décor militaire.",
@@ -4029,9 +4463,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi Hannibal ne suffit-il pas à expliquer les guerres puniques ?",
         "a": "Parce que l’enjeu inclut mer, alliances, ressources, provinces et capacité romaine à continuer la guerre.",
         "choices": [
-          "Parce qu’Hannibal n’a jamais combattu Rome.",
-          "Parce que Carthage est une cité grecque sans flotte.",
-          "Parce que Rome gagne toutes les batailles sans difficulté."
+          "Parce que la guerre se décide uniquement lors de ses batailles en Italie.",
+          "Parce que Carthage dépend entièrement de lui et ne dispose ni de flotte ni d’alliés.",
+          "Parce que Rome gagne dès qu’elle comprend sa stratégie et évite tout autre front."
         ],
         "why": "Une guerre longue ne se résume pas à un général brillant.",
         "trap": "Faire une biographie d’Hannibal au lieu d’une histoire impériale.",
@@ -4042,9 +4476,9 @@ const READY_LESSON_PACKS = {
         "q": "Que montre la bataille de Cannes en 216 av. J.-C. ?",
         "a": "Rome peut subir une défaite énorme sans s’effondrer immédiatement.",
         "choices": [
-          "Rome détruit Carthage ce jour-là.",
-          "La République romaine devient officiellement un empire.",
-          "Hannibal est battu définitivement en Afrique."
+          "La destruction de l’armée romaine et la capitulation immédiate de la République.",
+          "La dernière bataille de la guerre, après laquelle Hannibal quitte l’Italie.",
+          "Une victoire romaine qui met fin à l’invasion carthaginoise."
         ],
         "why": "La capacité de mobilisation romaine est décisive.",
         "trap": "Croire qu’une bataille suffit toujours à finir une guerre.",
@@ -4055,9 +4489,9 @@ const READY_LESSON_PACKS = {
         "q": "Que se passe-t-il à Zama en 202 av. J.-C. ?",
         "a": "Scipion l’Africain bat Hannibal et fait basculer la deuxième guerre punique.",
         "choices": [
-          "Romulus fonde Rome sur le Palatin.",
-          "Carthage signe le traité de Verdun.",
-          "Auguste reçoit le titre de princeps."
+          "Hannibal bat Scipion et impose un traité favorable à Carthage.",
+          "Rome détruit Carthage et annexe définitivement l’Afrique du Nord.",
+          "La première guerre punique se termine par l’abandon romain de la Sicile."
         ],
         "why": "Zama déplace l’avantage décisif vers Rome.",
         "trap": "Mélanger les repères romains célèbres.",
@@ -4068,9 +4502,9 @@ const READY_LESSON_PACKS = {
         "q": "Quel effet les guerres puniques ont-elles sur Rome ?",
         "a": "Elles renforcent Rome mais créent aussi provinces, richesses, esclavage et tensions sociales.",
         "choices": [
-          "Elles ramènent Rome à un simple village du Latium.",
-          "Elles suppriment les inégalités entre citoyens et esclaves.",
-          "Elles interdisent toute expansion romaine hors d’Italie."
+          "Elles enrichissent tous les citoyens romains et réduisent les inégalités sociales.",
+          "Elles renforcent le Sénat tout en mettant fin à l’esclavage et aux grands domaines.",
+          "Elles donnent des provinces à Rome sans modifier son économie ni ses institutions."
         ],
         "why": "La victoire impériale nourrit aussi la crise républicaine.",
         "trap": "Voir la conquête comme un bénéfice sans coût interne.",
@@ -4148,9 +4582,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi les conquêtes fragilisent-elles aussi la République ?",
         "a": "Parce qu’elles apportent richesses, provinces, esclaves et commandements qui creusent les tensions sociales et politiques.",
         "choices": [
-          "Parce qu’elles font disparaître toutes les élites romaines.",
-          "Parce qu’elles rendent le Sénat parfaitement égalitaire.",
-          "Parce qu’elles empêchent tout général d’obtenir du prestige."
+          "Parce qu’elles réduisent les écarts de richesse et rendent les commandements militaires plus courts.",
+          "Parce qu’elles font disparaître l’esclavage et renforcent les petits propriétaires italiens.",
+          "Parce qu’elles empêchent les généraux de gagner du prestige personnel auprès de leurs soldats."
         ],
         "why": "Le succès extérieur produit des déséquilibres internes.",
         "trap": "Voir la conquête uniquement comme une réussite.",
@@ -4161,9 +4595,9 @@ const READY_LESSON_PACKS = {
         "q": "Que révèle la violence autour des Gracques ?",
         "a": "Les institutions républicaines peinent à arbitrer des conflits sociaux devenus explosifs.",
         "choices": [
-          "La République romaine fonctionne sans conflit politique.",
-          "Les Gracques imposent immédiatement un empire monarchique.",
-          "La question des terres ne concerne jamais les citoyens."
+          "Que les tribuns ne disposent d’aucun moyen légal pour proposer des réformes.",
+          "Que la question agraire est réglée pacifiquement par un compromis durable.",
+          "Que la violence politique reste limitée aux provinces et n’atteint pas Rome."
         ],
         "why": "Les réformes agraires montrent une crise sociale et institutionnelle.",
         "trap": "Réduire l’épisode à deux biographies.",
@@ -4174,9 +4608,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi les armées personnelles sont-elles dangereuses pour la République ?",
         "a": "Parce que les soldats peuvent dépendre de leur général pour solde, butin, terres et carrière.",
         "choices": [
-          "Parce que les soldats romains ne participent jamais aux guerres.",
-          "Parce que les généraux n’ont aucun pouvoir hors de Rome.",
-          "Parce que la République interdit toute campagne militaire."
+          "Parce que les soldats sont recrutés uniquement parmi les esclaves personnels du général.",
+          "Parce que les généraux peuvent abolir le Sénat dès qu’ils remportent une victoire.",
+          "Parce que les légions deviennent héréditaires et appartiennent juridiquement à une famille."
         ],
         "why": "La fidélité militaire se personnalise.",
         "trap": "Penser que l’armée reste extérieure à la politique.",
@@ -4187,9 +4621,9 @@ const READY_LESSON_PACKS = {
         "q": "Que signifie la marche de Sylla sur Rome ?",
         "a": "La violence militaire entre dans la politique romaine au cœur même de la cité.",
         "choices": [
-          "La conversion officielle de Rome au christianisme.",
-          "La fin des guerres civiles par consensus.",
-          "La fondation légendaire de Rome par les jumeaux."
+          "L’armée protège les institutions en empêchant tout général d’entrer dans la ville.",
+          "La République met fin aux conflits civils grâce à un commandement exceptionnel temporaire.",
+          "La violence militaire reste dirigée contre les ennemis extérieurs, sans effet politique interne."
         ],
         "why": "La guerre civile touche directement le centre politique.",
         "trap": "Ne voir Sylla que comme un nom de général.",
@@ -4200,9 +4634,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi César n’explique-t-il pas à lui seul la fin de la République ?",
         "a": "Parce qu’il arrive dans une République déjà fragilisée par inégalités, violences et armées personnelles.",
         "choices": [
-          "Parce que César ne joue aucun rôle dans les guerres civiles.",
-          "Parce que la République reste stable jusqu’au IIIe siècle ap. J.-C.",
-          "Parce que tout commence seulement avec Auguste."
+          "Parce que César crée seul les inégalités sociales et les armées personnelles.",
+          "Parce que la République reste stable jusqu’à son assassinat, qui déclenche la première crise.",
+          "Parce que les conflits précédents sont uniquement économiques et sans violence politique."
         ],
         "why": "César accélère une crise déjà profonde.",
         "trap": "Chercher un responsable unique.",
@@ -4211,86 +4645,142 @@ const READY_LESSON_PACKS = {
     ]
   },
   "rome-augustus-principate": {
-    "hook": "Auguste ne dit pas “j’ai fondé une monarchie” : il prétend restaurer la République tout en concentrant les pouvoirs. C’est toute la finesse du principat.",
-    "express": [
-      "Après les guerres civiles, Octavien, devenu Auguste en 27 av. J.-C., installe un régime nouveau. Il conserve les mots et certaines institutions de la République, mais les pouvoirs essentiels se concentrent autour de lui.",
-      "Le principat repose sur un équilibre subtil : le princeps se présente comme le premier des citoyens, protecteur de la paix, restaurateur des traditions et chef militaire. Cette mise en scène évite l’image détestée du roi.",
-      "Le piège est de dire simplement “Auguste devient empereur”. Historiquement, le plus intéressant est la dissimulation institutionnelle : une monarchie de fait dans un décor républicain."
-    ],
-    "complete": [
-      {
-        "title": "1. Sortir des guerres civiles",
-        "text": "La fin de la République est marquée par violences, proscriptions, rivalités de généraux et crises politiques. Auguste tire sa légitimité de la promesse d’ordre après des décennies d’instabilité."
-      },
-      {
-        "title": "2. Garder les formes républicaines",
-        "text": "Sénat, magistratures, titres et cérémonies ne disparaissent pas. Auguste évite de se présenter comme roi. Il préfère accumuler des pouvoirs, des honneurs et des autorités sous une apparence de continuité."
-      },
-      {
-        "title": "3. Princeps, armée et provinces",
-        "text": "Le contrôle des armées et de provinces stratégiques donne au prince une puissance décisive. La paix intérieure dépend largement d’une supériorité militaire canalisée par une figure centrale."
-      },
-      {
-        "title": "4. La propagande de la paix",
-        "text": "La Pax Augusta, les monuments, les monnaies, la poésie et les rites mettent en scène un retour de l’ordre. La paix n’est pas seulement un fait : c’est un récit politique fabriqué."
-      },
-      {
-        "title": "5. Une invention durable",
-        "text": "Le principat devient un modèle : concentrer le pouvoir tout en maintenant des formes anciennes. C’est une solution romaine à la crise républicaine, mais aussi une transformation profonde du régime."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Repère",
-        "text": "Princeps signifie “premier”. Le terme permet d’éviter le mot roi tout en signalant une supériorité politique."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Imaginer un basculement brutal et assumé vers l’empire. Auguste avance par compromis, titres et légitimation progressive."
-      },
-      {
-        "title": "Source visuelle",
-        "text": "L’Ara Pacis ou les monnaies augustéennes montrent comment l’ordre, la famille, les dieux et la paix sont liés à l’image du prince."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi Auguste garde-t-il des formes républicaines ?",
-        "a": "Pour légitimer son pouvoir et éviter l’image d’une royauté rejetée par la tradition romaine.",
-        "why": "Le nouveau régime doit paraître acceptable après les guerres civiles.",
-        "trap": "Croire que toutes les anciennes institutions disparaissent.",
-        "evidence": "Le deuxième bloc."
-      },
-      {
-        "q": "Que signifie princeps ?",
-        "a": "Premier, c’est-à-dire premier citoyen plutôt que roi affiché.",
-        "why": "Le vocabulaire sert la stratégie politique.",
-        "trap": "Traduire directement par empereur au sens moderne.",
-        "evidence": "Le cours."
-      },
-      {
-        "q": "Quel pouvoir rend Auguste décisif ?",
-        "a": "Le contrôle des armées et de provinces stratégiques.",
-        "why": "La force militaire stabilise le régime.",
-        "trap": "Ne voir que les titres honorifiques.",
-        "evidence": "Le troisième bloc."
-      },
-      {
-        "q": "Pourquoi la paix augustéenne est-elle aussi un récit ?",
-        "a": "Parce qu’elle est mise en scène par monuments, monnaies, poésie et rites.",
-        "why": "Le pouvoir a besoin d’images et de mots pour convaincre.",
-        "trap": "Confondre propagande et simple décoration.",
-        "evidence": "Le quatrième bloc."
-      },
-      {
-        "q": "Quelle formule résume le principat ?",
-        "a": "Une monarchie de fait dans un décor républicain.",
-        "why": "C’est le cœur de la transformation augustéenne.",
-        "trap": "Dire seulement “la République continue” ou “la monarchie apparaît d’un coup”.",
-        "evidence": "L’express formule explicitement cette idée."
-      }
-    ]
-  },
+  "hook": "Auguste ne dit pas “j’ai fondé une monarchie” : il prétend restaurer la République tout en concentrant les pouvoirs. C’est toute la finesse du principat.",
+  "express": [
+    "Après les guerres civiles, Octavien, devenu Auguste en 27 av. J.-C., installe un régime nouveau. Il conserve les mots et certaines institutions de la République, mais les pouvoirs essentiels se concentrent autour de lui.",
+    "Le principat repose sur un équilibre subtil : le princeps se présente comme le premier des citoyens, protecteur de la paix, restaurateur des traditions et chef militaire. Cette mise en scène évite l’image détestée du roi.",
+    "Le piège est de dire simplement “Auguste devient empereur”. Historiquement, le plus intéressant est la dissimulation institutionnelle : une monarchie de fait dans un décor républicain."
+  ],
+  "complete": [
+    {
+      "title": "1. Sortir des guerres civiles",
+      "text": "La fin de la République est marquée par violences, proscriptions, rivalités de généraux et crises politiques. Auguste tire sa légitimité de la promesse d’ordre après des décennies d’instabilité."
+    },
+    {
+      "title": "2. Garder les formes républicaines",
+      "text": "Sénat, magistratures, titres et cérémonies ne disparaissent pas. Auguste évite de se présenter comme roi. Il préfère accumuler des pouvoirs, des honneurs et des autorités sous une apparence de continuité."
+    },
+    {
+      "title": "3. Princeps, armée et provinces",
+      "text": "Le contrôle des armées et de provinces stratégiques donne au prince une puissance décisive. La paix intérieure dépend largement d’une supériorité militaire canalisée par une figure centrale."
+    },
+    {
+      "title": "4. La propagande de la paix",
+      "text": "La Pax Augusta, les monuments, les monnaies, la poésie et les rites mettent en scène un retour de l’ordre. La paix n’est pas seulement un fait : c’est un récit politique fabriqué."
+    },
+    {
+      "title": "5. Une invention durable",
+      "text": "Le principat devient un modèle : concentrer le pouvoir tout en maintenant des formes anciennes. C’est une solution romaine à la crise républicaine, mais aussi une transformation profonde du régime."
+    },
+    {
+      "title": "6. Conserver les formes républicaines",
+      "text": "Octavien, devenu Auguste, évite les titres trop directement monarchiques. Il accumule plutôt des pouvoirs — commandement militaire supérieur, puissance tribunicienne, prestige religieux — tout en laissant fonctionner Sénat et magistratures. Le régime paraît ainsi restaurer la République alors que l’essentiel de l’autorité se concentre autour d’un homme."
+    },
+    {
+      "title": "7. L’armée et les provinces sous contrôle",
+      "text": "Auguste stabilise une armée permanente et garde l’autorité sur les provinces où stationnent la plupart des légions. Il crée aussi une garde prétorienne et organise la carrière des soldats. Le nouveau régime repose donc moins sur une constitution écrite que sur le contrôle durable des forces militaires et des nominations."
+    },
+    {
+      "title": "8. Une propagande de paix et de famille",
+      "text": "Monnaies, monuments et poésie célèbrent la paix retrouvée après les guerres civiles. L’Ara Pacis associe prospérité, religion et dynastie. Mais cette “paix augustéenne” est produite par des conquêtes, une surveillance politique et une mise en scène très contrôlée du passé récent."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Auguste ne dit pas “j’ai fondé une monarchie” : il prétend restaurer la République tout en concentrant les pouvoirs."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Princeps signifie “premier”. Le terme permet d’éviter le mot roi tout en signalant une supériorité politique."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Imaginer un basculement brutal et assumé vers l’empire. Auguste avance par compromis, titres et légitimation progressive."
+    },
+    {
+      "title": "Source visuelle",
+      "text": "L’Ara Pacis ou les monnaies augustéennes montrent comment l’ordre, la famille, les dieux et la paix sont liés à l’image du prince."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi Auguste garde-t-il des formes républicaines ?",
+      "a": "Pour légitimer son pouvoir et éviter l’image d’une royauté rejetée par la tradition romaine.",
+      "choices": [
+        "Pour partager réellement le pouvoir avec le Sénat et renoncer au contrôle de l’armée.",
+        "Pour préparer le retour annuel à l’élection des consuls sans intervention personnelle.",
+        "Pour empêcher toute concentration durable des pouvoirs entre les mains d’un seul homme."
+      ],
+      "why": "Le nouveau régime doit paraître acceptable après les guerres civiles.",
+      "trap": "Croire que toutes les anciennes institutions disparaissent.",
+      "evidence": "Le deuxième bloc."
+    },
+    {
+      "q": "Que signifie princeps ?",
+      "a": "Premier, c’est-à-dire premier citoyen plutôt que roi affiché.",
+      "choices": [
+        "Un titre militaire signifiant général en chef de toutes les légions.",
+        "Un roi héréditaire reconnu officiellement par la constitution romaine.",
+        "Le magistrat chargé de gouverner seul Rome pendant une crise de six mois."
+      ],
+      "why": "Le vocabulaire sert la stratégie politique.",
+      "trap": "Traduire directement par empereur au sens moderne.",
+      "evidence": "Le cours."
+    },
+    {
+      "q": "Quel pouvoir rend Auguste décisif ?",
+      "a": "Le contrôle des armées et de provinces stratégiques.",
+      "choices": [
+        "Le droit de nommer tous les prêtres sans intervenir dans les provinces.",
+        "La propriété personnelle de toutes les terres de l’Empire.",
+        "Le monopole des lois votées dans les assemblées populaires."
+      ],
+      "why": "La force militaire stabilise le régime.",
+      "trap": "Ne voir que les titres honorifiques.",
+      "evidence": "Le troisième bloc."
+    },
+    {
+      "q": "Pourquoi la paix augustéenne est-elle aussi un récit ?",
+      "a": "Parce qu’elle est mise en scène par monuments, monnaies, poésie et rites.",
+      "choices": [
+        "Parce qu’elle ne concerne que l’absence de guerres civiles à Rome même.",
+        "Parce qu’elle résulte d’une paix imposée sans armée, impôts ni conquêtes.",
+        "Parce qu’elle est décrite uniquement par des auteurs hostiles au nouveau régime."
+      ],
+      "why": "Le pouvoir a besoin d’images et de mots pour convaincre.",
+      "trap": "Confondre propagande et simple décoration.",
+      "evidence": "Le quatrième bloc."
+    },
+    {
+      "q": "Quelle formule résume le principat ?",
+      "a": "Une monarchie de fait dans un décor républicain.",
+      "choices": [
+        "Une République restaurée où Auguste n’exerce aucune autorité exceptionnelle.",
+        "Une royauté officielle assumée, sans Sénat ni magistratures républicaines.",
+        "Une dictature militaire provisoire limitée à la durée des guerres civiles."
+      ],
+      "why": "C’est le cœur de la transformation augustéenne.",
+      "trap": "Dire seulement “la République continue” ou “la monarchie apparaît d’un coup”.",
+      "evidence": "L’express formule explicitement cette idée."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "Octavien, devenu Auguste, évite les titres trop directement monarchiques."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Auguste stabilise une armée permanente et garde l’autorité sur les provinces où stationnent la plupart des légions."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Monnaies, monuments et poésie célèbrent la paix retrouvée après les guerres civiles."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "rome-christianity-late-empire": {
     "hook": "Le christianisme ne devient pas religion impériale par un simple déclic spirituel. Dans l’Empire tardif, il transforme les alliances politiques, les institutions, les villes, les conflits religieux et la manière de penser l’autorité.",
     "keyFacts": [
@@ -4361,9 +4851,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi faut-il nuancer l’idée de persécution permanente ?",
         "a": "Parce que les persécutions chrétiennes sont réelles mais variables selon les périodes, lieux et empereurs.",
         "choices": [
-          "Parce que les chrétiens gouvernent l’Empire dès le Ier siècle.",
-          "Parce que Rome ignore toujours les questions religieuses.",
-          "Parce que toutes les provinces suivent exactement la même politique."
+          "Parce que l’Empire interdit toujours le christianisme de manière continue jusqu’au IVe siècle.",
+          "Parce que les persécutions concernent chaque province au même moment et avec la même intensité.",
+          "Parce que tous les empereurs considèrent les chrétiens comme leur principal ennemi politique."
         ],
         "why": "Le cours refuse l’idée d’une situation uniforme.",
         "trap": "Transformer toute l’histoire chrétienne antique en récit unique de persécution.",
@@ -4374,9 +4864,9 @@ const READY_LESSON_PACKS = {
         "q": "Que symbolise l’édit de Milan en 313 ?",
         "a": "La légalisation et la reconnaissance du christianisme dans l’Empire romain.",
         "choices": [
-          "La destruction de Carthage par Rome.",
-          "La fondation légendaire de Rome.",
-          "La victoire d’Hannibal à Cannes."
+          "Le christianisme devient immédiatement la religion obligatoire de tous les habitants.",
+          "Les cultes traditionnels sont interdits et les temples fermés dans tout l’Empire.",
+          "L’empereur se convertit officiellement et place l’Église au-dessus de l’État."
         ],
         "why": "313 marque un tournant juridique et politique.",
         "trap": "Le confondre avec une conversion instantanée de tous les habitants.",
@@ -4387,9 +4877,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi les évêques deviennent-ils importants ?",
         "a": "Ils deviennent des acteurs urbains, religieux et politiques capables d’organiser des communautés et de peser dans les débats.",
         "choices": [
-          "Ils remplacent immédiatement tous les magistrats romains.",
-          "Ils commandent seuls toutes les légions de frontière.",
-          "Ils abolissent les villes et les institutions."
+          "Ils remplacent les gouverneurs et administrent directement les provinces de l’Empire.",
+          "Ils commandent les armées chrétiennes et contrôlent les frontières.",
+          "Ils sont élus par l’ensemble des citoyens, quelle que soit leur religion."
         ],
         "why": "La christianisation transforme aussi le pouvoir local.",
         "trap": "Voir les évêques comme de simples prêtres sans poids social.",
@@ -4400,9 +4890,9 @@ const READY_LESSON_PACKS = {
         "q": "À quoi servent les conciles ?",
         "a": "À réunir des évêques pour trancher des questions de doctrine, discipline ou organisation de l’Église.",
         "choices": [
-          "À élire les consuls de la République romaine.",
-          "À organiser les courses de chars du cirque.",
-          "À répartir les terres conquises aux vétérans."
+          "À élire l’empereur lorsque plusieurs candidats se disputent le pouvoir.",
+          "À rédiger les lois civiles de l’Empire et à fixer les impôts des villes.",
+          "À convertir de force les populations qui pratiquent encore les anciens cultes."
         ],
         "why": "Les conciles montrent que l’unité doctrinale se construit.",
         "trap": "Imaginer un christianisme antique déjà totalement uniforme.",
@@ -4413,9 +4903,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle idée retenir sur la christianisation de l’Empire ?",
         "a": "Elle est progressive, conflictuelle et transforme l’autorité impériale autant que la vie religieuse.",
         "choices": [
-          "Elle se fait en une journée après Constantin.",
-          "Elle met fin immédiatement à toutes les structures romaines.",
-          "Elle ne concerne que des croyances privées sans effet politique."
+          "Elle se produit rapidement après 313 et efface les cultes anciens en une génération.",
+          "Elle concerne seulement les croyances privées sans transformer villes ni institutions.",
+          "Elle affaiblit l’autorité impériale en séparant complètement religion et politique."
         ],
         "why": "Le cours relie religion, institutions, villes et pouvoir.",
         "trap": "Séparer complètement croyance et politique.",
@@ -4493,9 +4983,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle est la base principale de la vie quotidienne en Scandinavie vers 700-800 ?",
         "a": "La ferme, avec agriculture, élevage, artisanat domestique et liens familiaux.",
         "choices": [
-          "La grande ville industrielle organisée autour d’usines royales.",
-          "Le camp militaire permanent sans agriculture ni familles.",
-          "Le monastère chrétien qui contrôle toute la société scandinave."
+          "Le village marchand, où l’essentiel de la population vit du commerce à longue distance.",
+          "La troupe guerrière itinérante, qui fournit seule nourriture et protection aux familles.",
+          "Le domaine royal, qui emploie directement la majorité des habitants comme soldats ou artisans."
         ],
         "why": "La vie quotidienne explique le cadre d’où partent certains raiders.",
         "trap": "Réduire toute la société au raid.",
@@ -4505,9 +4995,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la mer est-elle centrale avant même les raids ?",
         "a": "Parce qu’elle relie fjords, côtes, îles et routes d’échange, et habitue à la navigation.",
         "choices": [
-          "Parce qu’elle isole totalement les Scandinaves du reste de l’Europe.",
-          "Parce qu’elle empêche tout commerce avant le XIe siècle.",
-          "Parce qu’elle remplace toutes les routes terrestres de Scandinavie."
+          "Parce qu’elle sépare les communautés et oblige chaque fjord à vivre sans échanges réguliers.",
+          "Parce qu’elle sert surtout de frontière défensive contre les royaumes voisins.",
+          "Parce qu’elle fournit davantage de terres cultivables que l’intérieur scandinave."
         ],
         "why": "La mobilité maritime précède les grandes expéditions.",
         "trap": "Croire que les raids apparaissent sans savoir-faire préalable.",
@@ -4517,9 +5007,9 @@ const READY_LESSON_PACKS = {
         "q": "Comment un chef local peut-il renforcer son prestige ?",
         "a": "En protégeant ses hommes, en redistribuant richesses et dons, et en réussissant des expéditions.",
         "choices": [
-          "En refusant tout don pour éviter de créer des fidélités.",
-          "En supprimant les alliances familiales et les banquets.",
-          "En dépendant uniquement d’une bureaucratie écrite centralisée."
+          "En accumulant les richesses sans les redistribuer afin de montrer son indépendance.",
+          "En contrôlant seul une administration écrite et un impôt permanent sur tout le royaume.",
+          "En évitant les expéditions pour préserver ses hommes et limiter les rivalités."
         ],
         "why": "Le prestige est une clé du pouvoir local.",
         "trap": "Penser le pouvoir uniquement comme un poste administratif.",
@@ -4529,9 +5019,9 @@ const READY_LESSON_PACKS = {
         "q": "Que montrent des lieux comme Ribe ou Birka ?",
         "a": "L’existence de places d’échange, d’artisanat et de connexions commerciales avant et pendant l’âge viking.",
         "choices": [
-          "L’absence complète d’artisanat en Scandinavie.",
-          "La domination directe de Rome sur la Baltique au IXe siècle.",
-          "La disparition de toute navigation avant les raids."
+          "Des centres politiques fortifiés où les rois scandinaves résident toute l’année.",
+          "Des ports créés uniquement après les premiers raids pour écouler le butin.",
+          "Des lieux religieux isolés, sans production artisanale ni visiteurs étrangers."
         ],
         "why": "Les réseaux commerciaux sont déjà importants.",
         "trap": "Imaginer une Scandinavie fermée sur elle-même.",
@@ -4541,9 +5031,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle nuance sociale faut-il garder ?",
         "a": "La société comprend libres, dépendants et esclaves ; elle est hiérarchisée et parfois violente.",
         "choices": [
-          "Tous les habitants ont exactement le même statut et les mêmes droits.",
-          "Les esclaves n’existent pas dans le monde scandinave.",
-          "La richesse ne joue aucun rôle dans les relations sociales."
+          "La plupart des habitants sont des hommes libres disposant des mêmes droits politiques.",
+          "La richesse distingue les familles, mais l’esclavage reste marginal et extérieur à la société.",
+          "Les chefs dominent les expéditions, tandis que la vie rurale fonctionne de façon largement égalitaire."
         ],
         "why": "Le mode de vie ne doit pas être romantisé.",
         "trap": "Transformer les Vikings en aventuriers sympathiques hors société.",
@@ -4644,9 +5134,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi 793 est-elle une date repère dans l’histoire viking ?",
         "a": "Parce que le raid contre le monastère de Lindisfarne marque fortement les sources chrétiennes occidentales.",
         "choices": [
-          "Parce que c’est la date de la fondation de la Normandie par Rollon.",
-          "Parce que c’est l’année où les royaumes scandinaves deviennent officiellement chrétiens.",
-          "Parce que c’est la fin de la Grande Armée viking en Angleterre."
+          "Parce qu’elle correspond au premier voyage scandinave attesté hors de Scandinavie.",
+          "Parce qu’elle marque le début d’une conquête durable de toute l’Angleterre.",
+          "Parce qu’elle est retenue comme la date où les Scandinaves adoptent officiellement le christianisme."
         ],
         "why": "La date est symbolique : elle vient surtout de l’impact du raid dans les sources anglaises.",
         "trap": "Croire que 793 serait le début absolu de toute activité scandinave maritime.",
@@ -4657,9 +5147,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi les monastères sont-ils souvent visés par les premiers raids ?",
         "a": "Parce qu’ils peuvent être riches, accessibles par mer et moins défendus qu’une forteresse.",
         "choices": [
-          "Parce qu’ils commandent directement toutes les armées royales d’Angleterre.",
-          "Parce qu’ils sont toujours situés au centre de grandes capitales fortifiées.",
-          "Parce qu’ils interdisent tout commerce avec les Scandinaves."
+          "Parce qu’ils concentrent des richesses religieuses et sont toujours dépourvus de toute protection locale.",
+          "Parce qu’ils contrôlent les ports et perçoivent les taxes sur tous les navires étrangers.",
+          "Parce qu’ils constituent des résidences royales dont la prise provoque automatiquement la capitulation d’un royaume."
         ],
         "why": "La cible combine valeur symbolique, richesse et vulnérabilité.",
         "trap": "Répondre uniquement par la religion sans expliquer l’intérêt matériel et stratégique.",
@@ -4670,9 +5160,9 @@ const READY_LESSON_PACKS = {
         "q": "Quel avantage les bateaux donnent-ils aux raiders ?",
         "a": "Ils permettent d’arriver vite par mer ou par fleuve, de choisir la cible et de repartir avant une réaction organisée.",
         "choices": [
-          "Ils servent surtout à transporter de lourdes murailles de siège permanentes.",
-          "Ils rendent inutiles les alliances, le renseignement et les négociations.",
-          "Ils limitent les raids aux ports scandinaves sans atteindre l’Europe occidentale."
+          "Ils permettent surtout de transporter de nombreux chevaux pour mener de longues campagnes terrestres.",
+          "Ils garantissent la victoire même sans renseignement, équipage expérimenté ni connaissance des côtes.",
+          "Ils servent de forteresses flottantes capables d’affronter directement les murailles urbaines."
         ],
         "why": "La mobilité explique une partie de l’efficacité des raids.",
         "trap": "Transformer le bateau en objet magique au lieu de comprendre son usage stratégique.",
@@ -4683,9 +5173,9 @@ const READY_LESSON_PACKS = {
         "q": "Que peuvent chercher les raiders en dehors des objets précieux ?",
         "a": "Des captifs, du bétail, de la nourriture, de l’argent, des armes et des tributs.",
         "choices": [
-          "Uniquement des manuscrits pour créer des bibliothèques royales en Scandinavie.",
-          "Seulement des terres agricoles déjà distribuées par les rois francs.",
-          "Principalement des reliques pour devenir des évêques locaux."
+          "Surtout des terres à coloniser immédiatement, car chaque raid prépare une installation durable.",
+          "Principalement des armes et des reliques, les captifs et les ressources alimentaires étant rarement emportés.",
+          "Des tributs versés par les souverains, mais presque jamais de personnes ni de bétail."
         ],
         "why": "Le raid est aussi une opération économique et politique.",
         "trap": "Imaginer uniquement un pillage de trésors décoratifs.",
@@ -4696,9 +5186,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle phrase résume le mieux ce cours ?",
         "a": "Les raids vikings sont une violence réelle, mais liée aux bateaux, aux captifs, aux tributs, au commerce et parfois à l’installation.",
         "choices": [
-          "Les raids vikings sont seulement une invention des chroniqueurs chrétiens.",
-          "Les Vikings sont uniquement des marchands pacifiques mal compris par leurs voisins.",
-          "Les raids disparaissent dès que les premiers monastères sont attaqués."
+          "Les raids sont avant tout des guerres de conquête territoriale menées par des armées royales permanentes.",
+          "Les raids et le commerce sont deux activités entièrement séparées, pratiquées par des groupes différents.",
+          "Les raids restent des opérations ponctuelles de pillage sans effet sur les tributs, les échanges ou les installations."
         ],
         "why": "La synthèse garde la violence sans réduire tout le phénomène à elle.",
         "trap": "Remplacer un cliché par son contraire.",
@@ -4707,129 +5197,156 @@ const READY_LESSON_PACKS = {
     ]
   },
   "northern-viking-worlds-navires-vikings": {
-    "hook": "Les navires longs ne sont pas un détail décoratif : ils expliquent une partie de la puissance viking. Ils permettent d’attaquer, commercer, explorer, transporter des hommes et remonter les fleuves.",
-    "keyFacts": [
-      "Période : VIIIe-XIe siècle",
-      "Objet central : navire long, léger, maniable, voile et avirons",
-      "Usage : raids, transport, commerce, prestige, exploration",
-      "Atout : passer de la mer aux fleuves et débarquer vite",
-      "Piège : croire qu’un bateau suffit à tout expliquer"
-    ],
-    "expressLabels": [
-      "Objet",
-      "Fonction",
-      "Conséquence",
-      "À retenir"
-    ],
-    "express": [
-      "Le navire long est l’un des grands outils de l’âge viking : coque souple, faible tirant d’eau, voile, avirons, vitesse et capacité à débarquer rapidement.",
-      "Il sert à plusieurs choses : transporter un équipage armé, rejoindre une côte, remonter un fleuve, commercer, explorer ou montrer le prestige d’un chef.",
-      "Grâce à ces bateaux, des zones qui semblaient protégées deviennent accessibles : monastères côtiers, villes fluviales, routes de la Baltique, Atlantique Nord.",
-      "À retenir : le navire n’explique pas les Vikings à lui seul, mais sans lui les raids, le commerce lointain et la colonisation atlantique changent complètement d’échelle."
-    ],
-    "complete": [
-      {
-        "title": "1. Un outil technique et politique",
-        "text": "Le navire long n’est pas seulement une belle image. C’est un outil technique qui donne de la mobilité, mais aussi un objet de prestige. Construire et entretenir un bateau demande du bois, du savoir-faire, des artisans, du temps et une organisation collective. Posséder ou commander un navire signifie donc disposer de ressources et d’hommes."
-      },
-      {
-        "title": "2. Mer et fleuves",
-        "text": "Le faible tirant d’eau permet à certains navires d’approcher les côtes, de débarquer sur des plages et de remonter des rivières. Cette capacité change la géographie militaire : une flotte peut menacer non seulement les ports, mais aussi des villes et monastères situés à l’intérieur des terres."
-      },
-      {
-        "title": "3. Voile et avirons",
-        "text": "La voile donne de la vitesse sur de longues distances ; les avirons permettent de manœuvrer quand le vent manque, dans les fjords, près des côtes ou sur les fleuves. Cette combinaison donne de la souplesse. Les équipages ne dépendent pas d’un seul mode de propulsion."
-      },
-      {
-        "title": "4. Bateau de raid, bateau de commerce",
-        "text": "Il ne faut pas séparer trop fortement guerre et échange. Les Scandinaves utilisent différents types de bateaux, et la même culture maritime permet le raid, le commerce, le transport de biens, l’exploration et parfois la migration. Les ports et les routes maritimes relient donc violence et économie."
-      },
-      {
-        "title": "5. La preuve archéologique",
-        "text": "Des découvertes comme les navires d’Oseberg, de Gokstad ou de Skuldelev montrent la qualité de la construction navale scandinave. Elles permettent d’étudier la forme des coques, les assemblages, les usages et parfois la dimension funéraire ou symbolique du bateau."
-      },
-      {
-        "title": "6. Synthèse",
-        "text": "Le navire long transforme les possibilités d’action : arriver vite, frapper, repartir, commercer loin, explorer, coloniser. Mais il ne faut pas oublier les hommes, les chefs, les ressources et les décisions politiques. Un bateau ouvre des possibilités ; une société les utilise."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Exemples",
-        "text": "Oseberg et Gokstad en Norvège, Skuldelev au Danemark, sont des découvertes majeures pour comprendre les bateaux vikings."
-      },
-      {
-        "title": "Repère",
-        "text": "Tirant d’eau : profondeur nécessaire à un bateau pour flotter. Un faible tirant d’eau facilite l’accès aux eaux peu profondes."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Dire “drakkar” pour tous les bateaux vikings. Le mot est courant en français, mais les types de navires sont plus variés."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Quel avantage donne le faible tirant d’eau ?",
-        "a": "Il permet d’approcher les côtes, de débarquer facilement et de remonter certains fleuves.",
-        "choices": [
-          "Il empêche totalement la navigation en rivière.",
-          "Il oblige le bateau à rester dans les ports profonds.",
-          "Il sert uniquement à transporter des pierres de construction."
-        ],
-        "why": "C’est un avantage stratégique concret.",
-        "trap": "Employer “rapide” sans expliquer pourquoi cela change les attaques.",
-        "evidence": "Bloc 2."
-      },
-      {
-        "q": "Pourquoi la combinaison voile-avirons est-elle utile ?",
-        "a": "Elle donne de la souplesse selon le vent, les côtes, les fjords et les fleuves.",
-        "choices": [
-          "Elle rend le navire dépendant d’un seul mode de propulsion.",
-          "Elle empêche les manœuvres près des côtes.",
-          "Elle interdit les longs trajets en mer."
-        ],
-        "why": "Le navire peut s’adapter aux situations.",
-        "trap": "Croire que la voile suffit toujours.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "q": "Pourquoi le navire est-il aussi un objet de prestige ?",
-        "a": "Parce qu’il demande ressources, artisans, équipage et capacité d’organisation.",
-        "choices": [
-          "Parce qu’il est fabriqué gratuitement par chaque famille isolée.",
-          "Parce qu’il n’a aucune utilité militaire ni économique.",
-          "Parce qu’il appartient toujours à un monastère anglais."
-        ],
-        "why": "Le bateau signale aussi le pouvoir d’un chef.",
-        "trap": "Voir le navire comme simple outil neutre.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "q": "Que montrent Oseberg, Gokstad ou Skuldelev ?",
-        "a": "Des preuves archéologiques de la qualité et de la diversité des constructions navales scandinaves.",
-        "choices": [
-          "Des traités de paix entre Charlemagne et les rois de Norvège.",
-          "Des capitales urbaines entièrement construites sur des navires.",
-          "Des preuves que les Scandinaves ne naviguaient pas."
-        ],
-        "why": "Ces découvertes matérialisent le sujet.",
-        "trap": "Rester seulement dans l’image du bateau sans preuve.",
-        "evidence": "Bloc 5."
-      },
-      {
-        "q": "Quelle synthèse est correcte ?",
-        "a": "Le navire ouvre des possibilités de raid, commerce et colonisation, mais il n’explique pas tout sans les sociétés qui l’utilisent.",
-        "choices": [
-          "Le navire suffit à expliquer toute l’histoire politique européenne.",
-          "Les raids vikings se comprennent sans mobilité maritime.",
-          "Les bateaux vikings servent uniquement aux funérailles."
-        ],
-        "why": "Technique et société doivent être liées.",
-        "trap": "Faire une explication monocausale.",
-        "evidence": "Synthèse."
-      }
-    ]
-  },
+  "hook": "Les navires longs ne sont pas un détail décoratif : ils expliquent une partie de la puissance viking. Ils permettent d’attaquer, commercer, explorer, transporter des hommes et remonter les fleuves.",
+  "keyFacts": [
+    "Période : VIIIe-XIe siècle",
+    "Objet central : navire long, léger, maniable, voile et avirons",
+    "Usage : raids, transport, commerce, prestige, exploration",
+    "Atout : passer de la mer aux fleuves et débarquer vite",
+    "Piège : croire qu’un bateau suffit à tout expliquer"
+  ],
+  "expressLabels": [
+    "Objet",
+    "Fonction",
+    "Conséquence",
+    "À retenir"
+  ],
+  "express": [
+    "Le navire long est l’un des grands outils de l’âge viking : coque souple, faible tirant d’eau, voile, avirons, vitesse et capacité à débarquer rapidement.",
+    "Il sert à plusieurs choses : transporter un équipage armé, rejoindre une côte, remonter un fleuve, commercer, explorer ou montrer le prestige d’un chef.",
+    "Grâce à ces bateaux, des zones qui semblaient protégées deviennent accessibles : monastères côtiers, villes fluviales, routes de la Baltique, Atlantique Nord.",
+    "À retenir : le navire n’explique pas les Vikings à lui seul, mais sans lui les raids, le commerce lointain et la colonisation atlantique changent complètement d’échelle."
+  ],
+  "complete": [
+    {
+      "title": "1. Un outil technique et politique",
+      "text": "Le navire long n’est pas seulement une belle image. C’est un outil technique qui donne de la mobilité, mais aussi un objet de prestige. Construire et entretenir un bateau demande du bois, du savoir-faire, des artisans, du temps et une organisation collective. Posséder ou commander un navire signifie donc disposer de ressources et d’hommes."
+    },
+    {
+      "title": "2. Mer et fleuves",
+      "text": "Le faible tirant d’eau permet à certains navires d’approcher les côtes, de débarquer sur des plages et de remonter des rivières. Cette capacité change la géographie militaire : une flotte peut menacer non seulement les ports, mais aussi des villes et monastères situés à l’intérieur des terres."
+    },
+    {
+      "title": "3. Voile et avirons",
+      "text": "La voile donne de la vitesse sur de longues distances ; les avirons permettent de manœuvrer quand le vent manque, dans les fjords, près des côtes ou sur les fleuves. Cette combinaison donne de la souplesse. Les équipages ne dépendent pas d’un seul mode de propulsion."
+    },
+    {
+      "title": "4. Bateau de raid, bateau de commerce",
+      "text": "Il ne faut pas séparer trop fortement guerre et échange. Les Scandinaves utilisent différents types de bateaux, et la même culture maritime permet le raid, le commerce, le transport de biens, l’exploration et parfois la migration. Les ports et les routes maritimes relient donc violence et économie."
+    },
+    {
+      "title": "5. La preuve archéologique",
+      "text": "Des découvertes comme les navires d’Oseberg, de Gokstad ou de Skuldelev montrent la qualité de la construction navale scandinave. Elles permettent d’étudier la forme des coques, les assemblages, les usages et parfois la dimension funéraire ou symbolique du bateau."
+    },
+    {
+      "title": "6. Des navires adaptés à des usages différents",
+      "text": "Le terme “drakkar” est moderne et donne l’impression d’un modèle unique. Les Scandinaves construisent des navires de guerre longs et rapides, mais aussi des cargos plus larges, comme les knarr, capables de transporter animaux et marchandises. La forme dépend de la mission, de la mer et de la cargaison."
+    },
+    {
+      "title": "7. Voile, rame et faible tirant d’eau",
+      "text": "La voile carrée permet de profiter du vent sur les longues distances ; les rames servent aux manœuvres, aux calmes ou aux combats. Le faible tirant d’eau autorise l’approche des plages et la remontée de certains fleuves. Cette polyvalence explique des débarquements rapides et des routes commerciales très intérieures."
+    },
+    {
+      "title": "8. L’archéologie expérimentale met les hypothèses à l’épreuve",
+      "text": "Les navires de Skuldelev, retrouvés dans le fjord de Roskilde, ont permis de reconstruire des embarcations grandeur nature. En naviguant avec elles, les chercheurs testent vitesse, stabilité, équipage et capacité de charge. L’expérience ne recrée pas parfaitement le passé, mais elle révèle ce qu’un plan ou une épave ne suffisent pas à comprendre."
+    },
+    {
+      "title": "9. Synthèse",
+      "text": "Le navire long transforme les possibilités d’action : arriver vite, frapper, repartir, commercer loin, explorer, coloniser. Mais il ne faut pas oublier les hommes, les chefs, les ressources et les décisions politiques. Un bateau ouvre des possibilités ; une société les utilise."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Exemples",
+      "text": "Oseberg et Gokstad en Norvège, Skuldelev au Danemark, sont des découvertes majeures pour comprendre les bateaux vikings."
+    },
+    {
+      "title": "Repère",
+      "text": "Tirant d’eau : profondeur nécessaire à un bateau pour flotter. Un faible tirant d’eau facilite l’accès aux eaux peu profondes."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Dire “drakkar” pour tous les bateaux vikings. Le mot est courant en français, mais les types de navires sont plus variés."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Quel avantage donne le faible tirant d’eau ?",
+      "a": "Il permet d’approcher les côtes, de débarquer facilement et de remonter certains fleuves.",
+      "choices": [
+        "Il augmente la capacité de charge en haute mer, mais limite l’accès aux rivages peu profonds.",
+        "Il permet surtout de résister aux tempêtes océaniques grâce à une coque plus lourde.",
+        "Il rend le navire plus rapide uniquement lorsqu’il navigue sous voile loin des côtes."
+      ],
+      "why": "C’est un avantage stratégique concret.",
+      "trap": "Employer “rapide” sans expliquer pourquoi cela change les attaques.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "q": "Pourquoi la combinaison voile-avirons est-elle utile ?",
+      "a": "Elle donne de la souplesse selon le vent, les côtes, les fjords et les fleuves.",
+      "choices": [
+        "La voile assure les traversées, tandis que les avirons ne servent qu’aux cérémonies et aux manœuvres portuaires.",
+        "Les avirons permettent les longs voyages, tandis que la voile est réservée aux vents très forts.",
+        "Les deux systèmes sont utilisés simultanément en permanence pour atteindre la vitesse maximale."
+      ],
+      "why": "Le navire peut s’adapter aux situations.",
+      "trap": "Croire que la voile suffit toujours.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "q": "Pourquoi le navire est-il aussi un objet de prestige ?",
+      "a": "Parce qu’il demande ressources, artisans, équipage et capacité d’organisation.",
+      "choices": [
+        "Parce que seuls les rois ont le droit religieux de posséder un navire de mer.",
+        "Parce que sa décoration importe davantage que son équipage ou sa capacité de navigation.",
+        "Parce que chaque navire est un objet unique impossible à réparer ou à reproduire."
+      ],
+      "why": "Le bateau signale aussi le pouvoir d’un chef.",
+      "trap": "Voir le navire comme simple outil neutre.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "q": "Que montrent Oseberg, Gokstad ou Skuldelev ?",
+      "a": "Des preuves archéologiques de la qualité et de la diversité des constructions navales scandinaves.",
+      "choices": [
+        "Des modèles funéraires symboliques qui renseignent peu sur la navigation réelle.",
+        "Une série de navires de guerre identiques, conçus selon un plan imposé par un pouvoir central.",
+        "Des épaves étrangères capturées, montrant surtout l’imitation des techniques franques."
+      ],
+      "why": "Ces découvertes matérialisent le sujet.",
+      "trap": "Rester seulement dans l’image du bateau sans preuve.",
+      "evidence": "Bloc 5."
+    },
+    {
+      "q": "Quelle synthèse est correcte ?",
+      "a": "Le navire ouvre des possibilités de raid, commerce et colonisation, mais il n’explique pas tout sans les sociétés qui l’utilisent.",
+      "choices": [
+        "La supériorité technique des navires suffit à expliquer les conquêtes, quelles que soient les sociétés qui les emploient.",
+        "Le même type de navire est utilisé de façon identique pour le raid, le commerce et la colonisation.",
+        "Les navires expliquent surtout les raids côtiers, mais jouent peu de rôle dans les échanges ou les migrations."
+      ],
+      "why": "Technique et société doivent être liées.",
+      "trap": "Faire une explication monocausale.",
+      "evidence": "Synthèse."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "Le terme “drakkar” est moderne et donne l’impression d’un modèle unique."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "La voile carrée permet de profiter du vent sur les longues distances ; les rames servent aux manœuvres, aux calmes ou aux combats."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Les navires de Skuldelev, retrouvés dans le fjord de Roskilde, ont permis de reconstruire des embarcations grandeur nature."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "northern-viking-worlds-colonisation-atlantique": {
     "hook": "Les Vikings ne se contentent pas de piller : certains partent vivre ailleurs. Islande, Groenland et Vinland montrent une autre histoire : migration, fermes, adaptation au climat, conflits et limites de la colonisation nordique.",
     "keyFacts": [
@@ -4896,9 +5413,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle différence faut-il faire pour comprendre Vinland ?",
         "a": "Distinguer atteindre un lieu, l’explorer, l’exploiter et y créer une colonie durable.",
         "choices": [
-          "Dire que tout voyage maritime devient automatiquement un empire.",
-          "Confondre Vinland avec la conquête espagnole du XVIe siècle.",
-          "Supposer que l’absence de grandes villes annule toute présence nordique."
+          "Considérer toute trace archéologique comme la preuve d’une colonie nombreuse et durable.",
+          "Opposer les sagas aux fouilles, comme si une seule catégorie de source pouvait établir toute l’histoire.",
+          "Réserver le mot colonisation aux conquêtes militaires accompagnées d’un État organisé."
         ],
         "why": "Cette distinction évite l’effet “découverte” trop vague.",
         "trap": "Transformer une présence réelle mais limitée en conquête massive.",
@@ -4908,9 +5425,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi l’Islande est-elle importante ?",
         "a": "Parce qu’elle devient une société de colons avec fermes, institutions et mémoire propre.",
         "choices": [
-          "Parce qu’elle reste seulement une base militaire sans habitants durables.",
-          "Parce qu’elle est le centre de l’empire byzantin au XIe siècle.",
-          "Parce qu’elle interdit toute assemblée locale."
+          "Parce qu’elle sert surtout d’étape saisonnière vers le Groenland sans peuplement permanent.",
+          "Parce qu’elle devient le centre politique d’un royaume scandinave unifié contrôlant l’Atlantique.",
+          "Parce que son peuplement repose principalement sur des comptoirs marchands urbains."
         ],
         "why": "L’Islande montre l’installation, pas seulement le passage.",
         "trap": "Raconter uniquement des explorateurs isolés.",
@@ -4920,9 +5437,9 @@ const READY_LESSON_PACKS = {
         "q": "Quel facteur rend la colonie du Groenland fragile ?",
         "a": "L’environnement rude, l’isolement, les ressources limitées et la dépendance aux échanges.",
         "choices": [
-          "La proximité immédiate avec toutes les grandes capitales européennes.",
-          "L’absence totale d’élevage et de commerce.",
-          "La disparition de toute contrainte climatique."
+          "L’absence de terres cultivables, qui empêche totalement l’élevage et toute implantation familiale.",
+          "La proximité des royaumes européens, qui provoque des interventions militaires constantes.",
+          "La dépendance exclusive à la chasse, sans échanges ni productions agricoles locales."
         ],
         "why": "Les colonies dépendent de conditions matérielles.",
         "trap": "Imaginer une expansion sans limites.",
@@ -4932,9 +5449,9 @@ const READY_LESSON_PACKS = {
         "q": "Que prouve L’Anse aux Meadows ?",
         "a": "Une présence nordique en Amérique du Nord, à Terre-Neuve, vers l’an 1000.",
         "choices": [
-          "La fondation d’un royaume scandinave durable sur tout le continent américain.",
-          "Le départ de tous les Scandinaves vers l’Amérique.",
-          "L’inexistence des sagas islandaises."
+          "Une colonie permanente et nombreuse qui contrôle durablement les côtes nord-américaines.",
+          "Un voyage isolé connu seulement par les sagas, sans confirmation archéologique.",
+          "Un comptoir régulier reliant l’Islande à l’Amérique pendant plusieurs siècles."
         ],
         "why": "Le site fournit une preuve archéologique essentielle.",
         "trap": "Confondre preuve de présence et preuve d’empire.",
@@ -4944,9 +5461,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle image des Vikings ce cours ajoute-t-il ?",
         "a": "Des migrants et colons capables de créer des fermes, institutions et réseaux dans l’Atlantique Nord.",
         "choices": [
-          "Des raiders incapables de s’installer où que ce soit.",
-          "Des moines sédentaires sans bateaux ni familles.",
-          "Des explorateurs sans contraintes matérielles ni contacts avec d’autres populations."
+          "Des explorateurs surtout motivés par la découverte, sans projet familial ni exploitation des ressources.",
+          "Des conquérants qui reproduisent partout le même modèle politique scandinave.",
+          "Des marchands saisonniers qui utilisent l’Atlantique sans créer de communautés durables."
         ],
         "why": "La colonisation complète l’histoire des raids.",
         "trap": "Réduire tout l’âge viking à la guerre.",
@@ -5020,9 +5537,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi les dirhams sont-ils importants ?",
         "a": "Ils prouvent des connexions commerciales entre la Scandinavie et les réseaux du monde islamique.",
         "choices": [
-          "Ils prouvent que tous les Scandinaves deviennent musulmans.",
-          "Ils montrent que les Vikings n’ont jamais utilisé l’argent.",
-          "Ils sont uniquement des décorations produites en Islande."
+          "Ils montrent que des communautés musulmanes se sont installées durablement dans chaque port scandinave.",
+          "Ils constituent la monnaie officielle frappée par les rois vikings pour unifier leurs royaumes.",
+          "Ils proviennent surtout du pillage de monastères occidentaux plutôt que d’échanges orientaux."
         ],
         "why": "Les monnaies sont des traces matérielles de circulation.",
         "trap": "Surinterpréter une monnaie comme conversion religieuse.",
@@ -5032,9 +5549,9 @@ const READY_LESSON_PACKS = {
         "q": "Que sont les routes de l’Est ?",
         "a": "Des itinéraires par la Baltique, les fleuves et les portages vers les mondes slaves, Byzance et le monde musulman.",
         "choices": [
-          "Des routes terrestres reliant uniquement Paris à Londres.",
-          "Des frontières fermées empêchant toute circulation.",
-          "Des chemins créés seulement après la fin du Moyen Âge."
+          "Des itinéraires maritimes directs entre la Scandinavie et Constantinople, sans passages fluviaux ni portages.",
+          "Des routes contrôlées par les royaumes francs pour détourner le commerce scandinave vers l’Occident.",
+          "Des chemins réservés aux expéditions militaires, qui transportent peu de marchandises ou de personnes."
         ],
         "why": "Ces routes élargissent l’espace viking.",
         "trap": "Limiter les Vikings à l’Atlantique et aux îles Britanniques.",
@@ -5044,9 +5561,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi l’esclavage doit-il être mentionné ?",
         "a": "Parce que les captifs font partie des circulations économiques et relient guerre, commerce et domination sociale.",
         "choices": [
-          "Parce qu’il est absent des sociétés scandinaves.",
-          "Parce qu’il concerne uniquement les royaumes modernes.",
-          "Parce qu’il prouve que le commerce n’existe pas."
+          "Parce que les esclaves forment l’essentiel des équipages marchands et dirigent les échanges lointains.",
+          "Parce que la vente de captifs remplace presque entièrement le commerce des métaux, fourrures et objets.",
+          "Parce que l’esclavage résulte uniquement des raids occidentaux et reste absent des routes de l’Est."
         ],
         "why": "C’est une dimension dure mais centrale.",
         "trap": "Rendre le commerce trop propre et pacifique.",
@@ -5056,9 +5573,9 @@ const READY_LESSON_PACKS = {
         "q": "Comment les objets importés renforcent-ils le pouvoir local ?",
         "a": "Ils peuvent être redistribués par un chef pour gagner prestige et fidélités.",
         "choices": [
-          "Ils suppriment tous les liens de dépendance.",
-          "Ils empêchent les chefs d’organiser des expéditions.",
-          "Ils n’ont aucun rôle social une fois arrivés."
+          "Ils servent surtout de réserve personnelle et doivent rester cachés pour conserver leur valeur.",
+          "Ils donnent au chef une autorité juridique automatique sur tous les hommes libres de la région.",
+          "Ils remplacent les alliances familiales, les banquets et les succès militaires dans la construction du prestige."
         ],
         "why": "La richesse circule dans des rapports politiques.",
         "trap": "Voir les objets comme de simples marchandises neutres.",
@@ -5068,9 +5585,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle synthèse est correcte ?",
         "a": "Commerce, violence, captifs, argent et pouvoir sont souvent mêlés dans les mondes vikings.",
         "choices": [
-          "Le commerce viking prouve que les raids n’ont jamais existé.",
-          "Les Vikings ne commercent qu’avec leur village d’origine.",
-          "Les échanges vikings excluent toute relation avec l’Est."
+          "Le commerce pacifique se développe à mesure que les raids et la domination sociale disparaissent.",
+          "Les réseaux commerciaux reposent surtout sur des monnaies standardisées et des marchés contrôlés par les rois.",
+          "La guerre fournit parfois des biens, mais reste extérieure aux échanges et aux stratégies de pouvoir."
         ],
         "why": "Le cours refuse l’opposition simpliste entre pillard et marchand.",
         "trap": "Remplacer un cliché par son contraire.",
@@ -5148,9 +5665,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la conversion d’un roi scandinave est-elle politique ?",
         "a": "Parce qu’elle renforce son autorité, ses alliances chrétiennes et la construction d’institutions religieuses.",
         "choices": [
-          "Parce qu’elle interdit automatiquement toute administration royale.",
-          "Parce qu’elle supprime immédiatement toutes les anciennes pratiques partout.",
-          "Parce qu’elle coupe le royaume de l’Europe chrétienne."
+          "Parce qu’elle lui permet de supprimer immédiatement les élites locales et les assemblées.",
+          "Parce qu’elle garantit l’obéissance religieuse de toute la population dès son baptême.",
+          "Parce qu’elle place son royaume sous l’autorité politique directe du pape ou d’un empereur chrétien."
         ],
         "why": "Religion et pouvoir royal sont liés.",
         "trap": "Voir la conversion comme uniquement individuelle.",
@@ -5160,9 +5677,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la christianisation est-elle progressive ?",
         "a": "Parce que les pratiques anciennes, les résistances et les adaptations varient selon les régions et les groupes.",
         "choices": [
-          "Parce qu’aucun Scandinave ne devient chrétien avant le XVe siècle.",
-          "Parce que les missionnaires refusent toute conversion royale.",
-          "Parce que les anciens cultes disparaissent partout en un jour."
+          "Parce que les missionnaires arrivent tard et ne s’adressent qu’aux rois, jamais aux populations.",
+          "Parce que les croyances anciennes disparaissent vite, mais les institutions chrétiennes mettent des siècles à apparaître.",
+          "Parce que chaque royaume suit le même calendrier, mais conserve des rites différents."
         ],
         "why": "Les sociétés changent par étapes.",
         "trap": "Raconter une conversion instantanée.",
@@ -5172,9 +5689,9 @@ const READY_LESSON_PACKS = {
         "q": "Que montre l’exemple islandais autour de l’an 1000 ?",
         "a": "La conversion peut être liée à la recherche d’un compromis politique et d’une unité sociale.",
         "choices": [
-          "L’Islande devient une colonie directe de Constantinople.",
-          "La religion n’a aucun lien avec l’ordre social.",
-          "Tous les Islandais quittent l’île après la conversion."
+          "Que l’assemblée impose une conversion purement religieuse sans enjeu d’ordre public.",
+          "Que l’Islande devient chrétienne après une conquête militaire menée par un roi norvégien.",
+          "Que les pratiques anciennes sont interdites et abandonnées immédiatement par tous les habitants."
         ],
         "why": "La décision religieuse peut servir la stabilité commune.",
         "trap": "Séparer totalement croyance et organisation politique.",
@@ -5184,9 +5701,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi les sagas demandent-elles de la prudence ?",
         "a": "Parce qu’elles sont souvent rédigées plus tard dans des sociétés déjà christianisées.",
         "choices": [
-          "Parce qu’elles sont toutes écrites au moment exact des premiers raids.",
-          "Parce qu’elles ne parlent jamais du passé nordique.",
-          "Parce qu’elles sont des archives administratives neutres."
+          "Parce qu’elles racontent seulement des événements imaginaires sans lien avec le passé scandinave.",
+          "Parce qu’elles sont contemporaines des premiers raids mais écrites exclusivement par des étrangers.",
+          "Parce qu’elles décrivent la conversion du point de vue des anciens cultes, sans influence chrétienne."
         ],
         "why": "La date et le contexte d’écriture comptent.",
         "trap": "Lire les sagas comme des reportages immédiats.",
@@ -5196,9 +5713,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle synthèse est correcte ?",
         "a": "La christianisation accompagne la transformation des sociétés vikings en royaumes scandinaves intégrés à l’Europe chrétienne.",
         "choices": [
-          "La christianisation prouve que les raids n’ont jamais existé.",
-          "La fin de l’âge viking signifie la disparition des Scandinaves.",
-          "Le christianisme n’a aucun effet politique dans le Nord."
+          "La christianisation remplace les royaumes par une organisation religieuse qui affaiblit durablement les rois.",
+          "Elle concerne surtout les croyances privées et modifie peu les alliances, les lois ou le pouvoir.",
+          "Elle clôt brutalement l’âge viking dès le premier baptême royal et fait disparaître les anciennes pratiques."
         ],
         "why": "C’est la transformation centrale.",
         "trap": "Parler seulement de fin au lieu de transformation.",
@@ -5207,455 +5724,573 @@ const READY_LESSON_PACKS = {
     ]
   },
   "northern-viking-worlds-vie-quotidienne": {
-    "hook": "Le monde viking ne se résume pas aux expéditions. Beaucoup de Scandinaves vivent dans des fermes, produisent leur nourriture, réparent des outils, élèvent des animaux et participent à des réseaux locaux. Comprendre ce quotidien évite de confondre une société entière avec ses guerriers les plus visibles.",
-    "keyFacts": [
-      "Période : VIIIe-XIe siècle",
-      "Espaces : fermes, fjords, ports, îles et colonies nordiques",
-      "Acteurs : familles, paysans libres, artisans, femmes, dépendants, esclaves et chefs",
-      "Enjeu : voir la base matérielle des raids, du commerce et de la colonisation",
-      "Piège : croire que tous les Vikings vivent en guerriers professionnels"
-    ],
-    "takeaways": [
-      {
-        "label": "Idée",
-        "text": "La ferme est le cœur de nombreuses sociétés nordiques."
-      },
-      {
-        "label": "Nuance",
-        "text": "Les expéditions partent d’un monde rural de stocks, saisons et maisonnées."
-      },
-      {
-        "label": "Trace",
-        "text": "Maisons longues, outils, textiles, restes alimentaires et tombes éclairent le quotidien."
-      }
-    ],
-    "express": [
-      "La vie quotidienne viking est d’abord rurale. Beaucoup de Scandinaves vivent dans des fermes, parfois isolées, organisées autour d’une maison longue où l’on dort, cuisine, travaille, reçoit et stocke.",
-      "Le foyer est aussi un lieu de production : on file, tisse, répare, prépare l’hiver, élève des animaux et organise la dépendance entre libres, serviteurs et esclaves. La richesse se voit autant dans les terres et les bêtes que dans les armes.",
-      "Un même individu peut être paysan une partie de l’année, marchand ou combattant à un autre moment. Les bateaux relient ce monde rural aux ports, aux marchés et aux expéditions.",
-      "À retenir : les raids sont spectaculaires, mais ils reposent sur des fermes, familles, stocks, artisanat et hiérarchies sociales."
-    ],
-    "complete": [
-      {
-        "title": "1. Une société de fermes",
-        "text": "La ferme est souvent l’unité centrale du monde nordique. Elle rassemble famille, dépendants, animaux, réserves, outils et parfois ateliers. La maison longue n’est pas seulement un logement : elle sert à dormir, cuisiner, travailler, recevoir et montrer le rang du groupe."
-      },
-      {
-        "title": "2. Produire pour survivre",
-        "text": "Le climat impose des contraintes fortes. Il faut cultiver quand c’est possible, élever bovins, moutons ou chevaux, pêcher, sécher, saler et stocker. L’hiver rend les réserves décisives : une mauvaise récolte peut fragiliser toute une maisonnée."
-      },
-      {
-        "title": "3. Objets et artisanat",
-        "text": "Les objets retrouvés montrent une société techniquement active : couteaux, peignes, clés, aiguilles, poids de métier à tisser, outils agricoles, bijoux et rivets de bateau. Le textile compte beaucoup, car produire vêtements, voiles et couvertures demande temps et savoir-faire."
-      },
-      {
-        "title": "4. Rôles sociaux variés",
-        "text": "On trouve des hommes libres, des femmes qui gèrent une partie de l’économie domestique, des artisans, des chefs, des clients, des serviteurs et des esclaves. Qui possède terres, bêtes, armes, bijoux ou clés possède aussi une forme d’autorité."
-      },
-      {
-        "title": "5. Le lien avec les expéditions",
-        "text": "Les raids et voyages ne tombent pas du ciel. Il faut construire ou entretenir des navires, réunir des hommes, financer le départ, accepter les risques et espérer un retour profitable. Le spectaculaire part donc du quotidien."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Objet",
-        "text": "La clé peut symboliser la gestion du foyer et des biens domestiques."
-      },
-      {
-        "title": "Comment le lire",
-        "text": "Le quotidien se lit dans les déchets, outils, maisons et traces alimentaires."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Prendre les guerriers des récits pour l’ensemble de la société."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi la ferme est-elle centrale ?",
-        "a": "Parce qu’elle organise nourriture, travail, stockage, famille, dépendances et statut social.",
-        "choices": [
-          "Parce qu’elle sert uniquement de caserne militaire.",
-          "Parce qu’elle remplace tous les ports scandinaves.",
-          "Parce qu’elle interdit toute navigation en mer."
-        ],
-        "why": "Le cours replace les expéditions dans une base rurale.",
-        "trap": "Réduire les Vikings aux raids.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "q": "Pourquoi l’hiver compte-t-il ?",
-        "a": "Parce que les réserves, les récoltes et l’élevage conditionnent la survie de la maisonnée.",
-        "choices": [
-          "Parce qu’il rend les stocks inutiles.",
-          "Parce qu’il supprime l’élevage dans tout le Nord.",
-          "Parce qu’il transforme chaque ferme en monastère."
-        ],
-        "why": "Le climat structure le quotidien.",
-        "trap": "Oublier les contraintes matérielles.",
-        "evidence": "Bloc 2."
-      },
-      {
-        "q": "Quelle trace aide à comprendre le quotidien ?",
-        "a": "Maisons longues, outils, textiles, restes alimentaires, objets domestiques et tombes.",
-        "choices": [
-          "Uniquement les récits de batailles écrits le jour même.",
-          "Seulement les couronnes royales modernes.",
-          "Des plans cadastraux du XIXe siècle."
-        ],
-        "why": "Le quotidien se lit dans des traces matérielles variées.",
-        "trap": "Chercher seulement des grands textes politiques.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "q": "Pourquoi les rôles sociaux sont-ils importants ?",
-        "a": "Parce que la société comprend libres, chefs, femmes gestionnaires, dépendants, artisans et esclaves.",
-        "choices": [
-          "Parce que tous les habitants ont exactement le même statut.",
-          "Parce que les femmes sont totalement absentes du foyer.",
-          "Parce que les esclaves n’existent jamais dans le monde viking."
-        ],
-        "why": "Le cours montre une hiérarchie sociale.",
-        "trap": "Imaginer une société uniforme.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "q": "Quelle synthèse est correcte ?",
-        "a": "Les voyages vikings reposent sur un quotidien rural, domestique, artisanal et hiérarchisé.",
-        "choices": [
-          "Les raids prouvent que les Vikings ne cultivent jamais la terre.",
-          "La vie quotidienne n’a aucun lien avec les expéditions.",
-          "Les fermes vikings sont seulement des décors de sagas."
-        ],
-        "why": "Le spectaculaire dépend d’une organisation matérielle.",
-        "trap": "Séparer totalement raid et société.",
-        "evidence": "Synthèse."
-      }
-    ]
-  },
+  "hook": "Le monde viking ne se résume pas aux expéditions. Beaucoup de Scandinaves vivent dans des fermes, produisent leur nourriture, réparent des outils, élèvent des animaux et participent à des réseaux locaux. Comprendre ce quotidien évite de confondre une société entière avec ses guerriers les plus visibles.",
+  "keyFacts": [
+    "Période : VIIIe-XIe siècle",
+    "Espaces : fermes, fjords, ports, îles et colonies nordiques",
+    "Acteurs : familles, paysans libres, artisans, femmes, dépendants, esclaves et chefs",
+    "Enjeu : voir la base matérielle des raids, du commerce et de la colonisation",
+    "Piège : croire que tous les Vikings vivent en guerriers professionnels"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée",
+      "text": "La ferme est le cœur de nombreuses sociétés nordiques."
+    },
+    {
+      "label": "Nuance",
+      "text": "Les expéditions partent d’un monde rural de stocks, saisons et maisonnées."
+    },
+    {
+      "label": "Trace",
+      "text": "Maisons longues, outils, textiles, restes alimentaires et tombes éclairent le quotidien."
+    }
+  ],
+  "express": [
+    "La vie quotidienne viking est d’abord rurale. Beaucoup de Scandinaves vivent dans des fermes, parfois isolées, organisées autour d’une maison longue où l’on dort, cuisine, travaille, reçoit et stocke.",
+    "Le foyer est aussi un lieu de production : on file, tisse, répare, prépare l’hiver, élève des animaux et organise la dépendance entre libres, serviteurs et esclaves. La richesse se voit autant dans les terres et les bêtes que dans les armes.",
+    "Un même individu peut être paysan une partie de l’année, marchand ou combattant à un autre moment. Les bateaux relient ce monde rural aux ports, aux marchés et aux expéditions.",
+    "À retenir : les raids sont spectaculaires, mais ils reposent sur des fermes, familles, stocks, artisanat et hiérarchies sociales."
+  ],
+  "complete": [
+    {
+      "title": "1. Une société de fermes",
+      "text": "La ferme est souvent l’unité centrale du monde nordique. Elle rassemble famille, dépendants, animaux, réserves, outils et parfois ateliers. La maison longue n’est pas seulement un logement : elle sert à dormir, cuisiner, travailler, recevoir et montrer le rang du groupe."
+    },
+    {
+      "title": "2. Produire pour survivre",
+      "text": "Le climat impose des contraintes fortes. Il faut cultiver quand c’est possible, élever bovins, moutons ou chevaux, pêcher, sécher, saler et stocker. L’hiver rend les réserves décisives : une mauvaise récolte peut fragiliser toute une maisonnée."
+    },
+    {
+      "title": "3. Objets et artisanat",
+      "text": "Les objets retrouvés montrent une société techniquement active : couteaux, peignes, clés, aiguilles, poids de métier à tisser, outils agricoles, bijoux et rivets de bateau. Le textile compte beaucoup, car produire vêtements, voiles et couvertures demande temps et savoir-faire."
+    },
+    {
+      "title": "4. Rôles sociaux variés",
+      "text": "On trouve des hommes libres, des femmes qui gèrent une partie de l’économie domestique, des artisans, des chefs, des clients, des serviteurs et des esclaves. Qui possède terres, bêtes, armes, bijoux ou clés possède aussi une forme d’autorité."
+    },
+    {
+      "title": "5. Le lien avec les expéditions",
+      "text": "Les raids et voyages ne tombent pas du ciel. Il faut construire ou entretenir des navires, réunir des hommes, financer le départ, accepter les risques et espérer un retour profitable. Le spectaculaire part donc du quotidien."
+    },
+    {
+      "title": "6. La ferme comme unité économique",
+      "text": "La plupart des familles vivent dans des exploitations où l’on cultive céréales, élève bovins, moutons ou porcs et produit une partie des objets nécessaires. La longue maison peut réunir humains, réserves et parfois animaux. Le quotidien est rythmé par les saisons, bien plus que par les expéditions lointaines."
+    },
+    {
+      "title": "7. Des métiers spécialisés",
+      "text": "Forgerons, charpentiers, tisserandes, sculpteurs ou fabricants de peignes possèdent des compétences recherchées. Dans les ports et centres comme Ribe, Hedeby ou Birka, ces artisans travaillent pour des marchés plus vastes. Le monde viking n’est donc pas uniquement rural : il comprend des lieux d’échange et de production spécialisés."
+    },
+    {
+      "title": "8. L’alimentation varie selon le milieu",
+      "text": "Bouillies de céréales, pain, produits laitiers, poisson, viande, légumes et baies composent des régimes différents selon les régions et les saisons. Les analyses d’ossements, de graines carbonisées et de résidus dans les récipients corrigent les images modernes de banquets permanents centrés sur la viande et l’hydromel."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Le monde viking ne se résume pas aux expéditions."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Objet",
+      "text": "La clé peut symboliser la gestion du foyer et des biens domestiques."
+    },
+    {
+      "title": "Comment le lire",
+      "text": "Le quotidien se lit dans les déchets, outils, maisons et traces alimentaires."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Prendre les guerriers des récits pour l’ensemble de la société."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi la ferme est-elle centrale ?",
+      "a": "Parce qu’elle organise nourriture, travail, stockage, famille, dépendances et statut social.",
+      "choices": [
+        "Parce qu’elle sert surtout de résidence aux guerriers entre deux expéditions maritimes.",
+        "Parce qu’elle concentre les marchés et l’artisanat spécialisés de toute une région.",
+        "Parce qu’elle appartient généralement à un chef qui emploie tous les habitants voisins."
+      ],
+      "why": "Le cours replace les expéditions dans une base rurale.",
+      "trap": "Réduire les Vikings aux raids.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "q": "Pourquoi l’hiver compte-t-il ?",
+      "a": "Parce que les réserves, les récoltes et l’élevage conditionnent la survie de la maisonnée.",
+      "choices": [
+        "Parce qu’il interdit les voyages et oblige toutes les familles à vivre de leurs réserves sans échanges.",
+        "Parce qu’il provoque chaque année une famine générale malgré les récoltes précédentes.",
+        "Parce qu’il constitue la principale saison des raids, lorsque les travaux agricoles cessent."
+      ],
+      "why": "Le climat structure le quotidien.",
+      "trap": "Oublier les contraintes matérielles.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "q": "Quelle trace aide à comprendre le quotidien ?",
+      "a": "Maisons longues, outils, textiles, restes alimentaires, objets domestiques et tombes.",
+      "choices": [
+        "Les sagas, qui décrivent précisément et sans déformation le travail de chaque famille.",
+        "Les trésors d’argent, qui suffisent à reconstituer l’alimentation et l’organisation domestique.",
+        "Les chroniques monastiques, principalement consacrées aux techniques agricoles scandinaves."
+      ],
+      "why": "Le quotidien se lit dans des traces matérielles variées.",
+      "trap": "Chercher seulement des grands textes politiques.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "q": "Pourquoi les rôles sociaux sont-ils importants ?",
+      "a": "Parce que la société comprend libres, chefs, femmes gestionnaires, dépendants, artisans et esclaves.",
+      "choices": [
+        "Parce que chacun occupe une fonction fixe décidée par une administration royale.",
+        "Parce que les statuts diffèrent peu dans la maisonnée, même si les tâches sont spécialisées.",
+        "Parce que seuls les guerriers et les chefs participent réellement à l’économie domestique."
+      ],
+      "why": "Le cours montre une hiérarchie sociale.",
+      "trap": "Imaginer une société uniforme.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "q": "Quelle synthèse est correcte ?",
+      "a": "Les voyages vikings reposent sur un quotidien rural, domestique, artisanal et hiérarchisé.",
+      "choices": [
+        "L’économie rurale décline pendant l’âge viking au profit du raid et du commerce lointain.",
+        "Les fermes restent autonomes et entretiennent peu de liens avec les chefs, les marchés ou les expéditions.",
+        "La vie quotidienne est largement égalitaire, les différences de statut apparaissant surtout en temps de guerre."
+      ],
+      "why": "Le spectaculaire dépend d’une organisation matérielle.",
+      "trap": "Séparer totalement raid et société.",
+      "evidence": "Synthèse."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "northern-viking-worlds-societe-droit-femmes": {
-    "hook": "La société viking n’est ni égalitaire ni totalement chaotique. Elle repose sur des statuts, des familles, des dépendances, des assemblées locales et des règles d’honneur. Les femmes peuvent exercer une vraie autorité domestique et économique, mais cela ne signifie pas égalité moderne.",
-    "keyFacts": [
-      "Statuts : chefs, hommes libres, femmes de maisonnée, clients, dépendants et esclaves",
-      "Institutions : assemblées locales, serments, compensations et coutumes",
-      "Femmes : gestion des biens, foyer, alliances et parfois héritage",
-      "Esclavage : captifs et personnes non libres dans l’économie",
-      "Piège : transformer une nuance sur les femmes en société égalitaire"
-    ],
-    "takeaways": [
-      {
-        "label": "Structure",
-        "text": "Liberté, dépendance, richesse et réputation comptent énormément."
-      },
-      {
-        "label": "Droit",
-        "text": "Les assemblées évitent de réduire la société à la violence privée."
-      },
-      {
-        "label": "Nuance",
-        "text": "Certaines femmes ont du pouvoir, surtout domestique et patrimonial, dans une société dominée par les hommes libres."
-      }
-    ],
-    "express": [
-      "La société viking est organisée par des statuts. Certains sont chefs, propriétaires ou hommes libres ; d’autres dépendent d’une maisonnée ; certains sont esclaves. Le prestige vient des terres, richesses, alliances, armes, voyages et réputations.",
-      "Il existe des assemblées locales, souvent appelées thing, où les hommes libres discutent de conflits, compensations ou règles communes. Cela ne rend pas la société pacifique, mais montre qu’elle possède des cadres collectifs.",
-      "Les femmes peuvent jouer un rôle important dans le foyer, les biens, les alliances familiales et parfois l’héritage. Certaines tombes montrent un prestige élevé. Mais ce n’est pas une société égalitaire au sens moderne.",
-      "À retenir : monde viking = hiérarchie, honneur, droit coutumier, familles puissantes et dépendances. Il faut éviter le cliché du chaos violent comme celui de la modernité avant l’heure."
-    ],
-    "complete": [
-      {
-        "title": "1. Des statuts inégaux",
-        "text": "La société viking distingue chefs, familles puissantes, hommes libres, dépendants et esclaves. Les droits et marges d’action ne sont pas les mêmes. Les hommes libres peuvent défendre leurs intérêts, porter les armes et participer à certaines décisions locales."
-      },
-      {
-        "title": "2. Honneur et réputation",
-        "text": "La réputation compte beaucoup. Être généreux, courageux, capable de protéger les siens ou de tenir sa parole renforce le prestige. Mais cette logique peut aussi alimenter rivalités, vengeances et conflits."
-      },
-      {
-        "title": "3. Le thing",
-        "text": "Les communautés nordiques disposent d’assemblées locales, souvent désignées par le mot thing. On y règle des litiges, négocie des compensations et affirme des règles. Ce n’est pas une démocratie moderne, mais ce n’est pas non plus l’absence de procédure."
-      },
-      {
-        "title": "4. Femmes, foyer et patrimoine",
-        "text": "Les femmes peuvent gérer des biens, organiser le foyer, participer aux stratégies familiales et apparaître dans des tombes riches. Les clés, textiles, bijoux ou objets funéraires montrent parfois une autorité domestique et sociale."
-      },
-      {
-        "title": "5. Esclavage et captifs",
-        "text": "Les captifs et esclaves sont une dimension essentielle. Ils peuvent venir de raids, d’échanges ou de dépendances locales. Leur travail renforce la richesse des maisonnées et des chefs, ce qui évite de romantiser le monde viking."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Mot important",
-        "text": "Thing : assemblée locale où les hommes libres peuvent traiter conflits, règles et décisions collectives."
-      },
-      {
-        "title": "Nuance",
-        "text": "Pouvoir domestique ne veut pas dire égalité politique moderne."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Dire que les femmes vikings étaient libres comme aujourd’hui est anachronique."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi la société viking n’est-elle pas égalitaire ?",
-        "a": "Parce qu’elle distingue chefs, hommes libres, dépendants, femmes de maisonnée et esclaves avec des droits différents.",
-        "choices": [
-          "Parce que tous les statuts sont identiques.",
-          "Parce qu’aucune famille ne possède de biens.",
-          "Parce que les assemblées suppriment toute hiérarchie."
-        ],
-        "why": "Le cours insiste sur les statuts.",
-        "trap": "Confondre règles collectives et égalité.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "q": "À quoi sert le thing ?",
-        "a": "À traiter litiges, règles, compensations et décisions dans un cadre collectif limité aux groupes reconnus.",
-        "choices": [
-          "À construire uniquement des bateaux.",
-          "À remplacer toutes les fermes par des villes.",
-          "À interdire toute discussion entre hommes libres."
-        ],
-        "why": "C’est un cadre de régulation sociale.",
-        "trap": "Croire que tout se règle seulement par violence.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "q": "Quelle nuance faut-il apporter sur les femmes ?",
-        "a": "Elles peuvent gérer biens, foyer et alliances, mais la société reste dominée par les hommes libres et les lignages.",
-        "choices": [
-          "Elles n’existent jamais dans les sources ou les tombes.",
-          "Elles ont partout les mêmes droits politiques que dans une démocratie moderne.",
-          "Elles vivent uniquement dans les monastères anglais."
-        ],
-        "why": "La bonne réponse évite les deux caricatures.",
-        "trap": "Transformer une nuance en slogan moderne.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "q": "Pourquoi parler de l’esclavage ?",
-        "a": "Parce que captifs et esclaves participent à l’économie, au prestige et aux rapports de domination.",
-        "choices": [
-          "Parce que les Vikings n’ont jamais eu de captifs.",
-          "Parce que l’esclavage annule l’existence du commerce.",
-          "Parce que seuls les Romains connaissent la dépendance."
-        ],
-        "why": "C’est central pour ne pas romantiser.",
-        "trap": "Nettoyer le sujet en retirant la violence sociale.",
-        "evidence": "Bloc 5."
-      },
-      {
-        "q": "Quelle synthèse évite les caricatures ?",
-        "a": "La société viking est ordonnée par coutumes et assemblées, mais aussi hiérarchisée et violente.",
-        "choices": [
-          "Elle est uniquement un chaos sans règles.",
-          "Elle est une démocratie moderne égalitaire.",
-          "Elle n’a ni familles, ni statuts, ni conflits."
-        ],
-        "why": "La complexité est la bonne conclusion.",
-        "trap": "Choisir un cliché contre un autre.",
-        "evidence": "Synthèse."
-      }
-    ]
-  },
+  "hook": "La société viking n’est ni égalitaire ni totalement chaotique. Elle repose sur des statuts, des familles, des dépendances, des assemblées locales et des règles d’honneur. Les femmes peuvent exercer une vraie autorité domestique et économique, mais cela ne signifie pas égalité moderne.",
+  "keyFacts": [
+    "Statuts : chefs, hommes libres, femmes de maisonnée, clients, dépendants et esclaves",
+    "Institutions : assemblées locales, serments, compensations et coutumes",
+    "Femmes : gestion des biens, foyer, alliances et parfois héritage",
+    "Esclavage : captifs et personnes non libres dans l’économie",
+    "Piège : transformer une nuance sur les femmes en société égalitaire"
+  ],
+  "takeaways": [
+    {
+      "label": "Structure",
+      "text": "Liberté, dépendance, richesse et réputation comptent énormément."
+    },
+    {
+      "label": "Droit",
+      "text": "Les assemblées évitent de réduire la société à la violence privée."
+    },
+    {
+      "label": "Nuance",
+      "text": "Certaines femmes ont du pouvoir, surtout domestique et patrimonial, dans une société dominée par les hommes libres."
+    }
+  ],
+  "express": [
+    "La société viking est organisée par des statuts. Certains sont chefs, propriétaires ou hommes libres ; d’autres dépendent d’une maisonnée ; certains sont esclaves. Le prestige vient des terres, richesses, alliances, armes, voyages et réputations.",
+    "Il existe des assemblées locales, souvent appelées thing, où les hommes libres discutent de conflits, compensations ou règles communes. Cela ne rend pas la société pacifique, mais montre qu’elle possède des cadres collectifs.",
+    "Les femmes peuvent jouer un rôle important dans le foyer, les biens, les alliances familiales et parfois l’héritage. Certaines tombes montrent un prestige élevé. Mais ce n’est pas une société égalitaire au sens moderne.",
+    "À retenir : monde viking = hiérarchie, honneur, droit coutumier, familles puissantes et dépendances. Il faut éviter le cliché du chaos violent comme celui de la modernité avant l’heure."
+  ],
+  "complete": [
+    {
+      "title": "1. Des statuts inégaux",
+      "text": "La société viking distingue chefs, familles puissantes, hommes libres, dépendants et esclaves. Les droits et marges d’action ne sont pas les mêmes. Les hommes libres peuvent défendre leurs intérêts, porter les armes et participer à certaines décisions locales."
+    },
+    {
+      "title": "2. Honneur et réputation",
+      "text": "La réputation compte beaucoup. Être généreux, courageux, capable de protéger les siens ou de tenir sa parole renforce le prestige. Mais cette logique peut aussi alimenter rivalités, vengeances et conflits."
+    },
+    {
+      "title": "3. Le thing",
+      "text": "Les communautés nordiques disposent d’assemblées locales, souvent désignées par le mot thing. On y règle des litiges, négocie des compensations et affirme des règles. Ce n’est pas une démocratie moderne, mais ce n’est pas non plus l’absence de procédure."
+    },
+    {
+      "title": "4. Femmes, foyer et patrimoine",
+      "text": "Les femmes peuvent gérer des biens, organiser le foyer, participer aux stratégies familiales et apparaître dans des tombes riches. Les clés, textiles, bijoux ou objets funéraires montrent parfois une autorité domestique et sociale."
+    },
+    {
+      "title": "5. Esclavage et captifs",
+      "text": "Les captifs et esclaves sont une dimension essentielle. Ils peuvent venir de raids, d’échanges ou de dépendances locales. Leur travail renforce la richesse des maisonnées et des chefs, ce qui évite de romantiser le monde viking."
+    },
+    {
+      "title": "6. Le thing : assemblée et rapport de forces",
+      "text": "Le thing réunit des hommes libres pour entendre des litiges, proclamer des règles et négocier des décisions. Ce n’est pas une démocratie moderne : prestige familial, richesse et alliances pèsent fortement. Mais le droit n’est pas seulement imposé par un roi ; il est aussi énoncé publiquement et discuté dans une communauté."
+    },
+    {
+      "title": "7. Des statuts très inégaux",
+      "text": "La société distingue notamment hommes libres, dépendants et esclaves. Les personnes réduites en esclavage travaillent dans les fermes, les ateliers ou les maisons et peuvent être vendues sur de longues distances. Les récits héroïques centrés sur des guerriers libres masquent donc une économie où la contrainte joue un rôle important."
+    },
+    {
+      "title": "8. Les femmes : droits réels, pouvoir variable",
+      "text": "Selon les régions et les périodes, une femme libre peut gérer des biens, demander une séparation ou tenir une ferme en l’absence d’un mari. Cela ne fait pas du monde viking une société égalitaire. Le statut dépend de la naissance, de la richesse et de la situation familiale ; les sources décrivent surtout les milieux les plus favorisés."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "La société viking n’est ni égalitaire ni totalement chaotique."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Mot important",
+      "text": "Thing : assemblée locale où les hommes libres peuvent traiter conflits, règles et décisions collectives."
+    },
+    {
+      "title": "Nuance",
+      "text": "Pouvoir domestique ne veut pas dire égalité politique moderne."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Dire que les femmes vikings étaient libres comme aujourd’hui est anachronique."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi la société viking n’est-elle pas égalitaire ?",
+      "a": "Parce qu’elle distingue chefs, hommes libres, dépendants, femmes de maisonnée et esclaves avec des droits différents.",
+      "choices": [
+        "Parce que tous les hommes libres sont égaux, mais que les étrangers restent exclus de la société.",
+        "Parce que la richesse crée des différences de prestige sans modifier les droits ni les dépendances.",
+        "Parce que seuls les chefs et les esclaves ont un statut défini, les autres habitants étant juridiquement identiques."
+      ],
+      "why": "Le cours insiste sur les statuts.",
+      "trap": "Confondre règles collectives et égalité.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "q": "À quoi sert le thing ?",
+      "a": "À traiter litiges, règles, compensations et décisions dans un cadre collectif limité aux groupes reconnus.",
+      "choices": [
+        "À voter les rois et les lois au suffrage de l’ensemble des hommes et des femmes adultes.",
+        "À rendre une justice royale appliquée partout de la même façon par des juges professionnels.",
+        "À réunir surtout les guerriers avant une expédition, sans traiter les conflits locaux."
+      ],
+      "why": "C’est un cadre de régulation sociale.",
+      "trap": "Croire que tout se règle seulement par violence.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "q": "Quelle nuance faut-il apporter sur les femmes ?",
+      "a": "Elles peuvent gérer biens, foyer et alliances, mais la société reste dominée par les hommes libres et les lignages.",
+      "choices": [
+        "Elles disposent généralement des mêmes droits politiques et militaires que les hommes libres.",
+        "Elles sont confinées aux tâches domestiques et ne peuvent posséder ni gérer aucun bien.",
+        "Leur autonomie augmente avec le statut social, au point de faire disparaître la domination masculine dans les familles riches."
+      ],
+      "why": "La bonne réponse évite les deux caricatures.",
+      "trap": "Transformer une nuance en slogan moderne.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "q": "Pourquoi parler de l’esclavage ?",
+      "a": "Parce que captifs et esclaves participent à l’économie, au prestige et aux rapports de domination.",
+      "choices": [
+        "Parce que les esclaves sont surtout des prisonniers temporaires libérés après chaque expédition.",
+        "Parce que leur travail reste extérieur aux fermes et se concentre dans les marchés lointains.",
+        "Parce que l’esclavage est condamné par les coutumes scandinaves mais toléré chez les peuples voisins."
+      ],
+      "why": "C’est central pour ne pas romantiser.",
+      "trap": "Nettoyer le sujet en retirant la violence sociale.",
+      "evidence": "Bloc 5."
+    },
+    {
+      "q": "Quelle synthèse évite les caricatures ?",
+      "a": "La société viking est ordonnée par coutumes et assemblées, mais aussi hiérarchisée et violente.",
+      "choices": [
+        "Une société égalitaire où le thing garantit à chacun la même participation politique.",
+        "Une société dominée uniquement par la force, sans règles, compensations ni institutions collectives.",
+        "Une monarchie centralisée dont les lois écrites remplacent rapidement les coutumes locales."
+      ],
+      "why": "La complexité est la bonne conclusion.",
+      "trap": "Choisir un cliché contre un autre.",
+      "evidence": "Synthèse."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "northern-viking-worlds-croyances-sagas-runes": {
-    "hook": "Les croyances nordiques ne sont pas un décor de fantasy. Elles donnent un langage pour penser le monde, la mort, le destin, l’honneur et la mémoire. Mais nos sources sont souvent tardives et parfois rédigées dans des sociétés déjà christianisées.",
-    "keyFacts": [
-      "Dieux : Odin, Thor, Freyja, Loki et autres figures nordiques",
-      "Cosmos : Midgard, Asgard, Yggdrasil, géants, dieux et mondes des morts",
-      "Runes : alphabet pour noms, mémoires, messages ou formules",
-      "Sources : sagas et Eddas souvent écrites plus tard, surtout en Islande",
-      "Piège : résumer toute la mort au Valhalla"
-    ],
-    "takeaways": [
-      {
-        "label": "Croyance",
-        "text": "Les dieux nordiques structurent des récits sur guerre, sagesse, tonnerre, fertilité, ruse et destin."
-      },
-      {
-        "label": "Repère",
-        "text": "Il faut croiser textes tardifs, inscriptions runiques, tombes et objets."
-      },
-      {
-        "label": "Nuance",
-        "text": "Le Valhalla existe dans les récits, mais ne résume pas tous les destins des morts."
-      }
-    ],
-    "express": [
-      "Avant leur christianisation, les Scandinaves du Nord vivent dans un univers religieux peuplé de dieux comme Odin, Thor, Freyja ou Loki. Midgard désigne le monde des hommes ; Asgard celui des dieux ; Yggdrasil relie plusieurs espaces mythologiques.",
-      "La mort est importante, mais il faut éviter le raccourci : tous les morts ne vont pas au Valhalla. Les récits parlent aussi d’autres destins, d’autres lieux et de figures comme Freyja ou Hel.",
-      "Les runes sont un alphabet utilisé pour inscrire noms, mémoires, messages, pierres commémoratives ou formules. Elles peuvent avoir une dimension symbolique, mais elles ne sont pas seulement magiques.",
-      "Nos connaissances viennent de textes souvent tardifs, comme sagas et Eddas, mais aussi de tombes, objets, amulettes, inscriptions et lieux cultuels. Il faut donc raconter les mythes et expliquer les sources."
-    ],
-    "complete": [
-      {
-        "title": "1. Un monde religieux non centralisé",
-        "text": "Les croyances nordiques ne fonctionnent pas comme le christianisme médiéval. Il n’existe pas un livre sacré unique, une hiérarchie religieuse centralisée ou un dogme fixé partout. Les récits, rites, cultes locaux et traditions orales varient selon régions et périodes."
-      },
-      {
-        "title": "2. Dieux et récits",
-        "text": "Odin est associé à la sagesse, à la guerre, à la poésie et aux morts choisis. Thor protège et combat les forces du chaos. Freyja touche à la fertilité, au désir, au prestige et à certains morts. Loki est une figure ambiguë, rusée, liée au désordre."
-      },
-      {
-        "title": "3. Cosmos et morts",
-        "text": "Les récits évoquent plusieurs mondes : Midgard pour les humains, Asgard pour les dieux, d’autres espaces pour géants ou morts. Le Valhalla est célèbre, mais il ne doit pas écraser les autres traditions et destins possibles."
-      },
-      {
-        "title": "4. Runes, objets et rites",
-        "text": "Les runes forment un alphabet. Elles apparaissent sur pierres, armes, bijoux, objets du quotidien ou monuments commémoratifs. Les tombes, amulettes, dépôts et traces de rites montrent que les croyances passent par objets et gestes."
-      },
-      {
-        "title": "5. Sagas, Eddas et sources",
-        "text": "Beaucoup de récits connus sont écrits plus tard, surtout en Islande, dans un monde déjà christianisé. Les sagas et Eddas sont précieuses, mais elles ne sont pas des enregistrements directs de la religion du VIIIe siècle."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Mot important",
-        "text": "Edda : textes médiévaux islandais essentiels pour connaître une partie de la mythologie nordique."
-      },
-      {
-        "title": "Piège",
-        "text": "Dire que tous les morts vont au Valhalla simplifie trop la diversité des croyances."
-      },
-      {
-        "title": "Comment le lire",
-        "text": "Une saga raconte ; une tombe, une rune ou un objet permettent de vérifier autrement."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi les croyances nordiques ne fonctionnent-elles pas comme l’Église chrétienne ?",
-        "a": "Parce qu’elles n’ont pas de livre sacré unique ni de clergé centralisé fixant partout le même dogme.",
-        "choices": [
-          "Parce qu’elles sont uniquement un code administratif romain.",
-          "Parce qu’elles apparaissent seulement au XIXe siècle.",
-          "Parce qu’elles interdisent toute tradition orale."
-        ],
-        "why": "Le cadre religieux est différent.",
-        "trap": "Projeter le modèle chrétien sur tout.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "q": "Quel dieu est associé au tonnerre et à la protection ?",
-        "a": "Thor, dieu du tonnerre et protecteur associé au marteau Mjöllnir.",
-        "choices": [
-          "Odin.",
-          "Freyja.",
-          "Loki."
-        ],
-        "why": "C’est un repère mythologique de base.",
-        "trap": "Mélanger mythe nordique et personnages historiques antiques.",
-        "evidence": "Bloc 2."
-      },
-      {
-        "q": "Pourquoi le Valhalla ne suffit-il pas à résumer la mort ?",
-        "a": "Parce que les récits présentent plusieurs destins possibles et tous les morts ne sont pas des guerriers choisis par Odin.",
-        "choices": [
-          "Parce qu’il désigne une assemblée juridique locale.",
-          "Parce qu’il correspond seulement à une route commerciale.",
-          "Parce qu’il décrit un alphabet utilisé sur les pierres."
-        ],
-        "why": "La réponse évite le cliché unique.",
-        "trap": "Réduire toute la religion au guerrier mort au combat.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "q": "Que sont les runes dans le cours ?",
-        "a": "Un alphabet utilisé pour inscrire noms, mémoires, messages, objets ou monuments.",
-        "choices": [
-          "Des bateaux de guerre à faible tirant d’eau.",
-          "Des assemblées où l’on règle les litiges.",
-          "Des poids utilisés pour peser l’argent."
-        ],
-        "why": "Il faut d’abord définir concrètement.",
-        "trap": "Les présenter seulement comme magie floue.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "q": "Pourquoi les sagas demandent-elles de la prudence ?",
-        "a": "Parce qu’elles sont souvent rédigées plus tard dans des sociétés déjà christianisées.",
-        "choices": [
-          "Parce qu’elles sont toujours rédigées par les raiders eux-mêmes au VIIIe siècle.",
-          "Parce qu’elles ne demandent aucun croisement avec l’archéologie.",
-          "Parce qu’elles remplacent totalement les inscriptions runiques."
-        ],
-        "why": "Le contexte d’écriture compte.",
-        "trap": "Lire les sagas comme des reportages immédiats.",
-        "evidence": "Bloc 5."
-      }
-    ]
-  },
+  "hook": "Les croyances nordiques ne sont pas un décor de fantasy. Elles donnent un langage pour penser le monde, la mort, le destin, l’honneur et la mémoire. Mais nos sources sont souvent tardives et parfois rédigées dans des sociétés déjà christianisées.",
+  "keyFacts": [
+    "Dieux : Odin, Thor, Freyja, Loki et autres figures nordiques",
+    "Cosmos : Midgard, Asgard, Yggdrasil, géants, dieux et mondes des morts",
+    "Runes : alphabet pour noms, mémoires, messages ou formules",
+    "Sources : sagas et Eddas souvent écrites plus tard, surtout en Islande",
+    "Piège : résumer toute la mort au Valhalla"
+  ],
+  "takeaways": [
+    {
+      "label": "Croyance",
+      "text": "Les dieux nordiques structurent des récits sur guerre, sagesse, tonnerre, fertilité, ruse et destin."
+    },
+    {
+      "label": "Repère",
+      "text": "Il faut croiser textes tardifs, inscriptions runiques, tombes et objets."
+    },
+    {
+      "label": "Nuance",
+      "text": "Le Valhalla existe dans les récits, mais ne résume pas tous les destins des morts."
+    }
+  ],
+  "express": [
+    "Avant leur christianisation, les Scandinaves du Nord vivent dans un univers religieux peuplé de dieux comme Odin, Thor, Freyja ou Loki. Midgard désigne le monde des hommes ; Asgard celui des dieux ; Yggdrasil relie plusieurs espaces mythologiques.",
+    "La mort est importante, mais il faut éviter le raccourci : tous les morts ne vont pas au Valhalla. Les récits parlent aussi d’autres destins, d’autres lieux et de figures comme Freyja ou Hel.",
+    "Les runes sont un alphabet utilisé pour inscrire noms, mémoires, messages, pierres commémoratives ou formules. Elles peuvent avoir une dimension symbolique, mais elles ne sont pas seulement magiques.",
+    "Nos connaissances viennent de textes souvent tardifs, comme sagas et Eddas, mais aussi de tombes, objets, amulettes, inscriptions et lieux cultuels. Il faut donc raconter les mythes et expliquer les sources."
+  ],
+  "complete": [
+    {
+      "title": "1. Un monde religieux non centralisé",
+      "text": "Les croyances nordiques ne fonctionnent pas comme le christianisme médiéval. Il n’existe pas un livre sacré unique, une hiérarchie religieuse centralisée ou un dogme fixé partout. Les récits, rites, cultes locaux et traditions orales varient selon régions et périodes."
+    },
+    {
+      "title": "2. Dieux et récits",
+      "text": "Odin est associé à la sagesse, à la guerre, à la poésie et aux morts choisis. Thor protège et combat les forces du chaos. Freyja touche à la fertilité, au désir, au prestige et à certains morts. Loki est une figure ambiguë, rusée, liée au désordre."
+    },
+    {
+      "title": "3. Cosmos et morts",
+      "text": "Les récits évoquent plusieurs mondes : Midgard pour les humains, Asgard pour les dieux, d’autres espaces pour géants ou morts. Le Valhalla est célèbre, mais il ne doit pas écraser les autres traditions et destins possibles."
+    },
+    {
+      "title": "4. Runes, objets et rites",
+      "text": "Les runes forment un alphabet. Elles apparaissent sur pierres, armes, bijoux, objets du quotidien ou monuments commémoratifs. Les tombes, amulettes, dépôts et traces de rites montrent que les croyances passent par objets et gestes."
+    },
+    {
+      "title": "5. Sagas, Eddas et sources",
+      "text": "Beaucoup de récits connus sont écrits plus tard, surtout en Islande, dans un monde déjà christianisé. Les sagas et Eddas sont précieuses, mais elles ne sont pas des enregistrements directs de la religion du VIIIe siècle."
+    },
+    {
+      "title": "6. Des cultes sans livre unique",
+      "text": "Les croyances nordiques ne reposent pas sur un texte révélé commun ni sur une Église centralisée. Les pratiques varient selon les lieux : sacrifices, banquets, cultes domestiques, lieux naturels ou grands sanctuaires. Odin, Thor ou Freyr sont importants, mais leur place n’est pas identique dans toutes les communautés."
+    },
+    {
+      "title": "7. Les runes servent à écrire, pas à lancer des sorts en permanence",
+      "text": "Les inscriptions runiques commémorent des morts, signalent une propriété, transmettent un message ou affichent un nom. Certaines ont un usage magique ou protecteur, mais réduire tout l’alphabet runique à la divination est trompeur. Une pierre runique est souvent aussi un monument familial et politique."
+    },
+    {
+      "title": "8. Les sagas sont tardives mais précieuses",
+      "text": "La plupart des grandes sagas sont mises par écrit en Islande aux XIIe et XIIIe siècles, après la christianisation, alors qu’elles racontent souvent des événements plus anciens. Elles conservent des traditions, des noms et des conflits, mais leur composition littéraire et leur époque doivent être prises en compte. Elles ne sont pas des enregistrements directs de l’âge viking."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Les croyances nordiques ne sont pas un décor de fantasy."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Mot important",
+      "text": "Edda : textes médiévaux islandais essentiels pour connaître une partie de la mythologie nordique."
+    },
+    {
+      "title": "Piège",
+      "text": "Dire que tous les morts vont au Valhalla simplifie trop la diversité des croyances."
+    },
+    {
+      "title": "Comment le lire",
+      "text": "Une saga raconte ; une tombe, une rune ou un objet permettent de vérifier autrement."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi les croyances nordiques ne fonctionnent-elles pas comme l’Église chrétienne ?",
+      "a": "Parce qu’elles n’ont pas de livre sacré unique ni de clergé centralisé fixant partout le même dogme.",
+      "choices": [
+        "Parce que chaque famille honore des dieux entièrement différents et ne partage aucun récit commun.",
+        "Parce qu’elles sont transmises uniquement par des prêtres itinérants opposés aux chefs politiques.",
+        "Parce qu’elles forment une religion privée sans rites collectifs, sanctuaires ni pratiques funéraires."
+      ],
+      "why": "Le cadre religieux est différent.",
+      "trap": "Projeter le modèle chrétien sur tout.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "q": "Quel dieu est associé au tonnerre et à la protection ?",
+      "a": "Thor, dieu du tonnerre et protecteur associé au marteau Mjöllnir.",
+      "choices": [
+        "Odin, dieu lié à la souveraineté, au savoir et à la guerre.",
+        "Freyja, déesse associée notamment à l’amour, à la fertilité et au seiðr.",
+        "Loki, figure rusée et ambivalente des récits mythologiques."
+      ],
+      "why": "C’est un repère mythologique de base.",
+      "trap": "Mélanger mythe nordique et personnages historiques antiques.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "q": "Pourquoi le Valhalla ne suffit-il pas à résumer la mort ?",
+      "a": "Parce que les récits présentent plusieurs destins possibles et tous les morts ne sont pas des guerriers choisis par Odin.",
+      "choices": [
+        "Parce que le Valhalla accueille seulement les rois et les chefs morts au combat.",
+        "Parce que les Scandinaves pensent surtout à une réincarnation identique pour tous.",
+        "Parce que le Valhalla est une invention chrétienne absente de toute tradition nordique."
+      ],
+      "why": "La réponse évite le cliché unique.",
+      "trap": "Réduire toute la religion au guerrier mort au combat.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "q": "Que sont les runes dans le cours ?",
+      "a": "Un alphabet utilisé pour inscrire noms, mémoires, messages, objets ou monuments.",
+      "choices": [
+        "Une écriture secrète réservée aux formules magiques et interdite aux usages quotidiens.",
+        "Un système de signes religieux servant uniquement à invoquer les dieux sur les tombes.",
+        "Une adaptation de l’alphabet latin créée après la christianisation pour copier les sagas."
+      ],
+      "why": "Il faut d’abord définir concrètement.",
+      "trap": "Les présenter seulement comme magie floue.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "q": "Pourquoi les sagas demandent-elles de la prudence ?",
+      "a": "Parce qu’elles sont souvent rédigées plus tard dans des sociétés déjà christianisées.",
+      "choices": [
+        "Parce qu’elles donnent une version purement chrétienne qui efface toute tradition antérieure.",
+        "Parce qu’elles transmettent oralement des faits exacts, mais les manuscrits modernes sont incomplets.",
+        "Parce qu’elles sont écrites par les acteurs des raids plusieurs siècles avant leur mise par écrit officielle."
+      ],
+      "why": "Le contexte d’écriture compte.",
+      "trap": "Lire les sagas comme des reportages immédiats.",
+      "evidence": "Bloc 5."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "atlantic-revolutions-revolution-francaise-1789": {
-    "hook": "1789 n’est pas seulement une foule en colère : c’est le moment où l’autorité politique change de source, du roi vers la nation.",
-    "express": [
-      "La Révolution française commence dans une crise financière, sociale et politique. Le royaume est endetté, les privilèges sont contestés, et les États généraux ouvrent un espace politique que le pouvoir royal ne contrôle plus totalement.",
-      "Le basculement majeur est la souveraineté nationale : l’idée que la loi doit exprimer la nation, et non seulement la volonté du roi. La Déclaration des droits de l’homme et du citoyen donne un langage nouveau à l’égalité civile, à la liberté et à la citoyenneté.",
-      "Le piège est de réduire 1789 à la prise de la Bastille. C’est un symbole fort, mais la révolution est aussi juridique, sociale, fiscale et institutionnelle."
-    ],
-    "complete": [
-      {
-        "title": "1. Une crise de l’Ancien Régime",
-        "text": "À la fin du XVIIIe siècle, la monarchie française affronte une crise de finances, de légitimité et d’inégalités. Les privilèges fiscaux et sociaux sont de plus en plus contestés dans un contexte de débats publics et de circulation des idées des Lumières."
-      },
-      {
-        "title": "2. Les États généraux débordent le cadre prévu",
-        "text": "Réunis en 1789, les États généraux devaient aider à résoudre la crise. Mais les députés du tiers état affirment représenter la nation. Le conflit devient alors une question de souveraineté : qui a le droit de faire la loi ?"
-      },
-      {
-        "title": "3. La souveraineté change de camp",
-        "text": "Avec l’Assemblée nationale, la nuit du 4 août et la Déclaration des droits, l’ordre ancien est ébranlé. Les privilèges sont remis en cause et les individus sont pensés comme citoyens égaux en droits."
-      },
-      {
-        "title": "4. Violence et peur politique",
-        "text": "La Révolution n’est pas un débat abstrait. Elle se déroule dans la peur, les mobilisations populaires, les rumeurs, la prise de la Bastille et les tensions avec le roi. L’événement combine idées, institutions et pression de la rue."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "1789 est un tournant parce que la légitimité politique se reformule autour de la nation, des droits et de la citoyenneté. Ce n’est pas un simple épisode parisien."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Repère",
-        "text": "Souveraineté nationale : principe selon lequel le pouvoir politique appartient à la nation."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Réduire la Révolution française à la Bastille, alors que le vrai changement est aussi institutionnel et juridique."
-      },
-      {
-        "title": "Pourquoi c’est fondateur",
-        "text": "Les débats sur droits, citoyenneté, nation et égalité restent au cœur de la politique contemporaine."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Quelle crise précède 1789 ?",
-        "a": "Une crise financière, sociale et politique de la monarchie."
-      },
-      {
-        "q": "Quel changement de souveraineté est central ?",
-        "a": "La loi doit venir de la nation, pas seulement du roi."
-      },
-      {
-        "q": "Pourquoi la Bastille ne suffit-elle pas à résumer 1789 ?",
-        "a": "Parce que la Révolution transforme aussi les droits, les institutions, les privilèges et la citoyenneté."
-      },
-      {
-        "q": "Quel texte donne un langage nouveau aux droits ?",
-        "a": "La Déclaration des droits de l’homme et du citoyen."
-      },
-      {
-        "q": "Quelle idée faut-il retenir ?",
-        "a": "1789 transforme la légitimité politique autour de la nation et des citoyens."
-      }
-    ]
-  },
+  "hook": "1789 n’est pas seulement une foule en colère : c’est le moment où l’autorité politique change de source, du roi vers la nation.",
+  "express": [
+    "La Révolution française commence dans une crise financière, sociale et politique. Le royaume est endetté, les privilèges sont contestés, et les États généraux ouvrent un espace politique que le pouvoir royal ne contrôle plus totalement.",
+    "Le basculement majeur est la souveraineté nationale : l’idée que la loi doit exprimer la nation, et non seulement la volonté du roi. La Déclaration des droits de l’homme et du citoyen donne un langage nouveau à l’égalité civile, à la liberté et à la citoyenneté.",
+    "Le piège est de réduire 1789 à la prise de la Bastille. C’est un symbole fort, mais la révolution est aussi juridique, sociale, fiscale et institutionnelle."
+  ],
+  "complete": [
+    {
+      "title": "1. Une crise de l’Ancien Régime",
+      "text": "À la fin du XVIIIe siècle, la monarchie française affronte une crise de finances, de légitimité et d’inégalités. Les privilèges fiscaux et sociaux sont de plus en plus contestés dans un contexte de débats publics et de circulation des idées des Lumières."
+    },
+    {
+      "title": "2. Les États généraux débordent le cadre prévu",
+      "text": "Réunis en 1789, les États généraux devaient aider à résoudre la crise. Mais les députés du tiers état affirment représenter la nation. Le conflit devient alors une question de souveraineté : qui a le droit de faire la loi ?"
+    },
+    {
+      "title": "3. La souveraineté change de camp",
+      "text": "Avec l’Assemblée nationale, la nuit du 4 août et la Déclaration des droits, l’ordre ancien est ébranlé. Les privilèges sont remis en cause et les individus sont pensés comme citoyens égaux en droits."
+    },
+    {
+      "title": "4. Violence et peur politique",
+      "text": "La Révolution n’est pas un débat abstrait. Elle se déroule dans la peur, les mobilisations populaires, les rumeurs, la prise de la Bastille et les tensions avec le roi. L’événement combine idées, institutions et pression de la rue."
+    },
+    {
+      "title": "5. Des États généraux à l’Assemblée nationale",
+      "text": "Le 17 juin 1789, les députés du tiers état, rejoints par quelques membres du clergé et de la noblesse, se proclament Assemblée nationale. Le Serment du Jeu de paume affirme qu’ils ne se sépareront pas avant d’avoir donné une constitution au royaume. La souveraineté commence ainsi à glisser du roi vers une représentation de la nation."
+    },
+    {
+      "title": "6. La prise de la Bastille a une portée politique",
+      "text": "Le 14 juillet, les Parisiens cherchent des armes et de la poudre dans un contexte de peur d’une répression royale. La forteresse ne détient que quelques prisonniers, mais elle symbolise l’arbitraire et la puissance militaire du pouvoir. Sa chute montre que la rue parisienne devient un acteur capable d’influencer la révolution institutionnelle."
+    },
+    {
+      "title": "7. La Grande Peur transforme les campagnes",
+      "text": "À l’été 1789, des rumeurs de complot aristocratique et de brigands circulent dans de nombreuses régions. Des paysans attaquent parfois des châteaux ou brûlent des titres seigneuriaux. Dans la nuit du 4 août, les députés abolissent le principe des privilèges, même si la disparition concrète de certaines redevances est plus lente et complexe."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "1789 est un tournant parce que la légitimité politique se reformule autour de la nation, des droits et de la citoyenneté. Ce n’est pas un simple épisode parisien."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Souveraineté nationale : principe selon lequel le pouvoir politique appartient à la nation."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Réduire la Révolution française à la Bastille, alors que le vrai changement est aussi institutionnel et juridique."
+    },
+    {
+      "title": "Pourquoi c’est fondateur",
+      "text": "Les débats sur droits, citoyenneté, nation et égalité restent au cœur de la politique contemporaine."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Quelle crise précède 1789 ?",
+      "a": "Une crise financière, sociale et politique de la monarchie.",
+      "choices": [
+        "Le 14 juillet 1789, jour où la monarchie est immédiatement abolie.",
+        "Le 21 janvier 1793, au moment de l’exécution de Louis XVI.",
+        "Le 18 Brumaire 1799, lorsque Bonaparte prend le pouvoir."
+      ],
+      "why": "Le serment du Jeu de paume marque la transformation des députés en pouvoir constituant.",
+      "trap": "Confondre les différentes journées de la Révolution.",
+      "evidence": "Cours complet, bloc sur les États généraux et l’Assemblée nationale."
+    },
+    {
+      "q": "Quel changement de souveraineté est central ?",
+      "a": "La loi doit venir de la nation, pas seulement du roi.",
+      "choices": [
+        "Une simple hausse du prix du pain sans crise politique ni financière.",
+        "La volonté unanime du roi, de la noblesse et du clergé de supprimer leurs privilèges.",
+        "Une guerre étrangère déjà commencée qui impose directement la République."
+      ],
+      "why": "La Révolution naît d’une crise financière et politique aggravée par les tensions sociales et frumentaires.",
+      "trap": "Réduire 1789 à une seule cause économique.",
+      "evidence": "Cours complet, bloc sur les crises de l’Ancien Régime."
+    },
+    {
+      "q": "Pourquoi la Bastille ne suffit-elle pas à résumer 1789 ?",
+      "a": "Parce que la Révolution transforme aussi les droits, les institutions, les privilèges et la citoyenneté.",
+      "choices": [
+        "Elle affirme que la souveraineté appartient au roi mais doit respecter les coutumes.",
+        "Elle réserve les droits politiques et civils aux seuls propriétaires nobles.",
+        "Elle garantit immédiatement l’égalité réelle et le suffrage universel à tous."
+      ],
+      "why": "La Déclaration pose des principes nouveaux de droits et de souveraineté, sans résoudre immédiatement toutes les exclusions.",
+      "trap": "Lire le texte comme une égalité sociale déjà réalisée.",
+      "evidence": "Cours complet, bloc sur la Déclaration des droits."
+    },
+    {
+      "q": "Quel texte donne un langage nouveau aux droits ?",
+      "a": "La Déclaration des droits de l’homme et du citoyen.",
+      "choices": [
+        "Parce que la monarchie disparaît dès la réunion des États généraux.",
+        "Parce que tous les Français obtiennent immédiatement les mêmes droits politiques.",
+        "Parce que les conflits sociaux cessent après l’abolition des privilèges."
+      ],
+      "why": "Entre 1789 et 1792, monarchie, souveraineté nationale et participation populaire restent en conflit.",
+      "trap": "Croire que la République est décidée dès juin 1789.",
+      "evidence": "Cours complet, bloc sur la monarchie constitutionnelle."
+    },
+    {
+      "q": "Quelle idée faut-il retenir ?",
+      "a": "1789 transforme la légitimité politique autour de la nation et des citoyens.",
+      "choices": [
+        "Une réforme fiscale limitée qui conserve l’ordre social et politique de l’Ancien Régime.",
+        "Une révolution achevée en quelques semaines sans guerre ni divisions ultérieures.",
+        "Une victoire exclusive de la bourgeoisie sans participation populaire ni paysanne."
+      ],
+      "why": "1789 ouvre une transformation durable de la souveraineté, des droits et de l’ordre social, puis de nouveaux conflits.",
+      "trap": "Présenter la Révolution comme un événement bref et achevé.",
+      "evidence": "Conclusion du cours."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "Le 17 juin 1789, les députés du tiers état, rejoints par quelques membres du clergé et de la noblesse, se proclament Assemblée nationale."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Le 14 juillet, les Parisiens cherchent des armes et de la poudre dans un contexte de peur d’une répression royale."
+    },
+    {
+      "label": "Conséquence",
+      "text": "À l’été 1789, des rumeurs de complot aristocratique et de brigands circulent dans de nombreuses régions."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "1789-crisis": {
     "hook": "1789 n’éclate pas parce qu’un peuple se réveille soudain : la Révolution naît d’une crise financière, sociale, politique et symbolique qui rend l’Ancien Régime impossible à réparer simplement.",
     "keyFacts": [
@@ -5726,9 +6361,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la crise financière fragilise-t-elle la monarchie en 1789 ?",
         "a": "Parce que l’État est très endetté et ne parvient plus à faire accepter une réforme fiscale durable.",
         "choices": [
-          "Parce que le roi décide volontairement de supprimer toutes les institutions.",
-          "Parce que la France ne possède plus aucune administration locale.",
-          "Parce que les députés refusent toute discussion sur les impôts avant même les États généraux."
+          "Parce que le roi refuse par principe tout nouvel impôt malgré des finances encore équilibrées.",
+          "Parce que les dépenses de la cour sont la seule cause du déficit et suffisent à expliquer la Révolution.",
+          "Parce que les États généraux disposent déjà du pouvoir de voter le budget et bloquent toute réforme."
         ],
         "why": "La dette rend nécessaire une réforme, mais le système politique bloque.",
         "trap": "Chercher une seule cause spectaculaire.",
@@ -5739,9 +6374,9 @@ const READY_LESSON_PACKS = {
         "q": "Qu’est-ce qui rend la société d’ordres contestable ?",
         "a": "L’existence d’inégalités juridiques et fiscales entre clergé, noblesse et tiers état.",
         "choices": [
-          "L’égalité complète entre tous les habitants du royaume.",
-          "L’absence de distinction sociale avant 1789.",
-          "La domination politique exclusive des paysans sur la noblesse."
+          "Le poids économique du tiers état, alors que les trois ordres disposent pourtant des mêmes droits et impôts.",
+          "Le conflit entre noblesse et clergé, les privilèges du tiers état étant désormais majoritaires.",
+          "L’absence de mobilité sociale, davantage que les différences de droits et de fiscalité entre ordres."
         ],
         "why": "La contestation porte sur les privilèges et les droits.",
         "trap": "Réduire la crise à une simple pénurie alimentaire.",
@@ -5752,9 +6387,9 @@ const READY_LESSON_PACKS = {
         "q": "Que signifie la proclamation de l’Assemblée nationale ?",
         "a": "Les députés du tiers état affirment représenter la nation et non plus seulement un ordre séparé.",
         "choices": [
-          "Le roi renforce le vote par ordre sans opposition.",
-          "Le clergé interdit toute constitution écrite.",
-          "Les provinces remplacent immédiatement Paris comme capitale politique."
+          "Les trois ordres décident ensemble de transformer les États généraux en parlement permanent.",
+          "Le tiers état réclame seulement le vote par tête tout en acceptant de rester un ordre distinct.",
+          "Les députés contestent les impôts royaux mais reconnaissent au roi seul le droit de parler au nom de la nation."
         ],
         "why": "C’est un déplacement de souveraineté.",
         "trap": "Confondre réunion des États généraux et révolution déjà achevée.",
@@ -5765,9 +6400,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la prise de la Bastille compte-t-elle ?",
         "a": "Elle montre que le peuple parisien peut intervenir dans la crise politique et sauver la dynamique révolutionnaire.",
         "choices": [
-          "Elle règle définitivement toutes les questions fiscales.",
-          "Elle abolit à elle seule tous les privilèges du royaume.",
-          "Elle marque la fin immédiate de la monarchie dès juillet 1789."
+          "Elle provoque immédiatement l’abolition des privilèges et la Déclaration des droits.",
+          "Elle constitue surtout une victoire militaire contre une forteresse qui menaçait directement l’Assemblée.",
+          "Elle montre que Paris soutient la monarchie constitutionnelle déjà établie contre les députés les plus radicaux."
         ],
         "why": "L’événement donne une force populaire à la Révolution.",
         "trap": "Lui attribuer tous les effets de l’année 1789.",
@@ -5778,9 +6413,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle formule résume le mieux 1789 ?",
         "a": "Une crise de l’État, des privilèges et de la souveraineté qui devient une révolution politique et sociale.",
         "choices": [
-          "Une réforme fiscale calme, menée sans mobilisation collective.",
-          "Une succession d’événements sans lien entre finances, société et politique.",
-          "Une crise uniquement militaire provoquée par une invasion étrangère."
+          "Une faillite financière qui oblige le roi à accepter quelques réformes sans changer la souveraineté.",
+          "Une révolte populaire qui renverse immédiatement la monarchie et fonde la République.",
+          "Une crise des privilèges réglée par les députés avant que la population n’intervienne."
         ],
         "why": "La bonne réponse relie plusieurs niveaux de crise.",
         "trap": "Réduire 1789 à une date ou à une foule.",
@@ -5858,9 +6493,9 @@ const READY_LESSON_PACKS = {
         "q": "Que proclame la Déclaration des droits de 1789 ?",
         "a": "Des principes comme liberté, égalité civile, propriété, sûreté et résistance à l’oppression.",
         "choices": [
-          "La restauration complète des privilèges seigneuriaux.",
-          "La suppression de toute loi commune au profit du roi seul.",
-          "L’obligation pour chaque citoyen d’appartenir au clergé."
+          "Des droits politiques égaux pour tous les adultes, femmes et hommes, quelle que soit leur richesse.",
+          "La primauté de la souveraineté populaire directe sur toute loi et toute représentation.",
+          "L’abolition immédiate de l’esclavage et des inégalités économiques dans tout l’empire colonial."
         ],
         "why": "Le texte fixe la nouvelle grammaire politique.",
         "trap": "Croire qu’il règle immédiatement tous les problèmes.",
@@ -5871,9 +6506,9 @@ const READY_LESSON_PACKS = {
         "q": "Que signifie la souveraineté nationale ?",
         "a": "Le pouvoir légitime vient de la nation et non plus seulement de la personne du roi.",
         "choices": [
-          "Le roi peut décider seul sans constitution.",
-          "Chaque province devient un royaume indépendant.",
-          "La noblesse récupère le monopole de l’impôt."
+          "Le pouvoir est partagé à parts égales entre le roi, les ordres et les provinces historiques.",
+          "La nation désigne l’ensemble des électeurs actifs qui exercent directement tous les pouvoirs.",
+          "Le roi reste la source de la souveraineté, mais il délègue temporairement son autorité aux députés."
         ],
         "why": "C’est une rupture avec l’absolutisme.",
         "trap": "Confondre nation et opinion unanime.",
@@ -5884,9 +6519,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la réorganisation administrative est-elle importante ?",
         "a": "Parce que la Révolution transforme aussi les institutions, la justice, les départements et les rapports avec l’Église.",
         "choices": [
-          "Parce que les droits restent uniquement une poésie sans aucune décision concrète.",
-          "Parce que les provinces d’Ancien Régime sont conservées sans changement.",
-          "Parce que le clergé devient l’unique administration de l’État."
+          "Parce qu’elle remplace surtout les anciennes provinces par des départements sans modifier justice ni Église.",
+          "Parce qu’elle applique les principes de 1789 uniquement à Paris, les institutions locales restant inchangées.",
+          "Parce qu’elle décentralise totalement l’État et rend chaque département souverain."
         ],
         "why": "La nouvelle France se construit par des mesures pratiques.",
         "trap": "Ne regarder que les grands discours.",
@@ -5897,9 +6532,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle limite faut-il retenir sur les droits de 1789 ?",
         "a": "Leur langage est universel, mais femmes, pauvres et esclaves coloniaux restent largement exclus.",
         "choices": [
-          "Tous les habitants votent immédiatement dans les mêmes conditions.",
-          "L’esclavage est aboli partout dans l’empire dès août 1789.",
-          "Les femmes deviennent majoritaires dans toutes les assemblées."
+          "Les droits civils s’appliquent seulement aux électeurs actifs, les autres habitants restant juridiquement sujets.",
+          "Le texte exclut explicitement les femmes, les pauvres et les esclaves de tous les droits qu’il proclame.",
+          "Les principes restent théoriques jusqu’au XIXe siècle et ne modifient aucun statut dès la Révolution."
         ],
         "why": "La tension entre principes et réalités est centrale.",
         "trap": "Confondre proclamation et application complète.",
@@ -5910,9 +6545,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi 1789 change-t-il la langue du pouvoir ?",
         "a": "Parce que la loi, les droits, la nation et l’égalité civile deviennent des références centrales.",
         "choices": [
-          "Parce que le pouvoir royal devient plus absolu qu’avant.",
-          "Parce que les privilèges d’ordres deviennent la base officielle de la citoyenneté.",
-          "Parce que la France renonce à écrire des textes politiques."
+          "Parce que la nation remplace la loi comme seule source légitime de décisions particulières.",
+          "Parce que l’égalité sociale réelle devient immédiatement la condition de toute citoyenneté.",
+          "Parce que les anciennes catégories de privilège sont conservées mais reformulées comme des droits individuels."
         ],
         "why": "Les mots du pouvoir changent avec les institutions.",
         "trap": "Ne voir que l’événementiel.",
@@ -5990,9 +6625,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la République se radicalise-t-elle à partir de 1792 ?",
         "a": "Parce qu’elle affronte la guerre extérieure, la chute de la monarchie, des révoltes et des divisions politiques.",
         "choices": [
-          "Parce que la France connaît une paix stable avec toutes les monarchies européennes.",
-          "Parce que Louis XVI reçoit des pouvoirs absolus renforcés par la Convention.",
-          "Parce que les clubs politiques disparaissent avant toute crise."
+          "Parce que la victoire militaire rapide libère le gouvernement de toute contrainte constitutionnelle.",
+          "Parce que les conflits sociaux cessent, laissant les clubs se diviser uniquement sur la religion.",
+          "Parce que la République est proclamée avant le début de la guerre et cherche ensuite à l’étendre par choix idéologique."
         ],
         "why": "Plusieurs menaces alimentent la radicalisation.",
         "trap": "Isoler la Terreur de la guerre.",
@@ -6003,9 +6638,9 @@ const READY_LESSON_PACKS = {
         "q": "Que provoque le 10 août 1792 ?",
         "a": "La chute de la monarchie constitutionnelle et l’ouverture de la voie républicaine.",
         "choices": [
-          "La restauration de l’Ancien Régime sans constitution.",
-          "La fin de toutes les mobilisations populaires à Paris.",
-          "La création de l’Empire napoléonien le même jour."
+          "La proclamation immédiate de la République et l’exécution de Louis XVI le même jour.",
+          "La suspension temporaire du roi, tandis que la Constitution de 1791 reste pleinement en vigueur.",
+          "Une victoire des armées étrangères qui oblige l’Assemblée à quitter Paris."
         ],
         "why": "C’est une rupture politique majeure.",
         "trap": "Confondre 1792 avec 1789 ou 1804.",
@@ -6016,9 +6651,9 @@ const READY_LESSON_PACKS = {
         "q": "À quoi sert le Comité de salut public dans ce contexte ?",
         "a": "À concentrer le gouvernement révolutionnaire pour défendre la République en guerre.",
         "choices": [
-          "À rétablir le pouvoir personnel de Louis XVI.",
-          "À organiser uniquement des fêtes sans rôle politique.",
-          "À supprimer les armées alors que les frontières sont menacées."
+          "À juger les suspects et prononcer les condamnations au nom de la Convention.",
+          "À diriger provisoirement les armées sans intervenir dans l’économie ni la politique intérieure.",
+          "À remplacer la Convention par un exécutif indépendant élu au suffrage universel."
         ],
         "why": "Il incarne un pouvoir d’exception.",
         "trap": "Le décrire comme une institution ordinaire.",
@@ -6029,9 +6664,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi comprendre la Terreur ne veut-il pas dire la justifier ?",
         "a": "Parce qu’on peut expliquer ses mécanismes de guerre, de peur et de pouvoir sans approuver la violence.",
         "choices": [
-          "Parce qu’il faut supprimer tout contexte historique.",
-          "Parce que les violences n’ont laissé aucune trace.",
-          "Parce que la Terreur est une période totalement inventée."
+          "Parce que le contexte militaire explique à lui seul toutes les décisions et retire toute responsabilité aux acteurs.",
+          "Parce que condamner la violence empêche de comprendre les menaces réelles auxquelles la République fait face.",
+          "Parce que les mesures d’exception sont justifiées dès lors qu’elles sont prises au nom de la défense révolutionnaire."
         ],
         "why": "L’histoire cherche des causes, pas des excuses automatiques.",
         "trap": "Confondre explication et approbation.",
@@ -6042,9 +6677,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle idée résume le mieux le cours ?",
         "a": "La République en danger produit un gouvernement d’exception qui radicalise la Révolution.",
         "choices": [
-          "La Terreur apparaît dans une France paisible et sans conflit.",
-          "La Révolution s’arrête définitivement dès la Déclaration des droits.",
-          "La République naît uniquement d’une réforme administrative locale."
+          "La République suspend provisoirement la Révolution afin de revenir aux institutions de 1791.",
+          "Le gouvernement d’exception répond seulement aux ennemis extérieurs et laisse la vie politique intérieure inchangée.",
+          "La Terreur résulte surtout du pouvoir personnel de Robespierre, indépendamment de la guerre et des institutions."
         ],
         "why": "La bonne réponse relie République, guerre et exception.",
         "trap": "Réduire la période à une image de guillotine.",
@@ -6122,9 +6757,9 @@ const READY_LESSON_PACKS = {
         "q": "Comment Bonaparte arrive-t-il au pouvoir en 1799 ?",
         "a": "Par le coup d’État du 18 Brumaire, dans un contexte de Directoire fragilisé.",
         "choices": [
-          "Par une élection présidentielle au suffrage universel direct.",
-          "Par l’héritage dynastique normal des Bourbons.",
-          "Par une décision de la Convention en 1793."
+          "Par une victoire électorale du Directoire qui lui confie légalement un mandat de Premier consul.",
+          "Par le soutien unanime des assemblées, qui réforment la Constitution sans intervention militaire.",
+          "Par une insurrection populaire parisienne qui renverse le Directoire en son absence."
         ],
         "why": "Le repère distingue Consulat, République et Empire.",
         "trap": "Confondre 1799 et le sacre de 1804.",
@@ -6135,9 +6770,9 @@ const READY_LESSON_PACKS = {
         "q": "Quel acquis révolutionnaire Napoléon stabilise-t-il en partie ?",
         "a": "L’égalité civile masculine et la protection de la propriété issue des transformations révolutionnaires.",
         "choices": [
-          "Le retour complet des privilèges de naissance.",
-          "La disparition de toute administration centralisée.",
-          "Le pouvoir politique autonome des assemblées de village."
+          "La souveraineté populaire exercée par des élections libres et régulières.",
+          "L’égalité complète des sexes devant la loi civile et familiale.",
+          "La décentralisation administrative mise en place par les assemblées révolutionnaires."
         ],
         "why": "Le régime consolide certains effets de 1789.",
         "trap": "Croire à une restauration pure et simple.",
@@ -6148,9 +6783,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi l’État napoléonien est-il autoritaire ?",
         "a": "Parce qu’il centralise l’administration, surveille l’opinion, limite la presse et encadre la participation politique.",
         "choices": [
-          "Parce qu’il supprime toute police et toute administration.",
-          "Parce qu’il laisse les provinces décider seules de la guerre.",
-          "Parce qu’il interdit les préfets et les tribunaux."
+          "Parce qu’il supprime les institutions représentatives et gouverne uniquement par décrets militaires.",
+          "Parce qu’il restaure la noblesse d’Ancien Régime et rend aux privilégiés leurs pouvoirs politiques.",
+          "Parce qu’il confie l’administration locale à des assemblées autonomes tout en contrôlant l’armée."
         ],
         "why": "L’efficacité administrative s’accompagne de contrôle.",
         "trap": "Confondre ordre et liberté politique.",
@@ -6161,9 +6796,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi le Code civil est-il durable mais limité ?",
         "a": "Il unifie le droit et protège propriété et contrats, mais renforce aussi l’autorité masculine dans la famille.",
         "choices": [
-          "Il abolit immédiatement toutes les inégalités entre hommes et femmes.",
-          "Il concerne uniquement les opérations militaires.",
-          "Il restaure les coutumes locales sans aucun cadre commun."
+          "Il consacre l’égalité civile de tous, mais laisse chaque région conserver son droit privé.",
+          "Il protège surtout les libertés politiques et la presse, tout en limitant les droits de propriété.",
+          "Il uniformise le droit familial et patrimonial sans conserver aucun héritage révolutionnaire."
         ],
         "why": "Le Code mêle modernisation juridique et hiérarchies sociales.",
         "trap": "Le présenter comme un progrès total sans limites.",
@@ -6174,9 +6809,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle formule résume le mieux Napoléon ?",
         "a": "Un pouvoir qui stabilise certains acquis révolutionnaires tout en construisant un régime autoritaire et guerrier.",
         "choices": [
-          "Un roi médiéval sans lien avec la Révolution française.",
-          "Un dirigeant sans administration, sans armée et sans réforme juridique.",
-          "Un président républicain gouvernant sans contrôle de l’opinion."
+          "Un régime qui restaure l’Ancien Régime tout en conservant le vocabulaire révolutionnaire.",
+          "Une dictature militaire qui détruit les réformes civiles et administratives de la Révolution.",
+          "Une république autoritaire qui refuse l’hérédité impériale et limite les conquêtes extérieures."
         ],
         "why": "La réponse tient ensemble héritage, autorité et guerre.",
         "trap": "Choisir une image simple au lieu d’une tension historique.",
@@ -6254,9 +6889,9 @@ const READY_LESSON_PACKS = {
         "q": "Quel est l’objectif principal du congrès de Vienne ?",
         "a": "Restaurer un ordre monarchique et maintenir un équilibre entre les grandes puissances européennes.",
         "choices": [
-          "Créer immédiatement une Europe républicaine fédérale.",
-          "Proclamer Napoléon roi héréditaire de tous les États allemands.",
-          "Supprimer toute diplomatie entre les puissances."
+          "Rétablir partout les frontières de 1789 et rendre à chaque dynastie l’intégralité de ses anciens territoires.",
+          "Punir durablement la France en l’excluant de l’équilibre européen et en la plaçant sous occupation permanente.",
+          "Créer une alliance militaire unique dirigée par l’Autriche pour empêcher toute guerre entre monarchies."
         ],
         "why": "Le congrès cherche stabilité et équilibre continental.",
         "trap": "Voir Vienne comme une simple vengeance contre la France.",
@@ -6267,9 +6902,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi 1815 n’efface-t-il pas 1789 ?",
         "a": "Parce que certaines réformes, idées de droits, pratiques administratives et attentes politiques ont déjà transformé l’Europe.",
         "choices": [
-          "Parce que l’Ancien Régime revient partout exactement comme avant.",
-          "Parce que les guerres napoléoniennes n’ont touché aucun territoire.",
-          "Parce que les populations oublient immédiatement les constitutions."
+          "Parce que les souverains restaurés conservent volontairement toutes les constitutions imposées par Napoléon.",
+          "Parce que les peuples obtiennent immédiatement le droit de choisir leurs frontières et leurs gouvernements.",
+          "Parce que les réformes administratives survivent, mais les idées politiques révolutionnaires disparaissent rapidement."
         ],
         "why": "Les changements sociaux et politiques ne disparaissent pas d’un coup.",
         "trap": "Confondre restauration dynastique et retour total en arrière.",
@@ -6280,9 +6915,9 @@ const READY_LESSON_PACKS = {
         "q": "Que demandent souvent les libéraux du XIXe siècle ?",
         "a": "Des constitutions, des libertés politiques, des assemblées et des garanties contre l’arbitraire.",
         "choices": [
-          "Le rétablissement intégral des droits seigneuriaux.",
-          "La suppression définitive de toute presse politique.",
-          "L’interdiction de toute représentation nationale."
+          "Le suffrage universel, l’égalité sociale et la souveraineté directe exercée sans représentants.",
+          "La liberté économique avant toute garantie constitutionnelle ou liberté publique.",
+          "L’unification nationale des peuples européens, même lorsqu’elle exige un pouvoir monarchique absolu."
         ],
         "why": "Le libéralisme politique vise à limiter le pouvoir arbitraire.",
         "trap": "Confondre libéralisme et démocratie complète immédiate.",
@@ -6293,9 +6928,9 @@ const READY_LESSON_PACKS = {
         "q": "Pourquoi la question nationale devient-elle explosive ?",
         "a": "Parce que des peuples contestent des frontières et dominations décidées sans eux par les puissances.",
         "choices": [
-          "Parce que toutes les frontières européennes deviennent unanimement acceptées.",
-          "Parce que les identités politiques disparaissent après 1815.",
-          "Parce que les diplomates renoncent à toute décision territoriale."
+          "Parce que les peuples nouvellement unifiés cherchent à restaurer leurs anciennes frontières médiévales.",
+          "Parce que les puissances encouragent les mouvements nationaux pour affaiblir leurs propres empires.",
+          "Parce que le principe national est déjà reconnu à Vienne, mais les populations contestent son application inégale."
         ],
         "why": "Le nationalisme remet en cause l’ordre de Vienne.",
         "trap": "Croire que l’équilibre diplomatique suffit à satisfaire les populations.",
@@ -6306,9 +6941,9 @@ const READY_LESSON_PACKS = {
         "q": "Quelle idée résume l’Europe après Napoléon ?",
         "a": "Un ordre restauré tente de contenir des héritages révolutionnaires, libéraux et nationaux encore actifs.",
         "choices": [
-          "Une Europe parfaitement immobile jusqu’en 1914.",
-          "Une disparition complète des monarchies dès 1815.",
-          "Une paix sociale totale sans révolutions ni contestations."
+          "Un retour durable à l’ordre d’avant 1789, perturbé seulement par quelques révoltes locales sans héritage commun.",
+          "Un nouvel équilibre démocratique où monarchies et peuples acceptent les mêmes principes politiques.",
+          "Une Europe dominée par les nationalités, les monarchies restaurées n’ayant plus de moyens de les contenir."
         ],
         "why": "La période est structurée par une tension durable.",
         "trap": "Croire à une parenthèse refermée sans conséquences.",
@@ -6317,167 +6952,279 @@ const READY_LESSON_PACKS = {
     ]
   },
   "russian-revolution-postwar": {
-    "hook": "La révolution russe ne commence pas par un plan bolchevique parfaitement maîtrisé : c’est l’effondrement d’un empire en guerre, puis une lutte brutale pour définir qui parle au nom du peuple.",
-    "express": [
-      "En 1917, la Russie connaît deux révolutions. En février, le tsar Nicolas II abdique après une crise nourrie par la guerre, les pénuries, les grèves et la perte de légitimité. Un gouvernement provisoire apparaît, mais il continue la guerre et peine à répondre aux attentes.",
-      "En octobre, les bolcheviks prennent le pouvoir au nom des soviets avec des mots d’ordre efficaces : paix, terre, pain, pouvoir aux soviets. Leur victoire n’est pas seulement idéologique : elle s’appuie sur la crise de l’État, la guerre, la discipline du parti et la faiblesse des adversaires.",
-      "Le piège est de raconter une révolution linéaire. Après octobre viennent guerre civile, terreur, armées blanches, interventions étrangères, famine et construction d’un État communiste autoritaire. La révolution ouvre une espérance et une violence d’État nouvelle."
-    ],
-    "complete": [
-      {
-        "title": "1. L’empire fragilisé par la guerre",
-        "text": "La Première Guerre mondiale désorganise l’économie, l’armée, les transports et les villes. Les pertes militaires, les pénuries et le discrédit du tsarisme rendent le régime incapable de tenir le choc."
-      },
-      {
-        "title": "2. Février : révolution sans pouvoir stable",
-        "text": "Le tsar abdique, mais le pouvoir est partagé entre gouvernement provisoire et soviets. Cette dualité crée une instabilité permanente : qui représente vraiment le peuple, l’État ou les conseils ?"
-      },
-      {
-        "title": "3. Octobre : prendre le moment",
-        "text": "Les bolcheviks exploitent la fatigue de guerre et la colère sociale. Leur force vient d’une ligne claire, d’un parti discipliné et de slogans qui répondent aux urgences : paix, terre, pain."
-      },
-      {
-        "title": "4. Guerre civile et radicalisation",
-        "text": "La prise du pouvoir ne stabilise pas la Russie. Armée rouge, armées blanches, réquisitions, terreur, interventions étrangères et famine transforment la révolution en guerre de survie."
-      },
-      {
-        "title": "5. Un nouveau type de régime",
-        "text": "La révolution débouche sur un État qui prétend gouverner au nom du prolétariat, mais concentre rapidement le pouvoir autour du parti unique, de la police politique et d’une centralisation extrême."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Repère",
-        "text": "Soviet : conseil d’ouvriers, soldats ou paysans, apparu dans les crises révolutionnaires russes."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Confondre février et octobre. Février renverse le tsar ; octobre porte les bolcheviks au pouvoir."
-      },
-      {
-        "title": "Question de fond",
-        "text": "La révolution russe pose une tension durable : émancipation sociale proclamée, autoritarisme politique construit."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Qu’est-ce qui fragilise le tsarisme en 1917 ?",
-        "a": "La guerre, les pénuries, les grèves, les défaites et la perte de légitimité.",
-        "why": "La révolution naît d’une crise d’État et de société.",
-        "trap": "Tout expliquer par un complot bolchevique.",
-        "evidence": "Le premier bloc."
-      },
-      {
-        "q": "Quelle différence entre février et octobre ?",
-        "a": "Février renverse le tsar ; octobre porte les bolcheviks au pouvoir.",
-        "why": "Les deux moments n’ont pas les mêmes acteurs ni les mêmes conséquences.",
-        "trap": "Fusionner les deux révolutions en un seul événement.",
-        "evidence": "Le bloc “Erreur fréquente”."
-      },
-      {
-        "q": "Pourquoi les slogans bolcheviks fonctionnent-ils ?",
-        "a": "Ils répondent directement aux urgences : paix, terre, pain, pouvoir aux soviets.",
-        "why": "Un slogan efficace condense des attentes sociales concrètes.",
-        "trap": "Croire que l’idéologie seule suffit.",
-        "evidence": "Le troisième bloc."
-      },
-      {
-        "q": "Que se passe-t-il après octobre ?",
-        "a": "Une guerre civile, la terreur, les réquisitions, la famine et la construction d’un État centralisé.",
-        "why": "La prise du pouvoir ne stabilise pas le pays.",
-        "trap": "Finir le récit le soir de la prise du palais d’Hiver.",
-        "evidence": "Le quatrième bloc."
-      },
-      {
-        "q": "Quelle tension politique naît de la révolution russe ?",
-        "a": "Une émancipation sociale proclamée associée à une concentration autoritaire du pouvoir.",
-        "why": "C’est un enjeu majeur du communisme soviétique.",
-        "trap": "Ne voir que l’espoir ou que la dictature sans expliquer le lien historique.",
-        "evidence": "Le dernier bloc et “Question de fond”."
-      }
-    ]
-  },
+  "hook": "La révolution russe ne commence pas par un plan bolchevique parfaitement maîtrisé : c’est l’effondrement d’un empire en guerre, puis une lutte brutale pour définir qui parle au nom du peuple.",
+  "express": [
+    "En 1917, la Russie connaît deux révolutions. En février, le tsar Nicolas II abdique après une crise nourrie par la guerre, les pénuries, les grèves et la perte de légitimité. Un gouvernement provisoire apparaît, mais il continue la guerre et peine à répondre aux attentes.",
+    "En octobre, les bolcheviks prennent le pouvoir au nom des soviets avec des mots d’ordre efficaces : paix, terre, pain, pouvoir aux soviets. Leur victoire n’est pas seulement idéologique : elle s’appuie sur la crise de l’État, la guerre, la discipline du parti et la faiblesse des adversaires.",
+    "Le piège est de raconter une révolution linéaire. Après octobre viennent guerre civile, terreur, armées blanches, interventions étrangères, famine et construction d’un État communiste autoritaire. La révolution ouvre une espérance et une violence d’État nouvelle."
+  ],
+  "complete": [
+    {
+      "title": "1. L’empire fragilisé par la guerre",
+      "text": "La Première Guerre mondiale désorganise l’économie, l’armée, les transports et les villes. Les pertes militaires, les pénuries et le discrédit du tsarisme rendent le régime incapable de tenir le choc."
+    },
+    {
+      "title": "2. Février : révolution sans pouvoir stable",
+      "text": "Le tsar abdique, mais le pouvoir est partagé entre gouvernement provisoire et soviets. Cette dualité crée une instabilité permanente : qui représente vraiment le peuple, l’État ou les conseils ?"
+    },
+    {
+      "title": "3. Octobre : prendre le moment",
+      "text": "Les bolcheviks exploitent la fatigue de guerre et la colère sociale. Leur force vient d’une ligne claire, d’un parti discipliné et de slogans qui répondent aux urgences : paix, terre, pain."
+    },
+    {
+      "title": "4. Guerre civile et radicalisation",
+      "text": "La prise du pouvoir ne stabilise pas la Russie. Armée rouge, armées blanches, réquisitions, terreur, interventions étrangères et famine transforment la révolution en guerre de survie."
+    },
+    {
+      "title": "5. Un nouveau type de régime",
+      "text": "La révolution débouche sur un État qui prétend gouverner au nom du prolétariat, mais concentre rapidement le pouvoir autour du parti unique, de la police politique et d’une centralisation extrême."
+    },
+    {
+      "title": "6. Février 1917 : l’effondrement du tsarisme",
+      "text": "À Petrograd, manifestations, grèves et mutineries se multiplient dans un contexte de pénuries et de guerre. Nicolas II abdique. Un gouvernement provisoire partage alors de fait l’espace politique avec les soviets, conseils de soldats et d’ouvriers. Cette “double puissance” rend la situation instable, surtout parce que la guerre continue."
+    },
+    {
+      "title": "7. Octobre : une prise de pouvoir organisée",
+      "text": "Les bolcheviks, devenus influents dans plusieurs soviets, renversent le gouvernement provisoire en octobre 1917 selon le calendrier russe de l’époque. Ils promettent paix, terre et pouvoir aux soviets. L’événement est décisif, mais il ne signifie pas que tout le pays adhère immédiatement au nouveau régime."
+    },
+    {
+      "title": "8. Guerre civile et transformation autoritaire",
+      "text": "De 1918 à 1921, les Rouges affrontent des armées blanches, des mouvements nationaux, des paysans insurgés et des interventions étrangères. Réquisitions, terreur politique et effondrement économique durcissent le pouvoir. La création de l’URSS en 1922 stabilise un nouvel État, mais dans un cadre de parti unique déjà très contraignant."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "La révolution russe ne commence pas par un plan bolchevique parfaitement maîtrisé : c’est l’effondrement d’un empire en guerre, puis une lutte brutale pour définir qui parle au nom du peuple."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Soviet : conseil d’ouvriers, soldats ou paysans, apparu dans les crises révolutionnaires russes."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Confondre février et octobre. Février renverse le tsar ; octobre porte les bolcheviks au pouvoir."
+    },
+    {
+      "title": "Question de fond",
+      "text": "La révolution russe pose une tension durable : émancipation sociale proclamée, autoritarisme politique construit."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Qu’est-ce qui fragilise le tsarisme en 1917 ?",
+      "a": "La guerre, les pénuries, les grèves, les défaites et la perte de légitimité.",
+      "choices": [
+        "Parce que la Russie gagne rapidement la guerre et renforce le prestige du tsar.",
+        "Parce que la guerre reste limitée au front et ne touche ni ravitaillement ni transports.",
+        "Parce que les soldats sont mieux payés et les villes mieux approvisionnées qu’avant 1914."
+      ],
+      "why": "La révolution naît d’une crise d’État et de société.",
+      "trap": "Tout expliquer par un complot bolchevique.",
+      "evidence": "Le premier bloc."
+    },
+    {
+      "q": "Quelle différence entre février et octobre ?",
+      "a": "Février renverse le tsar ; octobre porte les bolcheviks au pouvoir.",
+      "choices": [
+        "Le maintien du tsar avec une nouvelle constitution démocratique.",
+        "La prise directe du pouvoir par les bolcheviks dès le départ, sans gouvernement provisoire.",
+        "La fin immédiate de la guerre et de toutes les pénuries dans les villes."
+      ],
+      "why": "Les deux moments n’ont pas les mêmes acteurs ni les mêmes conséquences.",
+      "trap": "Fusionner les deux révolutions en un seul événement.",
+      "evidence": "Le bloc “Erreur fréquente”."
+    },
+    {
+      "q": "Pourquoi les slogans bolcheviks fonctionnent-ils ?",
+      "a": "Ils répondent directement aux urgences : paix, terre, pain, pouvoir aux soviets.",
+      "choices": [
+        "Les conseils nommés par le tsar pour contrôler les usines et les régiments.",
+        "Des assemblées uniquement paysannes chargées de redistribuer les terres.",
+        "Des tribunaux militaires créés pour réprimer les grèves et les désertions."
+      ],
+      "why": "Un slogan efficace condense des attentes sociales concrètes.",
+      "trap": "Croire que l’idéologie seule suffit.",
+      "evidence": "Le troisième bloc."
+    },
+    {
+      "q": "Que se passe-t-il après octobre ?",
+      "a": "Une guerre civile, la terreur, les réquisitions, la famine et la construction d’un État centralisé.",
+      "choices": [
+        "Une révolution conservatrice visant à restaurer l’autorité du tsar.",
+        "Une simple élection remportée légalement par les bolcheviks dans toute la Russie.",
+        "Une révolte militaire sans programme sur la paix, la terre ou le pouvoir."
+      ],
+      "why": "La prise du pouvoir ne stabilise pas le pays.",
+      "trap": "Finir le récit le soir de la prise du palais d’Hiver.",
+      "evidence": "Le quatrième bloc."
+    },
+    {
+      "q": "Quelle tension politique naît de la révolution russe ?",
+      "a": "Une émancipation sociale proclamée associée à une concentration autoritaire du pouvoir.",
+      "choices": [
+        "Parce qu’elle oppose seulement la Russie aux puissances étrangères après 1918.",
+        "Parce qu’elle se termine rapidement sans famine, violence ni intervention extérieure.",
+        "Parce qu’elle rétablit les institutions du gouvernement provisoire et annule Octobre."
+      ],
+      "why": "C’est un enjeu majeur du communisme soviétique.",
+      "trap": "Ne voir que l’espoir ou que la dictature sans expliquer le lien historique.",
+      "evidence": "Le dernier bloc et “Question de fond”."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "À Petrograd, manifestations, grèves et mutineries se multiplient dans un contexte de pénuries et de guerre."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Les bolcheviks, devenus influents dans plusieurs soviets, renversent le gouvernement provisoire en octobre 1917 selon le calendrier russe de l’époque."
+    },
+    {
+      "label": "Conséquence",
+      "text": "De 1918 à 1921, les Rouges affrontent des armées blanches, des mouvements nationaux, des paysans insurgés et des interventions étrangères."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "second-world-war-detail-resistances-collaborations": {
-    "hook": "Sous l’Occupation, personne ne vit dans un schéma simple héros/traîtres : contraintes, peur, intérêts, convictions et choix moraux se croisent brutalement.",
-    "express": [
-      "Résistance et collaboration ne sont pas seulement deux camps abstraits. Elles se déploient dans des situations concrètes : occupation militaire, pénuries, répression, propagande, antisémitisme d’État, surveillance et peur des représailles.",
-      "La Résistance rassemble des profils divers : gaullistes, communistes, chrétiens, républicains, étrangers, réseaux de renseignement, maquis, presse clandestine, aides aux persécutés. Elle n’est pas massive dès 1940 et se transforme avec la guerre.",
-      "Le piège est de juger tout le monde depuis la fin de l’histoire. Il faut comprendre les contraintes sans excuser les choix : collaborer, dénoncer, résister, attendre ou survivre n’ont ni les mêmes risques ni les mêmes responsabilités."
-    ],
-    "complete": [
-      {
-        "title": "1. L’Occupation comme cadre",
-        "text": "La défaite, la présence allemande, Vichy, la propagande, les rationnements et la répression créent une situation où les choix sont rarement abstraits. Les possibilités d’action dépendent du lieu, du métier, du réseau et du moment."
-      },
-      {
-        "title": "2. Collaborations multiples",
-        "text": "Il existe une collaboration d’État, policière, économique, idéologique ou opportuniste. Vichy participe notamment à l’exclusion des Juifs et à la répression, ce qui engage une responsabilité politique propre."
-      },
-      {
-        "title": "3. Résister : des gestes variés",
-        "text": "Résister peut signifier imprimer un journal clandestin, transmettre un renseignement, cacher une personne, saboter, rejoindre un maquis ou organiser une filière. Tous les gestes n’ont pas la même visibilité ni le même danger."
-      },
-      {
-        "title": "4. 1942-1944 : radicalisation",
-        "text": "Le STO, les rafles, l’évolution militaire et la répression changent les comportements. Des jeunes rejoignent les maquis, les réseaux se structurent, mais les risques augmentent fortement."
-      },
-      {
-        "title": "5. Mémoire et complexité",
-        "text": "Après la guerre, les sociétés construisent des récits. Mettre en avant la Résistance peut aider à reconstruire l’unité nationale, mais risque aussi de masquer les collaborations et les persécutions."
-      }
-    ],
-    "deeper": [
-      {
-        "title": "Repère",
-        "text": "STO : Service du travail obligatoire, qui envoie des travailleurs français en Allemagne et pousse certains réfractaires vers les maquis."
-      },
-      {
-        "title": "Erreur fréquente",
-        "text": "Imaginer que la majorité de la population est immédiatement résistante ou collaboratrice militante. Entre les deux existent prudence, peur, attentisme, survie et ambiguïtés."
-      },
-      {
-        "title": "Question morale",
-        "text": "Comprendre les contraintes ne veut pas dire neutraliser les responsabilités. L’histoire explique sans effacer les choix."
-      }
-    ],
-    "quiz": [
-      {
-        "q": "Pourquoi faut-il partir du cadre de l’Occupation ?",
-        "a": "Parce que présence allemande, Vichy, répression, pénuries et propagande conditionnent les choix possibles.",
-        "why": "Les comportements n’existent pas dans le vide.",
-        "trap": "Jugement abstrait sans contexte.",
-        "evidence": "Le premier bloc."
-      },
-      {
-        "q": "Cite deux formes de collaboration.",
-        "a": "Collaboration d’État, policière, économique, idéologique ou opportuniste.",
-        "why": "Le phénomène est pluriel.",
-        "trap": "Réduire la collaboration à quelques individus caricaturaux.",
-        "evidence": "Le deuxième bloc."
-      },
-      {
-        "q": "Cite deux gestes de résistance non militaires.",
-        "a": "Presse clandestine, renseignement, cacher des persécutés, fausses cartes, filières d’évasion.",
-        "why": "Résister ne signifie pas seulement prendre les armes.",
-        "trap": "Confondre Résistance et maquis uniquement.",
-        "evidence": "Le troisième bloc."
-      },
-      {
-        "q": "Pourquoi le STO est-il important ?",
-        "a": "Il pousse des réfractaires vers les maquis et modifie les engagements.",
-        "why": "Une politique allemande/Vichy a des effets sociaux directs.",
-        "trap": "Oublier les facteurs concrets d’entrée en résistance.",
-        "evidence": "Le bloc “1942-1944”."
-      },
-      {
-        "q": "Pourquoi la mémoire d’après-guerre est-elle délicate ?",
-        "a": "Parce qu’elle peut valoriser la Résistance tout en masquant collaborations et persécutions.",
-        "why": "La mémoire reconstruit un récit national.",
-        "trap": "Confondre mémoire collective et histoire critique.",
-        "evidence": "Le dernier bloc."
-      }
-    ]
-  }
+  "hook": "Sous l’Occupation, personne ne vit dans un schéma simple héros/traîtres : contraintes, peur, intérêts, convictions et choix moraux se croisent brutalement.",
+  "express": [
+    "Résistance et collaboration ne sont pas seulement deux camps abstraits. Elles se déploient dans des situations concrètes : occupation militaire, pénuries, répression, propagande, antisémitisme d’État, surveillance et peur des représailles.",
+    "La Résistance rassemble des profils divers : gaullistes, communistes, chrétiens, républicains, étrangers, réseaux de renseignement, maquis, presse clandestine, aides aux persécutés. Elle n’est pas massive dès 1940 et se transforme avec la guerre.",
+    "Le piège est de juger tout le monde depuis la fin de l’histoire. Il faut comprendre les contraintes sans excuser les choix : collaborer, dénoncer, résister, attendre ou survivre n’ont ni les mêmes risques ni les mêmes responsabilités."
+  ],
+  "complete": [
+    {
+      "title": "1. L’Occupation comme cadre",
+      "text": "La défaite, la présence allemande, Vichy, la propagande, les rationnements et la répression créent une situation où les choix sont rarement abstraits. Les possibilités d’action dépendent du lieu, du métier, du réseau et du moment."
+    },
+    {
+      "title": "2. Collaborations multiples",
+      "text": "Il existe une collaboration d’État, policière, économique, idéologique ou opportuniste. Vichy participe notamment à l’exclusion des Juifs et à la répression, ce qui engage une responsabilité politique propre."
+    },
+    {
+      "title": "3. Résister : des gestes variés",
+      "text": "Résister peut signifier imprimer un journal clandestin, transmettre un renseignement, cacher une personne, saboter, rejoindre un maquis ou organiser une filière. Tous les gestes n’ont pas la même visibilité ni le même danger."
+    },
+    {
+      "title": "4. 1942-1944 : radicalisation",
+      "text": "Le STO, les rafles, l’évolution militaire et la répression changent les comportements. Des jeunes rejoignent les maquis, les réseaux se structurent, mais les risques augmentent fortement."
+    },
+    {
+      "title": "5. Mémoire et complexité",
+      "text": "Après la guerre, les sociétés construisent des récits. Mettre en avant la Résistance peut aider à reconstruire l’unité nationale, mais risque aussi de masquer les collaborations et les persécutions."
+    },
+    {
+      "title": "6. Collaborer prend plusieurs formes",
+      "text": "Le régime de Vichy choisit une politique de collaboration avec l’Allemagne, mais celle-ci comprend des dimensions différentes : coopération d’État, répression politique, persécution antisémite, collaboration économique ou engagement idéologique. À côté de ces choix institutionnels existent aussi accommodements, opportunisme et contraintes du quotidien, qu’il faut distinguer sans les confondre moralement."
+    },
+    {
+      "title": "7. Les résistances sont multiples",
+      "text": "Réseaux de renseignement, mouvements publiant des journaux clandestins, filières d’évasion, maquis et actions armées ne naissent pas tous au même moment ni avec les mêmes objectifs. Gaullistes, communistes, chrétiens, socialistes ou personnes sans engagement antérieur peuvent se retrouver dans la lutte contre l’occupant et Vichy."
+    },
+    {
+      "title": "8. Unifier sans effacer les désaccords",
+      "text": "Jean Moulin contribue à rapprocher plusieurs organisations au sein du Conseil national de la Résistance en 1943. Cette coordination facilite le lien avec la France libre et prépare l’après-guerre. Elle ne supprime ni les rivalités ni les débats sur la stratégie, mais elle donne une représentation politique plus cohérente à la résistance intérieure."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Sous l’Occupation, personne ne vit dans un schéma simple héros/traîtres : contraintes, peur, intérêts, convictions et choix moraux se croisent brutalement."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "STO : Service du travail obligatoire, qui envoie des travailleurs français en Allemagne et pousse certains réfractaires vers les maquis."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Imaginer que la majorité de la population est immédiatement résistante ou collaboratrice militante. Entre les deux existent prudence, peur, attentisme, survie et ambiguïtés."
+    },
+    {
+      "title": "Question morale",
+      "text": "Comprendre les contraintes ne veut pas dire neutraliser les responsabilités. L’histoire explique sans effacer les choix."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Pourquoi faut-il partir du cadre de l’Occupation ?",
+      "a": "Parce que présence allemande, Vichy, répression, pénuries et propagande conditionnent les choix possibles.",
+      "choices": [
+        "Elle est partout immédiate, massive et organisée dès juin 1940.",
+        "Elle concerne uniquement les militaires restés en uniforme.",
+        "Elle reste identique dans tous les pays occupés et pendant toute la guerre."
+      ],
+      "why": "Les comportements n’existent pas dans le vide.",
+      "trap": "Jugement abstrait sans contexte.",
+      "evidence": "Le premier bloc."
+    },
+    {
+      "q": "Cite deux formes de collaboration.",
+      "a": "Collaboration d’État, policière, économique, idéologique ou opportuniste.",
+      "choices": [
+        "Une simple neutralité administrative sans aide à l’occupant.",
+        "Uniquement l’engagement de volontaires dans l’armée allemande.",
+        "Toute forme d’obéissance quotidienne imposée par la présence militaire."
+      ],
+      "why": "Le phénomène est pluriel.",
+      "trap": "Réduire la collaboration à quelques individus caricaturaux.",
+      "evidence": "Le deuxième bloc."
+    },
+    {
+      "q": "Cite deux gestes de résistance non militaires.",
+      "a": "Presse clandestine, renseignement, cacher des persécutés, fausses cartes, filières d’évasion.",
+      "choices": [
+        "La presse clandestine et le renseignement, mais pas l’aide aux persécutés.",
+        "Les maquis et les sabotages uniquement, car les faux papiers ne sont pas une résistance.",
+        "La participation aux administrations de l’occupant pour limiter les réquisitions."
+      ],
+      "why": "Résister ne signifie pas seulement prendre les armes.",
+      "trap": "Confondre Résistance et maquis uniquement.",
+      "evidence": "Le troisième bloc."
+    },
+    {
+      "q": "Pourquoi le STO est-il important ?",
+      "a": "Il pousse des réfractaires vers les maquis et modifie les engagements.",
+      "choices": [
+        "Il permet à Vichy de recruter davantage de fonctionnaires volontaires.",
+        "Il met fin aux maquis en donnant du travail aux jeunes en Allemagne.",
+        "Il concerne seulement les prisonniers de guerre déjà détenus depuis 1940."
+      ],
+      "why": "Une politique allemande/Vichy a des effets sociaux directs.",
+      "trap": "Oublier les facteurs concrets d’entrée en résistance.",
+      "evidence": "Le bloc “1942-1944”."
+    },
+    {
+      "q": "Pourquoi la mémoire d’après-guerre est-elle délicate ?",
+      "a": "Parce qu’elle peut valoriser la Résistance tout en masquant collaborations et persécutions.",
+      "choices": [
+        "Parce que la collaboration est oubliée mais les persécutions sont immédiatement reconnues dans toute leur ampleur.",
+        "Parce que la mémoire collective reproduit exactement les conclusions des historiens.",
+        "Parce que la Résistance n’occupe aucune place dans les récits nationaux d’après-guerre."
+      ],
+      "why": "La mémoire reconstruit un récit national.",
+      "trap": "Confondre mémoire collective et histoire critique.",
+      "evidence": "Le dernier bloc."
+    }
+  ],
+  "takeaways": [
+    {
+      "label": "Cas concret",
+      "text": "Le régime de Vichy choisit une politique de collaboration avec l’Allemagne, mais celle-ci comprend des dimensions différentes : coopération d’État, répression politique, persécution antisémite, collaboration économique ou engagement idéologique."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Réseaux de renseignement, mouvements publiant des journaux clandestins, filières d’évasion, maquis et actions armées ne naissent pas tous au même moment ni avec les mêmes objectifs."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Jean Moulin contribue à rapprocher plusieurs organisations au sein du Conseil national de la Résistance en 1943."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+}
 };
 
 function quizKindFallback(index) {
@@ -6492,7 +7239,8 @@ function normalizeQuizPack(quiz = [], lesson = {}, content = {}) {
     a: item.a || "Réponse à retrouver dans le cours.",
     why: item.why || "Cette question vérifie que tu as compris le mécanisme historique, pas seulement retenu un mot-clé.",
     trap: item.trap || "Répondre par une formule trop générale, sans date, lieu, acteur ou trace.",
-    evidence: item.evidence || (content.ready ? "La réponse est explicitement formulée dans le cours." : "La réponse se trouve dans la version express ou dans le cours complet.")
+    evidence: item.evidence || (content.ready ? "La réponse est explicitement formulée dans le cours." : "La réponse se trouve dans la version express ou dans le cours complet."),
+    choices: Array.isArray(item.choices) ? item.choices.slice(0, 3) : []
   }));
 }
 function lessonKeyFacts(lesson = {}, content = {}) {
@@ -6966,7 +7714,7 @@ function quizItemMarkup(item, index, quizItems, lesson, content) {
         return `<button type="button" class="quiz-choice ${cls}" data-quiz-choice="${index}" data-choice-index="${choiceIndex}" ${isLocked ? "disabled" : ""}><span>${String.fromCharCode(65 + choiceIndex)}</span>${escapeHtml(choice.text)}</button>`;
       }).join("")}
     </div>
-    ${isCorrect ? `<p class="quiz-result good"><b>Correct.</b> ${escapeHtml(item.why || "Tu as retrouvé l’idée importante du cours.")}</p>${item.evidence ? `<p class="quiz-evidence"><strong>À retrouver :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : wrongSelected ? `<p class="quiz-result bad"><b>Raté.</b> La réponse ne colle pas au cours. Recommence le quiz si le score final ne suffit pas ; je ne donne pas la correction complète ici.</p>${item.trap ? `<p class="quiz-trap"><strong>Piège :</strong> ${escapeHtml(item.trap)}</p>` : ""}` : `<p class="quiz-result neutral">Choisis une réponse. Tu fais le quiz comme une vraie étape : une réponse par question, puis score final.</p>`}
+    ${isCorrect ? `<p class="quiz-result good"><b>Correct.</b> ${escapeHtml(item.a)}</p><p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why || "Cette réponse reprend précisément l’idée démontrée dans le cours.")}</p>${item.evidence ? `<p class="quiz-evidence"><strong>À retrouver dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : wrongSelected ? `<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${escapeHtml(item.a)}</strong></p><p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why || "La correction reprend l’idée explicitement expliquée dans le cours.")}</p>${item.trap ? `<p class="quiz-trap"><strong>Le piège :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>À revoir dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : `<p class="quiz-result neutral">Choisis la réponse la plus précise. Après ton choix, la correction et l’explication apparaîtront ici.</p>`}
   </article>`;
 }
 function handleQuizChoice(lessonId, questionIndex, choiceIndex) {
@@ -8357,204 +9105,750 @@ ROME_EDITORIAL_LESSON_IDS.forEach(id => PUBLISHED_LESSON_IDS.add(id));
 
 Object.assign(READY_LESSON_PACKS, {
   "rome-foundation-kings": {
-    hook: "Rome ne naît pas comme une grande capitale impériale. Elle commence comme un ensemble de communautés du Latium, autour du Tibre, puis transforme des récits de fondation en mémoire politique.",
-    keyFacts: [
-      "Quand : fondation légendaire en 753 av. J.-C. ; premiers siècles mal documentés",
-      "Où : Latium, collines de Rome, vallée du Tibre",
-      "Acteurs : Latins, Sabins, Étrusques, familles aristocratiques, rois légendaires",
-      "Traces : archéologie du Palatin et du Forum, traditions littéraires tardives, rites et institutions",
-      "Piège : prendre Romulus et Rémus comme un reportage historique"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "La fondation de Rome mélange archéologie, mémoire civique et légendes construites longtemps après les débuts de la ville." },
-      { label: "Preuve", text: "Les traces matérielles montrent une urbanisation progressive, pas une ville née en un jour." },
-      { label: "Piège", text: "La louve, Romulus et Rémus disent surtout comment les Romains veulent raconter leurs origines." }
-    ],
-    express: [
-      "La date de 753 av. J.-C. est une date traditionnelle, pas une photographie de naissance. Les récits de Romulus, Rémus, la louve ou l’enlèvement des Sabines appartiennent à la mémoire romaine : ils expliquent comment Rome veut se représenter, plus qu’ils ne décrivent directement les faits.",
-      "L’archéologie montre plutôt une croissance progressive : des habitats sur les collines, des espaces communs, des contacts entre Latins, Sabins et Étrusques, puis l’aménagement du Forum. Rome devient peu à peu une cité organisée autour du Tibre, car ce fleuve relie l’intérieur et les échanges.",
-      "Le piège est de choisir entre “tout est faux” et “tout est vrai”. Les légendes sont fausses comme reportage, mais vraies comme sources de mémoire politique : elles parlent de guerre, d’asile, d’intégration, de violence fondatrice et d’identité civique."
-    ],
-    complete: [
-      { title: "1. Une ville qui ne naît pas en un jour", text: "Les Romains aiment dater leur fondation en 753 av. J.-C., mais les débuts de Rome sont progressifs. Des villages et habitats se développent sur les collines, près d’un passage du Tibre. La ville se forme par rapprochement, aménagement et organisation d’espaces communs." },
-      { title: "2. Pourquoi le Tibre compte", text: "Rome est placée sur un site utile : le Tibre permet des circulations, le passage entre rives, des échanges avec l’intérieur et le monde tyrrhénien. La géographie ne crée pas automatiquement la ville, mais elle donne des possibilités que des groupes humains exploitent." },
-      { title: "3. La légende comme mémoire", text: "Romulus, Rémus, la louve ou le meurtre du frère ne doivent pas être lus comme un journal du VIIIe siècle av. J.-C. Ces récits, transmis et réécrits plus tard, construisent une identité : Rome se dit née de conflit, d’accueil, de force et de destin." },
-      { title: "4. Des influences multiples", text: "Rome n’est pas isolée. Latins, Sabins et Étrusques participent à son environnement. Les Étrusques, notamment, influencent des formes de pouvoir, des rites, des techniques et des signes de prestige. Rome se construit par contacts autant que par opposition." },
-      { title: "5. Ce qu’il faut retenir", text: "Étudier la fondation de Rome, ce n’est pas demander si la louve a vraiment existé. C’est comprendre comment une communauté devenue puissante relit ses origines pour expliquer son identité, ses institutions et sa vocation à intégrer puis dominer." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Fondation légendaire : récit d’origine qui donne du sens politique à une communauté, même quand il ne correspond pas directement aux faits." },
-      { title: "Comment le lire", text: "On croise les textes tardifs avec l’archéologie : aucun type de source ne suffit seul." },
-      { title: "Erreur fréquente", text: "Dire seulement “Rome a été fondée par Romulus” revient à confondre mémoire civique et histoire des débuts urbains." }
-    ],
-    quiz: [
-      { kind: "date", q: "Pourquoi 753 av. J.-C. doit-elle être utilisée avec prudence ?", a: "Parce que c’est une date traditionnelle de fondation, pas une preuve directe de naissance soudaine de la ville.", choices: ["Parce que c’est la date de la destruction de Carthage.", "Parce que Rome existe déjà comme empire chrétien.", "Parce que cette date concerne Athènes et non le Latium."], why: "Le cours distingue date mémorielle et formation progressive.", trap: "Lire la date comme une certitude archéologique.", evidence: "Express et bloc 1." },
-      { kind: "lieu", q: "Pourquoi le Tibre est-il important dans les débuts de Rome ?", a: "Parce qu’il facilite passage, échanges et circulation entre l’intérieur du Latium et les réseaux voisins.", choices: ["Parce qu’il isole Rome de tous les échanges méditerranéens.", "Parce qu’il remplace toute organisation politique.", "Parce qu’il prouve à lui seul l’existence de Romulus."], why: "Le site donne des possibilités que les sociétés exploitent.", trap: "Faire de la géographie une cause automatique.", evidence: "Bloc 2." },
-      { kind: "source", q: "Que peut apprendre la légende de Romulus et Rémus ?", a: "Elle renseigne surtout la mémoire politique romaine et la manière dont Rome raconte ses origines.", choices: ["Elle fournit un compte rendu neutre du VIIIe siècle av. J.-C.", "Elle remplace toutes les traces archéologiques.", "Elle prouve que les Étrusques n’ont joué aucun rôle."], why: "Une légende peut être utile sans être un reportage.", trap: "Opposer naïvement vrai et faux.", evidence: "Bloc 3." },
-      { kind: "acteurs", q: "Quels peuples faut-il garder en tête autour des débuts de Rome ?", a: "Latins, Sabins et Étrusques, dans un espace de contacts et d’influences.", choices: ["Francs, Vikings et Normands du XIe siècle.", "Aztèques, Incas et Mayas des Amériques.", "Huns, Mongols et Ottomans de l’époque médiévale."], why: "Rome se construit dans un environnement régional précis.", trap: "Imaginer Rome isolée dès l’origine.", evidence: "Repères et bloc 4." },
-      { kind: "synthèse", q: "Quelle idée faut-il retenir sur la fondation de Rome ?", a: "La ville se forme progressivement, tandis que les récits de fondation construisent une identité civique.", choices: ["Rome devient capitale impériale dès le premier jour.", "La fondation est seulement une fable inutile pour l’historien.", "L’archéologie confirme chaque détail du récit de la louve."], why: "La bonne réponse combine formation urbaine et mémoire politique.", trap: "Choisir tout vrai ou tout faux.", evidence: "Conclusion." }
-    ]
-  },
+  "hook": "Rome ne naît pas comme une grande capitale impériale. Elle commence comme un ensemble de communautés du Latium, autour du Tibre, puis transforme des récits de fondation en mémoire politique.",
+  "keyFacts": [
+    "Quand : fondation légendaire en 753 av. J.-C. ; premiers siècles mal documentés",
+    "Où : Latium, collines de Rome, vallée du Tibre",
+    "Acteurs : Latins, Sabins, Étrusques, familles aristocratiques, rois légendaires",
+    "Traces : archéologie du Palatin et du Forum, traditions littéraires tardives, rites et institutions",
+    "Piège : prendre Romulus et Rémus comme un reportage historique"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "La fondation de Rome mélange archéologie, mémoire civique et légendes construites longtemps après les débuts de la ville."
+    },
+    {
+      "label": "Preuve",
+      "text": "Les traces matérielles montrent une urbanisation progressive, pas une ville née en un jour."
+    },
+    {
+      "label": "Piège",
+      "text": "La louve, Romulus et Rémus disent surtout comment les Romains veulent raconter leurs origines."
+    }
+  ],
+  "express": [
+    "La date de 753 av. J.-C. est une date traditionnelle, pas une photographie de naissance. Les récits de Romulus, Rémus, la louve ou l’enlèvement des Sabines appartiennent à la mémoire romaine : ils expliquent comment Rome veut se représenter, plus qu’ils ne décrivent directement les faits.",
+    "L’archéologie montre plutôt une croissance progressive : des habitats sur les collines, des espaces communs, des contacts entre Latins, Sabins et Étrusques, puis l’aménagement du Forum. Rome devient peu à peu une cité organisée autour du Tibre, car ce fleuve relie l’intérieur et les échanges.",
+    "Le piège est de choisir entre “tout est faux” et “tout est vrai”. Les légendes sont fausses comme reportage, mais vraies comme sources de mémoire politique : elles parlent de guerre, d’asile, d’intégration, de violence fondatrice et d’identité civique."
+  ],
+  "complete": [
+    {
+      "title": "1. Une ville qui ne naît pas en un jour",
+      "text": "Les Romains aiment dater leur fondation en 753 av. J.-C., mais les débuts de Rome sont progressifs. Des villages et habitats se développent sur les collines, près d’un passage du Tibre. La ville se forme par rapprochement, aménagement et organisation d’espaces communs."
+    },
+    {
+      "title": "2. Pourquoi le Tibre compte",
+      "text": "Rome est placée sur un site utile : le Tibre permet des circulations, le passage entre rives, des échanges avec l’intérieur et le monde tyrrhénien. La géographie ne crée pas automatiquement la ville, mais elle donne des possibilités que des groupes humains exploitent."
+    },
+    {
+      "title": "3. La légende comme mémoire",
+      "text": "Romulus, Rémus, la louve ou le meurtre du frère ne doivent pas être lus comme un journal du VIIIe siècle av. J.-C. Ces récits, transmis et réécrits plus tard, construisent une identité : Rome se dit née de conflit, d’accueil, de force et de destin."
+    },
+    {
+      "title": "4. Des influences multiples",
+      "text": "Rome n’est pas isolée. Latins, Sabins et Étrusques participent à son environnement. Les Étrusques, notamment, influencent des formes de pouvoir, des rites, des techniques et des signes de prestige. Rome se construit par contacts autant que par opposition."
+    },
+    {
+      "title": "5. Entre légende et archéologie",
+      "text": "La date traditionnelle de 753 av. J.-C. et le récit de Romulus donnent à Rome une origine claire et héroïque. L’archéologie montre plutôt des habitats installés sur plusieurs collines, qui se rapprochent progressivement autour du Forum. La légende n’est pas inutile : elle révèle la manière dont les Romains veulent expliquer leur ville, mais elle ne remplace pas les traces matérielles."
+    },
+    {
+      "title": "6. L’influence étrusque",
+      "text": "Aux VIIe et VIe siècles av. J.-C., Rome appartient à un monde fortement marqué par les cités étrusques. Techniques de construction, signes religieux, symboles du pouvoir et organisation urbaine témoignent de ces contacts. Parler d’une Rome entièrement latine et isolée efface la circulation des pratiques dans l’Italie centrale."
+    },
+    {
+      "title": "7. Le Forum, signe d’une ville commune",
+      "text": "L’assèchement et l’aménagement de la zone du Forum créent un espace politique, religieux et commercial entre les collines. Ce chantier compte autant que les récits de rois : il transforme plusieurs communautés voisines en une cité dotée de lieux communs, de cultes et d’institutions."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Étudier la fondation de Rome, ce n’est pas demander si la louve a vraiment existé. C’est comprendre comment une communauté devenue puissante relit ses origines pour expliquer son identité, ses institutions et sa vocation à intégrer puis dominer."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Fondation légendaire : récit d’origine qui donne du sens politique à une communauté, même quand il ne correspond pas directement aux faits."
+    },
+    {
+      "title": "Comment le lire",
+      "text": "On croise les textes tardifs avec l’archéologie : aucun type de source ne suffit seul."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Dire seulement “Rome a été fondée par Romulus” revient à confondre mémoire civique et histoire des débuts urbains."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "date",
+      "q": "Pourquoi 753 av. J.-C. doit-elle être utilisée avec prudence ?",
+      "a": "Parce que c’est une date traditionnelle de fondation, pas une preuve directe de naissance soudaine de la ville.",
+      "choices": [
+        "Parce que c’est la date de la destruction de Carthage.",
+        "Parce que Rome existe déjà comme empire chrétien.",
+        "Parce que cette date concerne Athènes et non le Latium."
+      ],
+      "why": "Le cours distingue date mémorielle et formation progressive.",
+      "trap": "Lire la date comme une certitude archéologique.",
+      "evidence": "Express et bloc 1."
+    },
+    {
+      "kind": "lieu",
+      "q": "Pourquoi le Tibre est-il important dans les débuts de Rome ?",
+      "a": "Parce qu’il facilite passage, échanges et circulation entre l’intérieur du Latium et les réseaux voisins.",
+      "choices": [
+        "Parce qu’il isole Rome de tous les échanges méditerranéens.",
+        "Parce qu’il remplace toute organisation politique.",
+        "Parce qu’il prouve à lui seul l’existence de Romulus."
+      ],
+      "why": "Le site donne des possibilités que les sociétés exploitent.",
+      "trap": "Faire de la géographie une cause automatique.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "source",
+      "q": "Que peut apprendre la légende de Romulus et Rémus ?",
+      "a": "Elle renseigne surtout la mémoire politique romaine et la manière dont Rome raconte ses origines.",
+      "choices": [
+        "Elle fournit un compte rendu neutre du VIIIe siècle av. J.-C.",
+        "Elle remplace toutes les traces archéologiques.",
+        "Elle prouve que les Étrusques n’ont joué aucun rôle."
+      ],
+      "why": "Une légende peut être utile sans être un reportage.",
+      "trap": "Opposer naïvement vrai et faux.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "acteurs",
+      "q": "Quels peuples faut-il garder en tête autour des débuts de Rome ?",
+      "a": "Latins, Sabins et Étrusques, dans un espace de contacts et d’influences.",
+      "choices": [
+        "Francs, Vikings et Normands du XIe siècle.",
+        "Aztèques, Incas et Mayas des Amériques.",
+        "Huns, Mongols et Ottomans de l’époque médiévale."
+      ],
+      "why": "Rome se construit dans un environnement régional précis.",
+      "trap": "Imaginer Rome isolée dès l’origine.",
+      "evidence": "Repères et bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle idée faut-il retenir sur la fondation de Rome ?",
+      "a": "La ville se forme progressivement, tandis que les récits de fondation construisent une identité civique.",
+      "choices": [
+        "Rome devient capitale impériale dès le premier jour.",
+        "La fondation est seulement une fable inutile pour l’historien.",
+        "L’archéologie confirme chaque détail du récit de la louve."
+      ],
+      "why": "La bonne réponse combine formation urbaine et mémoire politique.",
+      "trap": "Choisir tout vrai ou tout faux.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
 
   "rome-italy-expansion": {
-    hook: "Avant de dominer la Méditerranée, Rome doit d’abord dominer l’Italie. Cette étape est décisive : Rome gagne par la guerre, mais aussi par des alliances, des statuts différenciés et une intégration politique très pragmatique.",
-    keyFacts: [
-      "Quand : Ve → IIIe siècles av. J.-C., avant les guerres puniques",
-      "Où : Latium, Italie centrale, Italie du Sud",
-      "Acteurs : Romains, Latins, Samnites, cités grecques du Sud, alliés italiens",
-      "Traces : traités, récits de Tite-Live, colonies, voies, statuts juridiques",
-      "Piège : croire que Rome conquiert l’Italie seulement par des victoires militaires"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "La conquête de l’Italie repose sur un mélange de guerre, alliances, colonies et statuts juridiques." },
-      { label: "Repère", text: "Il faut regarder comment Rome traite différemment les vaincus : certains deviennent citoyens, alliés ou communautés liées par traité." },
-      { label: "Conséquence", text: "Cette intégration donne à Rome des soldats, des ressources et une profondeur stratégique." }
-    ],
-    express: [
-      "Rome ne passe pas directement du petit Latium à l’empire méditerranéen. Elle construit d’abord sa domination en Italie, du Ve au IIIe siècle av. J.-C., face aux peuples voisins, aux Samnites et aux cités grecques du Sud.",
-      "Sa force n’est pas seulement militaire. Rome impose ou négocie des statuts variés : citoyenneté complète, citoyenneté limitée, alliances, colonies, obligations militaires. Les vaincus ne sont pas tous traités pareil, ce qui permet de diviser, intégrer et mobiliser.",
-      "Le point à retenir est stratégique : Rome fabrique un réseau italien. Quand les guerres puniques commencent, elle peut appeler des alliés, lever des soldats et encaisser des défaites parce que sa puissance repose sur une Italie déjà organisée autour d’elle."
-    ],
-    complete: [
-      { title: "1. Une expansion par étapes", text: "Rome commence par affirmer sa position dans le Latium, puis affronte des voisins plus puissants ou mieux installés. Les guerres ne suivent pas une ligne droite : il y a défaites, traités, reprises, colonies et rivalités régionales." },
-      { title: "2. Les Samnites, adversaires majeurs", text: "Les guerres samnites montrent que la conquête de l’Italie n’est pas facile. Les Samnites contrôlent des espaces montagneux et obligent Rome à s’adapter militairement et politiquement." },
-      { title: "3. Les cités grecques du Sud", text: "En Italie du Sud, Rome rencontre des cités grecques anciennes et riches. L’intervention de Pyrrhus montre que le monde italien est lié à des puissances plus larges. Rome apprend à gérer des conflits qui dépassent son voisinage immédiat." },
-      { title: "4. Intégrer pour dominer", text: "La vraie originalité romaine est d’organiser les vaincus. Certains reçoivent la citoyenneté, d’autres gardent une autonomie sous contrainte, d’autres fournissent des soldats. Rome transforme ainsi la conquête en réseau durable d’obligations." },
-      { title: "5. Préparer l’empire", text: "La domination de l’Italie donne à Rome une base humaine et matérielle immense. Ce n’est pas encore l’empire, mais c’est la condition de l’expansion méditerranéenne : sans l’Italie mobilisée, Rome ne résisterait pas aux guerres longues." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Allié italien : communauté liée à Rome par des obligations, notamment militaires, sans être nécessairement composée de citoyens romains complets." },
-      { title: "Nuance", text: "L’intégration romaine n’est pas égalitaire : elle donne des avantages à certains groupes et impose des contraintes fortes à d’autres." },
-      { title: "Erreur fréquente", text: "Raconter seulement des batailles : la domination romaine dépend aussi du droit, des statuts, des routes, des colonies et de la mobilisation." }
-    ],
-    quiz: [
-      { kind: "mécanisme", q: "Pourquoi la conquête de l’Italie ne se résume-t-elle pas à des batailles ?", a: "Parce que Rome combine guerre, alliances, colonies, statuts juridiques et obligations militaires.", choices: ["Parce que Rome évite totalement la guerre en Italie.", "Parce que les cités grecques du Sud contrôlent directement le Sénat.", "Parce que les Samnites deviennent empereurs de Rome."], why: "La domination repose sur un réseau politique et militaire.", trap: "Raconter uniquement une suite de victoires.", evidence: "Express et bloc 4." },
-      { kind: "acteurs", q: "Quel adversaire montre que la conquête italienne est difficile ?", a: "Les Samnites, notamment dans les espaces montagneux d’Italie centrale.", choices: ["Les Vikings de la mer du Nord.", "Les califes abbassides de Bagdad.", "Les armées napoléoniennes du XIXe siècle."], why: "Les Samnites obligent Rome à s’adapter.", trap: "Imaginer une expansion automatique.", evidence: "Bloc 2." },
-      { kind: "concept", q: "Que signifie intégrer pour dominer dans le cas romain ?", a: "Traiter différemment les vaincus pour obtenir fidélité, soldats, ressources et contrôle durable.", choices: ["Accorder immédiatement la même égalité politique à toute l’Italie.", "Détruire chaque cité vaincue pour éviter toute alliance.", "Refuser toute obligation militaire aux communautés italiennes."], why: "Rome varie les statuts au lieu d’uniformiser tout le monde.", trap: "Confondre intégration et égalité.", evidence: "Bloc 4." },
-      { kind: "conséquence", q: "Pourquoi cette conquête prépare-t-elle les guerres méditerranéennes ?", a: "Elle donne à Rome une base italienne de soldats, ressources et alliés mobilisables.", choices: ["Elle rend Rome définitivement pacifique.", "Elle supprime le besoin d’institutions politiques.", "Elle transforme immédiatement Rome en monarchie chrétienne."], why: "La profondeur italienne permet de tenir les conflits longs.", trap: "Séparer conquête italienne et expansion impériale.", evidence: "Bloc 5." },
-      { kind: "piège", q: "Quel piège faut-il éviter ?", a: "Croire que Rome domine l’Italie seulement par une supériorité militaire simple.", choices: ["Chercher des alliances et des statuts dans l’explication.", "Situer la conquête avant les guerres puniques.", "Distinguer citoyens, alliés et cités dépendantes."], why: "La conquête romaine est aussi juridique et politique.", trap: "Rendre Rome invincible par nature.", evidence: "Deeper et synthèse." }
-    ]
-  },
+  "hook": "Avant de dominer la Méditerranée, Rome doit d’abord dominer l’Italie. Cette étape est décisive : Rome gagne par la guerre, mais aussi par des alliances, des statuts différenciés et une intégration politique très pragmatique.",
+  "keyFacts": [
+    "Quand : Ve → IIIe siècles av. J.-C., avant les guerres puniques",
+    "Où : Latium, Italie centrale, Italie du Sud",
+    "Acteurs : Romains, Latins, Samnites, cités grecques du Sud, alliés italiens",
+    "Traces : traités, récits de Tite-Live, colonies, voies, statuts juridiques",
+    "Piège : croire que Rome conquiert l’Italie seulement par des victoires militaires"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "La conquête de l’Italie repose sur un mélange de guerre, alliances, colonies et statuts juridiques."
+    },
+    {
+      "label": "Repère",
+      "text": "Il faut regarder comment Rome traite différemment les vaincus : certains deviennent citoyens, alliés ou communautés liées par traité."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Cette intégration donne à Rome des soldats, des ressources et une profondeur stratégique."
+    }
+  ],
+  "express": [
+    "Rome ne passe pas directement du petit Latium à l’empire méditerranéen. Elle construit d’abord sa domination en Italie, du Ve au IIIe siècle av. J.-C., face aux peuples voisins, aux Samnites et aux cités grecques du Sud.",
+    "Sa force n’est pas seulement militaire. Rome impose ou négocie des statuts variés : citoyenneté complète, citoyenneté limitée, alliances, colonies, obligations militaires. Les vaincus ne sont pas tous traités pareil, ce qui permet de diviser, intégrer et mobiliser.",
+    "Le point à retenir est stratégique : Rome fabrique un réseau italien. Quand les guerres puniques commencent, elle peut appeler des alliés, lever des soldats et encaisser des défaites parce que sa puissance repose sur une Italie déjà organisée autour d’elle."
+  ],
+  "complete": [
+    {
+      "title": "1. Une expansion par étapes",
+      "text": "Rome commence par affirmer sa position dans le Latium, puis affronte des voisins plus puissants ou mieux installés. Les guerres ne suivent pas une ligne droite : il y a défaites, traités, reprises, colonies et rivalités régionales."
+    },
+    {
+      "title": "2. Les Samnites, adversaires majeurs",
+      "text": "Les guerres samnites montrent que la conquête de l’Italie n’est pas facile. Les Samnites contrôlent des espaces montagneux et obligent Rome à s’adapter militairement et politiquement."
+    },
+    {
+      "title": "3. Les cités grecques du Sud",
+      "text": "En Italie du Sud, Rome rencontre des cités grecques anciennes et riches. L’intervention de Pyrrhus montre que le monde italien est lié à des puissances plus larges. Rome apprend à gérer des conflits qui dépassent son voisinage immédiat."
+    },
+    {
+      "title": "4. Intégrer pour dominer",
+      "text": "La vraie originalité romaine est d’organiser les vaincus. Certains reçoivent la citoyenneté, d’autres gardent une autonomie sous contrainte, d’autres fournissent des soldats. Rome transforme ainsi la conquête en réseau durable d’obligations."
+    },
+    {
+      "title": "5. Préparer l’empire",
+      "text": "La domination de l’Italie donne à Rome une base humaine et matérielle immense. Ce n’est pas encore l’empire, mais c’est la condition de l’expansion méditerranéenne : sans l’Italie mobilisée, Rome ne résisterait pas aux guerres longues."
+    },
+    {
+      "title": "6. Une conquête faite de guerres et d’alliances",
+      "text": "Rome combat les Latins, les Samnites, les Étrusques et des cités grecques du sud. Elle ne détruit pas systématiquement ses adversaires : elle négocie des traités différents, accorde parfois une citoyenneté partielle et exige soldats ou fidélité. Cette souplesse permet de transformer des vaincus en partenaires militaires."
+    },
+    {
+      "title": "7. Les colonies et les routes",
+      "text": "Des colonies romaines ou latines surveillent des territoires stratégiques. Les routes, comme la voie Appienne, facilitent le déplacement des armées mais aussi des hommes, marchandises et messages. L’expansion militaire s’accompagne donc d’une prise de contrôle concrète de l’espace."
+    },
+    {
+      "title": "8. Pyrrhus et la limite de la victoire tactique",
+      "text": "Le roi Pyrrhus d’Épire remporte plusieurs batailles contre Rome au début du IIIe siècle av. J.-C., mais ses pertes sont difficiles à remplacer. Rome, soutenue par un vaste réseau d’alliés, reconstitue ses armées. L’expression “victoire à la Pyrrhus” résume ce contraste entre succès local et épuisement stratégique."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Avant de dominer la Méditerranée, Rome doit d’abord dominer l’Italie."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Allié italien : communauté liée à Rome par des obligations, notamment militaires, sans être nécessairement composée de citoyens romains complets."
+    },
+    {
+      "title": "Nuance",
+      "text": "L’intégration romaine n’est pas égalitaire : elle donne des avantages à certains groupes et impose des contraintes fortes à d’autres."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Raconter seulement des batailles : la domination romaine dépend aussi du droit, des statuts, des routes, des colonies et de la mobilisation."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "mécanisme",
+      "q": "Pourquoi la conquête de l’Italie ne se résume-t-elle pas à des batailles ?",
+      "a": "Parce que Rome combine guerre, alliances, colonies, statuts juridiques et obligations militaires.",
+      "choices": [
+        "Parce que Rome évite totalement la guerre en Italie.",
+        "Parce que les cités grecques du Sud contrôlent directement le Sénat.",
+        "Parce que les Samnites deviennent empereurs de Rome."
+      ],
+      "why": "La domination repose sur un réseau politique et militaire.",
+      "trap": "Raconter uniquement une suite de victoires.",
+      "evidence": "Express et bloc 4."
+    },
+    {
+      "kind": "acteurs",
+      "q": "Quel adversaire montre que la conquête italienne est difficile ?",
+      "a": "Les Samnites, notamment dans les espaces montagneux d’Italie centrale.",
+      "choices": [
+        "Les Vikings de la mer du Nord.",
+        "Les califes abbassides de Bagdad.",
+        "Les armées napoléoniennes du XIXe siècle."
+      ],
+      "why": "Les Samnites obligent Rome à s’adapter.",
+      "trap": "Imaginer une expansion automatique.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "concept",
+      "q": "Que signifie intégrer pour dominer dans le cas romain ?",
+      "a": "Traiter différemment les vaincus pour obtenir fidélité, soldats, ressources et contrôle durable.",
+      "choices": [
+        "Accorder immédiatement la même égalité politique à toute l’Italie.",
+        "Détruire chaque cité vaincue pour éviter toute alliance.",
+        "Refuser toute obligation militaire aux communautés italiennes."
+      ],
+      "why": "Rome varie les statuts au lieu d’uniformiser tout le monde.",
+      "trap": "Confondre intégration et égalité.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "conséquence",
+      "q": "Pourquoi cette conquête prépare-t-elle les guerres méditerranéennes ?",
+      "a": "Elle donne à Rome une base italienne de soldats, ressources et alliés mobilisables.",
+      "choices": [
+        "Elle rend Rome définitivement pacifique.",
+        "Elle supprime le besoin d’institutions politiques.",
+        "Elle transforme immédiatement Rome en monarchie chrétienne."
+      ],
+      "why": "La profondeur italienne permet de tenir les conflits longs.",
+      "trap": "Séparer conquête italienne et expansion impériale.",
+      "evidence": "Bloc 5."
+    },
+    {
+      "kind": "piège",
+      "q": "Quel piège faut-il éviter ?",
+      "a": "Croire que Rome domine l’Italie seulement par une supériorité militaire simple.",
+      "choices": [
+        "Chercher des alliances et des statuts dans l’explication.",
+        "Situer la conquête avant les guerres puniques.",
+        "Distinguer citoyens, alliés et cités dépendantes."
+      ],
+      "why": "La conquête romaine est aussi juridique et politique.",
+      "trap": "Rendre Rome invincible par nature.",
+      "evidence": "Deeper et synthèse."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
 
   "rome-punic-wars": {
-    hook: "Les guerres puniques font passer Rome du rang de puissance italienne à celui de puissance méditerranéenne. Elles opposent Rome à Carthage, mais l’enjeu dépasse le duel : mer, îles, ressources, alliances, provinces et capacité à continuer une guerre longue.",
-    keyFacts: [
-      "Quand : 264 → 146 av. J.-C.",
-      "Où : Sicile, Méditerranée occidentale, Espagne, Italie, Afrique du Nord",
-      "Acteurs : Rome, Carthage, Hannibal, Scipion, alliés italiens, populations provinciales",
-      "Repères : Cannes en 216 av. J.-C. ; Zama en 202 ; destruction de Carthage en 146",
-      "Piège : faire des guerres puniques seulement l’histoire d’Hannibal"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "Rome gagne parce qu’elle sait mobiliser longtemps, pas parce qu’elle remporte toutes les batailles." },
-      { label: "Preuve", text: "Après Cannes, Rome subit une catastrophe mais continue la guerre, conserve des alliances et déplace le conflit." },
-      { label: "Conséquence", text: "La victoire crée un empire méditerranéen, avec provinces, richesses, esclaves et tensions internes." }
-    ],
-    express: [
-      "Les guerres puniques opposent Rome et Carthage entre 264 et 146 av. J.-C. Elles commencent autour de la Sicile, espace stratégique entre Italie et Afrique du Nord, puis s’élargissent à l’Espagne, à l’Italie et à l’Afrique.",
-      "La deuxième guerre punique est célèbre grâce à Hannibal, qui franchit les Alpes et écrase Rome à Cannes en 216 av. J.-C. Mais Hannibal ne suffit pas à expliquer l’ensemble : Rome perd des batailles, mais conserve assez d’alliés, de soldats et d’institutions pour continuer.",
-      "En 146 av. J.-C., Carthage est détruite. Rome domine la Méditerranée occidentale, mais cette victoire transforme aussi Rome elle-même : provinces, butin, esclavage, grands généraux et inégalités nourrissent les crises de la République."
-    ],
-    complete: [
-      { title: "1. Carthage et Rome, deux puissances", text: "Carthage est une grande cité d’Afrique du Nord, héritière du monde phénicien, puissante par la mer, le commerce et ses possessions. Rome est d’abord une puissance italienne. Leur affrontement force Rome à apprendre la guerre navale et l’administration de territoires extérieurs." },
-      { title: "2. La Sicile comme verrou", text: "La Sicile contrôle routes maritimes, ports et ressources agricoles. La première guerre punique oblige Rome à construire une flotte et à sortir de son cadre italien. C’est un changement d’échelle." },
-      { title: "3. Hannibal et la guerre d’usure", text: "Hannibal remporte de grandes victoires grâce à sa mobilité et à sa tactique. Mais après Cannes, Rome ne capitule pas. Elle évite parfois l’affrontement direct, reconstitue des armées et attaque les bases carthaginoises ailleurs." },
-      { title: "4. Scipion et la bascule africaine", text: "Le conflit se déplace en Espagne puis en Afrique. Scipion l’Africain bat Hannibal à Zama en 202 av. J.-C. Rome impose ensuite sa supériorité, mais laisse Carthage affaiblie avant la destruction finale de 146." },
-      { title: "5. Une victoire qui change Rome", text: "Les guerres puniques donnent à Rome des provinces, des tributs, des terres, des esclaves et un prestige immense. Mais elles renforcent aussi les écarts sociaux et le pouvoir des généraux, préparant les tensions de la fin de la République." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Punique vient de Punicus, terme latin lié aux Phéniciens ; Carthage est une puissance issue de ce monde méditerranéen." },
-      { title: "Nuance", text: "Cannes est une victoire éclatante d’Hannibal, mais une grande victoire tactique ne suffit pas toujours à gagner une guerre longue." },
-      { title: "Erreur fréquente", text: "Transformer les guerres puniques en duel de héros entre Hannibal et Rome, en oubliant mer, ressources, alliances et provinces." }
-    ],
-    quiz: [
-      { kind: "lieu", q: "Pourquoi la Sicile est-elle importante dans la première guerre punique ?", a: "Parce qu’elle contrôle des ports, routes maritimes et ressources entre l’Italie et l’Afrique du Nord.", choices: ["Parce qu’elle est le centre politique du Sénat romain.", "Parce qu’elle est déjà une province chrétienne de l’Empire tardif.", "Parce qu’elle empêche Rome de construire des routes terrestres."], why: "La Sicile oblige Rome à changer d’échelle maritime.", trap: "La voir comme un simple décor militaire.", evidence: "Bloc 2." },
-      { kind: "personnage", q: "Pourquoi Hannibal ne suffit-il pas à expliquer les guerres puniques ?", a: "Parce que l’enjeu inclut mer, alliances, ressources, provinces et capacité romaine à continuer la guerre.", choices: ["Parce qu’Hannibal n’a jamais combattu Rome.", "Parce que Carthage est une cité grecque sans flotte.", "Parce que Rome gagne toutes les batailles sans difficulté."], why: "Une guerre longue ne se résume pas à un général brillant.", trap: "Faire une biographie d’Hannibal au lieu d’une histoire impériale.", evidence: "Express et deeper." },
-      { kind: "date", q: "Que montre la bataille de Cannes en 216 av. J.-C. ?", a: "Rome peut subir une défaite énorme sans s’effondrer immédiatement.", choices: ["Rome détruit Carthage ce jour-là.", "La République romaine devient officiellement un empire.", "Hannibal est battu définitivement en Afrique."], why: "La capacité de mobilisation romaine est décisive.", trap: "Croire qu’une bataille suffit toujours à finir une guerre.", evidence: "Bloc 3." },
-      { kind: "repère", q: "Que se passe-t-il à Zama en 202 av. J.-C. ?", a: "Scipion l’Africain bat Hannibal et fait basculer la deuxième guerre punique.", choices: ["Romulus fonde Rome sur le Palatin.", "Carthage signe le traité de Verdun.", "Auguste reçoit le titre de princeps."], why: "Zama déplace l’avantage décisif vers Rome.", trap: "Mélanger les repères romains célèbres.", evidence: "Bloc 4." },
-      { kind: "conséquence", q: "Quel effet les guerres puniques ont-elles sur Rome ?", a: "Elles renforcent Rome mais créent aussi provinces, richesses, esclavage et tensions sociales.", choices: ["Elles ramènent Rome à un simple village du Latium.", "Elles suppriment les inégalités entre citoyens et esclaves.", "Elles interdisent toute expansion romaine hors d’Italie."], why: "La victoire impériale nourrit aussi la crise républicaine.", trap: "Voir la conquête comme un bénéfice sans coût interne.", evidence: "Bloc 5." }
-    ]
-  },
+  "hook": "Les guerres puniques font passer Rome du rang de puissance italienne à celui de puissance méditerranéenne. Elles opposent Rome à Carthage, mais l’enjeu dépasse le duel : mer, îles, ressources, alliances, provinces et capacité à continuer une guerre longue.",
+  "keyFacts": [
+    "Quand : 264 → 146 av. J.-C.",
+    "Où : Sicile, Méditerranée occidentale, Espagne, Italie, Afrique du Nord",
+    "Acteurs : Rome, Carthage, Hannibal, Scipion, alliés italiens, populations provinciales",
+    "Repères : Cannes en 216 av. J.-C. ; Zama en 202 ; destruction de Carthage en 146",
+    "Piège : faire des guerres puniques seulement l’histoire d’Hannibal"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "Rome gagne parce qu’elle sait mobiliser longtemps, pas parce qu’elle remporte toutes les batailles."
+    },
+    {
+      "label": "Preuve",
+      "text": "Après Cannes, Rome subit une catastrophe mais continue la guerre, conserve des alliances et déplace le conflit."
+    },
+    {
+      "label": "Conséquence",
+      "text": "La victoire crée un empire méditerranéen, avec provinces, richesses, esclaves et tensions internes."
+    }
+  ],
+  "express": [
+    "Les guerres puniques opposent Rome et Carthage entre 264 et 146 av. J.-C. Elles commencent autour de la Sicile, espace stratégique entre Italie et Afrique du Nord, puis s’élargissent à l’Espagne, à l’Italie et à l’Afrique.",
+    "La deuxième guerre punique est célèbre grâce à Hannibal, qui franchit les Alpes et écrase Rome à Cannes en 216 av. J.-C. Mais Hannibal ne suffit pas à expliquer l’ensemble : Rome perd des batailles, mais conserve assez d’alliés, de soldats et d’institutions pour continuer.",
+    "En 146 av. J.-C., Carthage est détruite. Rome domine la Méditerranée occidentale, mais cette victoire transforme aussi Rome elle-même : provinces, butin, esclavage, grands généraux et inégalités nourrissent les crises de la République."
+  ],
+  "complete": [
+    {
+      "title": "1. Carthage et Rome, deux puissances",
+      "text": "Carthage est une grande cité d’Afrique du Nord, héritière du monde phénicien, puissante par la mer, le commerce et ses possessions. Rome est d’abord une puissance italienne. Leur affrontement force Rome à apprendre la guerre navale et l’administration de territoires extérieurs."
+    },
+    {
+      "title": "2. La Sicile comme verrou",
+      "text": "La Sicile contrôle routes maritimes, ports et ressources agricoles. La première guerre punique oblige Rome à construire une flotte et à sortir de son cadre italien. C’est un changement d’échelle."
+    },
+    {
+      "title": "3. Hannibal et la guerre d’usure",
+      "text": "Hannibal remporte de grandes victoires grâce à sa mobilité et à sa tactique. Mais après Cannes, Rome ne capitule pas. Elle évite parfois l’affrontement direct, reconstitue des armées et attaque les bases carthaginoises ailleurs."
+    },
+    {
+      "title": "4. Scipion et la bascule africaine",
+      "text": "Le conflit se déplace en Espagne puis en Afrique. Scipion l’Africain bat Hannibal à Zama en 202 av. J.-C. Rome impose ensuite sa supériorité, mais laisse Carthage affaiblie avant la destruction finale de 146."
+    },
+    {
+      "title": "5. Une victoire qui change Rome",
+      "text": "Les guerres puniques donnent à Rome des provinces, des tributs, des terres, des esclaves et un prestige immense. Mais elles renforcent aussi les écarts sociaux et le pouvoir des généraux, préparant les tensions de la fin de la République."
+    },
+    {
+      "title": "6. La Sicile au cœur de la première guerre",
+      "text": "Rome, puissance surtout terrestre, doit construire et apprendre à utiliser une flotte pour affronter Carthage. La guerre dure plus de vingt ans et coûte énormément aux deux camps. La victoire romaine entraîne la prise de la Sicile, première province durable hors de la péninsule italienne."
+    },
+    {
+      "title": "7. Hannibal, de l’Espagne à l’Italie",
+      "text": "En 218 av. J.-C., Hannibal traverse les Alpes avec une armée venue d’Hispanie. Ses victoires du lac Trasimène et surtout de Cannes détruisent plusieurs armées romaines. Pourtant, une grande partie des alliés italiens reste fidèle à Rome, qui évite de capituler et mobilise de nouvelles forces."
+    },
+    {
+      "title": "8. La victoire change la République",
+      "text": "Après Zama puis la destruction de Carthage en 146 av. J.-C., Rome contrôle une grande partie de la Méditerranée occidentale. Les richesses, terres, esclaves et commandements militaires affluent. Cette expansion renforce l’État, mais accentue aussi les inégalités et la compétition entre aristocrates."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Les guerres puniques font passer Rome du rang de puissance italienne à celui de puissance méditerranéenne."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Punique vient de Punicus, terme latin lié aux Phéniciens ; Carthage est une puissance issue de ce monde méditerranéen."
+    },
+    {
+      "title": "Nuance",
+      "text": "Cannes est une victoire éclatante d’Hannibal, mais une grande victoire tactique ne suffit pas toujours à gagner une guerre longue."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Transformer les guerres puniques en duel de héros entre Hannibal et Rome, en oubliant mer, ressources, alliances et provinces."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "lieu",
+      "q": "Pourquoi la Sicile est-elle importante dans la première guerre punique ?",
+      "a": "Parce qu’elle contrôle des ports, routes maritimes et ressources entre l’Italie et l’Afrique du Nord.",
+      "choices": [
+        "Parce qu’elle est le centre politique du Sénat romain.",
+        "Parce qu’elle est déjà une province chrétienne de l’Empire tardif.",
+        "Parce qu’elle empêche Rome de construire des routes terrestres."
+      ],
+      "why": "La Sicile oblige Rome à changer d’échelle maritime.",
+      "trap": "La voir comme un simple décor militaire.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "personnage",
+      "q": "Pourquoi Hannibal ne suffit-il pas à expliquer les guerres puniques ?",
+      "a": "Parce que l’enjeu inclut mer, alliances, ressources, provinces et capacité romaine à continuer la guerre.",
+      "choices": [
+        "Parce qu’Hannibal n’a jamais combattu Rome.",
+        "Parce que Carthage est une cité grecque sans flotte.",
+        "Parce que Rome gagne toutes les batailles sans difficulté."
+      ],
+      "why": "Une guerre longue ne se résume pas à un général brillant.",
+      "trap": "Faire une biographie d’Hannibal au lieu d’une histoire impériale.",
+      "evidence": "Express et deeper."
+    },
+    {
+      "kind": "date",
+      "q": "Que montre la bataille de Cannes en 216 av. J.-C. ?",
+      "a": "Rome peut subir une défaite énorme sans s’effondrer immédiatement.",
+      "choices": [
+        "Rome détruit Carthage ce jour-là.",
+        "La République romaine devient officiellement un empire.",
+        "Hannibal est battu définitivement en Afrique."
+      ],
+      "why": "La capacité de mobilisation romaine est décisive.",
+      "trap": "Croire qu’une bataille suffit toujours à finir une guerre.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "repère",
+      "q": "Que se passe-t-il à Zama en 202 av. J.-C. ?",
+      "a": "Scipion l’Africain bat Hannibal et fait basculer la deuxième guerre punique.",
+      "choices": [
+        "Romulus fonde Rome sur le Palatin.",
+        "Carthage signe le traité de Verdun.",
+        "Auguste reçoit le titre de princeps."
+      ],
+      "why": "Zama déplace l’avantage décisif vers Rome.",
+      "trap": "Mélanger les repères romains célèbres.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "conséquence",
+      "q": "Quel effet les guerres puniques ont-elles sur Rome ?",
+      "a": "Elles renforcent Rome mais créent aussi provinces, richesses, esclavage et tensions sociales.",
+      "choices": [
+        "Elles ramènent Rome à un simple village du Latium.",
+        "Elles suppriment les inégalités entre citoyens et esclaves.",
+        "Elles interdisent toute expansion romaine hors d’Italie."
+      ],
+      "why": "La victoire impériale nourrit aussi la crise républicaine.",
+      "trap": "Voir la conquête comme un bénéfice sans coût interne.",
+      "evidence": "Bloc 5."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
 
   "rome-republic-crisis": {
-    hook: "La République romaine ne s’effondre pas parce que les Romains auraient soudain oublié leurs institutions. Elle entre en crise parce que conquêtes, inégalités, armées personnelles et rivalités aristocratiques rendent les anciens équilibres intenables.",
-    keyFacts: [
-      "Quand : surtout IIe → Ier siècle av. J.-C.",
-      "Où : Rome, Italie, provinces méditerranéennes",
-      "Acteurs : Sénat, plèbe, Gracques, Marius, Sylla, Pompée, César, soldats, alliés italiens",
-      "Enjeux : terres, citoyenneté, armées, violences politiques, commandements provinciaux",
-      "Piège : expliquer la crise uniquement par l’ambition de César"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "Les conquêtes enrichissent Rome mais déstabilisent la République par les inégalités, l’armée et la compétition politique." },
-      { label: "Mécanisme", text: "Des généraux commandent longtemps des armées fidèles à leur personne, ce qui fragilise les institutions." },
-      { label: "Conséquence", text: "La violence politique devient une manière de résoudre des conflits que les institutions ne contiennent plus." }
-    ],
-    express: [
-      "Aux IIe et Ier siècles av. J.-C., Rome domine un espace immense, mais la République souffre de ses succès. Les conquêtes apportent richesses, esclaves, provinces et prestige, tout en creusant les tensions sociales et politiques.",
-      "Les conflits portent sur la terre, la citoyenneté italienne, le poids du Sénat, le rôle des tribuns, les commandements militaires et la fidélité des soldats. Les Gracques, Marius, Sylla, Pompée et César ne sont pas des accidents isolés : ils incarnent une crise structurelle.",
-      "Le piège est de dire “César détruit la République” comme si tout dépendait d’un homme. César joue un rôle décisif, mais il arrive dans une République déjà fragilisée par les guerres civiles, les violences politiques et les armées personnelles."
-    ],
-    complete: [
-      { title: "1. Une République enrichie par la conquête", text: "Rome gagne des provinces, des butins, des esclaves et des commandements prestigieux. Cette richesse n’est pas répartie également. Les élites peuvent accroître leurs domaines et leur influence, tandis que des petits citoyens-soldats sont fragilisés." },
-      { title: "2. La question agraire", text: "Les réformes des Gracques cherchent à répondre au problème des terres et de la pauvreté civique. Leur destin violent montre que les institutions républicaines ont de plus en plus de mal à arbitrer les conflits sociaux." },
-      { title: "3. L’armée et les fidélités personnelles", text: "Les campagnes lointaines et les commandements prolongés donnent aux généraux un poids immense. Des soldats attendent solde, butin et terres de leur chef. La fidélité à Rome se mêle à la fidélité personnelle au général." },
-      { title: "4. Violence et guerres civiles", text: "Sylla marche sur Rome, des proscriptions éliminent des adversaires, les rivalités entre grands hommes deviennent armées. La politique républicaine se militarise : les conflits ne restent plus confinés aux débats et aux votes." },
-      { title: "5. César dans une crise déjà avancée", text: "César franchit le Rubicon en 49 av. J.-C. et ouvre une nouvelle guerre civile. Il accélère la fin de la République, mais il n’en est pas la seule cause. Son ascension est possible parce que les équilibres anciens sont déjà brisés." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Guerre civile : conflit armé entre membres d’une même communauté politique, ici des Romains contre des Romains." },
-      { title: "Nuance", text: "La République garde longtemps ses mots et ses magistratures, mais les pratiques politiques changent en profondeur." },
-      { title: "Erreur fréquente", text: "Réduire la crise à une lutte de personnalités : les structures sociales et militaires comptent autant que les ambitions individuelles." }
-    ],
-    quiz: [
-      { kind: "cause", q: "Pourquoi les conquêtes fragilisent-elles aussi la République ?", a: "Parce qu’elles apportent richesses, provinces, esclaves et commandements qui creusent les tensions sociales et politiques.", choices: ["Parce qu’elles font disparaître toutes les élites romaines.", "Parce qu’elles rendent le Sénat parfaitement égalitaire.", "Parce qu’elles empêchent tout général d’obtenir du prestige."], why: "Le succès extérieur produit des déséquilibres internes.", trap: "Voir la conquête uniquement comme une réussite.", evidence: "Express et bloc 1." },
-      { kind: "réforme", q: "Que révèle la violence autour des Gracques ?", a: "Les institutions républicaines peinent à arbitrer des conflits sociaux devenus explosifs.", choices: ["La République romaine fonctionne sans conflit politique.", "Les Gracques imposent immédiatement un empire monarchique.", "La question des terres ne concerne jamais les citoyens."], why: "Les réformes agraires montrent une crise sociale et institutionnelle.", trap: "Réduire l’épisode à deux biographies.", evidence: "Bloc 2." },
-      { kind: "armée", q: "Pourquoi les armées personnelles sont-elles dangereuses pour la République ?", a: "Parce que les soldats peuvent dépendre de leur général pour solde, butin, terres et carrière.", choices: ["Parce que les soldats romains ne participent jamais aux guerres.", "Parce que les généraux n’ont aucun pouvoir hors de Rome.", "Parce que la République interdit toute campagne militaire."], why: "La fidélité militaire se personnalise.", trap: "Penser que l’armée reste extérieure à la politique.", evidence: "Bloc 3." },
-      { kind: "événement", q: "Que signifie la marche de Sylla sur Rome ?", a: "La violence militaire entre dans la politique romaine au cœur même de la cité.", choices: ["La conversion officielle de Rome au christianisme.", "La fin des guerres civiles par consensus.", "La fondation légendaire de Rome par les jumeaux."], why: "La guerre civile touche directement le centre politique.", trap: "Ne voir Sylla que comme un nom de général.", evidence: "Bloc 4." },
-      { kind: "synthèse", q: "Pourquoi César n’explique-t-il pas à lui seul la fin de la République ?", a: "Parce qu’il arrive dans une République déjà fragilisée par inégalités, violences et armées personnelles.", choices: ["Parce que César ne joue aucun rôle dans les guerres civiles.", "Parce que la République reste stable jusqu’au IIIe siècle ap. J.-C.", "Parce que tout commence seulement avec Auguste."], why: "César accélère une crise déjà profonde.", trap: "Chercher un responsable unique.", evidence: "Bloc 5." }
-    ]
-  },
+  "hook": "La République romaine ne s’effondre pas parce que les Romains auraient soudain oublié leurs institutions. Elle entre en crise parce que conquêtes, inégalités, armées personnelles et rivalités aristocratiques rendent les anciens équilibres intenables.",
+  "keyFacts": [
+    "Quand : surtout IIe → Ier siècle av. J.-C.",
+    "Où : Rome, Italie, provinces méditerranéennes",
+    "Acteurs : Sénat, plèbe, Gracques, Marius, Sylla, Pompée, César, soldats, alliés italiens",
+    "Enjeux : terres, citoyenneté, armées, violences politiques, commandements provinciaux",
+    "Piège : expliquer la crise uniquement par l’ambition de César"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "Les conquêtes enrichissent Rome mais déstabilisent la République par les inégalités, l’armée et la compétition politique."
+    },
+    {
+      "label": "Mécanisme",
+      "text": "Des généraux commandent longtemps des armées fidèles à leur personne, ce qui fragilise les institutions."
+    },
+    {
+      "label": "Conséquence",
+      "text": "La violence politique devient une manière de résoudre des conflits que les institutions ne contiennent plus."
+    }
+  ],
+  "express": [
+    "Aux IIe et Ier siècles av. J.-C., Rome domine un espace immense, mais la République souffre de ses succès. Les conquêtes apportent richesses, esclaves, provinces et prestige, tout en creusant les tensions sociales et politiques.",
+    "Les conflits portent sur la terre, la citoyenneté italienne, le poids du Sénat, le rôle des tribuns, les commandements militaires et la fidélité des soldats. Les Gracques, Marius, Sylla, Pompée et César ne sont pas des accidents isolés : ils incarnent une crise structurelle.",
+    "Le piège est de dire “César détruit la République” comme si tout dépendait d’un homme. César joue un rôle décisif, mais il arrive dans une République déjà fragilisée par les guerres civiles, les violences politiques et les armées personnelles."
+  ],
+  "complete": [
+    {
+      "title": "1. Une République enrichie par la conquête",
+      "text": "Rome gagne des provinces, des butins, des esclaves et des commandements prestigieux. Cette richesse n’est pas répartie également. Les élites peuvent accroître leurs domaines et leur influence, tandis que des petits citoyens-soldats sont fragilisés."
+    },
+    {
+      "title": "2. La question agraire",
+      "text": "Les réformes des Gracques cherchent à répondre au problème des terres et de la pauvreté civique. Leur destin violent montre que les institutions républicaines ont de plus en plus de mal à arbitrer les conflits sociaux."
+    },
+    {
+      "title": "3. L’armée et les fidélités personnelles",
+      "text": "Les campagnes lointaines et les commandements prolongés donnent aux généraux un poids immense. Des soldats attendent solde, butin et terres de leur chef. La fidélité à Rome se mêle à la fidélité personnelle au général."
+    },
+    {
+      "title": "4. Violence et guerres civiles",
+      "text": "Sylla marche sur Rome, des proscriptions éliminent des adversaires, les rivalités entre grands hommes deviennent armées. La politique républicaine se militarise : les conflits ne restent plus confinés aux débats et aux votes."
+    },
+    {
+      "title": "5. César dans une crise déjà avancée",
+      "text": "César franchit le Rubicon en 49 av. J.-C. et ouvre une nouvelle guerre civile. Il accélère la fin de la République, mais il n’en est pas la seule cause. Son ascension est possible parce que les équilibres anciens sont déjà brisés."
+    },
+    {
+      "title": "6. La question de la terre",
+      "text": "Les longues campagnes éloignent certains petits propriétaires de leurs exploitations, tandis que les élites agrandissent de grands domaines travaillés en partie par des esclaves. Les frères Gracques proposent au IIe siècle av. J.-C. de redistribuer des terres publiques. Leur mort violente montre que le conflit politique franchit un seuil."
+    },
+    {
+      "title": "7. Des armées attachées à leurs chefs",
+      "text": "Les généraux promettent butin, terres et carrière à leurs soldats. Marius, Sylla, Pompée ou César disposent ainsi d’une influence personnelle considérable. Quand la fidélité à un commandant entre en concurrence avec l’obéissance aux institutions, les légions peuvent devenir des instruments de guerre civile."
+    },
+    {
+      "title": "8. La citoyenneté italienne en débat",
+      "text": "Les alliés italiens fournissent des soldats mais ne bénéficient pas tous des mêmes droits. La guerre sociale, entre 91 et 88 av. J.-C., conduit Rome à étendre largement la citoyenneté. La République sort agrandie juridiquement, mais ses institutions conçues pour une cité peinent à gérer un territoire immense."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "La République romaine ne s’effondre pas parce que les Romains auraient soudain oublié leurs institutions."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Guerre civile : conflit armé entre membres d’une même communauté politique, ici des Romains contre des Romains."
+    },
+    {
+      "title": "Nuance",
+      "text": "La République garde longtemps ses mots et ses magistratures, mais les pratiques politiques changent en profondeur."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Réduire la crise à une lutte de personnalités : les structures sociales et militaires comptent autant que les ambitions individuelles."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "cause",
+      "q": "Pourquoi les conquêtes fragilisent-elles aussi la République ?",
+      "a": "Parce qu’elles apportent richesses, provinces, esclaves et commandements qui creusent les tensions sociales et politiques.",
+      "choices": [
+        "Parce qu’elles font disparaître toutes les élites romaines.",
+        "Parce qu’elles rendent le Sénat parfaitement égalitaire.",
+        "Parce qu’elles empêchent tout général d’obtenir du prestige."
+      ],
+      "why": "Le succès extérieur produit des déséquilibres internes.",
+      "trap": "Voir la conquête uniquement comme une réussite.",
+      "evidence": "Express et bloc 1."
+    },
+    {
+      "kind": "réforme",
+      "q": "Que révèle la violence autour des Gracques ?",
+      "a": "Les institutions républicaines peinent à arbitrer des conflits sociaux devenus explosifs.",
+      "choices": [
+        "La République romaine fonctionne sans conflit politique.",
+        "Les Gracques imposent immédiatement un empire monarchique.",
+        "La question des terres ne concerne jamais les citoyens."
+      ],
+      "why": "Les réformes agraires montrent une crise sociale et institutionnelle.",
+      "trap": "Réduire l’épisode à deux biographies.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "armée",
+      "q": "Pourquoi les armées personnelles sont-elles dangereuses pour la République ?",
+      "a": "Parce que les soldats peuvent dépendre de leur général pour solde, butin, terres et carrière.",
+      "choices": [
+        "Parce que les soldats romains ne participent jamais aux guerres.",
+        "Parce que les généraux n’ont aucun pouvoir hors de Rome.",
+        "Parce que la République interdit toute campagne militaire."
+      ],
+      "why": "La fidélité militaire se personnalise.",
+      "trap": "Penser que l’armée reste extérieure à la politique.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "événement",
+      "q": "Que signifie la marche de Sylla sur Rome ?",
+      "a": "La violence militaire entre dans la politique romaine au cœur même de la cité.",
+      "choices": [
+        "La conversion officielle de Rome au christianisme.",
+        "La fin des guerres civiles par consensus.",
+        "La fondation légendaire de Rome par les jumeaux."
+      ],
+      "why": "La guerre civile touche directement le centre politique.",
+      "trap": "Ne voir Sylla que comme un nom de général.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi César n’explique-t-il pas à lui seul la fin de la République ?",
+      "a": "Parce qu’il arrive dans une République déjà fragilisée par inégalités, violences et armées personnelles.",
+      "choices": [
+        "Parce que César ne joue aucun rôle dans les guerres civiles.",
+        "Parce que la République reste stable jusqu’au IIIe siècle ap. J.-C.",
+        "Parce que tout commence seulement avec Auguste."
+      ],
+      "why": "César accélère une crise déjà profonde.",
+      "trap": "Chercher un responsable unique.",
+      "evidence": "Bloc 5."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
 
   "rome-christianity-late-empire": {
-    hook: "Le christianisme ne devient pas religion impériale par un simple déclic spirituel. Dans l’Empire tardif, il transforme les alliances politiques, les institutions, les villes, les conflits religieux et la manière de penser l’autorité.",
-    keyFacts: [
-      "Quand : Ier → IVe siècles, puis Empire tardif",
-      "Où : Empire romain, villes méditerranéennes, Orient et Occident",
-      "Acteurs : communautés chrétiennes, évêques, empereurs, élites urbaines, païens, hérétiques désignés",
-      "Repères : persécutions ponctuelles ; Constantin ; édit de Milan en 313 ; Théodose à la fin du IVe siècle",
-      "Piège : croire que tout l’Empire devient chrétien instantanément"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "La christianisation de l’Empire est progressive, conflictuelle et politique autant que religieuse." },
-      { label: "Preuve", text: "Édits, conciles, basiliques, inscriptions et rôle des évêques montrent l’entrée du christianisme dans l’espace public." },
-      { label: "Nuance", text: "La conversion impériale ne signifie pas disparition immédiate des cultes anciens ni accord entre tous les chrétiens." }
-    ],
-    express: [
-      "Au départ, les chrétiens forment des communautés minoritaires dans l’Empire romain. Ils peuvent être tolérés, ignorés ou persécutés selon les périodes et les lieux. Il ne faut donc pas imaginer une persécution permanente et uniforme.",
-      "Le tournant majeur est Constantin : après le début du IVe siècle, le christianisme obtient une reconnaissance impériale, des privilèges et une visibilité nouvelle. L’édit de Milan en 313 symbolise cette légalisation, même si l’évolution reste progressive.",
-      "À la fin du IVe siècle, avec Théodose, le christianisme nicéen devient central dans l’ordre impérial. Mais la christianisation reste conflictuelle : débats théologiques, conciles, tensions avec les cultes anciens, rôle croissant des évêques et différences entre régions."
-    ],
-    complete: [
-      { title: "1. Des communautés minoritaires", text: "Les premiers chrétiens vivent dans un empire polythéiste où la religion est liée aux cités, aux familles, à l’empereur et aux rites publics. Ils ne forment pas un bloc social unique : on trouve des pauvres, des femmes, des artisans, mais aussi progressivement des élites." },
-      { title: "2. Des persécutions réelles mais discontinues", text: "Certaines persécutions sont violentes, notamment quand l’État exige des gestes de loyauté religieuse. Mais elles ne sont pas permanentes dans tout l’Empire. Selon les empereurs, les provinces et les moments, la situation varie." },
-      { title: "3. Constantin et la légalisation", text: "Constantin ne rend pas tout l’Empire chrétien en un jour. Il donne au christianisme un statut favorable, soutient l’Église, intervient dans les débats et associe progressivement pouvoir impérial et religion chrétienne." },
-      { title: "4. Évêques, conciles et débats", text: "Les évêques deviennent des acteurs urbains majeurs. Les conciles cherchent à définir la doctrine, mais les désaccords montrent que le christianisme antique n’est pas uniforme. Le pouvoir impérial intervient souvent pour stabiliser l’unité religieuse." },
-      { title: "5. Une transformation de l’Empire", text: "La christianisation change les monuments, les calendriers, les lois, les formes de charité, les conflits et la légitimité politique. Elle ne fait pas disparaître immédiatement l’Empire romain : elle participe à sa transformation tardive." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Concile : assemblée d’évêques réunie pour trancher des questions de doctrine, de discipline ou d’organisation de l’Église." },
-      { title: "Nuance", text: "Le mot paganisme regroupe des cultes très variés ; il ne désigne pas une religion unique comparable à une Église centralisée." },
-      { title: "Erreur fréquente", text: "Dire “Constantin convertit l’Empire” est trop rapide : il légalise, favorise et politise une évolution plus longue." }
-    ],
-    quiz: [
-      { kind: "nuance", q: "Pourquoi faut-il nuancer l’idée de persécution permanente ?", a: "Parce que les persécutions chrétiennes sont réelles mais variables selon les périodes, lieux et empereurs.", choices: ["Parce que les chrétiens gouvernent l’Empire dès le Ier siècle.", "Parce que Rome ignore toujours les questions religieuses.", "Parce que toutes les provinces suivent exactement la même politique."], why: "Le cours refuse l’idée d’une situation uniforme.", trap: "Transformer toute l’histoire chrétienne antique en récit unique de persécution.", evidence: "Bloc 2." },
-      { kind: "repère", q: "Que symbolise l’édit de Milan en 313 ?", a: "La légalisation et la reconnaissance du christianisme dans l’Empire romain.", choices: ["La destruction de Carthage par Rome.", "La fondation légendaire de Rome.", "La victoire d’Hannibal à Cannes."], why: "313 marque un tournant juridique et politique.", trap: "Le confondre avec une conversion instantanée de tous les habitants.", evidence: "Express et bloc 3." },
-      { kind: "acteur", q: "Pourquoi les évêques deviennent-ils importants ?", a: "Ils deviennent des acteurs urbains, religieux et politiques capables d’organiser des communautés et de peser dans les débats.", choices: ["Ils remplacent immédiatement tous les magistrats romains.", "Ils commandent seuls toutes les légions de frontière.", "Ils abolissent les villes et les institutions."], why: "La christianisation transforme aussi le pouvoir local.", trap: "Voir les évêques comme de simples prêtres sans poids social.", evidence: "Bloc 4." },
-      { kind: "concept", q: "À quoi servent les conciles ?", a: "À réunir des évêques pour trancher des questions de doctrine, discipline ou organisation de l’Église.", choices: ["À élire les consuls de la République romaine.", "À organiser les courses de chars du cirque.", "À répartir les terres conquises aux vétérans."], why: "Les conciles montrent que l’unité doctrinale se construit.", trap: "Imaginer un christianisme antique déjà totalement uniforme.", evidence: "Deeper et bloc 4." },
-      { kind: "synthèse", q: "Quelle idée retenir sur la christianisation de l’Empire ?", a: "Elle est progressive, conflictuelle et transforme l’autorité impériale autant que la vie religieuse.", choices: ["Elle se fait en une journée après Constantin.", "Elle met fin immédiatement à toutes les structures romaines.", "Elle ne concerne que des croyances privées sans effet politique."], why: "Le cours relie religion, institutions, villes et pouvoir.", trap: "Séparer complètement croyance et politique.", evidence: "Conclusion." }
-    ]
-  }
+  "hook": "Le christianisme ne devient pas religion impériale par un simple déclic spirituel. Dans l’Empire tardif, il transforme les alliances politiques, les institutions, les villes, les conflits religieux et la manière de penser l’autorité.",
+  "keyFacts": [
+    "Quand : Ier → IVe siècles, puis Empire tardif",
+    "Où : Empire romain, villes méditerranéennes, Orient et Occident",
+    "Acteurs : communautés chrétiennes, évêques, empereurs, élites urbaines, païens, hérétiques désignés",
+    "Repères : persécutions ponctuelles ; Constantin ; édit de Milan en 313 ; Théodose à la fin du IVe siècle",
+    "Piège : croire que tout l’Empire devient chrétien instantanément"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "La christianisation de l’Empire est progressive, conflictuelle et politique autant que religieuse."
+    },
+    {
+      "label": "Preuve",
+      "text": "Édits, conciles, basiliques, inscriptions et rôle des évêques montrent l’entrée du christianisme dans l’espace public."
+    },
+    {
+      "label": "Nuance",
+      "text": "La conversion impériale ne signifie pas disparition immédiate des cultes anciens ni accord entre tous les chrétiens."
+    }
+  ],
+  "express": [
+    "Au départ, les chrétiens forment des communautés minoritaires dans l’Empire romain. Ils peuvent être tolérés, ignorés ou persécutés selon les périodes et les lieux. Il ne faut donc pas imaginer une persécution permanente et uniforme.",
+    "Le tournant majeur est Constantin : après le début du IVe siècle, le christianisme obtient une reconnaissance impériale, des privilèges et une visibilité nouvelle. L’édit de Milan en 313 symbolise cette légalisation, même si l’évolution reste progressive.",
+    "À la fin du IVe siècle, avec Théodose, le christianisme nicéen devient central dans l’ordre impérial. Mais la christianisation reste conflictuelle : débats théologiques, conciles, tensions avec les cultes anciens, rôle croissant des évêques et différences entre régions."
+  ],
+  "complete": [
+    {
+      "title": "1. Des communautés minoritaires",
+      "text": "Les premiers chrétiens vivent dans un empire polythéiste où la religion est liée aux cités, aux familles, à l’empereur et aux rites publics. Ils ne forment pas un bloc social unique : on trouve des pauvres, des femmes, des artisans, mais aussi progressivement des élites."
+    },
+    {
+      "title": "2. Des persécutions réelles mais discontinues",
+      "text": "Certaines persécutions sont violentes, notamment quand l’État exige des gestes de loyauté religieuse. Mais elles ne sont pas permanentes dans tout l’Empire. Selon les empereurs, les provinces et les moments, la situation varie."
+    },
+    {
+      "title": "3. Constantin et la légalisation",
+      "text": "Constantin ne rend pas tout l’Empire chrétien en un jour. Il donne au christianisme un statut favorable, soutient l’Église, intervient dans les débats et associe progressivement pouvoir impérial et religion chrétienne."
+    },
+    {
+      "title": "4. Évêques, conciles et débats",
+      "text": "Les évêques deviennent des acteurs urbains majeurs. Les conciles cherchent à définir la doctrine, mais les désaccords montrent que le christianisme antique n’est pas uniforme. Le pouvoir impérial intervient souvent pour stabiliser l’unité religieuse."
+    },
+    {
+      "title": "5. Une transformation de l’Empire",
+      "text": "La christianisation change les monuments, les calendriers, les lois, les formes de charité, les conflits et la légitimité politique. Elle ne fait pas disparaître immédiatement l’Empire romain : elle participe à sa transformation tardive."
+    },
+    {
+      "title": "6. D’une minorité diverse à une Église organisée",
+      "text": "Les premières communautés chrétiennes sont implantées dans plusieurs villes de l’Empire et ne parlent pas toujours d’une seule voix. Évêques, conciles et textes contribuent progressivement à fixer des doctrines et une organisation. Les persécutions existent, mais elles sont intermittentes et variables selon les règnes et les régions."
+    },
+    {
+      "title": "7. Constantin change le rapport au pouvoir",
+      "text": "Après sa victoire au pont Milvius en 312, Constantin favorise le christianisme et l’accord de Milan de 313 met fin aux mesures générales de persécution. Il finance des églises et intervient dans les conflits doctrinaux, notamment au concile de Nicée. L’empereur n’abandonne pas immédiatement toutes les traditions religieuses, mais il crée une nouvelle proximité entre Église et État."
+    },
+    {
+      "title": "8. Christianisation ne signifie pas disparition immédiate des anciens cultes",
+      "text": "À la fin du IVe siècle, les empereurs soutiennent de plus en plus le christianisme nicéen et limitent certains cultes publics. Dans la pratique, les habitudes religieuses, fêtes et sanctuaires ne s’effacent pas en un jour. La transformation s’étale sur plusieurs générations et varie fortement entre villes et campagnes."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Le christianisme ne devient pas religion impériale par un simple déclic spirituel."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Concile : assemblée d’évêques réunie pour trancher des questions de doctrine, de discipline ou d’organisation de l’Église."
+    },
+    {
+      "title": "Nuance",
+      "text": "Le mot paganisme regroupe des cultes très variés ; il ne désigne pas une religion unique comparable à une Église centralisée."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Dire “Constantin convertit l’Empire” est trop rapide : il légalise, favorise et politise une évolution plus longue."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "nuance",
+      "q": "Pourquoi faut-il nuancer l’idée de persécution permanente ?",
+      "a": "Parce que les persécutions chrétiennes sont réelles mais variables selon les périodes, lieux et empereurs.",
+      "choices": [
+        "Parce que les chrétiens gouvernent l’Empire dès le Ier siècle.",
+        "Parce que Rome ignore toujours les questions religieuses.",
+        "Parce que toutes les provinces suivent exactement la même politique."
+      ],
+      "why": "Le cours refuse l’idée d’une situation uniforme.",
+      "trap": "Transformer toute l’histoire chrétienne antique en récit unique de persécution.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "repère",
+      "q": "Que symbolise l’édit de Milan en 313 ?",
+      "a": "La légalisation et la reconnaissance du christianisme dans l’Empire romain.",
+      "choices": [
+        "La destruction de Carthage par Rome.",
+        "La fondation légendaire de Rome.",
+        "La victoire d’Hannibal à Cannes."
+      ],
+      "why": "313 marque un tournant juridique et politique.",
+      "trap": "Le confondre avec une conversion instantanée de tous les habitants.",
+      "evidence": "Express et bloc 3."
+    },
+    {
+      "kind": "acteur",
+      "q": "Pourquoi les évêques deviennent-ils importants ?",
+      "a": "Ils deviennent des acteurs urbains, religieux et politiques capables d’organiser des communautés et de peser dans les débats.",
+      "choices": [
+        "Ils remplacent immédiatement tous les magistrats romains.",
+        "Ils commandent seuls toutes les légions de frontière.",
+        "Ils abolissent les villes et les institutions."
+      ],
+      "why": "La christianisation transforme aussi le pouvoir local.",
+      "trap": "Voir les évêques comme de simples prêtres sans poids social.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "concept",
+      "q": "À quoi servent les conciles ?",
+      "a": "À réunir des évêques pour trancher des questions de doctrine, discipline ou organisation de l’Église.",
+      "choices": [
+        "À élire les consuls de la République romaine.",
+        "À organiser les courses de chars du cirque.",
+        "À répartir les terres conquises aux vétérans."
+      ],
+      "why": "Les conciles montrent que l’unité doctrinale se construit.",
+      "trap": "Imaginer un christianisme antique déjà totalement uniforme.",
+      "evidence": "Deeper et bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle idée retenir sur la christianisation de l’Empire ?",
+      "a": "Elle est progressive, conflictuelle et transforme l’autorité impériale autant que la vie religieuse.",
+      "choices": [
+        "Elle se fait en une journée après Constantin.",
+        "Elle met fin immédiatement à toutes les structures romaines.",
+        "Elle ne concerne que des croyances privées sans effet politique."
+      ],
+      "why": "Le cours relie religion, institutions, villes et pouvoir.",
+      "trap": "Séparer complètement croyance et politique.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+}
 });
 
 
@@ -8567,124 +9861,454 @@ EGYPT_EDITORIAL_LESSON_IDS.forEach(id => PUBLISHED_LESSON_IDS.add(id));
 
 Object.assign(READY_LESSON_PACKS, {
   "egypt-two-lands": {
-    hook: "Avant les pyramides, il faut comprendre comment l’Égypte devient un royaume : l’unification des Deux Terres transforme une vallée en État pharaonique.",
-    keyFacts: [
-      "Quand : autour de -3100, avec une chronologie encore discutée",
-      "Où : Haute-Égypte au sud, Basse-Égypte dans le delta",
-      "Acteurs : élites locales, premiers rois, administration naissante, sanctuaires",
-      "Traces : palettes cérémonielles, tombes d’Abydos, motifs des deux couronnes, premières inscriptions",
-      "Piège : imaginer une unification instantanée par un seul héros"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "L’unification des Deux Terres est un processus politique, religieux et administratif, pas seulement une victoire militaire." },
-      { label: "Preuve", text: "Les symboles des couronnes, les noms royaux, les tombes et les objets cérémoniels montrent la construction d’un pouvoir central." },
-      { label: "Nuance", text: "Narmer est important dans la mémoire des débuts, mais il ne faut pas réduire toute la formation de l’État égyptien à un seul personnage." }
-    ],
-    express: [
-      "Les Égyptiens parlent souvent des Deux Terres : la Haute-Égypte, au sud de la vallée du Nil, et la Basse-Égypte, dans le delta. L’unification de ces espaces autour de -3100 est un moment fondateur, même si elle ne doit pas être imaginée comme une scène simple et instantanée.",
-      "Les premiers rois construisent leur autorité avec des symboles puissants : couronnes, noms royaux, rites, images de domination, liens avec les dieux et contrôle des lieux importants. Le pouvoir pharaonique naît donc en associant guerre, religion, administration et mémoire officielle.",
-      "Le piège est de raconter seulement Narmer comme un héros qui aurait “créé l’Égypte” d’un coup. Ce qui compte historiquement, c’est la formation progressive d’un État capable de contrôler les hommes, les terres, les récoltes, les cultes et les signes du pouvoir."
-    ],
-    complete: [
-      { title: "1. Deux espaces à unir", text: "La Haute-Égypte correspond à la vallée étroite du Nil vers le sud ; la Basse-Égypte correspond au delta, plus ouvert sur la Méditerranée. Les appeler Deux Terres montre que l’unité égyptienne est pensée comme la réunion de régions différentes." },
-      { title: "2. Un processus plus qu’un instant", text: "Autour de -3100, les traces suggèrent une concentration du pouvoir. Mais l’unification n’est probablement pas un événement unique et limpide : elle combine rivalités entre élites, contrôle de territoires, conquêtes, alliances et mise en ordre symbolique." },
-      { title: "3. Narmer et les images du pouvoir", text: "La palette de Narmer est célèbre parce qu’elle montre un roi dans des scènes de domination et de victoire. Elle est précieuse, mais ce n’est pas une photo de reportage : c’est un objet cérémoniel qui met en scène une idéologie royale." },
-      { title: "4. Naissance d’un État pharaonique", text: "Unifier, ce n’est pas seulement battre des adversaires. Il faut compter, prélever, stocker, organiser des travaux, contrôler des sanctuaires, afficher l’autorité du roi et créer une mémoire commune. Les premiers signes d’écriture et d’administration deviennent donc essentiels." },
-      { title: "5. Une mémoire durable", text: "L’idée des Deux Terres reste centrale pendant toute l’histoire pharaonique. Même des siècles plus tard, le pharaon est présenté comme celui qui tient ensemble la Haute et la Basse-Égypte. Le début du royaume devient ainsi une référence politique permanente." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Deux Terres : expression qui désigne la Haute et la Basse-Égypte, dont l’union symbolise l’autorité du pharaon." },
-      { title: "Source à manier", text: "Une palette cérémonielle renseigne sur la mise en scène du pouvoir, mais pas directement sur tous les détails de l’événement représenté." },
-      { title: "Erreur fréquente", text: "Croire qu’un seul roi fonde l’Égypte d’un geste simple. L’unification est aussi une construction administrative, religieuse et mémorielle." }
-    ],
-    quiz: [
-      { kind: "concept", q: "Que désignent les Deux Terres ?", a: "La Haute-Égypte au sud et la Basse-Égypte dans le delta, réunies symboliquement sous l’autorité du roi.", choices: ["Deux empires séparés entre Rome et Athènes.", "Deux pyramides construites par le même architecte.", "Deux routes commerciales entre Chine et Méditerranée."], why: "L’expression résume l’unité politique égyptienne.", trap: "Croire qu’il s’agit seulement d’une formule poétique.", evidence: "Express et bloc 1." },
-      { kind: "date", q: "Pourquoi faut-il être prudent avec l’unification autour de -3100 ?", a: "Parce qu’elle désigne un processus de formation de l’État plus qu’un événement unique parfaitement connu.", choices: ["Parce que l’Égypte n’existe qu’après Alexandre.", "Parce que les pyramides sont déjà détruites à cette date.", "Parce que cette date correspond à la fin de l’Empire romain."], why: "Les débuts sont reconstruits à partir de traces partielles.", trap: "Transformer une chronologie utile en scène simple.", evidence: "Bloc 2." },
-      { kind: "source", q: "Que montre surtout la palette de Narmer ?", a: "Une mise en scène cérémonielle de la victoire et de l’idéologie royale.", choices: ["Un contrat fiscal complet avec les paysans du delta.", "Une carte précise de toutes les provinces égyptiennes.", "Un récit neutre écrit par un témoin extérieur."], why: "L’objet est précieux, mais il met en scène le pouvoir.", trap: "La lire comme un reportage moderne.", evidence: "Bloc 3." },
-      { kind: "pouvoir", q: "Pourquoi l’unification n’est-elle pas seulement militaire ?", a: "Parce qu’elle implique aussi administration, rites, prélèvements, sanctuaires et symboles royaux.", choices: ["Parce qu’aucune élite locale n’existe dans la vallée du Nil.", "Parce que l’écriture remplace entièrement le pouvoir royal.", "Parce que les temples n’ont aucun rôle politique."], why: "Un État durable doit organiser plus que des batailles.", trap: "Réduire l’État à la guerre.", evidence: "Bloc 4." },
-      { kind: "synthèse", q: "Quelle idée reste durable dans la monarchie pharaonique ?", a: "Le pharaon est celui qui tient ensemble la Haute et la Basse-Égypte.", choices: ["Le roi égyptien refuse tous les symboles religieux.", "La Basse-Égypte gouverne seule tout le royaume sans roi.", "L’unification est oubliée dès l’Ancien Empire."], why: "Les Deux Terres deviennent un langage permanent du pouvoir.", trap: "Croire que les débuts ne comptent plus ensuite.", evidence: "Bloc 5." }
-    ]
-  },
+  "hook": "Avant les pyramides, il faut comprendre comment l’Égypte devient un royaume : l’unification des Deux Terres transforme une vallée en État pharaonique.",
+  "keyFacts": [
+    "Quand : autour de -3100, avec une chronologie encore discutée",
+    "Où : Haute-Égypte au sud, Basse-Égypte dans le delta",
+    "Acteurs : élites locales, premiers rois, administration naissante, sanctuaires",
+    "Traces : palettes cérémonielles, tombes d’Abydos, motifs des deux couronnes, premières inscriptions",
+    "Piège : imaginer une unification instantanée par un seul héros"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "L’unification des Deux Terres est un processus politique, religieux et administratif, pas seulement une victoire militaire."
+    },
+    {
+      "label": "Preuve",
+      "text": "Les symboles des couronnes, les noms royaux, les tombes et les objets cérémoniels montrent la construction d’un pouvoir central."
+    },
+    {
+      "label": "Nuance",
+      "text": "Narmer est important dans la mémoire des débuts, mais il ne faut pas réduire toute la formation de l’État égyptien à un seul personnage."
+    }
+  ],
+  "express": [
+    "Les Égyptiens parlent souvent des Deux Terres : la Haute-Égypte, au sud de la vallée du Nil, et la Basse-Égypte, dans le delta. L’unification de ces espaces autour de -3100 est un moment fondateur, même si elle ne doit pas être imaginée comme une scène simple et instantanée.",
+    "Les premiers rois construisent leur autorité avec des symboles puissants : couronnes, noms royaux, rites, images de domination, liens avec les dieux et contrôle des lieux importants. Le pouvoir pharaonique naît donc en associant guerre, religion, administration et mémoire officielle.",
+    "Le piège est de raconter seulement Narmer comme un héros qui aurait “créé l’Égypte” d’un coup. Ce qui compte historiquement, c’est la formation progressive d’un État capable de contrôler les hommes, les terres, les récoltes, les cultes et les signes du pouvoir."
+  ],
+  "complete": [
+    {
+      "title": "1. Deux espaces à unir",
+      "text": "La Haute-Égypte correspond à la vallée étroite du Nil vers le sud ; la Basse-Égypte correspond au delta, plus ouvert sur la Méditerranée. Les appeler Deux Terres montre que l’unité égyptienne est pensée comme la réunion de régions différentes."
+    },
+    {
+      "title": "2. Un processus plus qu’un instant",
+      "text": "Autour de -3100, les traces suggèrent une concentration du pouvoir. Mais l’unification n’est probablement pas un événement unique et limpide : elle combine rivalités entre élites, contrôle de territoires, conquêtes, alliances et mise en ordre symbolique."
+    },
+    {
+      "title": "3. Narmer et les images du pouvoir",
+      "text": "La palette de Narmer est célèbre parce qu’elle montre un roi dans des scènes de domination et de victoire. Elle est précieuse, mais ce n’est pas une photo de reportage : c’est un objet cérémoniel qui met en scène une idéologie royale."
+    },
+    {
+      "title": "4. Naissance d’un État pharaonique",
+      "text": "Unifier, ce n’est pas seulement battre des adversaires. Il faut compter, prélever, stocker, organiser des travaux, contrôler des sanctuaires, afficher l’autorité du roi et créer une mémoire commune. Les premiers signes d’écriture et d’administration deviennent donc essentiels."
+    },
+    {
+      "title": "5. Une mémoire durable",
+      "text": "L’idée des Deux Terres reste centrale pendant toute l’histoire pharaonique. Même des siècles plus tard, le pharaon est présenté comme celui qui tient ensemble la Haute et la Basse-Égypte. Le début du royaume devient ainsi une référence politique permanente."
+    },
+    {
+      "title": "6. Deux régions complémentaires",
+      "text": "La Haute-Égypte correspond à la vallée étroite du sud ; la Basse-Égypte, au delta du nord. Leurs paysages, leurs ressources et leurs réseaux diffèrent. La monarchie se présente comme l’union des “Deux Terres”, formule politique qui rappelle que le royaume rassemble des espaces distincts plutôt qu’une unité naturelle évidente."
+    },
+    {
+      "title": "7. Narmer, un repère à manier avec prudence",
+      "text": "La palette de Narmer montre le souverain portant des couronnes associées aux deux régions et dominant des ennemis. Elle est souvent reliée à l’unification autour de 3100 av. J.-C. Mais cette image cérémonielle n’est pas la photographie d’une bataille unique : elle met en scène un processus probablement plus long."
+    },
+    {
+      "title": "8. La capitale aide à tenir le royaume",
+      "text": "La région de Memphis, située près de la jonction entre vallée et delta, permet de contrôler les circulations et de coordonner le territoire. Administrer exige des scribes, des prélèvements, des domaines et des relais locaux. L’unification ne repose donc pas uniquement sur une couronne symbolique, mais sur des institutions durables."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Avant les pyramides, il faut comprendre comment l’Égypte devient un royaume : l’unification des Deux Terres transforme une vallée en État pharaonique."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Deux Terres : expression qui désigne la Haute et la Basse-Égypte, dont l’union symbolise l’autorité du pharaon."
+    },
+    {
+      "title": "Source à manier",
+      "text": "Une palette cérémonielle renseigne sur la mise en scène du pouvoir, mais pas directement sur tous les détails de l’événement représenté."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Croire qu’un seul roi fonde l’Égypte d’un geste simple. L’unification est aussi une construction administrative, religieuse et mémorielle."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "concept",
+      "q": "Que désignent les Deux Terres ?",
+      "a": "La Haute-Égypte au sud et la Basse-Égypte dans le delta, réunies symboliquement sous l’autorité du roi.",
+      "choices": [
+        "Deux empires séparés entre Rome et Athènes.",
+        "Deux pyramides construites par le même architecte.",
+        "Deux routes commerciales entre Chine et Méditerranée."
+      ],
+      "why": "L’expression résume l’unité politique égyptienne.",
+      "trap": "Croire qu’il s’agit seulement d’une formule poétique.",
+      "evidence": "Express et bloc 1."
+    },
+    {
+      "kind": "date",
+      "q": "Pourquoi faut-il être prudent avec l’unification autour de -3100 ?",
+      "a": "Parce qu’elle désigne un processus de formation de l’État plus qu’un événement unique parfaitement connu.",
+      "choices": [
+        "Parce que l’Égypte n’existe qu’après Alexandre.",
+        "Parce que les pyramides sont déjà détruites à cette date.",
+        "Parce que cette date correspond à la fin de l’Empire romain."
+      ],
+      "why": "Les débuts sont reconstruits à partir de traces partielles.",
+      "trap": "Transformer une chronologie utile en scène simple.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "source",
+      "q": "Que montre surtout la palette de Narmer ?",
+      "a": "Une mise en scène cérémonielle de la victoire et de l’idéologie royale.",
+      "choices": [
+        "Un contrat fiscal complet avec les paysans du delta.",
+        "Une carte précise de toutes les provinces égyptiennes.",
+        "Un récit neutre écrit par un témoin extérieur."
+      ],
+      "why": "L’objet est précieux, mais il met en scène le pouvoir.",
+      "trap": "La lire comme un reportage moderne.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "pouvoir",
+      "q": "Pourquoi l’unification n’est-elle pas seulement militaire ?",
+      "a": "Parce qu’elle implique aussi administration, rites, prélèvements, sanctuaires et symboles royaux.",
+      "choices": [
+        "Parce qu’aucune élite locale n’existe dans la vallée du Nil.",
+        "Parce que l’écriture remplace entièrement le pouvoir royal.",
+        "Parce que les temples n’ont aucun rôle politique."
+      ],
+      "why": "Un État durable doit organiser plus que des batailles.",
+      "trap": "Réduire l’État à la guerre.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle idée reste durable dans la monarchie pharaonique ?",
+      "a": "Le pharaon est celui qui tient ensemble la Haute et la Basse-Égypte.",
+      "choices": [
+        "Le roi égyptien refuse tous les symboles religieux.",
+        "La Basse-Égypte gouverne seule tout le royaume sans roi.",
+        "L’unification est oubliée dès l’Ancien Empire."
+      ],
+      "why": "Les Deux Terres deviennent un langage permanent du pouvoir.",
+      "trap": "Croire que les débuts ne comptent plus ensuite.",
+      "evidence": "Bloc 5."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
 
   "egypt-ramses": {
-    hook: "Ramsès II est célèbre pour ses colosses, ses temples et Qadesh. Mais le plus intéressant n’est pas seulement sa gloire : c’est la fabrication politique de cette gloire.",
-    keyFacts: [
-      "Quand : règne de Ramsès II, XIIIe siècle av. J.-C.",
-      "Où : Égypte du Nouvel Empire, Levant, Qadesh, Abou Simbel, Pi-Ramsès",
-      "Acteurs : Ramsès II, Hittites, armée égyptienne, scribes, artisans, prêtres",
-      "Traces : inscriptions royales, reliefs de bataille, temples, traité égypto-hittite",
-      "Piège : prendre la propagande de Qadesh comme une victoire totale et simple"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "Ramsès II montre comment un pharaon du Nouvel Empire construit son image par guerre, diplomatie, temples et inscriptions." },
-      { label: "Preuve", text: "Les récits de Qadesh répétés sur les temples transforment un affrontement difficile en victoire royale mémorable." },
-      { label: "Nuance", text: "Le traité avec les Hittites rappelle que la diplomatie compte autant que la bataille." }
-    ],
-    express: [
-      "Ramsès II règne au XIIIe siècle av. J.-C., pendant le Nouvel Empire. Son image est immense : temples, colosses, inscriptions, capitales et scènes militaires. Il devient un modèle de pharaon puissant, mais cette puissance est aussi soigneusement mise en scène.",
-      "La bataille de Qadesh, contre les Hittites, est racontée comme un exploit personnel du roi. Pourtant, l’affrontement ne donne pas une victoire égyptienne simple et définitive. Les récits officiels montrent surtout comment le pouvoir transforme une situation militaire complexe en propagande royale.",
-      "Ramsès II est aussi un acteur diplomatique. Le traité avec les Hittites montre que l’Égypte du Nouvel Empire vit dans un monde de grandes puissances, d’alliances, de rivalités et de négociations. Le pharaon n’est donc pas seulement un guerrier : il est aussi un constructeur d’image et d’équilibre politique."
-    ],
-    complete: [
-      { title: "1. Un règne très long", text: "Ramsès II règne longtemps, ce qui lui permet d’accumuler monuments, inscriptions et mémoire officielle. La durée du règne contribue à son prestige : plus le roi est visible partout, plus il semble incarner la stabilité du royaume." },
-      { title: "2. Le Nouvel Empire et le Levant", text: "Au Nouvel Empire, l’Égypte projette sa puissance au-delà de la vallée du Nil, notamment vers le Levant. Elle y rencontre d’autres grandes puissances, dont les Hittites. Qadesh appartient à cette géopolitique, pas à un simple duel héroïque." },
-      { title: "3. Qadesh : bataille et propagande", text: "Les inscriptions racontent Ramsès sauvant la situation par son courage. Cette image est politique. L’affrontement est difficile, et la répétition du récit sur plusieurs monuments montre que le roi veut imposer une mémoire de victoire." },
-      { title: "4. Diplomatie avec les Hittites", text: "Après les affrontements, Égyptiens et Hittites concluent un traité. C’est essentiel : la puissance d’un roi ne se mesure pas seulement à ses victoires, mais aussi à sa capacité à stabiliser des frontières, négocier et être reconnu par d’autres souverains." },
-      { title: "5. Des monuments comme langage politique", text: "Abou Simbel, Pi-Ramsès et les reliefs royaux ne servent pas seulement à décorer. Ils rendent le pouvoir visible, rappellent la protection divine du roi et fixent dans la pierre la version officielle de son règne." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Propagande royale : mise en forme officielle du pouvoir, destinée à montrer le roi comme vainqueur, protecteur et choisi par les dieux." },
-      { title: "Nuance", text: "Un récit royal peut contenir des faits, mais il sélectionne et organise ces faits pour produire une image avantageuse du souverain." },
-      { title: "Erreur fréquente", text: "Raconter Qadesh comme une victoire nette de Ramsès II. L’intérêt historique est justement l’écart entre bataille, diplomatie et mémoire officielle." }
-    ],
-    quiz: [
-      { kind: "repère", q: "À quelle période appartient Ramsès II ?", a: "Au Nouvel Empire, au XIIIe siècle av. J.-C.", choices: ["À l’époque de la Révolution française.", "Au temps de la République romaine tardive.", "Au Moyen Âge scandinave."], why: "Le cadre chronologique évite de mélanger les périodes.", trap: "Traiter Ramsès comme un pharaon hors du temps.", evidence: "Express et repères." },
-      { kind: "événement", q: "Pourquoi Qadesh est-elle importante ?", a: "Parce qu’elle oppose l’Égypte aux Hittites et devient un grand récit de propagande royale.", choices: ["Parce qu’elle marque la construction de la première pyramide.", "Parce qu’elle fonde la démocratie athénienne.", "Parce qu’elle met fin à l’Empire romain d’Occident."], why: "Qadesh relie guerre, rivalité de puissances et mémoire officielle.", trap: "La réduire à une simple bataille gagnée.", evidence: "Bloc 3." },
-      { kind: "source", q: "Comment lire les inscriptions de Qadesh ?", a: "Comme des récits officiels qui mettent en scène le courage du roi et organisent la mémoire de l’événement.", choices: ["Comme des journaux neutres écrits par les soldats hittites.", "Comme des documents sans intention politique.", "Comme des preuves que la diplomatie n’existe pas."], why: "La source royale est précieuse mais orientée.", trap: "Confondre inscription royale et reportage.", evidence: "Deeper et bloc 3." },
-      { kind: "diplomatie", q: "Que montre le traité avec les Hittites ?", a: "Que la puissance de Ramsès II passe aussi par la diplomatie et la stabilisation des relations internationales.", choices: ["Que l’Égypte ne connaît aucun voisin puissant.", "Que tous les conflits se règlent par des pyramides.", "Que les Hittites sont des scribes du delta."], why: "Le traité nuance l’image du roi uniquement guerrier.", trap: "Opposer guerre et diplomatie.", evidence: "Bloc 4." },
-      { kind: "synthèse", q: "Pourquoi les monuments de Ramsès II sont-ils politiques ?", a: "Ils rendent visible une version officielle du pouvoir, de la protection divine et de la victoire royale.", choices: ["Ils servent seulement d’abris agricoles pour la crue.", "Ils prouvent que les scribes dirigent seuls l’armée.", "Ils effacent tout lien entre roi et religion."], why: "Les monuments fixent la mémoire royale dans l’espace.", trap: "Les voir comme de simples décorations.", evidence: "Bloc 5." }
-    ]
-  },
+  "hook": "Ramsès II est célèbre pour ses colosses, ses temples et Qadesh. Mais le plus intéressant n’est pas seulement sa gloire : c’est la fabrication politique de cette gloire.",
+  "keyFacts": [
+    "Quand : règne de Ramsès II, XIIIe siècle av. J.-C.",
+    "Où : Égypte du Nouvel Empire, Levant, Qadesh, Abou Simbel, Pi-Ramsès",
+    "Acteurs : Ramsès II, Hittites, armée égyptienne, scribes, artisans, prêtres",
+    "Traces : inscriptions royales, reliefs de bataille, temples, traité égypto-hittite",
+    "Piège : prendre la propagande de Qadesh comme une victoire totale et simple"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "Ramsès II montre comment un pharaon du Nouvel Empire construit son image par guerre, diplomatie, temples et inscriptions."
+    },
+    {
+      "label": "Preuve",
+      "text": "Les récits de Qadesh répétés sur les temples transforment un affrontement difficile en victoire royale mémorable."
+    },
+    {
+      "label": "Nuance",
+      "text": "Le traité avec les Hittites rappelle que la diplomatie compte autant que la bataille."
+    }
+  ],
+  "express": [
+    "Ramsès II règne au XIIIe siècle av. J.-C., pendant le Nouvel Empire. Son image est immense : temples, colosses, inscriptions, capitales et scènes militaires. Il devient un modèle de pharaon puissant, mais cette puissance est aussi soigneusement mise en scène.",
+    "La bataille de Qadesh, contre les Hittites, est racontée comme un exploit personnel du roi. Pourtant, l’affrontement ne donne pas une victoire égyptienne simple et définitive. Les récits officiels montrent surtout comment le pouvoir transforme une situation militaire complexe en propagande royale.",
+    "Ramsès II est aussi un acteur diplomatique. Le traité avec les Hittites montre que l’Égypte du Nouvel Empire vit dans un monde de grandes puissances, d’alliances, de rivalités et de négociations. Le pharaon n’est donc pas seulement un guerrier : il est aussi un constructeur d’image et d’équilibre politique."
+  ],
+  "complete": [
+    {
+      "title": "1. Un règne très long",
+      "text": "Ramsès II règne longtemps, ce qui lui permet d’accumuler monuments, inscriptions et mémoire officielle. La durée du règne contribue à son prestige : plus le roi est visible partout, plus il semble incarner la stabilité du royaume."
+    },
+    {
+      "title": "2. Le Nouvel Empire et le Levant",
+      "text": "Au Nouvel Empire, l’Égypte projette sa puissance au-delà de la vallée du Nil, notamment vers le Levant. Elle y rencontre d’autres grandes puissances, dont les Hittites. Qadesh appartient à cette géopolitique, pas à un simple duel héroïque."
+    },
+    {
+      "title": "3. Qadesh : bataille et propagande",
+      "text": "Les inscriptions racontent Ramsès sauvant la situation par son courage. Cette image est politique. L’affrontement est difficile, et la répétition du récit sur plusieurs monuments montre que le roi veut imposer une mémoire de victoire."
+    },
+    {
+      "title": "4. Diplomatie avec les Hittites",
+      "text": "Après les affrontements, Égyptiens et Hittites concluent un traité. C’est essentiel : la puissance d’un roi ne se mesure pas seulement à ses victoires, mais aussi à sa capacité à stabiliser des frontières, négocier et être reconnu par d’autres souverains."
+    },
+    {
+      "title": "5. Des monuments comme langage politique",
+      "text": "Abou Simbel, Pi-Ramsès et les reliefs royaux ne servent pas seulement à décorer. Ils rendent le pouvoir visible, rappellent la protection divine du roi et fixent dans la pierre la version officielle de son règne."
+    },
+    {
+      "title": "6. Qadesh : bataille indécise, victoire affichée",
+      "text": "Vers 1274 av. J.-C., Ramsès II affronte les Hittites près de Qadesh. Les textes égyptiens célèbrent son courage personnel et présentent l’épisode comme un triomphe. Pourtant, la ville ne passe pas durablement sous contrôle égyptien. La bataille montre donc comment un résultat militaire ambigu peut être transformé en victoire monumentale."
+    },
+    {
+      "title": "7. Un traité et un mariage diplomatique",
+      "text": "Quelques années plus tard, Égyptiens et Hittites concluent un accord de paix et d’assistance mutuelle, connu par des versions dans les deux langues. Une princesse hittite épouse ensuite Ramsès. La puissance ne se mesure pas seulement aux combats : négocier, stabiliser une frontière et construire une alliance sont aussi des succès politiques."
+    },
+    {
+      "title": "8. Construire sa mémoire",
+      "text": "Ramsès fait graver son nom sur de nombreux monuments, bâtit à Pi-Ramsès et fait aménager les temples d’Abou Simbel. Certaines inscriptions réutilisent ou transforment des œuvres plus anciennes. Son règne illustre une politique de mémoire : l’espace monumental doit rendre le souverain visible bien au-delà de sa présence physique."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Ramsès II est célèbre pour ses colosses, ses temples et Qadesh."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Propagande royale : mise en forme officielle du pouvoir, destinée à montrer le roi comme vainqueur, protecteur et choisi par les dieux."
+    },
+    {
+      "title": "Nuance",
+      "text": "Un récit royal peut contenir des faits, mais il sélectionne et organise ces faits pour produire une image avantageuse du souverain."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Raconter Qadesh comme une victoire nette de Ramsès II. L’intérêt historique est justement l’écart entre bataille, diplomatie et mémoire officielle."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "À quelle période appartient Ramsès II ?",
+      "a": "Au Nouvel Empire, au XIIIe siècle av. J.-C.",
+      "choices": [
+        "À l’époque de la Révolution française.",
+        "Au temps de la République romaine tardive.",
+        "Au Moyen Âge scandinave."
+      ],
+      "why": "Le cadre chronologique évite de mélanger les périodes.",
+      "trap": "Traiter Ramsès comme un pharaon hors du temps.",
+      "evidence": "Express et repères."
+    },
+    {
+      "kind": "événement",
+      "q": "Pourquoi Qadesh est-elle importante ?",
+      "a": "Parce qu’elle oppose l’Égypte aux Hittites et devient un grand récit de propagande royale.",
+      "choices": [
+        "Parce qu’elle marque la construction de la première pyramide.",
+        "Parce qu’elle fonde la démocratie athénienne.",
+        "Parce qu’elle met fin à l’Empire romain d’Occident."
+      ],
+      "why": "Qadesh relie guerre, rivalité de puissances et mémoire officielle.",
+      "trap": "La réduire à une simple bataille gagnée.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "source",
+      "q": "Comment lire les inscriptions de Qadesh ?",
+      "a": "Comme des récits officiels qui mettent en scène le courage du roi et organisent la mémoire de l’événement.",
+      "choices": [
+        "Comme des journaux neutres écrits par les soldats hittites.",
+        "Comme des documents sans intention politique.",
+        "Comme des preuves que la diplomatie n’existe pas."
+      ],
+      "why": "La source royale est précieuse mais orientée.",
+      "trap": "Confondre inscription royale et reportage.",
+      "evidence": "Deeper et bloc 3."
+    },
+    {
+      "kind": "diplomatie",
+      "q": "Que montre le traité avec les Hittites ?",
+      "a": "Que la puissance de Ramsès II passe aussi par la diplomatie et la stabilisation des relations internationales.",
+      "choices": [
+        "Que l’Égypte ne connaît aucun voisin puissant.",
+        "Que tous les conflits se règlent par des pyramides.",
+        "Que les Hittites sont des scribes du delta."
+      ],
+      "why": "Le traité nuance l’image du roi uniquement guerrier.",
+      "trap": "Opposer guerre et diplomatie.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi les monuments de Ramsès II sont-ils politiques ?",
+      "a": "Ils rendent visible une version officielle du pouvoir, de la protection divine et de la victoire royale.",
+      "choices": [
+        "Ils servent seulement d’abris agricoles pour la crue.",
+        "Ils prouvent que les scribes dirigent seuls l’armée.",
+        "Ils effacent tout lien entre roi et religion."
+      ],
+      "why": "Les monuments fixent la mémoire royale dans l’espace.",
+      "trap": "Les voir comme de simples décorations.",
+      "evidence": "Bloc 5."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
 
   "egypt-connected": {
-    hook: "L’Égypte n’est pas une civilisation enfermée derrière ses déserts. Elle échange, combat, négocie et se transforme au contact de la Nubie, du Levant et de la Méditerranée.",
-    keyFacts: [
-      "Quand : surtout du Moyen Empire à l’époque tardive, avec un accent sur le Nouvel Empire",
-      "Où : vallée du Nil, Nubie, Sinaï, Levant, Méditerranée orientale",
-      "Acteurs : Égyptiens, Nubiens, Hyksôs, Hittites, cités du Levant, marchands, diplomates",
-      "Traces : lettres diplomatiques, objets importés, forteresses, reliefs, inscriptions, tombes",
-      "Piège : imaginer l’Égypte comme un monde isolé et immobile"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "L’Égypte ancienne est connectée : les échanges, les guerres et la diplomatie font partie de son histoire." },
-      { label: "Preuve", text: "Or nubien, bois du Levant, chevaux, chars, lettres diplomatiques et objets étrangers montrent ces circulations." },
-      { label: "Nuance", text: "Les contacts ne sont pas toujours pacifiques : commerce, domination, emprunts, rivalités et alliances coexistent." }
-    ],
-    express: [
-      "Les déserts protègent partiellement l’Égypte, mais ils ne l’enferment pas. Le Nil ouvre vers la Nubie au sud, le delta regarde vers la Méditerranée, le Sinaï et le Levant relient l’Égypte au Proche-Orient. L’histoire égyptienne est donc aussi une histoire de contacts.",
-      "Ces contacts prennent plusieurs formes : commerce de bois, d’or, de pierres ou de produits de luxe ; campagnes militaires ; forteresses ; mariages diplomatiques ; circulation d’objets, de techniques et d’idées. Le Nouvel Empire, notamment, est très engagé au Levant et en Nubie.",
-      "Le piège est de présenter l’Égypte comme une civilisation pure, isolée et toujours identique à elle-même. Les Hyksôs, les Nubiens, les Hittites, les cités du Levant et les routes méditerranéennes montrent au contraire une Égypte puissante mais connectée, parfois dominante, parfois influencée."
-    ],
-    complete: [
-      { title: "1. Des frontières qui filtrent", text: "Les déserts et la mer créent des protections, mais pas des murs absolus. Les oasis, le Sinaï, la Nubie, le delta et les ports permettent des circulations. Une frontière ancienne est souvent un espace de contrôle et de passage, pas une ligne fermée." },
-      { title: "2. La Nubie, partenaire et enjeu", text: "Au sud, la Nubie fournit notamment de l’or, des soldats, des produits africains et des routes. L’Égypte y construit parfois des forteresses et impose son contrôle, mais les royaumes nubiens ne sont pas de simples figurants : ils développent aussi leurs propres pouvoirs." },
-      { title: "3. Le Levant et les grandes puissances", text: "Vers le nord-est, l’Égypte entre en relation avec les cités du Levant et les grands royaumes du Proche-Orient. Les guerres contre les Hittites, mais aussi les échanges diplomatiques, montrent une Égypte intégrée à un système international." },
-      { title: "4. Emprunter et transformer", text: "Les contacts apportent des objets, des techniques, des mots, des styles et parfois des pratiques militaires. L’usage du cheval et du char, les produits importés ou certains motifs artistiques rappellent que les sociétés anciennes changent par circulation." },
-      { title: "5. Une puissance connectée", text: "Dire que l’Égypte est connectée ne diminue pas son originalité. Au contraire, cela explique mieux sa durée : elle protège son cœur nilotique tout en utilisant des réseaux extérieurs pour obtenir ressources, prestige, alliés et informations." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Levant : région de la Méditerranée orientale, entre Égypte, Anatolie, Syrie-Palestine et grands royaumes du Proche-Orient." },
-      { title: "Nuance", text: "Un contact peut être commercial, militaire, diplomatique, religieux ou artistique ; il ne signifie pas toujours domination dans un seul sens." },
-      { title: "Erreur fréquente", text: "Imaginer une Égypte figée derrière le désert. Les sources montrent un royaume qui surveille, échange, emprunte, conquiert et négocie." }
-    ],
-    quiz: [
-      { kind: "concept", q: "Pourquoi l’Égypte n’est-elle pas isolée ?", a: "Parce qu’elle est reliée à la Nubie, au Sinaï, au Levant et à la Méditerranée par des routes et des contacts variés.", choices: ["Parce qu’elle se situe au centre de l’Europe médiévale.", "Parce que ses pyramides servent de ports maritimes.", "Parce qu’elle refuse tout échange avec ses voisins."], why: "La géographie protège mais permet aussi des passages.", trap: "Confondre protection et isolement total.", evidence: "Express et bloc 1." },
-      { kind: "lieu", q: "Pourquoi la Nubie est-elle importante pour l’Égypte ?", a: "Elle est liée à l’or, aux routes du Nil, aux soldats, aux forteresses et à des royaumes africains puissants.", choices: ["Elle est une cité grecque inventée par Alexandre.", "Elle est le quartier central de Rome.", "Elle est uniquement une légende funéraire sans territoire."], why: "La Nubie est un espace réel d’échanges et de rivalités.", trap: "La réduire à une marge passive.", evidence: "Bloc 2." },
-      { kind: "diplomatie", q: "Que montre le Levant dans l’histoire égyptienne ?", a: "L’intégration de l’Égypte à des guerres, alliances et échanges avec les puissances du Proche-Orient.", choices: ["L’absence totale de voisins au nord-est.", "La fin immédiate de toute monarchie pharaonique.", "La naissance des chasseurs-cueilleurs paléolithiques."], why: "Le Levant connecte l’Égypte aux grands équilibres régionaux.", trap: "Raconter l’Égypte seulement depuis la vallée du Nil.", evidence: "Bloc 3." },
-      { kind: "circulation", q: "Quelle idée corrigent les emprunts techniques ou artistiques ?", a: "Les sociétés anciennes changent aussi par circulation d’objets, de techniques, de styles et d’idées.", choices: ["Une civilisation ne change jamais au contact d’une autre.", "Tous les objets étrangers sont automatiquement sans valeur.", "Le commerce supprime toutes les identités politiques."], why: "Les contacts transforment sans effacer l’originalité locale.", trap: "Opposer pureté et influence.", evidence: "Bloc 4." },
-      { kind: "synthèse", q: "Quelle formule résume le mieux le cours ?", a: "L’Égypte est une puissance nilotique originale, mais connectée à des réseaux extérieurs.", choices: ["L’Égypte est un monde fermé, sans échanges ni diplomatie.", "L’Égypte est seulement une copie des royaumes hittites.", "L’Égypte n’existe qu’à travers les récits grecs tardifs."], why: "La bonne réponse combine originalité et connexions.", trap: "Choisir entre isolement total et absence d’identité propre.", evidence: "Conclusion." }
-    ]
-  }
+  "hook": "L’Égypte n’est pas une civilisation enfermée derrière ses déserts. Elle échange, combat, négocie et se transforme au contact de la Nubie, du Levant et de la Méditerranée.",
+  "keyFacts": [
+    "Quand : surtout du Moyen Empire à l’époque tardive, avec un accent sur le Nouvel Empire",
+    "Où : vallée du Nil, Nubie, Sinaï, Levant, Méditerranée orientale",
+    "Acteurs : Égyptiens, Nubiens, Hyksôs, Hittites, cités du Levant, marchands, diplomates",
+    "Traces : lettres diplomatiques, objets importés, forteresses, reliefs, inscriptions, tombes",
+    "Piège : imaginer l’Égypte comme un monde isolé et immobile"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "L’Égypte ancienne est connectée : les échanges, les guerres et la diplomatie font partie de son histoire."
+    },
+    {
+      "label": "Preuve",
+      "text": "Or nubien, bois du Levant, chevaux, chars, lettres diplomatiques et objets étrangers montrent ces circulations."
+    },
+    {
+      "label": "Nuance",
+      "text": "Les contacts ne sont pas toujours pacifiques : commerce, domination, emprunts, rivalités et alliances coexistent."
+    }
+  ],
+  "express": [
+    "Les déserts protègent partiellement l’Égypte, mais ils ne l’enferment pas. Le Nil ouvre vers la Nubie au sud, le delta regarde vers la Méditerranée, le Sinaï et le Levant relient l’Égypte au Proche-Orient. L’histoire égyptienne est donc aussi une histoire de contacts.",
+    "Ces contacts prennent plusieurs formes : commerce de bois, d’or, de pierres ou de produits de luxe ; campagnes militaires ; forteresses ; mariages diplomatiques ; circulation d’objets, de techniques et d’idées. Le Nouvel Empire, notamment, est très engagé au Levant et en Nubie.",
+    "Le piège est de présenter l’Égypte comme une civilisation pure, isolée et toujours identique à elle-même. Les Hyksôs, les Nubiens, les Hittites, les cités du Levant et les routes méditerranéennes montrent au contraire une Égypte puissante mais connectée, parfois dominante, parfois influencée."
+  ],
+  "complete": [
+    {
+      "title": "1. Des frontières qui filtrent",
+      "text": "Les déserts et la mer créent des protections, mais pas des murs absolus. Les oasis, le Sinaï, la Nubie, le delta et les ports permettent des circulations. Une frontière ancienne est souvent un espace de contrôle et de passage, pas une ligne fermée."
+    },
+    {
+      "title": "2. La Nubie, partenaire et enjeu",
+      "text": "Au sud, la Nubie fournit notamment de l’or, des soldats, des produits africains et des routes. L’Égypte y construit parfois des forteresses et impose son contrôle, mais les royaumes nubiens ne sont pas de simples figurants : ils développent aussi leurs propres pouvoirs."
+    },
+    {
+      "title": "3. Le Levant et les grandes puissances",
+      "text": "Vers le nord-est, l’Égypte entre en relation avec les cités du Levant et les grands royaumes du Proche-Orient. Les guerres contre les Hittites, mais aussi les échanges diplomatiques, montrent une Égypte intégrée à un système international."
+    },
+    {
+      "title": "4. Emprunter et transformer",
+      "text": "Les contacts apportent des objets, des techniques, des mots, des styles et parfois des pratiques militaires. L’usage du cheval et du char, les produits importés ou certains motifs artistiques rappellent que les sociétés anciennes changent par circulation."
+    },
+    {
+      "title": "5. Une puissance connectée",
+      "text": "Dire que l’Égypte est connectée ne diminue pas son originalité. Au contraire, cela explique mieux sa durée : elle protège son cœur nilotique tout en utilisant des réseaux extérieurs pour obtenir ressources, prestige, alliés et informations."
+    },
+    {
+      "title": "6. La Nubie, partenaire et territoire convoité",
+      "text": "Au sud, la Nubie fournit notamment de l’or, du bétail, de l’ivoire et des voies vers l’Afrique intérieure. Selon les périodes, l’Égypte commerce, construit des forteresses ou impose son contrôle. Les relations ne sont jamais à sens unique : les royaumes nubiens développent leurs propres puissances et finissent même par gouverner l’Égypte au VIIIe siècle av. J.-C."
+    },
+    {
+      "title": "7. Le bois vient d’ailleurs",
+      "text": "La vallée du Nil offre peu de grands bois de construction. Les Égyptiens importent notamment du cèdre du Levant pour les navires, portes ou objets prestigieux. Cette dépendance rappelle qu’une civilisation monumentale ne vit pas en autarcie : ses temples et ses flottes reposent sur des ressources obtenues par échange ou diplomatie."
+    },
+    {
+      "title": "8. Des étrangers intégrés au monde égyptien",
+      "text": "Marchands, soldats, artisans, captifs et diplomates circulent. Certains s’installent, adoptent des pratiques locales ou servent l’administration. Les images officielles opposent parfois clairement l’Égypte aux peuples étrangers, mais la vie réelle est faite de contacts, de mariages, de traductions et de transferts techniques."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "L’Égypte n’est pas une civilisation enfermée derrière ses déserts."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Levant : région de la Méditerranée orientale, entre Égypte, Anatolie, Syrie-Palestine et grands royaumes du Proche-Orient."
+    },
+    {
+      "title": "Nuance",
+      "text": "Un contact peut être commercial, militaire, diplomatique, religieux ou artistique ; il ne signifie pas toujours domination dans un seul sens."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Imaginer une Égypte figée derrière le désert. Les sources montrent un royaume qui surveille, échange, emprunte, conquiert et négocie."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "concept",
+      "q": "Pourquoi l’Égypte n’est-elle pas isolée ?",
+      "a": "Parce qu’elle est reliée à la Nubie, au Sinaï, au Levant et à la Méditerranée par des routes et des contacts variés.",
+      "choices": [
+        "Parce qu’elle se situe au centre de l’Europe médiévale.",
+        "Parce que ses pyramides servent de ports maritimes.",
+        "Parce qu’elle refuse tout échange avec ses voisins."
+      ],
+      "why": "La géographie protège mais permet aussi des passages.",
+      "trap": "Confondre protection et isolement total.",
+      "evidence": "Express et bloc 1."
+    },
+    {
+      "kind": "lieu",
+      "q": "Pourquoi la Nubie est-elle importante pour l’Égypte ?",
+      "a": "Elle est liée à l’or, aux routes du Nil, aux soldats, aux forteresses et à des royaumes africains puissants.",
+      "choices": [
+        "Elle est une cité grecque inventée par Alexandre.",
+        "Elle est le quartier central de Rome.",
+        "Elle est uniquement une légende funéraire sans territoire."
+      ],
+      "why": "La Nubie est un espace réel d’échanges et de rivalités.",
+      "trap": "La réduire à une marge passive.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "diplomatie",
+      "q": "Que montre le Levant dans l’histoire égyptienne ?",
+      "a": "L’intégration de l’Égypte à des guerres, alliances et échanges avec les puissances du Proche-Orient.",
+      "choices": [
+        "L’absence totale de voisins au nord-est.",
+        "La fin immédiate de toute monarchie pharaonique.",
+        "La naissance des chasseurs-cueilleurs paléolithiques."
+      ],
+      "why": "Le Levant connecte l’Égypte aux grands équilibres régionaux.",
+      "trap": "Raconter l’Égypte seulement depuis la vallée du Nil.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "circulation",
+      "q": "Quelle idée corrigent les emprunts techniques ou artistiques ?",
+      "a": "Les sociétés anciennes changent aussi par circulation d’objets, de techniques, de styles et d’idées.",
+      "choices": [
+        "Une civilisation ne change jamais au contact d’une autre.",
+        "Tous les objets étrangers sont automatiquement sans valeur.",
+        "Le commerce supprime toutes les identités politiques."
+      ],
+      "why": "Les contacts transforment sans effacer l’originalité locale.",
+      "trap": "Opposer pureté et influence.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle formule résume le mieux le cours ?",
+      "a": "L’Égypte est une puissance nilotique originale, mais connectée à des réseaux extérieurs.",
+      "choices": [
+        "L’Égypte est un monde fermé, sans échanges ni diplomatie.",
+        "L’Égypte est seulement une copie des royaumes hittites.",
+        "L’Égypte n’existe qu’à travers les récits grecs tardifs."
+      ],
+      "why": "La bonne réponse combine originalité et connexions.",
+      "trap": "Choisir entre isolement total et absence d’identité propre.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+}
 });
 
 
@@ -8697,124 +10321,442 @@ GREECE_AEGEAN_EDITORIAL_LESSON_IDS.forEach(id => PUBLISHED_LESSON_IDS.add(id));
 
 Object.assign(READY_LESSON_PACKS, {
   "aegean-mediterranean-minoens-crete": {
-    hook: "Avant les cités grecques classiques, la Crète minoenne montre un autre visage du monde égéen : palais, fresques, routes maritimes et pouvoir sans armée monumentale évidente.",
-    keyFacts: [
-      "Quand : surtout vers -2000 à -1450",
-      "Où : Crète, notamment Cnossos, Phaistos, Malia et Zakros",
-      "Acteurs : élites palatiales, artisans, marchands, scribes, communautés crétoises",
-      "Traces : palais, fresques, sceaux, tablettes en linéaire A, ateliers, objets importés",
-      "Piège : imaginer une Grèce classique déjà formée à l’époque minoenne"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "Les palais minoens sont des centres de stockage, production, redistribution, rituels et prestige." },
-      { label: "Nuance", text: "La Crète minoenne appartient au monde égéen de l’âge du Bronze, pas à la cité grecque classique." },
-      { label: "Trace", text: "Fresques, sceaux, jarres, ateliers et écritures non déchiffrées montrent une société complexe." }
-    ],
-    express: [
-      "La Crète minoenne se développe à l’âge du Bronze, surtout entre -2000 et -1450. Elle n’est pas une démocratie grecque ancienne : c’est un monde de palais, de stockage, d’ateliers, de fresques, de rituels et d’échanges maritimes.",
-      "Les grands palais comme Cnossos ne sont pas seulement des résidences. Ils organisent des réserves, des productions artisanales, des cérémonies et des circulations de biens. Les jarres, sceaux et tablettes montrent un pouvoir capable d’enregistrer et de contrôler.",
-      "Le linéaire A reste largement non déchiffré, ce qui impose de la prudence. On connaît les Minoens par l’archéologie plus que par des récits lisibles. Le vrai intérêt est de comprendre un monde égéen complexe avant Athènes, Sparte et les cités classiques."
-    ],
-    complete: [
-      { title: "1. Une Crète de l’âge du Bronze", text: "Les Minoens vivent plusieurs siècles avant la Grèce classique. Leur histoire appartient à l’âge du Bronze égéen, dans une Méditerranée où circulent métaux, céramiques, idées, techniques et objets de prestige. Les appeler simplement “Grecs” serait trompeur : ils précèdent les cités grecques que l’on connaît mieux." },
-      { title: "2. Le palais comme centre", text: "Les palais crétois sont des lieux de pouvoir, mais pas seulement des maisons royales. Ils regroupent magasins, ateliers, cours, salles décorées, espaces rituels et zones de circulation. Ils rendent visible une organisation capable de concentrer et redistribuer des biens." },
-      { title: "3. Une puissance maritime", text: "La Crète est au cœur des routes de la mer Égée et de la Méditerranée orientale. Objets importés, influences artistiques et réseaux commerciaux montrent que les Minoens ne vivent pas isolés : ils participent à un monde connecté par bateau." },
-      { title: "4. Sources et prudence", text: "Les fresques, sceaux, jarres, ateliers et bâtiments sont abondants, mais l’écriture appelée linéaire A n’est pas vraiment lue. L’historien doit donc éviter les certitudes trop fortes sur la langue, les récits politiques ou les noms des dirigeants." },
-      { title: "5. Ce qu’il faut retenir", text: "La Crète minoenne est essentielle parce qu’elle montre que le monde grec a des racines égéennes plus anciennes et variées. Avant la polis, il existe déjà des palais, des réseaux, des techniques, des cultes et des sociétés hiérarchisées." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Linéaire A : écriture utilisée en Crète minoenne, encore non déchiffrée de manière satisfaisante." },
-      { title: "Comment le lire", text: "Quand les textes manquent, on raisonne avec l’architecture, les objets, les images et les traces de stockage." },
-      { title: "Erreur fréquente", text: "Projeter directement Athènes, la démocratie ou la philosophie classique sur la Crète minoenne." }
-    ],
-    quiz: [
-      { kind: "repère", q: "À quelle période appartient surtout la Crète minoenne ?", a: "À l’âge du Bronze égéen, avant la Grèce classique des cités.", choices: ["À la période des royaumes francs médiévaux.", "À l’époque de la République romaine tardive.", "Au temps des États industriels du XIXe siècle."], why: "Le cours situe les Minoens avant Athènes et Sparte classiques.", trap: "Faire de Cnossos une cité grecque classique.", evidence: "Express et bloc 1." },
-      { kind: "concept", q: "Pourquoi le palais minoen n’est-il pas seulement une résidence ?", a: "Parce qu’il concentre stockage, ateliers, rituels, circulation de biens et prestige politique.", choices: ["Parce qu’il sert uniquement de forteresse frontalière.", "Parce qu’il remplace toute activité artisanale.", "Parce qu’il interdit tout échange maritime."], why: "Le palais est un centre d’organisation sociale et économique.", trap: "Le réduire à un logement monumental.", evidence: "Bloc 2." },
-      { kind: "connexion", q: "Que montrent les objets importés et les influences artistiques ?", a: "Que la Crète minoenne participe à des réseaux maritimes égéens et méditerranéens.", choices: ["Que l’île est totalement coupée des routes de mer.", "Que les palais ne contrôlent aucun objet.", "Que les échanges apparaissent seulement après Alexandre."], why: "La mer relie la Crète à d’autres espaces.", trap: "Confondre île et isolement.", evidence: "Bloc 3." },
-      { kind: "source", q: "Pourquoi faut-il rester prudent avec les Minoens ?", a: "Parce que le linéaire A n’est pas vraiment déchiffré et que beaucoup d’informations viennent de l’archéologie.", choices: ["Parce que toutes les archives politiques sont parfaitement lisibles.", "Parce que les palais ont disparu sans aucune trace matérielle.", "Parce que les fresques suffisent à connaître chaque roi par son nom."], why: "L’état des sources limite les certitudes.", trap: "Inventer une histoire trop précise.", evidence: "Bloc 4." },
-      { kind: "synthèse", q: "Quelle idée résume le mieux le cours ?", a: "La Crète minoenne montre un monde égéen complexe avant la polis grecque classique.", choices: ["La Crète minoenne est déjà une démocratie athénienne.", "Les Minoens ne connaissent ni ateliers, ni stockage, ni échanges.", "L’âge du Bronze égéen n’a aucun lien avec la Méditerranée."], why: "Le cours relie complexité palatiale et chronologie.", trap: "Coller trop vite le modèle classique à une période plus ancienne.", evidence: "Conclusion." }
-    ]
-  },
+  "hook": "Avant les cités grecques classiques, la Crète minoenne montre un autre visage du monde égéen : palais, fresques, routes maritimes et pouvoir sans armée monumentale évidente.",
+  "keyFacts": [
+    "Quand : surtout vers -2000 à -1450",
+    "Où : Crète, notamment Cnossos, Phaistos, Malia et Zakros",
+    "Acteurs : élites palatiales, artisans, marchands, scribes, communautés crétoises",
+    "Traces : palais, fresques, sceaux, tablettes en linéaire A, ateliers, objets importés",
+    "Piège : imaginer une Grèce classique déjà formée à l’époque minoenne"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "Les palais minoens sont des centres de stockage, production, redistribution, rituels et prestige."
+    },
+    {
+      "label": "Nuance",
+      "text": "La Crète minoenne appartient au monde égéen de l’âge du Bronze, pas à la cité grecque classique."
+    },
+    {
+      "label": "Trace",
+      "text": "Fresques, sceaux, jarres, ateliers et écritures non déchiffrées montrent une société complexe."
+    }
+  ],
+  "express": [
+    "La Crète minoenne se développe à l’âge du Bronze, surtout entre -2000 et -1450. Elle n’est pas une démocratie grecque ancienne : c’est un monde de palais, de stockage, d’ateliers, de fresques, de rituels et d’échanges maritimes.",
+    "Les grands palais comme Cnossos ne sont pas seulement des résidences. Ils organisent des réserves, des productions artisanales, des cérémonies et des circulations de biens. Les jarres, sceaux et tablettes montrent un pouvoir capable d’enregistrer et de contrôler.",
+    "Le linéaire A reste largement non déchiffré, ce qui impose de la prudence. On connaît les Minoens par l’archéologie plus que par des récits lisibles. Le vrai intérêt est de comprendre un monde égéen complexe avant Athènes, Sparte et les cités classiques."
+  ],
+  "complete": [
+    {
+      "title": "1. Une Crète de l’âge du Bronze",
+      "text": "Les Minoens vivent plusieurs siècles avant la Grèce classique. Leur histoire appartient à l’âge du Bronze égéen, dans une Méditerranée où circulent métaux, céramiques, idées, techniques et objets de prestige. Les appeler simplement “Grecs” serait trompeur : ils précèdent les cités grecques que l’on connaît mieux."
+    },
+    {
+      "title": "2. Le palais comme centre",
+      "text": "Les palais crétois sont des lieux de pouvoir, mais pas seulement des maisons royales. Ils regroupent magasins, ateliers, cours, salles décorées, espaces rituels et zones de circulation. Ils rendent visible une organisation capable de concentrer et redistribuer des biens."
+    },
+    {
+      "title": "3. Une puissance maritime",
+      "text": "La Crète est au cœur des routes de la mer Égée et de la Méditerranée orientale. Objets importés, influences artistiques et réseaux commerciaux montrent que les Minoens ne vivent pas isolés : ils participent à un monde connecté par bateau."
+    },
+    {
+      "title": "4. Sources et prudence",
+      "text": "Les fresques, sceaux, jarres, ateliers et bâtiments sont abondants, mais l’écriture appelée linéaire A n’est pas vraiment lue. L’historien doit donc éviter les certitudes trop fortes sur la langue, les récits politiques ou les noms des dirigeants."
+    },
+    {
+      "title": "5. Les palais sont des centres, pas seulement des résidences",
+      "text": "Cnossos, Phaistos ou Malia regroupent cours, magasins, ateliers et espaces cérémoniels. Leur architecture suggère qu’on y collecte, transforme et redistribue des produits. Le mot “palais” est pratique, mais il peut tromper si l’on imagine uniquement la demeure privée d’un roi comparable aux monarchies plus récentes."
+    },
+    {
+      "title": "6. Une puissance maritime visible dans les échanges",
+      "text": "La céramique crétoise, les matières premières importées et les influences artistiques témoignent de contacts avec les Cyclades, l’Égypte et le Levant. La Crète ne domine pas nécessairement toute la mer par une flotte permanente ; elle occupe surtout une position favorable dans un réseau où circulent objets, artisans et idées."
+    },
+    {
+      "title": "7. Une écriture encore partiellement muette",
+      "text": "Les Minoens utilisent notamment le linéaire A, qui n’est toujours pas déchiffré de manière assurée. Cette limite est essentielle : les bâtiments et les objets sont abondants, mais nous connaissons mal les mots par lesquels les habitants nommaient leurs institutions ou leurs dieux. L’archéologie doit donc éviter de combler les silences par la légende."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "La Crète minoenne est essentielle parce qu’elle montre que le monde grec a des racines égéennes plus anciennes et variées. Avant la polis, il existe déjà des palais, des réseaux, des techniques, des cultes et des sociétés hiérarchisées."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Linéaire A : écriture utilisée en Crète minoenne, encore non déchiffrée de manière satisfaisante."
+    },
+    {
+      "title": "Comment le lire",
+      "text": "Quand les textes manquent, on raisonne avec l’architecture, les objets, les images et les traces de stockage."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Projeter directement Athènes, la démocratie ou la philosophie classique sur la Crète minoenne."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "À quelle période appartient surtout la Crète minoenne ?",
+      "a": "À l’âge du Bronze égéen, avant la Grèce classique des cités.",
+      "choices": [
+        "À la période des royaumes francs médiévaux.",
+        "À l’époque de la République romaine tardive.",
+        "Au temps des États industriels du XIXe siècle."
+      ],
+      "why": "Le cours situe les Minoens avant Athènes et Sparte classiques.",
+      "trap": "Faire de Cnossos une cité grecque classique.",
+      "evidence": "Express et bloc 1."
+    },
+    {
+      "kind": "concept",
+      "q": "Pourquoi le palais minoen n’est-il pas seulement une résidence ?",
+      "a": "Parce qu’il concentre stockage, ateliers, rituels, circulation de biens et prestige politique.",
+      "choices": [
+        "Parce qu’il sert uniquement de forteresse frontalière.",
+        "Parce qu’il remplace toute activité artisanale.",
+        "Parce qu’il interdit tout échange maritime."
+      ],
+      "why": "Le palais est un centre d’organisation sociale et économique.",
+      "trap": "Le réduire à un logement monumental.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "connexion",
+      "q": "Que montrent les objets importés et les influences artistiques ?",
+      "a": "Que la Crète minoenne participe à des réseaux maritimes égéens et méditerranéens.",
+      "choices": [
+        "Que l’île est totalement coupée des routes de mer.",
+        "Que les palais ne contrôlent aucun objet.",
+        "Que les échanges apparaissent seulement après Alexandre."
+      ],
+      "why": "La mer relie la Crète à d’autres espaces.",
+      "trap": "Confondre île et isolement.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "source",
+      "q": "Pourquoi faut-il rester prudent avec les Minoens ?",
+      "a": "Parce que le linéaire A n’est pas vraiment déchiffré et que beaucoup d’informations viennent de l’archéologie.",
+      "choices": [
+        "Parce que toutes les archives politiques sont parfaitement lisibles.",
+        "Parce que les palais ont disparu sans aucune trace matérielle.",
+        "Parce que les fresques suffisent à connaître chaque roi par son nom."
+      ],
+      "why": "L’état des sources limite les certitudes.",
+      "trap": "Inventer une histoire trop précise.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle idée résume le mieux le cours ?",
+      "a": "La Crète minoenne montre un monde égéen complexe avant la polis grecque classique.",
+      "choices": [
+        "La Crète minoenne est déjà une démocratie athénienne.",
+        "Les Minoens ne connaissent ni ateliers, ni stockage, ni échanges.",
+        "L’âge du Bronze égéen n’a aucun lien avec la Méditerranée."
+      ],
+      "why": "Le cours relie complexité palatiale et chronologie.",
+      "trap": "Coller trop vite le modèle classique à une période plus ancienne.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
 
   "aegean-mediterranean-myceniens-palais": {
-    hook: "Les Mycéniens ne sont pas seulement des guerriers de légende. Ce sont aussi des sociétés de palais, de scribes, de stocks, de terres et de réseaux, connues grâce à l’archéologie et au linéaire B.",
-    keyFacts: [
-      "Quand : surtout vers -1600 à -1200",
-      "Où : Grèce continentale, Mycènes, Pylos, Tirynthe, Thèbes",
-      "Acteurs : rois palatiaux, guerriers, scribes, artisans, paysans, dépendants",
-      "Traces : palais fortifiés, tombes, armes, tablettes en linéaire B, céramiques",
-      "Piège : lire l’Iliade comme un reportage direct sur les palais mycéniens"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "Les palais mycéniens administrent terres, productions, personnes et redistributions." },
-      { label: "Preuve", text: "Le linéaire B est déchiffré : il note une forme ancienne de grec et des comptes palatiaux." },
-      { label: "Nuance", text: "Les héros homériques gardent une mémoire de l’âge du Bronze, mais les poèmes sont beaucoup plus tardifs." }
-    ],
-    express: [
-      "Les Mycéniens dominent une partie de la Grèce continentale à la fin de l’âge du Bronze, surtout entre -1600 et -1200. Mycènes, Pylos ou Tirynthe sont liées à des palais fortifiés, des tombes riches, des armes et une élite guerrière.",
-      "Mais le cœur du sujet n’est pas seulement militaire. Les tablettes en linéaire B montrent une administration qui enregistre terres, rations, artisans, troupeaux, produits et dépendants. Le palais gère, compte et redistribue.",
-      "Homère évoque un monde héroïque, mais ses poèmes sont plus tardifs. Pour comprendre les Mycéniens, il faut croiser récits, archéologie et tablettes : les héros fascinent, les archives expliquent le fonctionnement réel des palais."
-    ],
-    complete: [
-      { title: "1. Des palais fortifiés", text: "Les sites mycéniens impressionnent par leurs murs, portes, tombes et espaces palatiaux. Ils ne forment pas un État grec unifié : plusieurs centres dominent des territoires, rivalisent ou coopèrent. La fortification montre l’importance du pouvoir, du prestige et de la protection." },
-      { title: "2. Une administration lisible", text: "Le linéaire B est une écriture syllabique utilisée pour des comptes. Son déchiffrement a montré qu’elle note une forme ancienne de grec. Les tablettes parlent de produits, terres, artisans, rations, offrandes et personnes dépendantes." },
-      { title: "3. Le palais comme machine économique", text: "Le palais collecte, stocke, commande et redistribue. Il peut contrôler des ateliers, des troupeaux, des terres et des produits spécialisés. Ce système rend visible une société très organisée, où l’écriture sert d’abord à administrer." },
-      { title: "4. Guerre, prestige et réseaux", text: "Les armes et tombes riches montrent des élites guerrières, mais les Mycéniens participent aussi à des échanges égéens et méditerranéens. Céramiques, objets précieux et contacts rappellent que la puissance se construit autant par réseau que par combat." },
-      { title: "5. Ce qu’il faut retenir", text: "Les Mycéniens sont importants parce qu’ils relient la Grèce à l’âge du Bronze palatial. Ils donnent un arrière-plan aux récits héroïques, mais leur histoire concrète se comprend surtout par palais, tablettes, tombes et objets." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Linéaire B : écriture administrative déchiffrée, utilisée dans des palais mycéniens et notant une forme ancienne de grec." },
-      { title: "Nuance", text: "Un poème peut garder une mémoire du passé sans être un document administratif contemporain." },
-      { title: "Erreur fréquente", text: "Réduire Mycènes à la guerre de Troie et oublier les scribes, les terres, les stocks et les dépendants." }
-    ],
-    quiz: [
-      { kind: "repère", q: "À quelle période appartiennent surtout les Mycéniens ?", a: "À la fin de l’âge du Bronze égéen, avant les cités grecques classiques.", choices: ["À la période de l’empire carolingien.", "À l’époque des monarchies absolues modernes.", "Au lendemain de la guerre froide."], why: "La chronologie évite de confondre palais mycéniens et cité classique.", trap: "Mettre Mycènes au temps de Périclès.", evidence: "Express et bloc 1." },
-      { kind: "source", q: "Pourquoi le linéaire B est-il essentiel ?", a: "Parce qu’il note une forme ancienne de grec et donne accès à des comptes palatiaux.", choices: ["Parce qu’il décrit les débats de l’assemblée athénienne.", "Parce qu’il est une écriture inventée par les empereurs romains.", "Parce qu’il est uniquement une décoration murale sans texte."], why: "Il rend l’administration mycénienne partiellement lisible.", trap: "Ignorer les archives au profit des seuls héros.", evidence: "Bloc 2." },
-      { kind: "fonction", q: "Que fait le palais mycénien dans l’économie ?", a: "Il collecte, stocke, commande des productions et redistribue des biens.", choices: ["Il sert seulement de théâtre public.", "Il supprime toutes les terres agricoles.", "Il interdit la présence de scribes et d’artisans."], why: "Le palais est une machine de gestion.", trap: "Le voir seulement comme décor militaire.", evidence: "Bloc 3." },
-      { kind: "nuance", q: "Pourquoi ne pas lire Homère comme un reportage direct ?", a: "Parce que les poèmes sont plus tardifs et transforment la mémoire de l’âge du Bronze en récit héroïque.", choices: ["Parce que les poèmes sont des tablettes comptables du palais de Pylos.", "Parce que les récits héroïques donnent tous les impôts exacts.", "Parce que les tombes remplacent entièrement toute tradition orale."], why: "Il faut distinguer mémoire, poésie et sources contemporaines.", trap: "Confondre mythe et archive.", evidence: "Deeper et conclusion." },
-      { kind: "synthèse", q: "Quelle formule résume le mieux les Mycéniens ?", a: "Des sociétés palatiales grecques de l’âge du Bronze, connues par palais, tombes, objets et tablettes.", choices: ["Une cité démocratique classique centrée sur l’assemblée.", "Un peuple sans écriture, sans palais et sans réseaux.", "Une province romaine administrée depuis le Sénat."], why: "La réponse combine chronologie, organisation et sources.", trap: "Les réduire aux guerriers de légende.", evidence: "Conclusion." }
-    ]
-  },
+  "hook": "Les Mycéniens ne sont pas seulement des guerriers de légende. Ce sont aussi des sociétés de palais, de scribes, de stocks, de terres et de réseaux, connues grâce à l’archéologie et au linéaire B.",
+  "keyFacts": [
+    "Quand : surtout vers -1600 à -1200",
+    "Où : Grèce continentale, Mycènes, Pylos, Tirynthe, Thèbes",
+    "Acteurs : rois palatiaux, guerriers, scribes, artisans, paysans, dépendants",
+    "Traces : palais fortifiés, tombes, armes, tablettes en linéaire B, céramiques",
+    "Piège : lire l’Iliade comme un reportage direct sur les palais mycéniens"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "Les palais mycéniens administrent terres, productions, personnes et redistributions."
+    },
+    {
+      "label": "Preuve",
+      "text": "Le linéaire B est déchiffré : il note une forme ancienne de grec et des comptes palatiaux."
+    },
+    {
+      "label": "Nuance",
+      "text": "Les héros homériques gardent une mémoire de l’âge du Bronze, mais les poèmes sont beaucoup plus tardifs."
+    }
+  ],
+  "express": [
+    "Les Mycéniens dominent une partie de la Grèce continentale à la fin de l’âge du Bronze, surtout entre -1600 et -1200. Mycènes, Pylos ou Tirynthe sont liées à des palais fortifiés, des tombes riches, des armes et une élite guerrière.",
+    "Mais le cœur du sujet n’est pas seulement militaire. Les tablettes en linéaire B montrent une administration qui enregistre terres, rations, artisans, troupeaux, produits et dépendants. Le palais gère, compte et redistribue.",
+    "Homère évoque un monde héroïque, mais ses poèmes sont plus tardifs. Pour comprendre les Mycéniens, il faut croiser récits, archéologie et tablettes : les héros fascinent, les archives expliquent le fonctionnement réel des palais."
+  ],
+  "complete": [
+    {
+      "title": "1. Des palais fortifiés",
+      "text": "Les sites mycéniens impressionnent par leurs murs, portes, tombes et espaces palatiaux. Ils ne forment pas un État grec unifié : plusieurs centres dominent des territoires, rivalisent ou coopèrent. La fortification montre l’importance du pouvoir, du prestige et de la protection."
+    },
+    {
+      "title": "2. Une administration lisible",
+      "text": "Le linéaire B est une écriture syllabique utilisée pour des comptes. Son déchiffrement a montré qu’elle note une forme ancienne de grec. Les tablettes parlent de produits, terres, artisans, rations, offrandes et personnes dépendantes."
+    },
+    {
+      "title": "3. Le palais comme machine économique",
+      "text": "Le palais collecte, stocke, commande et redistribue. Il peut contrôler des ateliers, des troupeaux, des terres et des produits spécialisés. Ce système rend visible une société très organisée, où l’écriture sert d’abord à administrer."
+    },
+    {
+      "title": "4. Guerre, prestige et réseaux",
+      "text": "Les armes et tombes riches montrent des élites guerrières, mais les Mycéniens participent aussi à des échanges égéens et méditerranéens. Céramiques, objets précieux et contacts rappellent que la puissance se construit autant par réseau que par combat."
+    },
+    {
+      "title": "5. Le linéaire B ouvre les archives des palais",
+      "text": "Les tablettes en linéaire B enregistrent des rations, des troupeaux, des terres, des offrandes et des personnels. Elles ont souvent été conservées parce qu’un incendie a cuit accidentellement l’argile. Elles révèlent une administration minutieuse, mais presque aucune littérature : ce sont des documents de gestion, non les récits d’Homère."
+    },
+    {
+      "title": "6. Le wanax au sommet d’un système hiérarchisé",
+      "text": "Les textes mentionnent un souverain appelé wanax, des responsables, des artisans spécialisés et des groupes dépendants. Les palais contrôlent une partie de la production et des échanges, sans forcément administrer chaque geste de toute la population. Autour d’eux existent villages, terres et élites guerrières."
+    },
+    {
+      "title": "7. Entre archéologie et mémoire héroïque",
+      "text": "Mycènes, Pylos ou Tirynthe ont nourri plus tard les récits sur Agamemnon et la guerre de Troie. Ces traditions peuvent conserver des souvenirs lointains, mais elles ont été mises en forme des siècles après l’effondrement des palais. On ne peut donc pas lire l’Iliade comme un compte rendu direct du XIIIe siècle av. J.-C."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Les Mycéniens sont importants parce qu’ils relient la Grèce à l’âge du Bronze palatial. Ils donnent un arrière-plan aux récits héroïques, mais leur histoire concrète se comprend surtout par palais, tablettes, tombes et objets."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Linéaire B : écriture administrative déchiffrée, utilisée dans des palais mycéniens et notant une forme ancienne de grec."
+    },
+    {
+      "title": "Nuance",
+      "text": "Un poème peut garder une mémoire du passé sans être un document administratif contemporain."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Réduire Mycènes à la guerre de Troie et oublier les scribes, les terres, les stocks et les dépendants."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "À quelle période appartiennent surtout les Mycéniens ?",
+      "a": "À la fin de l’âge du Bronze égéen, avant les cités grecques classiques.",
+      "choices": [
+        "À la période de l’empire carolingien.",
+        "À l’époque des monarchies absolues modernes.",
+        "Au lendemain de la guerre froide."
+      ],
+      "why": "La chronologie évite de confondre palais mycéniens et cité classique.",
+      "trap": "Mettre Mycènes au temps de Périclès.",
+      "evidence": "Express et bloc 1."
+    },
+    {
+      "kind": "source",
+      "q": "Pourquoi le linéaire B est-il essentiel ?",
+      "a": "Parce qu’il note une forme ancienne de grec et donne accès à des comptes palatiaux.",
+      "choices": [
+        "Parce qu’il décrit les débats de l’assemblée athénienne.",
+        "Parce qu’il est une écriture inventée par les empereurs romains.",
+        "Parce qu’il est uniquement une décoration murale sans texte."
+      ],
+      "why": "Il rend l’administration mycénienne partiellement lisible.",
+      "trap": "Ignorer les archives au profit des seuls héros.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "fonction",
+      "q": "Que fait le palais mycénien dans l’économie ?",
+      "a": "Il collecte, stocke, commande des productions et redistribue des biens.",
+      "choices": [
+        "Il sert seulement de théâtre public.",
+        "Il supprime toutes les terres agricoles.",
+        "Il interdit la présence de scribes et d’artisans."
+      ],
+      "why": "Le palais est une machine de gestion.",
+      "trap": "Le voir seulement comme décor militaire.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "nuance",
+      "q": "Pourquoi ne pas lire Homère comme un reportage direct ?",
+      "a": "Parce que les poèmes sont plus tardifs et transforment la mémoire de l’âge du Bronze en récit héroïque.",
+      "choices": [
+        "Parce que les poèmes sont des tablettes comptables du palais de Pylos.",
+        "Parce que les récits héroïques donnent tous les impôts exacts.",
+        "Parce que les tombes remplacent entièrement toute tradition orale."
+      ],
+      "why": "Il faut distinguer mémoire, poésie et sources contemporaines.",
+      "trap": "Confondre mythe et archive.",
+      "evidence": "Deeper et conclusion."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle formule résume le mieux les Mycéniens ?",
+      "a": "Des sociétés palatiales grecques de l’âge du Bronze, connues par palais, tombes, objets et tablettes.",
+      "choices": [
+        "Une cité démocratique classique centrée sur l’assemblée.",
+        "Un peuple sans écriture, sans palais et sans réseaux.",
+        "Une province romaine administrée depuis le Sénat."
+      ],
+      "why": "La réponse combine chronologie, organisation et sources.",
+      "trap": "Les réduire aux guerriers de légende.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
 
   "aegean-mediterranean-effondrement-egeen": {
-    hook: "Autour de -1200, le monde égéen et méditerranéen oriental connaît une crise majeure. Ce n’est pas une catastrophe simple : c’est un enchaînement de fragilités, de violences, de ruptures et de recompositions.",
-    keyFacts: [
-      "Quand : surtout vers -1250 à -1100",
-      "Où : Égée, Anatolie, Levant, Méditerranée orientale",
-      "Acteurs : palais mycéniens, Hittites, cités du Levant, groupes mobiles, élites locales",
-      "Traces : destructions, abandons, raréfaction des archives, changements matériels, récits égyptiens",
-      "Piège : expliquer toute la crise par une seule cause magique ou un seul peuple"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "La crise de -1200 touche plusieurs sociétés de l’âge du Bronze, mais de façon inégale." },
-      { label: "Nuance", text: "Invasions, tensions internes, climat, réseaux fragiles et guerres peuvent se combiner." },
-      { label: "Conséquence", text: "Après la crise, le monde égéen se réorganise avant l’émergence progressive des cités grecques." }
-    ],
-    express: [
-      "Vers -1200, plusieurs centres de l’âge du Bronze en Méditerranée orientale sont détruits, abandonnés ou profondément transformés. Les palais mycéniens disparaissent, l’empire hittite s’effondre, des routes se fragilisent et les archives deviennent plus rares.",
-      "Il ne faut pas chercher une cause unique. Guerres, mouvements de populations, tensions sociales, difficultés économiques, sécheresses possibles, dépendance aux réseaux et fragilité des systèmes palatiaux peuvent se combiner différemment selon les régions.",
-      "La crise n’est pas la fin de l’histoire grecque. Elle ouvre une période de recomposition : moins de grands palais, d’autres formes d’habitat, de mémoire et de pouvoir, puis, plus tard, l’émergence des cités du monde archaïque."
-    ],
-    complete: [
-      { title: "1. Une crise régionale", text: "Autour de -1200, la Méditerranée orientale connaît de fortes perturbations. Les palais mycéniens disparaissent, l’empire hittite s’effondre, certaines cités sont détruites ou abandonnées, et plusieurs réseaux de longue distance sont bouleversés." },
-      { title: "2. Des causes multiples", text: "Aucune cause unique ne suffit. Les sociétés palatiales dépendent de chaînes d’échanges, de stocks, de scribes, de protection militaire et d’autorité centrale. Si plusieurs maillons se fragilisent en même temps, tout le système peut devenir instable." },
-      { title: "3. Les “peuples de la mer”", text: "Les sources égyptiennes mentionnent des groupes que l’on appelle souvent peuples de la mer. Ils sont importants, mais ils ne doivent pas devenir une explication magique. Les noms, origines et rôles de ces groupes restent discutés." },
-      { title: "4. Ruptures et continuités", text: "La crise ne détruit pas toute vie humaine. Des techniques, langues, mémoires et pratiques survivent, mais les formes de pouvoir changent. Les grands palais laissent place à des organisations plus locales et moins centralisées dans plusieurs régions égéennes." },
-      { title: "5. Ce qu’il faut retenir", text: "La crise de -1200 est utile pour comprendre le passage entre âge du Bronze et monde grec archaïque. Elle montre qu’une civilisation peut s’effondrer comme système sans que les populations, les cultures et les mémoires disparaissent totalement." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Système palatial : organisation centrée sur un palais qui administre ressources, productions, stocks, dépendants et échanges." },
-      { title: "Comment le lire", text: "Pour expliquer une crise ancienne, on compare destructions, abandons, textes, climat possible, objets et changements d’habitat." },
-      { title: "Erreur fréquente", text: "Dire “les peuples de la mer ont tout détruit” comme si une seule formule expliquait une crise très large." }
-    ],
-    quiz: [
-      { kind: "repère", q: "Quand situe-t-on la grande crise du monde égéen de l’âge du Bronze ?", a: "Autour de -1200, surtout entre environ -1250 et -1100.", choices: ["Au Ve siècle avec la guerre du Péloponnèse.", "Au temps de l’Empire napoléonien.", "Après la décolonisation du XXe siècle."], why: "Le cours donne un repère chronologique central.", trap: "Mélanger l’âge du Bronze et l’époque classique.", evidence: "Express et repères." },
-      { kind: "cause", q: "Pourquoi faut-il éviter l’explication par une seule cause ?", a: "Parce que guerres, réseaux fragiles, tensions internes, climat possible et crise des palais peuvent se combiner.", choices: ["Parce qu’aucune trace de changement n’existe.", "Parce que les palais sont tous plus solides après la crise.", "Parce que la Méditerranée orientale est sans échanges."], why: "La crise est un enchaînement de fragilités.", trap: "Chercher une cause miracle.", evidence: "Bloc 2." },
-      { kind: "source", q: "Quelle prudence faut-il avoir avec les peuples de la mer ?", a: "Ils sont mentionnés dans des sources, mais leurs origines et leurs rôles restent discutés.", choices: ["Ils expliquent seuls chaque abandon et chaque transformation.", "Ils sont les magistrats réguliers des cités classiques.", "Ils remplacent toutes les autres preuves archéologiques."], why: "La formule est utile mais insuffisante.", trap: "Transformer un nom en explication totale.", evidence: "Bloc 3." },
-      { kind: "conséquence", q: "Que se passe-t-il après la disparition des grands palais ?", a: "Des formes plus locales de pouvoir et d’habitat se développent dans plusieurs régions.", choices: ["Toute présence humaine disparaît définitivement de l’Égée.", "Les cités classiques apparaissent immédiatement sans transition.", "Les tablettes administratives deviennent plus nombreuses partout."], why: "La crise entraîne recomposition, pas vide absolu.", trap: "Confondre effondrement d’un système et fin des populations.", evidence: "Bloc 4." },
-      { kind: "synthèse", q: "Pourquoi cette crise est-elle importante pour la Grèce ?", a: "Parce qu’elle aide à comprendre le passage entre monde palatial de l’âge du Bronze et monde grec archaïque.", choices: ["Parce qu’elle fonde directement la démocratie athénienne en un jour.", "Parce qu’elle n’a aucun lien avec l’évolution du monde égéen.", "Parce qu’elle transforme tous les palais en royaumes médiévaux."], why: "Elle éclaire une transition de longue durée.", trap: "Sauter directement des héros à Athènes.", evidence: "Conclusion." }
-    ]
-  }
+  "hook": "Autour de -1200, le monde égéen et méditerranéen oriental connaît une crise majeure. Ce n’est pas une catastrophe simple : c’est un enchaînement de fragilités, de violences, de ruptures et de recompositions.",
+  "keyFacts": [
+    "Quand : surtout vers -1250 à -1100",
+    "Où : Égée, Anatolie, Levant, Méditerranée orientale",
+    "Acteurs : palais mycéniens, Hittites, cités du Levant, groupes mobiles, élites locales",
+    "Traces : destructions, abandons, raréfaction des archives, changements matériels, récits égyptiens",
+    "Piège : expliquer toute la crise par une seule cause magique ou un seul peuple"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "La crise de -1200 touche plusieurs sociétés de l’âge du Bronze, mais de façon inégale."
+    },
+    {
+      "label": "Nuance",
+      "text": "Invasions, tensions internes, climat, réseaux fragiles et guerres peuvent se combiner."
+    },
+    {
+      "label": "Conséquence",
+      "text": "Après la crise, le monde égéen se réorganise avant l’émergence progressive des cités grecques."
+    }
+  ],
+  "express": [
+    "Vers -1200, plusieurs centres de l’âge du Bronze en Méditerranée orientale sont détruits, abandonnés ou profondément transformés. Les palais mycéniens disparaissent, l’empire hittite s’effondre, des routes se fragilisent et les archives deviennent plus rares.",
+    "Il ne faut pas chercher une cause unique. Guerres, mouvements de populations, tensions sociales, difficultés économiques, sécheresses possibles, dépendance aux réseaux et fragilité des systèmes palatiaux peuvent se combiner différemment selon les régions.",
+    "La crise n’est pas la fin de l’histoire grecque. Elle ouvre une période de recomposition : moins de grands palais, d’autres formes d’habitat, de mémoire et de pouvoir, puis, plus tard, l’émergence des cités du monde archaïque."
+  ],
+  "complete": [
+    {
+      "title": "1. Une crise régionale",
+      "text": "Autour de -1200, la Méditerranée orientale connaît de fortes perturbations. Les palais mycéniens disparaissent, l’empire hittite s’effondre, certaines cités sont détruites ou abandonnées, et plusieurs réseaux de longue distance sont bouleversés."
+    },
+    {
+      "title": "2. Des causes multiples",
+      "text": "Aucune cause unique ne suffit. Les sociétés palatiales dépendent de chaînes d’échanges, de stocks, de scribes, de protection militaire et d’autorité centrale. Si plusieurs maillons se fragilisent en même temps, tout le système peut devenir instable."
+    },
+    {
+      "title": "3. Les “peuples de la mer”",
+      "text": "Les sources égyptiennes mentionnent des groupes que l’on appelle souvent peuples de la mer. Ils sont importants, mais ils ne doivent pas devenir une explication magique. Les noms, origines et rôles de ces groupes restent discutés."
+    },
+    {
+      "title": "4. Ruptures et continuités",
+      "text": "La crise ne détruit pas toute vie humaine. Des techniques, langues, mémoires et pratiques survivent, mais les formes de pouvoir changent. Les grands palais laissent place à des organisations plus locales et moins centralisées dans plusieurs régions égéennes."
+    },
+    {
+      "title": "5. Une crise en chaîne plutôt qu’une cause unique",
+      "text": "Vers 1200 av. J.-C., plusieurs palais sont détruits ou abandonnés, les échanges se contractent et certaines écritures disparaissent. Les chercheurs discutent des guerres, révoltes, sécheresses, séismes et ruptures commerciales. Aucun facteur n’explique seul l’ensemble ; leur combinaison a pu fragiliser des systèmes déjà très dépendants."
+    },
+    {
+      "title": "6. Les “Peuples de la mer” ne résolvent pas tout",
+      "text": "Des inscriptions égyptiennes évoquent des groupes arrivant par terre et par mer. Elles sont précieuses, mais elles présentent la victoire du pharaon selon les codes de la propagande royale. Faire de ces groupes un peuple unique ayant détruit toute la Méditerranée simplifie à l’excès une mosaïque de déplacements et de conflits."
+    },
+    {
+      "title": "7. Après l’effondrement, des recompositions",
+      "text": "La disparition des palais mycéniens ne signifie pas que toute population ou toute technique s’évanouit. Des communautés survivent, se déplacent et inventent d’autres formes d’organisation. L’usage du fer progresse, de nouveaux réseaux apparaissent et, plusieurs siècles plus tard, les cités grecques se développent dans un monde profondément réorganisé."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "La crise de -1200 est utile pour comprendre le passage entre âge du Bronze et monde grec archaïque. Elle montre qu’une civilisation peut s’effondrer comme système sans que les populations, les cultures et les mémoires disparaissent totalement."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Système palatial : organisation centrée sur un palais qui administre ressources, productions, stocks, dépendants et échanges."
+    },
+    {
+      "title": "Comment le lire",
+      "text": "Pour expliquer une crise ancienne, on compare destructions, abandons, textes, climat possible, objets et changements d’habitat."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Dire “les peuples de la mer ont tout détruit” comme si une seule formule expliquait une crise très large."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quand situe-t-on la grande crise du monde égéen de l’âge du Bronze ?",
+      "a": "Autour de -1200, surtout entre environ -1250 et -1100.",
+      "choices": [
+        "Au Ve siècle avec la guerre du Péloponnèse.",
+        "Au temps de l’Empire napoléonien.",
+        "Après la décolonisation du XXe siècle."
+      ],
+      "why": "Le cours donne un repère chronologique central.",
+      "trap": "Mélanger l’âge du Bronze et l’époque classique.",
+      "evidence": "Express et repères."
+    },
+    {
+      "kind": "cause",
+      "q": "Pourquoi faut-il éviter l’explication par une seule cause ?",
+      "a": "Parce que guerres, réseaux fragiles, tensions internes, climat possible et crise des palais peuvent se combiner.",
+      "choices": [
+        "Parce qu’aucune trace de changement n’existe.",
+        "Parce que les palais sont tous plus solides après la crise.",
+        "Parce que la Méditerranée orientale est sans échanges."
+      ],
+      "why": "La crise est un enchaînement de fragilités.",
+      "trap": "Chercher une cause miracle.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "source",
+      "q": "Quelle prudence faut-il avoir avec les peuples de la mer ?",
+      "a": "Ils sont mentionnés dans des sources, mais leurs origines et leurs rôles restent discutés.",
+      "choices": [
+        "Ils expliquent seuls chaque abandon et chaque transformation.",
+        "Ils sont les magistrats réguliers des cités classiques.",
+        "Ils remplacent toutes les autres preuves archéologiques."
+      ],
+      "why": "La formule est utile mais insuffisante.",
+      "trap": "Transformer un nom en explication totale.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "conséquence",
+      "q": "Que se passe-t-il après la disparition des grands palais ?",
+      "a": "Des formes plus locales de pouvoir et d’habitat se développent dans plusieurs régions.",
+      "choices": [
+        "Toute présence humaine disparaît définitivement de l’Égée.",
+        "Les cités classiques apparaissent immédiatement sans transition.",
+        "Les tablettes administratives deviennent plus nombreuses partout."
+      ],
+      "why": "La crise entraîne recomposition, pas vide absolu.",
+      "trap": "Confondre effondrement d’un système et fin des populations.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi cette crise est-elle importante pour la Grèce ?",
+      "a": "Parce qu’elle aide à comprendre le passage entre monde palatial de l’âge du Bronze et monde grec archaïque.",
+      "choices": [
+        "Parce qu’elle fonde directement la démocratie athénienne en un jour.",
+        "Parce qu’elle n’a aucun lien avec l’évolution du monde égéen.",
+        "Parce qu’elle transforme tous les palais en royaumes médiévaux."
+      ],
+      "why": "Elle éclaire une transition de longue durée.",
+      "trap": "Sauter directement des héros à Athènes.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+}
 });
 
 
@@ -8829,200 +10771,746 @@ REVOLUTION_EDITORIAL_LESSON_IDS.forEach(id => PUBLISHED_LESSON_IDS.add(id));
 
 Object.assign(READY_LESSON_PACKS, {
   "1789-crisis": {
-    hook: "1789 n’éclate pas parce qu’un peuple se réveille soudain : la Révolution naît d’une crise financière, sociale, politique et symbolique qui rend l’Ancien Régime impossible à réparer simplement.",
-    keyFacts: [
-      "Quand : 1788-1789, avec l’ouverture des États généraux en mai 1789",
-      "Où : royaume de France, surtout Versailles et Paris au début",
-      "Acteurs : roi, ministres, noblesse, clergé, tiers état, députés, peuple des villes et campagnes",
-      "Traces : cahiers de doléances, débats des États généraux, serment du Jeu de paume, prise de la Bastille",
-      "Piège : croire que la Révolution commence par une seule journée ou une seule cause"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "La crise de 1789 combine dette de l’État, inégalités d’ordres, blocage politique et politisation de la société." },
-      { label: "Moment clé", text: "Le tiers état se proclame Assemblée nationale : la souveraineté commence à glisser du roi vers la nation." },
-      { label: "Nuance", text: "La Révolution n’est pas seulement parisienne : les campagnes, les cahiers et les peurs collectives comptent aussi." }
-    ],
-    express: [
-      "En 1789, la France traverse une crise profonde. L’État est très endetté, l’impôt pèse surtout sur les roturiers, les privilèges d’ordres sont contestés et la monarchie n’arrive plus à faire accepter ses réformes.",
-      "Louis XVI convoque les États généraux pour trouver une solution. Mais le tiers état refuse de rester un ordre dominé : ses députés se proclament Assemblée nationale, puis jurent de donner une constitution à la France lors du serment du Jeu de paume.",
-      "La prise de la Bastille, le 14 juillet 1789, donne une dimension populaire et parisienne à la crise. Dans les campagnes, la Grande Peur et les attaques contre les droits seigneuriaux poussent les députés à abolir les privilèges dans la nuit du 4 août."
-    ],
-    complete: [
-      { title: "1. Une monarchie endettée", text: "La monarchie française sort du XVIIIe siècle avec une dette lourde, aggravée par les guerres et le coût de l’État. Pour réformer l’impôt, le roi doit affronter les privilégiés, les parlements et une opinion publique de plus en plus attentive aux affaires politiques." },
-      { title: "2. Une société d’ordres contestée", text: "La société est officiellement divisée entre clergé, noblesse et tiers état. Cette organisation ne correspond plus aux aspirations d’une partie de la bourgeoisie, des professions urbaines et de nombreux paysans. Le problème n’est pas seulement la pauvreté : c’est l’inégalité juridique." },
-      { title: "3. Les cahiers et les États généraux", text: "Avant la réunion des États généraux, les Français rédigent des cahiers de doléances. On y trouve des plaintes fiscales, des demandes de justice plus claire, des critiques des privilèges et l’espoir que le roi écoute enfin la nation." },
-      { title: "4. Le tiers état devient Assemblée nationale", text: "Le conflit porte sur la manière de voter : par ordre ou par tête. En se proclamant Assemblée nationale, les députés du tiers état affirment qu’ils représentent la nation entière. C’est une rupture décisive avec la souveraineté royale traditionnelle." },
-      { title: "5. L’irruption populaire", text: "La prise de la Bastille montre que la rue parisienne peut peser sur les événements. Dans les campagnes, la peur des complots aristocratiques et les violences contre les droits seigneuriaux accélèrent la décision d’abolir les privilèges. La Révolution devient à la fois politique, sociale et populaire." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Tiers état : ordre qui regroupe tous ceux qui ne sont ni nobles ni membres du clergé, donc l’immense majorité de la population." },
-      { title: "Comment le lire", text: "Pour comprendre 1789, il faut relier finances publiques, institutions, hiérarchies sociales et événements de rue." },
-      { title: "Erreur fréquente", text: "Résumer 1789 à la Bastille. Le 14 juillet est majeur, mais il vient après une crise politique déjà ouverte." }
-    ],
-    quiz: [
-      { kind: "cause", q: "Pourquoi la crise financière fragilise-t-elle la monarchie en 1789 ?", a: "Parce que l’État est très endetté et ne parvient plus à faire accepter une réforme fiscale durable.", choices: ["Parce que le roi décide volontairement de supprimer toutes les institutions.", "Parce que la France ne possède plus aucune administration locale.", "Parce que les députés refusent toute discussion sur les impôts avant même les États généraux."], why: "La dette rend nécessaire une réforme, mais le système politique bloque.", trap: "Chercher une seule cause spectaculaire.", evidence: "Bloc 1." },
-      { kind: "société", q: "Qu’est-ce qui rend la société d’ordres contestable ?", a: "L’existence d’inégalités juridiques et fiscales entre clergé, noblesse et tiers état.", choices: ["L’égalité complète entre tous les habitants du royaume.", "L’absence de distinction sociale avant 1789.", "La domination politique exclusive des paysans sur la noblesse."], why: "La contestation porte sur les privilèges et les droits.", trap: "Réduire la crise à une simple pénurie alimentaire.", evidence: "Bloc 2." },
-      { kind: "institution", q: "Que signifie la proclamation de l’Assemblée nationale ?", a: "Les députés du tiers état affirment représenter la nation et non plus seulement un ordre séparé.", choices: ["Le roi renforce le vote par ordre sans opposition.", "Le clergé interdit toute constitution écrite.", "Les provinces remplacent immédiatement Paris comme capitale politique."], why: "C’est un déplacement de souveraineté.", trap: "Confondre réunion des États généraux et révolution déjà achevée.", evidence: "Bloc 4." },
-      { kind: "événement", q: "Pourquoi la prise de la Bastille compte-t-elle ?", a: "Elle montre que le peuple parisien peut intervenir dans la crise politique et sauver la dynamique révolutionnaire.", choices: ["Elle règle définitivement toutes les questions fiscales.", "Elle abolit à elle seule tous les privilèges du royaume.", "Elle marque la fin immédiate de la monarchie dès juillet 1789."], why: "L’événement donne une force populaire à la Révolution.", trap: "Lui attribuer tous les effets de l’année 1789.", evidence: "Bloc 5." },
-      { kind: "synthèse", q: "Quelle formule résume le mieux 1789 ?", a: "Une crise de l’État, des privilèges et de la souveraineté qui devient une révolution politique et sociale.", choices: ["Une réforme fiscale calme, menée sans mobilisation collective.", "Une succession d’événements sans lien entre finances, société et politique.", "Une crise uniquement militaire provoquée par une invasion étrangère."], why: "La bonne réponse relie plusieurs niveaux de crise.", trap: "Réduire 1789 à une date ou à une foule.", evidence: "Conclusion." }
-    ]
-  },
+  "hook": "1789 n’éclate pas parce qu’un peuple se réveille soudain : la Révolution naît d’une crise financière, sociale, politique et symbolique qui rend l’Ancien Régime impossible à réparer simplement.",
+  "keyFacts": [
+    "Quand : 1788-1789, avec l’ouverture des États généraux en mai 1789",
+    "Où : royaume de France, surtout Versailles et Paris au début",
+    "Acteurs : roi, ministres, noblesse, clergé, tiers état, députés, peuple des villes et campagnes",
+    "Traces : cahiers de doléances, débats des États généraux, serment du Jeu de paume, prise de la Bastille",
+    "Piège : croire que la Révolution commence par une seule journée ou une seule cause"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "La crise de 1789 combine dette de l’État, inégalités d’ordres, blocage politique et politisation de la société."
+    },
+    {
+      "label": "Moment clé",
+      "text": "Le tiers état se proclame Assemblée nationale : la souveraineté commence à glisser du roi vers la nation."
+    },
+    {
+      "label": "Nuance",
+      "text": "La Révolution n’est pas seulement parisienne : les campagnes, les cahiers et les peurs collectives comptent aussi."
+    }
+  ],
+  "express": [
+    "En 1789, la France traverse une crise profonde. L’État est très endetté, l’impôt pèse surtout sur les roturiers, les privilèges d’ordres sont contestés et la monarchie n’arrive plus à faire accepter ses réformes.",
+    "Louis XVI convoque les États généraux pour trouver une solution. Mais le tiers état refuse de rester un ordre dominé : ses députés se proclament Assemblée nationale, puis jurent de donner une constitution à la France lors du serment du Jeu de paume.",
+    "La prise de la Bastille, le 14 juillet 1789, donne une dimension populaire et parisienne à la crise. Dans les campagnes, la Grande Peur et les attaques contre les droits seigneuriaux poussent les députés à abolir les privilèges dans la nuit du 4 août."
+  ],
+  "complete": [
+    {
+      "title": "1. Une monarchie endettée",
+      "text": "La monarchie française sort du XVIIIe siècle avec une dette lourde, aggravée par les guerres et le coût de l’État. Pour réformer l’impôt, le roi doit affronter les privilégiés, les parlements et une opinion publique de plus en plus attentive aux affaires politiques."
+    },
+    {
+      "title": "2. Une société d’ordres contestée",
+      "text": "La société est officiellement divisée entre clergé, noblesse et tiers état. Cette organisation ne correspond plus aux aspirations d’une partie de la bourgeoisie, des professions urbaines et de nombreux paysans. Le problème n’est pas seulement la pauvreté : c’est l’inégalité juridique."
+    },
+    {
+      "title": "3. Les cahiers et les États généraux",
+      "text": "Avant la réunion des États généraux, les Français rédigent des cahiers de doléances. On y trouve des plaintes fiscales, des demandes de justice plus claire, des critiques des privilèges et l’espoir que le roi écoute enfin la nation."
+    },
+    {
+      "title": "4. Le tiers état devient Assemblée nationale",
+      "text": "Le conflit porte sur la manière de voter : par ordre ou par tête. En se proclamant Assemblée nationale, les députés du tiers état affirment qu’ils représentent la nation entière. C’est une rupture décisive avec la souveraineté royale traditionnelle."
+    },
+    {
+      "title": "5. L’irruption populaire",
+      "text": "La prise de la Bastille montre que la rue parisienne peut peser sur les événements. Dans les campagnes, la peur des complots aristocratiques et les violences contre les droits seigneuriaux accélèrent la décision d’abolir les privilèges. La Révolution devient à la fois politique, sociale et populaire."
+    },
+    {
+      "title": "6. Une dette ancienne devenue ingérable",
+      "text": "Les guerres menées au XVIIIe siècle, notamment le soutien à l’indépendance américaine, ont alourdi la dette de la monarchie. L’État emprunte à des conditions coûteuses et une grande part de ses recettes sert à payer les intérêts. La crise n’est donc pas seulement provoquée par les dépenses de cour, souvent spectaculaires mais insuffisantes pour expliquer le déficit."
+    },
+    {
+      "title": "7. Réformer l’impôt se heurte aux privilèges",
+      "text": "Plusieurs ministres tentent d’élargir l’impôt aux groupes jusque-là mieux protégés. Les parlements et assemblées de notables résistent en invoquant les lois du royaume. Cette opposition bloque les solutions financières et oblige Louis XVI à convoquer les États généraux, qui n’avaient plus été réunis depuis 1614."
+    },
+    {
+      "title": "8. La crise des subsistances politise la colère",
+      "text": "Les mauvaises récoltes de 1788 font monter le prix du pain, poste essentiel du budget populaire. Le chômage touche aussi certaines villes. La faim ne produit pas mécaniquement une révolution, mais elle rend les conflits institutionnels concrets : l’impuissance du gouvernement et les inégalités fiscales deviennent visibles dans la vie quotidienne."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "1789 n’éclate pas parce qu’un peuple se réveille soudain : la Révolution naît d’une crise financière, sociale, politique et symbolique qui rend l’Ancien Régime impossible à réparer simplement."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Tiers état : ordre qui regroupe tous ceux qui ne sont ni nobles ni membres du clergé, donc l’immense majorité de la population."
+    },
+    {
+      "title": "Comment le lire",
+      "text": "Pour comprendre 1789, il faut relier finances publiques, institutions, hiérarchies sociales et événements de rue."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Résumer 1789 à la Bastille. Le 14 juillet est majeur, mais il vient après une crise politique déjà ouverte."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "cause",
+      "q": "Pourquoi la crise financière fragilise-t-elle la monarchie en 1789 ?",
+      "a": "Parce que l’État est très endetté et ne parvient plus à faire accepter une réforme fiscale durable.",
+      "choices": [
+        "Parce que le roi décide volontairement de supprimer toutes les institutions.",
+        "Parce que la France ne possède plus aucune administration locale.",
+        "Parce que les députés refusent toute discussion sur les impôts avant même les États généraux."
+      ],
+      "why": "La dette rend nécessaire une réforme, mais le système politique bloque.",
+      "trap": "Chercher une seule cause spectaculaire.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "société",
+      "q": "Qu’est-ce qui rend la société d’ordres contestable ?",
+      "a": "L’existence d’inégalités juridiques et fiscales entre clergé, noblesse et tiers état.",
+      "choices": [
+        "L’égalité complète entre tous les habitants du royaume.",
+        "L’absence de distinction sociale avant 1789.",
+        "La domination politique exclusive des paysans sur la noblesse."
+      ],
+      "why": "La contestation porte sur les privilèges et les droits.",
+      "trap": "Réduire la crise à une simple pénurie alimentaire.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "institution",
+      "q": "Que signifie la proclamation de l’Assemblée nationale ?",
+      "a": "Les députés du tiers état affirment représenter la nation et non plus seulement un ordre séparé.",
+      "choices": [
+        "Le roi renforce le vote par ordre sans opposition.",
+        "Le clergé interdit toute constitution écrite.",
+        "Les provinces remplacent immédiatement Paris comme capitale politique."
+      ],
+      "why": "C’est un déplacement de souveraineté.",
+      "trap": "Confondre réunion des États généraux et révolution déjà achevée.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "événement",
+      "q": "Pourquoi la prise de la Bastille compte-t-elle ?",
+      "a": "Elle montre que le peuple parisien peut intervenir dans la crise politique et sauver la dynamique révolutionnaire.",
+      "choices": [
+        "Elle règle définitivement toutes les questions fiscales.",
+        "Elle abolit à elle seule tous les privilèges du royaume.",
+        "Elle marque la fin immédiate de la monarchie dès juillet 1789."
+      ],
+      "why": "L’événement donne une force populaire à la Révolution.",
+      "trap": "Lui attribuer tous les effets de l’année 1789.",
+      "evidence": "Bloc 5."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle formule résume le mieux 1789 ?",
+      "a": "Une crise de l’État, des privilèges et de la souveraineté qui devient une révolution politique et sociale.",
+      "choices": [
+        "Une réforme fiscale calme, menée sans mobilisation collective.",
+        "Une succession d’événements sans lien entre finances, société et politique.",
+        "Une crise uniquement militaire provoquée par une invasion étrangère."
+      ],
+      "why": "La bonne réponse relie plusieurs niveaux de crise.",
+      "trap": "Réduire 1789 à une date ou à une foule.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "rights-new-france": {
-    hook: "La Déclaration des droits de l’homme et du citoyen ne se contente pas d’annoncer de beaux principes : elle change la langue du pouvoir en plaçant la loi, la nation et l’égalité civile au centre.",
-    keyFacts: [
-      "Quand : été 1789, Déclaration adoptée le 26 août",
-      "Où : Assemblée nationale constituante, France révolutionnaire",
-      "Acteurs : députés, clubs, citoyens actifs, presse, roi contraint de composer",
-      "Traces : Déclaration des droits, abolition des privilèges, Constitution de 1791",
-      "Piège : croire que droits proclamés = droits appliqués immédiatement à tous"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "La souveraineté nationale remplace progressivement l’idée que le pouvoir vient seulement du roi." },
-      { label: "Texte clé", text: "La Déclaration affirme liberté, égalité civile, propriété, sûreté, résistance à l’oppression et loi commune." },
-      { label: "Limite", text: "Femmes, pauvres, esclaves des colonies et opposants politiques ne bénéficient pas tous de la même manière de ces principes." }
-    ],
-    express: [
-      "Après l’été 1789, les députés cherchent à refonder la France. La nuit du 4 août abolit les privilèges, puis la Déclaration des droits de l’homme et du citoyen affirme que les hommes naissent libres et égaux en droits.",
-      "Le pouvoir n’est plus pensé comme une propriété du roi. La souveraineté appartient à la nation, la loi doit être l’expression de la volonté générale, et les citoyens doivent être jugés selon des règles communes.",
-      "Mais il faut distinguer principe et réalité. La Constitution de 1791 garde une monarchie constitutionnelle et limite la participation politique. Les femmes, les plus pauvres et les esclaves des colonies restent exclus ou marginalisés malgré le langage universel des droits."
-    ],
-    complete: [
-      { title: "1. Abolir les privilèges", text: "La nuit du 4 août 1789 marque une rupture majeure : les droits seigneuriaux et privilèges d’ordres sont attaqués. L’objectif est de construire une société de droits communs, même si l’application concrète reste progressive et négociée." },
-      { title: "2. Déclarer des droits", text: "La Déclaration du 26 août 1789 énonce des principes généraux : liberté, égalité civile, propriété, sûreté, résistance à l’oppression. Elle donne aux révolutionnaires une grammaire politique nouvelle, opposable à l’arbitraire." },
-      { title: "3. La nation contre l’absolutisme", text: "La souveraineté nationale signifie que le pouvoir légitime vient de la nation. Le roi n’est plus la source unique de la loi. Les députés veulent encadrer l’exécutif, écrire une constitution et limiter l’ancien arbitraire monarchique." },
-      { title: "4. Une France réorganisée", text: "La Révolution transforme aussi l’espace politique : départements, nouvelles administrations, justice réformée, vente de biens du clergé, constitution civile du clergé. La nouvelle France n’est pas seulement un texte, c’est une réorganisation concrète." },
-      { title: "5. Des droits universels, des exclusions réelles", text: "Le langage des droits est immense, mais son application est limitée. Le suffrage n’est pas universel, les femmes sont exclues du vote, l’esclavage colonial n’est pas aboli en 1789. Cette tension nourrit des débats et des luttes durables." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Souveraineté nationale : principe selon lequel le pouvoir politique appartient à la nation, représentée par des institutions." },
-      { title: "Nuance", text: "Un principe proclamé peut devenir une arme politique même lorsqu’il n’est pas encore appliqué partout." },
-      { title: "Erreur fréquente", text: "Dire que 1789 installe immédiatement la démocratie moderne complète. La rupture est forte, mais les exclusions restent nombreuses." }
-    ],
-    quiz: [
-      { kind: "texte", q: "Que proclame la Déclaration des droits de 1789 ?", a: "Des principes comme liberté, égalité civile, propriété, sûreté et résistance à l’oppression.", choices: ["La restauration complète des privilèges seigneuriaux.", "La suppression de toute loi commune au profit du roi seul.", "L’obligation pour chaque citoyen d’appartenir au clergé."], why: "Le texte fixe la nouvelle grammaire politique.", trap: "Croire qu’il règle immédiatement tous les problèmes.", evidence: "Bloc 2." },
-      { kind: "concept", q: "Que signifie la souveraineté nationale ?", a: "Le pouvoir légitime vient de la nation et non plus seulement de la personne du roi.", choices: ["Le roi peut décider seul sans constitution.", "Chaque province devient un royaume indépendant.", "La noblesse récupère le monopole de l’impôt."], why: "C’est une rupture avec l’absolutisme.", trap: "Confondre nation et opinion unanime.", evidence: "Bloc 3." },
-      { kind: "réforme", q: "Pourquoi la réorganisation administrative est-elle importante ?", a: "Parce que la Révolution transforme aussi les institutions, la justice, les départements et les rapports avec l’Église.", choices: ["Parce que les droits restent uniquement une poésie sans aucune décision concrète.", "Parce que les provinces d’Ancien Régime sont conservées sans changement.", "Parce que le clergé devient l’unique administration de l’État."], why: "La nouvelle France se construit par des mesures pratiques.", trap: "Ne regarder que les grands discours.", evidence: "Bloc 4." },
-      { kind: "limite", q: "Quelle limite faut-il retenir sur les droits de 1789 ?", a: "Leur langage est universel, mais femmes, pauvres et esclaves coloniaux restent largement exclus.", choices: ["Tous les habitants votent immédiatement dans les mêmes conditions.", "L’esclavage est aboli partout dans l’empire dès août 1789.", "Les femmes deviennent majoritaires dans toutes les assemblées."], why: "La tension entre principes et réalités est centrale.", trap: "Confondre proclamation et application complète.", evidence: "Bloc 5." },
-      { kind: "synthèse", q: "Pourquoi 1789 change-t-il la langue du pouvoir ?", a: "Parce que la loi, les droits, la nation et l’égalité civile deviennent des références centrales.", choices: ["Parce que le pouvoir royal devient plus absolu qu’avant.", "Parce que les privilèges d’ordres deviennent la base officielle de la citoyenneté.", "Parce que la France renonce à écrire des textes politiques."], why: "Les mots du pouvoir changent avec les institutions.", trap: "Ne voir que l’événementiel.", evidence: "Hook et conclusion." }
-    ]
-  },
+  "hook": "La Déclaration des droits de l’homme et du citoyen ne se contente pas d’annoncer de beaux principes : elle change la langue du pouvoir en plaçant la loi, la nation et l’égalité civile au centre.",
+  "keyFacts": [
+    "Quand : été 1789, Déclaration adoptée le 26 août",
+    "Où : Assemblée nationale constituante, France révolutionnaire",
+    "Acteurs : députés, clubs, citoyens actifs, presse, roi contraint de composer",
+    "Traces : Déclaration des droits, abolition des privilèges, Constitution de 1791",
+    "Piège : croire que droits proclamés = droits appliqués immédiatement à tous"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "La souveraineté nationale remplace progressivement l’idée que le pouvoir vient seulement du roi."
+    },
+    {
+      "label": "Texte clé",
+      "text": "La Déclaration affirme liberté, égalité civile, propriété, sûreté, résistance à l’oppression et loi commune."
+    },
+    {
+      "label": "Limite",
+      "text": "Femmes, pauvres, esclaves des colonies et opposants politiques ne bénéficient pas tous de la même manière de ces principes."
+    }
+  ],
+  "express": [
+    "Après l’été 1789, les députés cherchent à refonder la France. La nuit du 4 août abolit les privilèges, puis la Déclaration des droits de l’homme et du citoyen affirme que les hommes naissent libres et égaux en droits.",
+    "Le pouvoir n’est plus pensé comme une propriété du roi. La souveraineté appartient à la nation, la loi doit être l’expression de la volonté générale, et les citoyens doivent être jugés selon des règles communes.",
+    "Mais il faut distinguer principe et réalité. La Constitution de 1791 garde une monarchie constitutionnelle et limite la participation politique. Les femmes, les plus pauvres et les esclaves des colonies restent exclus ou marginalisés malgré le langage universel des droits."
+  ],
+  "complete": [
+    {
+      "title": "1. Abolir les privilèges",
+      "text": "La nuit du 4 août 1789 marque une rupture majeure : les droits seigneuriaux et privilèges d’ordres sont attaqués. L’objectif est de construire une société de droits communs, même si l’application concrète reste progressive et négociée."
+    },
+    {
+      "title": "2. Déclarer des droits",
+      "text": "La Déclaration du 26 août 1789 énonce des principes généraux : liberté, égalité civile, propriété, sûreté, résistance à l’oppression. Elle donne aux révolutionnaires une grammaire politique nouvelle, opposable à l’arbitraire."
+    },
+    {
+      "title": "3. La nation contre l’absolutisme",
+      "text": "La souveraineté nationale signifie que le pouvoir légitime vient de la nation. Le roi n’est plus la source unique de la loi. Les députés veulent encadrer l’exécutif, écrire une constitution et limiter l’ancien arbitraire monarchique."
+    },
+    {
+      "title": "4. Une France réorganisée",
+      "text": "La Révolution transforme aussi l’espace politique : départements, nouvelles administrations, justice réformée, vente de biens du clergé, constitution civile du clergé. La nouvelle France n’est pas seulement un texte, c’est une réorganisation concrète."
+    },
+    {
+      "title": "5. Des droits universels, des exclusions réelles",
+      "text": "Le langage des droits est immense, mais son application est limitée. Le suffrage n’est pas universel, les femmes sont exclues du vote, l’esclavage colonial n’est pas aboli en 1789. Cette tension nourrit des débats et des luttes durables."
+    },
+    {
+      "title": "6. Des principes universels dans un contexte limité",
+      "text": "La Déclaration du 26 août 1789 affirme liberté, égalité en droits, souveraineté nationale et protection de la propriété. Son vocabulaire vise l’universel, mais les droits politiques restent ensuite liés au sexe, au statut et parfois à la richesse. Le texte ouvre donc un horizon plus large que les institutions immédiatement mises en place."
+    },
+    {
+      "title": "7. La loi remplace le privilège comme idéal",
+      "text": "Sous l’Ancien Régime, les droits et obligations varient selon l’ordre, le territoire ou la corporation. La Déclaration affirme au contraire que la loi est l’expression de la volonté générale et qu’elle doit être la même pour tous. Ce basculement ne supprime pas toutes les inégalités sociales, mais il change la manière de les justifier."
+    },
+    {
+      "title": "8. Les exclusions deviennent contestables",
+      "text": "Olympe de Gouges rédige en 1791 une Déclaration des droits de la femme et de la citoyenne. Dans les colonies, les libres de couleur et les esclaves mobilisent eux aussi le langage des droits. Le caractère universel des principes fournit donc des arguments à ceux que la première révolution politique laisse à l’écart."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "La Déclaration des droits de l’homme et du citoyen ne se contente pas d’annoncer de beaux principes : elle change la langue du pouvoir en plaçant la loi, la nation et l’égalité civile au centre."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Souveraineté nationale : principe selon lequel le pouvoir politique appartient à la nation, représentée par des institutions."
+    },
+    {
+      "title": "Nuance",
+      "text": "Un principe proclamé peut devenir une arme politique même lorsqu’il n’est pas encore appliqué partout."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Dire que 1789 installe immédiatement la démocratie moderne complète. La rupture est forte, mais les exclusions restent nombreuses."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "texte",
+      "q": "Que proclame la Déclaration des droits de 1789 ?",
+      "a": "Des principes comme liberté, égalité civile, propriété, sûreté et résistance à l’oppression.",
+      "choices": [
+        "La restauration complète des privilèges seigneuriaux.",
+        "La suppression de toute loi commune au profit du roi seul.",
+        "L’obligation pour chaque citoyen d’appartenir au clergé."
+      ],
+      "why": "Le texte fixe la nouvelle grammaire politique.",
+      "trap": "Croire qu’il règle immédiatement tous les problèmes.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "concept",
+      "q": "Que signifie la souveraineté nationale ?",
+      "a": "Le pouvoir légitime vient de la nation et non plus seulement de la personne du roi.",
+      "choices": [
+        "Le roi peut décider seul sans constitution.",
+        "Chaque province devient un royaume indépendant.",
+        "La noblesse récupère le monopole de l’impôt."
+      ],
+      "why": "C’est une rupture avec l’absolutisme.",
+      "trap": "Confondre nation et opinion unanime.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "réforme",
+      "q": "Pourquoi la réorganisation administrative est-elle importante ?",
+      "a": "Parce que la Révolution transforme aussi les institutions, la justice, les départements et les rapports avec l’Église.",
+      "choices": [
+        "Parce que les droits restent uniquement une poésie sans aucune décision concrète.",
+        "Parce que les provinces d’Ancien Régime sont conservées sans changement.",
+        "Parce que le clergé devient l’unique administration de l’État."
+      ],
+      "why": "La nouvelle France se construit par des mesures pratiques.",
+      "trap": "Ne regarder que les grands discours.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "limite",
+      "q": "Quelle limite faut-il retenir sur les droits de 1789 ?",
+      "a": "Leur langage est universel, mais femmes, pauvres et esclaves coloniaux restent largement exclus.",
+      "choices": [
+        "Tous les habitants votent immédiatement dans les mêmes conditions.",
+        "L’esclavage est aboli partout dans l’empire dès août 1789.",
+        "Les femmes deviennent majoritaires dans toutes les assemblées."
+      ],
+      "why": "La tension entre principes et réalités est centrale.",
+      "trap": "Confondre proclamation et application complète.",
+      "evidence": "Bloc 5."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi 1789 change-t-il la langue du pouvoir ?",
+      "a": "Parce que la loi, les droits, la nation et l’égalité civile deviennent des références centrales.",
+      "choices": [
+        "Parce que le pouvoir royal devient plus absolu qu’avant.",
+        "Parce que les privilèges d’ordres deviennent la base officielle de la citoyenneté.",
+        "Parce que la France renonce à écrire des textes politiques."
+      ],
+      "why": "Les mots du pouvoir changent avec les institutions.",
+      "trap": "Ne voir que l’événementiel.",
+      "evidence": "Hook et conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "republic-terror-war": {
-    hook: "La Terreur ne se comprend pas comme une simple folie collective : elle naît d’une République en guerre, menacée aux frontières, divisée à l’intérieur et obsédée par le salut public.",
-    keyFacts: [
-      "Quand : surtout 1792-1794",
-      "Où : France républicaine, frontières, Paris, Vendée et provinces insurgées",
-      "Acteurs : Convention, Montagnards, Girondins, sans-culottes, comités, armées, opposants",
-      "Traces : chute de la monarchie, procès de Louis XVI, Comité de salut public, levée en masse, lois d’exception",
-      "Piège : expliquer la Terreur sans la guerre ou réduire toute la Révolution à la guillotine"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "La République se radicalise dans un contexte de guerre extérieure, guerre civile et crise politique." },
-      { label: "Moment clé", text: "La monarchie tombe en 1792, Louis XVI est jugé puis exécuté en janvier 1793." },
-      { label: "Nuance", text: "La Terreur combine défense révolutionnaire, violence d’État, peur des complots et luttes de pouvoir." }
-    ],
-    express: [
-      "En 1792, la Révolution entre dans une phase plus radicale. La guerre contre les monarchies européennes, la méfiance envers Louis XVI et la pression populaire conduisent à la chute de la monarchie et à la proclamation de la République.",
-      "L’exécution du roi en janvier 1793 aggrave le conflit avec l’Europe et les divisions françaises. La République doit affronter des ennemis extérieurs, des soulèvements intérieurs, la crise économique et les rivalités politiques entre Girondins, Montagnards et sans-culottes.",
-      "La Terreur correspond à un gouvernement d’exception : Comité de salut public, surveillance, tribunaux révolutionnaires, répression des opposants. Elle ne résume pas toute la Révolution, mais elle montre jusqu’où un pouvoir peut aller lorsqu’il affirme défendre la République en danger."
-    ],
-    complete: [
-      { title: "1. La monarchie tombe", text: "La guerre commencée en 1792 fragilise la monarchie constitutionnelle. Le roi est soupçonné de double jeu avec les puissances ennemies. L’insurrection du 10 août 1792 renverse la monarchie et ouvre la voie à une République proclamée en septembre." },
-      { title: "2. Le procès du roi", text: "Louis XVI devient Louis Capet devant la Convention. Son procès pose une question politique immense : peut-on fonder une République en laissant vivre l’ancien roi ? Son exécution en janvier 1793 rend la rupture irréversible." },
-      { title: "3. Une République encerclée", text: "La France affronte une coalition européenne, tandis que des révoltes éclatent à l’intérieur, notamment en Vendée. La levée en masse mobilise les hommes et les ressources. La République devient une machine de guerre." },
-      { title: "4. Le gouvernement révolutionnaire", text: "Le Comité de salut public, les représentants en mission, les tribunaux révolutionnaires et les mesures de surveillance créent un pouvoir d’exception. La logique est celle du salut public : vaincre les ennemis avant de revenir à une constitution ordinaire." },
-      { title: "5. Violence et héritage difficile", text: "La Terreur laisse une mémoire lourde : répression, guillotine, guerres civiles, suspects. Mais elle ne doit pas être séparée du contexte de guerre et de peur politique. Comprendre n’est pas justifier : c’est expliquer les mécanismes de radicalisation." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Salut public : idée selon laquelle des mesures extraordinaires sont justifiées pour sauver la République en danger." },
-      { title: "Nuance", text: "La Terreur n’est pas un bloc simple : elle varie selon les lieux, les moments et les acteurs." },
-      { title: "Erreur fréquente", text: "Commencer et finir la Révolution par la guillotine. Cela écrase les enjeux de souveraineté, de droits et de guerre." }
-    ],
-    quiz: [
-      { kind: "cause", q: "Pourquoi la République se radicalise-t-elle à partir de 1792 ?", a: "Parce qu’elle affronte la guerre extérieure, la chute de la monarchie, des révoltes et des divisions politiques.", choices: ["Parce que la France connaît une paix stable avec toutes les monarchies européennes.", "Parce que Louis XVI reçoit des pouvoirs absolus renforcés par la Convention.", "Parce que les clubs politiques disparaissent avant toute crise."], why: "Plusieurs menaces alimentent la radicalisation.", trap: "Isoler la Terreur de la guerre.", evidence: "Express." },
-      { kind: "événement", q: "Que provoque le 10 août 1792 ?", a: "La chute de la monarchie constitutionnelle et l’ouverture de la voie républicaine.", choices: ["La restauration de l’Ancien Régime sans constitution.", "La fin de toutes les mobilisations populaires à Paris.", "La création de l’Empire napoléonien le même jour."], why: "C’est une rupture politique majeure.", trap: "Confondre 1792 avec 1789 ou 1804.", evidence: "Bloc 1." },
-      { kind: "institution", q: "À quoi sert le Comité de salut public dans ce contexte ?", a: "À concentrer le gouvernement révolutionnaire pour défendre la République en guerre.", choices: ["À rétablir le pouvoir personnel de Louis XVI.", "À organiser uniquement des fêtes sans rôle politique.", "À supprimer les armées alors que les frontières sont menacées."], why: "Il incarne un pouvoir d’exception.", trap: "Le décrire comme une institution ordinaire.", evidence: "Bloc 4." },
-      { kind: "nuance", q: "Pourquoi comprendre la Terreur ne veut-il pas dire la justifier ?", a: "Parce qu’on peut expliquer ses mécanismes de guerre, de peur et de pouvoir sans approuver la violence.", choices: ["Parce qu’il faut supprimer tout contexte historique.", "Parce que les violences n’ont laissé aucune trace.", "Parce que la Terreur est une période totalement inventée."], why: "L’histoire cherche des causes, pas des excuses automatiques.", trap: "Confondre explication et approbation.", evidence: "Bloc 5." },
-      { kind: "synthèse", q: "Quelle idée résume le mieux le cours ?", a: "La République en danger produit un gouvernement d’exception qui radicalise la Révolution.", choices: ["La Terreur apparaît dans une France paisible et sans conflit.", "La Révolution s’arrête définitivement dès la Déclaration des droits.", "La République naît uniquement d’une réforme administrative locale."], why: "La bonne réponse relie République, guerre et exception.", trap: "Réduire la période à une image de guillotine.", evidence: "Conclusion." }
-    ]
-  },
+  "hook": "La Terreur ne se comprend pas comme une simple folie collective : elle naît d’une République en guerre, menacée aux frontières, divisée à l’intérieur et obsédée par le salut public.",
+  "keyFacts": [
+    "Quand : surtout 1792-1794",
+    "Où : France républicaine, frontières, Paris, Vendée et provinces insurgées",
+    "Acteurs : Convention, Montagnards, Girondins, sans-culottes, comités, armées, opposants",
+    "Traces : chute de la monarchie, procès de Louis XVI, Comité de salut public, levée en masse, lois d’exception",
+    "Piège : expliquer la Terreur sans la guerre ou réduire toute la Révolution à la guillotine"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "La République se radicalise dans un contexte de guerre extérieure, guerre civile et crise politique."
+    },
+    {
+      "label": "Moment clé",
+      "text": "La monarchie tombe en 1792, Louis XVI est jugé puis exécuté en janvier 1793."
+    },
+    {
+      "label": "Nuance",
+      "text": "La Terreur combine défense révolutionnaire, violence d’État, peur des complots et luttes de pouvoir."
+    }
+  ],
+  "express": [
+    "En 1792, la Révolution entre dans une phase plus radicale. La guerre contre les monarchies européennes, la méfiance envers Louis XVI et la pression populaire conduisent à la chute de la monarchie et à la proclamation de la République.",
+    "L’exécution du roi en janvier 1793 aggrave le conflit avec l’Europe et les divisions françaises. La République doit affronter des ennemis extérieurs, des soulèvements intérieurs, la crise économique et les rivalités politiques entre Girondins, Montagnards et sans-culottes.",
+    "La Terreur correspond à un gouvernement d’exception : Comité de salut public, surveillance, tribunaux révolutionnaires, répression des opposants. Elle ne résume pas toute la Révolution, mais elle montre jusqu’où un pouvoir peut aller lorsqu’il affirme défendre la République en danger."
+  ],
+  "complete": [
+    {
+      "title": "1. La monarchie tombe",
+      "text": "La guerre commencée en 1792 fragilise la monarchie constitutionnelle. Le roi est soupçonné de double jeu avec les puissances ennemies. L’insurrection du 10 août 1792 renverse la monarchie et ouvre la voie à une République proclamée en septembre."
+    },
+    {
+      "title": "2. Le procès du roi",
+      "text": "Louis XVI devient Louis Capet devant la Convention. Son procès pose une question politique immense : peut-on fonder une République en laissant vivre l’ancien roi ? Son exécution en janvier 1793 rend la rupture irréversible."
+    },
+    {
+      "title": "3. Une République encerclée",
+      "text": "La France affronte une coalition européenne, tandis que des révoltes éclatent à l’intérieur, notamment en Vendée. La levée en masse mobilise les hommes et les ressources. La République devient une machine de guerre."
+    },
+    {
+      "title": "4. Le gouvernement révolutionnaire",
+      "text": "Le Comité de salut public, les représentants en mission, les tribunaux révolutionnaires et les mesures de surveillance créent un pouvoir d’exception. La logique est celle du salut public : vaincre les ennemis avant de revenir à une constitution ordinaire."
+    },
+    {
+      "title": "5. Violence et héritage difficile",
+      "text": "La Terreur laisse une mémoire lourde : répression, guillotine, guerres civiles, suspects. Mais elle ne doit pas être séparée du contexte de guerre et de peur politique. Comprendre n’est pas justifier : c’est expliquer les mécanismes de radicalisation."
+    },
+    {
+      "title": "6. La République naît dans la guerre",
+      "text": "La monarchie est renversée le 10 août 1792 alors que la France affronte plusieurs puissances européennes. La Convention proclame la République en septembre. Les défaites, la peur de la trahison et les soulèvements intérieurs donnent aux décisions politiques un caractère d’urgence permanente."
+    },
+    {
+      "title": "7. Mobiliser toute la société",
+      "text": "La levée en masse appelle les citoyens à contribuer à la défense : les jeunes combattent, d’autres fabriquent armes et équipements. Contrôle des prix, réquisitions et propagande montrent que la guerre touche l’économie et le quotidien. Cette mobilisation aide la République à survivre, au prix de fortes contraintes et violences."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "La Terreur ne se comprend pas comme une simple folie collective : elle naît d’une République en guerre, menacée aux frontières, divisée à l’intérieur et obsédée par le salut public."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Salut public : idée selon laquelle des mesures extraordinaires sont justifiées pour sauver la République en danger."
+    },
+    {
+      "title": "Nuance",
+      "text": "La Terreur n’est pas un bloc simple : elle varie selon les lieux, les moments et les acteurs."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Commencer et finir la Révolution par la guillotine. Cela écrase les enjeux de souveraineté, de droits et de guerre."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "cause",
+      "q": "Pourquoi la République se radicalise-t-elle à partir de 1792 ?",
+      "a": "Parce qu’elle affronte la guerre extérieure, la chute de la monarchie, des révoltes et des divisions politiques.",
+      "choices": [
+        "Parce que la France connaît une paix stable avec toutes les monarchies européennes.",
+        "Parce que Louis XVI reçoit des pouvoirs absolus renforcés par la Convention.",
+        "Parce que les clubs politiques disparaissent avant toute crise."
+      ],
+      "why": "Plusieurs menaces alimentent la radicalisation.",
+      "trap": "Isoler la Terreur de la guerre.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "événement",
+      "q": "Que provoque le 10 août 1792 ?",
+      "a": "La chute de la monarchie constitutionnelle et l’ouverture de la voie républicaine.",
+      "choices": [
+        "La restauration de l’Ancien Régime sans constitution.",
+        "La fin de toutes les mobilisations populaires à Paris.",
+        "La création de l’Empire napoléonien le même jour."
+      ],
+      "why": "C’est une rupture politique majeure.",
+      "trap": "Confondre 1792 avec 1789 ou 1804.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "institution",
+      "q": "À quoi sert le Comité de salut public dans ce contexte ?",
+      "a": "À concentrer le gouvernement révolutionnaire pour défendre la République en guerre.",
+      "choices": [
+        "À rétablir le pouvoir personnel de Louis XVI.",
+        "À organiser uniquement des fêtes sans rôle politique.",
+        "À supprimer les armées alors que les frontières sont menacées."
+      ],
+      "why": "Il incarne un pouvoir d’exception.",
+      "trap": "Le décrire comme une institution ordinaire.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "nuance",
+      "q": "Pourquoi comprendre la Terreur ne veut-il pas dire la justifier ?",
+      "a": "Parce qu’on peut expliquer ses mécanismes de guerre, de peur et de pouvoir sans approuver la violence.",
+      "choices": [
+        "Parce qu’il faut supprimer tout contexte historique.",
+        "Parce que les violences n’ont laissé aucune trace.",
+        "Parce que la Terreur est une période totalement inventée."
+      ],
+      "why": "L’histoire cherche des causes, pas des excuses automatiques.",
+      "trap": "Confondre explication et approbation.",
+      "evidence": "Bloc 5."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle idée résume le mieux le cours ?",
+      "a": "La République en danger produit un gouvernement d’exception qui radicalise la Révolution.",
+      "choices": [
+        "La Terreur apparaît dans une France paisible et sans conflit.",
+        "La Révolution s’arrête définitivement dès la Déclaration des droits.",
+        "La République naît uniquement d’une réforme administrative locale."
+      ],
+      "why": "La bonne réponse relie République, guerre et exception.",
+      "trap": "Réduire la période à une image de guillotine.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "napoleon-empire": {
-    hook: "Napoléon n’est pas seulement un général victorieux : il stabilise une partie de l’héritage révolutionnaire tout en construisant un pouvoir autoritaire et une Europe dominée par la guerre.",
-    keyFacts: [
-      "Quand : Consulat à partir de 1799, Empire de 1804 à 1815",
-      "Où : France, Europe continentale, Méditerranée et colonies",
-      "Acteurs : Bonaparte/Napoléon, armée, préfets, notables, adversaires européens",
-      "Traces : coup d’État du 18 Brumaire, Code civil, Concordat, préfets, plébiscites, grandes campagnes",
-      "Piège : choisir entre héros modernisateur et tyran militaire sans tenir les deux dimensions"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "Le régime napoléonien consolide l’État et certains acquis de 1789, mais réduit fortement la liberté politique." },
-      { label: "Trace durable", text: "Le Code civil organise propriété, famille, contrats et égalité civile masculine devant la loi." },
-      { label: "Limite", text: "Les guerres napoléoniennes diffusent des réformes mais provoquent aussi occupation, résistances et épuisement." }
-    ],
-    express: [
-      "Après les années révolutionnaires, Bonaparte prend le pouvoir par le coup d’État du 18 Brumaire en 1799. Le Consulat promet l’ordre, la stabilité et la fin des divisions, puis Napoléon devient empereur en 1804.",
-      "Le régime conserve une partie de l’héritage révolutionnaire : égalité civile, carrières ouvertes aux talents, vente des biens nationaux, État plus rationnel. Mais il limite la presse, contrôle les élections, surveille l’opinion et concentre le pouvoir autour de l’empereur.",
-      "Le Code civil, les préfets, le Concordat et l’administration impériale marquent durablement la France. En Europe, les victoires diffusent des réformes, mais les occupations et la guerre permanente suscitent résistances, coalitions et finalement chute de l’Empire en 1815."
-    ],
-    complete: [
-      { title: "1. Sortir du désordre révolutionnaire", text: "Le Directoire apparaît fragile, contesté et dépendant de l’armée. Bonaparte profite de sa gloire militaire et du désir d’ordre pour prendre le pouvoir en 1799. Le Consulat présente l’autorité forte comme une solution à l’instabilité." },
-      { title: "2. Stabiliser certains acquis", text: "Napoléon ne revient pas simplement à l’Ancien Régime. Il protège la propriété, l’égalité civile masculine, les carrières administratives et militaires ouvertes aux talents, ainsi que l’achat des biens nationaux par les nouveaux propriétaires." },
-      { title: "3. Construire un État autoritaire", text: "Préfets, police, censure, plébiscites encadrés, administration centralisée : le régime donne une place majeure à l’efficacité et au contrôle. Les citoyens existent, mais la participation politique réelle est fortement limitée." },
-      { title: "4. Le Code civil et la société", text: "Le Code civil de 1804 unifie le droit privé. Il consacre la propriété, les contrats et l’égalité civile des hommes, mais renforce l’autorité du père et du mari dans la famille. C’est un héritage durable, mais pas une démocratie sociale." },
-      { title: "5. L’Europe napoléonienne", text: "Les conquêtes exportent des réformes et bousculent les anciens pouvoirs. Mais la domination française entraîne impôts, conscription, occupations et résistances nationales. L’Empire vit de la guerre, et cette dynamique finit par l’épuiser." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Plébiscite : vote demandé au peuple pour approuver une décision ou un pouvoir, souvent encadré par le régime." },
-      { title: "Nuance", text: "Napoléon peut moderniser l’État tout en restreignant les libertés politiques : les deux ne s’annulent pas." },
-      { title: "Erreur fréquente", text: "Faire de Napoléon seulement un héros ou seulement un dictateur. Historiquement, son régime combine stabilisation, autorité et guerre." }
-    ],
-    quiz: [
-      { kind: "repère", q: "Comment Bonaparte arrive-t-il au pouvoir en 1799 ?", a: "Par le coup d’État du 18 Brumaire, dans un contexte de Directoire fragilisé.", choices: ["Par une élection présidentielle au suffrage universel direct.", "Par l’héritage dynastique normal des Bourbons.", "Par une décision de la Convention en 1793."], why: "Le repère distingue Consulat, République et Empire.", trap: "Confondre 1799 et le sacre de 1804.", evidence: "Bloc 1." },
-      { kind: "héritage", q: "Quel acquis révolutionnaire Napoléon stabilise-t-il en partie ?", a: "L’égalité civile masculine et la protection de la propriété issue des transformations révolutionnaires.", choices: ["Le retour complet des privilèges de naissance.", "La disparition de toute administration centralisée.", "Le pouvoir politique autonome des assemblées de village."], why: "Le régime consolide certains effets de 1789.", trap: "Croire à une restauration pure et simple.", evidence: "Bloc 2." },
-      { kind: "institution", q: "Pourquoi l’État napoléonien est-il autoritaire ?", a: "Parce qu’il centralise l’administration, surveille l’opinion, limite la presse et encadre la participation politique.", choices: ["Parce qu’il supprime toute police et toute administration.", "Parce qu’il laisse les provinces décider seules de la guerre.", "Parce qu’il interdit les préfets et les tribunaux."], why: "L’efficacité administrative s’accompagne de contrôle.", trap: "Confondre ordre et liberté politique.", evidence: "Bloc 3." },
-      { kind: "droit", q: "Pourquoi le Code civil est-il durable mais limité ?", a: "Il unifie le droit et protège propriété et contrats, mais renforce aussi l’autorité masculine dans la famille.", choices: ["Il abolit immédiatement toutes les inégalités entre hommes et femmes.", "Il concerne uniquement les opérations militaires.", "Il restaure les coutumes locales sans aucun cadre commun."], why: "Le Code mêle modernisation juridique et hiérarchies sociales.", trap: "Le présenter comme un progrès total sans limites.", evidence: "Bloc 4." },
-      { kind: "synthèse", q: "Quelle formule résume le mieux Napoléon ?", a: "Un pouvoir qui stabilise certains acquis révolutionnaires tout en construisant un régime autoritaire et guerrier.", choices: ["Un roi médiéval sans lien avec la Révolution française.", "Un dirigeant sans administration, sans armée et sans réforme juridique.", "Un président républicain gouvernant sans contrôle de l’opinion."], why: "La réponse tient ensemble héritage, autorité et guerre.", trap: "Choisir une image simple au lieu d’une tension historique.", evidence: "Hook et conclusion." }
-    ]
-  },
+  "hook": "Napoléon n’est pas seulement un général victorieux : il stabilise une partie de l’héritage révolutionnaire tout en construisant un pouvoir autoritaire et une Europe dominée par la guerre.",
+  "keyFacts": [
+    "Quand : Consulat à partir de 1799, Empire de 1804 à 1815",
+    "Où : France, Europe continentale, Méditerranée et colonies",
+    "Acteurs : Bonaparte/Napoléon, armée, préfets, notables, adversaires européens",
+    "Traces : coup d’État du 18 Brumaire, Code civil, Concordat, préfets, plébiscites, grandes campagnes",
+    "Piège : choisir entre héros modernisateur et tyran militaire sans tenir les deux dimensions"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "Le régime napoléonien consolide l’État et certains acquis de 1789, mais réduit fortement la liberté politique."
+    },
+    {
+      "label": "Trace durable",
+      "text": "Le Code civil organise propriété, famille, contrats et égalité civile masculine devant la loi."
+    },
+    {
+      "label": "Limite",
+      "text": "Les guerres napoléoniennes diffusent des réformes mais provoquent aussi occupation, résistances et épuisement."
+    }
+  ],
+  "express": [
+    "Après les années révolutionnaires, Bonaparte prend le pouvoir par le coup d’État du 18 Brumaire en 1799. Le Consulat promet l’ordre, la stabilité et la fin des divisions, puis Napoléon devient empereur en 1804.",
+    "Le régime conserve une partie de l’héritage révolutionnaire : égalité civile, carrières ouvertes aux talents, vente des biens nationaux, État plus rationnel. Mais il limite la presse, contrôle les élections, surveille l’opinion et concentre le pouvoir autour de l’empereur.",
+    "Le Code civil, les préfets, le Concordat et l’administration impériale marquent durablement la France. En Europe, les victoires diffusent des réformes, mais les occupations et la guerre permanente suscitent résistances, coalitions et finalement chute de l’Empire en 1815."
+  ],
+  "complete": [
+    {
+      "title": "1. Sortir du désordre révolutionnaire",
+      "text": "Le Directoire apparaît fragile, contesté et dépendant de l’armée. Bonaparte profite de sa gloire militaire et du désir d’ordre pour prendre le pouvoir en 1799. Le Consulat présente l’autorité forte comme une solution à l’instabilité."
+    },
+    {
+      "title": "2. Stabiliser certains acquis",
+      "text": "Napoléon ne revient pas simplement à l’Ancien Régime. Il protège la propriété, l’égalité civile masculine, les carrières administratives et militaires ouvertes aux talents, ainsi que l’achat des biens nationaux par les nouveaux propriétaires."
+    },
+    {
+      "title": "3. Construire un État autoritaire",
+      "text": "Préfets, police, censure, plébiscites encadrés, administration centralisée : le régime donne une place majeure à l’efficacité et au contrôle. Les citoyens existent, mais la participation politique réelle est fortement limitée."
+    },
+    {
+      "title": "4. Le Code civil et la société",
+      "text": "Le Code civil de 1804 unifie le droit privé. Il consacre la propriété, les contrats et l’égalité civile des hommes, mais renforce l’autorité du père et du mari dans la famille. C’est un héritage durable, mais pas une démocratie sociale."
+    },
+    {
+      "title": "5. L’Europe napoléonienne",
+      "text": "Les conquêtes exportent des réformes et bousculent les anciens pouvoirs. Mais la domination française entraîne impôts, conscription, occupations et résistances nationales. L’Empire vit de la guerre, et cette dynamique finit par l’épuiser."
+    },
+    {
+      "title": "6. Stabiliser et contrôler",
+      "text": "Le Consulat conserve certains acquis révolutionnaires — égalité civile masculine, fin des privilèges, vente des biens nationaux — tout en réduisant la liberté politique. Les préfets représentent l’État dans les départements, la presse est surveillée et les opposants sont contrôlés. La stabilité napoléonienne est donc à la fois administrative et autoritaire."
+    },
+    {
+      "title": "7. Le Code civil unifie sans tout égaliser",
+      "text": "Promulgué en 1804, le Code civil fixe des règles communes sur la propriété, les contrats et la famille. Il renforce la sécurité juridique et l’autorité de l’État, mais consacre aussi la domination du mari dans le foyer et limite fortement les droits des femmes mariées. Un même texte peut ainsi être modernisateur et inégalitaire."
+    },
+    {
+      "title": "8. Un empire européen fragile",
+      "text": "Les victoires d’Austerlitz ou d’Iéna permettent à Napoléon de réorganiser une partie de l’Europe. Mais les occupations, impôts et conscriptions alimentent des résistances, notamment en Espagne. La campagne de Russie de 1812 puis la coalition des puissances européennes montrent les limites d’un système dépendant de guerres et de victoires répétées."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Napoléon n’est pas seulement un général victorieux : il stabilise une partie de l’héritage révolutionnaire tout en construisant un pouvoir autoritaire et une Europe dominée par la guerre."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Plébiscite : vote demandé au peuple pour approuver une décision ou un pouvoir, souvent encadré par le régime."
+    },
+    {
+      "title": "Nuance",
+      "text": "Napoléon peut moderniser l’État tout en restreignant les libertés politiques : les deux ne s’annulent pas."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "Faire de Napoléon seulement un héros ou seulement un dictateur. Historiquement, son régime combine stabilisation, autorité et guerre."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Comment Bonaparte arrive-t-il au pouvoir en 1799 ?",
+      "a": "Par le coup d’État du 18 Brumaire, dans un contexte de Directoire fragilisé.",
+      "choices": [
+        "Par une élection présidentielle au suffrage universel direct.",
+        "Par l’héritage dynastique normal des Bourbons.",
+        "Par une décision de la Convention en 1793."
+      ],
+      "why": "Le repère distingue Consulat, République et Empire.",
+      "trap": "Confondre 1799 et le sacre de 1804.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "héritage",
+      "q": "Quel acquis révolutionnaire Napoléon stabilise-t-il en partie ?",
+      "a": "L’égalité civile masculine et la protection de la propriété issue des transformations révolutionnaires.",
+      "choices": [
+        "Le retour complet des privilèges de naissance.",
+        "La disparition de toute administration centralisée.",
+        "Le pouvoir politique autonome des assemblées de village."
+      ],
+      "why": "Le régime consolide certains effets de 1789.",
+      "trap": "Croire à une restauration pure et simple.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "institution",
+      "q": "Pourquoi l’État napoléonien est-il autoritaire ?",
+      "a": "Parce qu’il centralise l’administration, surveille l’opinion, limite la presse et encadre la participation politique.",
+      "choices": [
+        "Parce qu’il supprime toute police et toute administration.",
+        "Parce qu’il laisse les provinces décider seules de la guerre.",
+        "Parce qu’il interdit les préfets et les tribunaux."
+      ],
+      "why": "L’efficacité administrative s’accompagne de contrôle.",
+      "trap": "Confondre ordre et liberté politique.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "droit",
+      "q": "Pourquoi le Code civil est-il durable mais limité ?",
+      "a": "Il unifie le droit et protège propriété et contrats, mais renforce aussi l’autorité masculine dans la famille.",
+      "choices": [
+        "Il abolit immédiatement toutes les inégalités entre hommes et femmes.",
+        "Il concerne uniquement les opérations militaires.",
+        "Il restaure les coutumes locales sans aucun cadre commun."
+      ],
+      "why": "Le Code mêle modernisation juridique et hiérarchies sociales.",
+      "trap": "Le présenter comme un progrès total sans limites.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle formule résume le mieux Napoléon ?",
+      "a": "Un pouvoir qui stabilise certains acquis révolutionnaires tout en construisant un régime autoritaire et guerrier.",
+      "choices": [
+        "Un roi médiéval sans lien avec la Révolution française.",
+        "Un dirigeant sans administration, sans armée et sans réforme juridique.",
+        "Un président républicain gouvernant sans contrôle de l’opinion."
+      ],
+      "why": "La réponse tient ensemble héritage, autorité et guerre.",
+      "trap": "Choisir une image simple au lieu d’une tension historique.",
+      "evidence": "Hook et conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "europe-after-napoleon": {
-    hook: "Après 1815, l’Europe ne revient pas simplement en arrière : les vainqueurs veulent restaurer l’ordre, mais les idées de nation, de droits et de constitution continuent de circuler.",
-    keyFacts: [
-      "Quand : 1814-1815 puis première moitié du XIXe siècle",
-      "Où : Europe, surtout Vienne, France, États allemands, Italie, Pologne, Balkans",
-      "Acteurs : puissances victorieuses, diplomates, monarchies restaurées, libéraux, nationalistes",
-      "Traces : congrès de Vienne, Sainte-Alliance, restaurations monarchiques, révolutions de 1830 et 1848",
-      "Piège : croire que la défaite de Napoléon efface les transformations révolutionnaires"
-    ],
-    takeaways: [
-      { label: "Idée forte", text: "Le congrès de Vienne cherche l’équilibre entre puissances et la stabilité monarchique." },
-      { label: "Tension", text: "La restauration politique se heurte aux attentes libérales, nationales et constitutionnelles." },
-      { label: "Héritage", text: "L’Europe du XIXe siècle reste travaillée par les effets de 1789 et des guerres napoléoniennes." }
-    ],
-    express: [
-      "Après la chute de Napoléon, les vainqueurs se réunissent au congrès de Vienne. Ils veulent empêcher une nouvelle domination française, restaurer des monarchies et construire un équilibre entre grandes puissances.",
-      "Mais l’Europe de 1815 n’est pas celle de 1788. Les guerres ont déplacé des frontières, diffusé des codes, réveillé des sentiments nationaux et rendu plus visibles les demandes de constitution et de libertés politiques.",
-      "Le XIXe siècle européen naît de cette tension : les gouvernements cherchent l’ordre, tandis que des libéraux, des nationalistes et des républicains contestent les restaurations. Les révolutions de 1830 et 1848 montrent que l’héritage révolutionnaire reste actif."
-    ],
-    complete: [
-      { title: "1. Vienne : restaurer et équilibrer", text: "Le congrès de Vienne réunit les grandes puissances victorieuses. L’objectif n’est pas seulement de punir la France : il faut éviter qu’une puissance domine le continent. L’équilibre européen devient un principe diplomatique central." },
-      { title: "2. Le retour des monarchies", text: "Plusieurs dynasties reviennent au pouvoir, dont les Bourbons en France. Cette restauration ne signifie pas effacer vingt-cinq ans de bouleversements : certaines réformes administratives, juridiques ou sociales demeurent." },
-      { title: "3. Libéralisme et constitution", text: "Des groupes libéraux réclament des constitutions, des assemblées, la liberté de presse et des garanties contre l’arbitraire. Ils ne veulent pas toujours une République, mais ils refusent l’absolutisme pur." },
-      { title: "4. La question nationale", text: "Les guerres napoléoniennes ont renforcé ou révélé des sentiments nationaux, notamment dans les espaces allemands, italiens ou polonais. Beaucoup contestent des frontières décidées par les diplomates sans consulter les peuples." },
-      { title: "5. Une Europe instable", text: "Les révolutions de 1830 puis 1848 montrent que la restauration ne ferme pas la période révolutionnaire. L’Europe du XIXe siècle se construit dans un conflit durable entre ordre monarchique, droits politiques et aspirations nationales." }
-    ],
-    deeper: [
-      { title: "Repère", text: "Équilibre européen : système diplomatique visant à empêcher qu’une seule puissance domine durablement le continent." },
-      { title: "Nuance", text: "Restaurer un roi ne veut pas dire restaurer exactement l’Ancien Régime : les sociétés ont changé." },
-      { title: "Erreur fréquente", text: "S’arrêter à Waterloo. La vraie question est ce que l’Europe fait ensuite de l’héritage révolutionnaire et impérial." }
-    ],
-    quiz: [
-      { kind: "repère", q: "Quel est l’objectif principal du congrès de Vienne ?", a: "Restaurer un ordre monarchique et maintenir un équilibre entre les grandes puissances européennes.", choices: ["Créer immédiatement une Europe républicaine fédérale.", "Proclamer Napoléon roi héréditaire de tous les États allemands.", "Supprimer toute diplomatie entre les puissances."], why: "Le congrès cherche stabilité et équilibre continental.", trap: "Voir Vienne comme une simple vengeance contre la France.", evidence: "Bloc 1." },
-      { kind: "nuance", q: "Pourquoi 1815 n’efface-t-il pas 1789 ?", a: "Parce que certaines réformes, idées de droits, pratiques administratives et attentes politiques ont déjà transformé l’Europe.", choices: ["Parce que l’Ancien Régime revient partout exactement comme avant.", "Parce que les guerres napoléoniennes n’ont touché aucun territoire.", "Parce que les populations oublient immédiatement les constitutions."], why: "Les changements sociaux et politiques ne disparaissent pas d’un coup.", trap: "Confondre restauration dynastique et retour total en arrière.", evidence: "Bloc 2." },
-      { kind: "idée", q: "Que demandent souvent les libéraux du XIXe siècle ?", a: "Des constitutions, des libertés politiques, des assemblées et des garanties contre l’arbitraire.", choices: ["Le rétablissement intégral des droits seigneuriaux.", "La suppression définitive de toute presse politique.", "L’interdiction de toute représentation nationale."], why: "Le libéralisme politique vise à limiter le pouvoir arbitraire.", trap: "Confondre libéralisme et démocratie complète immédiate.", evidence: "Bloc 3." },
-      { kind: "nation", q: "Pourquoi la question nationale devient-elle explosive ?", a: "Parce que des peuples contestent des frontières et dominations décidées sans eux par les puissances.", choices: ["Parce que toutes les frontières européennes deviennent unanimement acceptées.", "Parce que les identités politiques disparaissent après 1815.", "Parce que les diplomates renoncent à toute décision territoriale."], why: "Le nationalisme remet en cause l’ordre de Vienne.", trap: "Croire que l’équilibre diplomatique suffit à satisfaire les populations.", evidence: "Bloc 4." },
-      { kind: "synthèse", q: "Quelle idée résume l’Europe après Napoléon ?", a: "Un ordre restauré tente de contenir des héritages révolutionnaires, libéraux et nationaux encore actifs.", choices: ["Une Europe parfaitement immobile jusqu’en 1914.", "Une disparition complète des monarchies dès 1815.", "Une paix sociale totale sans révolutions ni contestations."], why: "La période est structurée par une tension durable.", trap: "Croire à une parenthèse refermée sans conséquences.", evidence: "Conclusion." }
-    ]
-  }
+  "hook": "Après 1815, l’Europe ne revient pas simplement en arrière : les vainqueurs veulent restaurer l’ordre, mais les idées de nation, de droits et de constitution continuent de circuler.",
+  "keyFacts": [
+    "Quand : 1814-1815 puis première moitié du XIXe siècle",
+    "Où : Europe, surtout Vienne, France, États allemands, Italie, Pologne, Balkans",
+    "Acteurs : puissances victorieuses, diplomates, monarchies restaurées, libéraux, nationalistes",
+    "Traces : congrès de Vienne, Sainte-Alliance, restaurations monarchiques, révolutions de 1830 et 1848",
+    "Piège : croire que la défaite de Napoléon efface les transformations révolutionnaires"
+  ],
+  "takeaways": [
+    {
+      "label": "Idée forte",
+      "text": "Le congrès de Vienne cherche l’équilibre entre puissances et la stabilité monarchique."
+    },
+    {
+      "label": "Tension",
+      "text": "La restauration politique se heurte aux attentes libérales, nationales et constitutionnelles."
+    },
+    {
+      "label": "Héritage",
+      "text": "L’Europe du XIXe siècle reste travaillée par les effets de 1789 et des guerres napoléoniennes."
+    }
+  ],
+  "express": [
+    "Après la chute de Napoléon, les vainqueurs se réunissent au congrès de Vienne. Ils veulent empêcher une nouvelle domination française, restaurer des monarchies et construire un équilibre entre grandes puissances.",
+    "Mais l’Europe de 1815 n’est pas celle de 1788. Les guerres ont déplacé des frontières, diffusé des codes, réveillé des sentiments nationaux et rendu plus visibles les demandes de constitution et de libertés politiques.",
+    "Le XIXe siècle européen naît de cette tension : les gouvernements cherchent l’ordre, tandis que des libéraux, des nationalistes et des républicains contestent les restaurations. Les révolutions de 1830 et 1848 montrent que l’héritage révolutionnaire reste actif."
+  ],
+  "complete": [
+    {
+      "title": "1. Vienne : restaurer et équilibrer",
+      "text": "Le congrès de Vienne réunit les grandes puissances victorieuses. L’objectif n’est pas seulement de punir la France : il faut éviter qu’une puissance domine le continent. L’équilibre européen devient un principe diplomatique central."
+    },
+    {
+      "title": "2. Le retour des monarchies",
+      "text": "Plusieurs dynasties reviennent au pouvoir, dont les Bourbons en France. Cette restauration ne signifie pas effacer vingt-cinq ans de bouleversements : certaines réformes administratives, juridiques ou sociales demeurent."
+    },
+    {
+      "title": "3. Libéralisme et constitution",
+      "text": "Des groupes libéraux réclament des constitutions, des assemblées, la liberté de presse et des garanties contre l’arbitraire. Ils ne veulent pas toujours une République, mais ils refusent l’absolutisme pur."
+    },
+    {
+      "title": "4. La question nationale",
+      "text": "Les guerres napoléoniennes ont renforcé ou révélé des sentiments nationaux, notamment dans les espaces allemands, italiens ou polonais. Beaucoup contestent des frontières décidées par les diplomates sans consulter les peuples."
+    },
+    {
+      "title": "5. Une Europe instable",
+      "text": "Les révolutions de 1830 puis 1848 montrent que la restauration ne ferme pas la période révolutionnaire. L’Europe du XIXe siècle se construit dans un conflit durable entre ordre monarchique, droits politiques et aspirations nationales."
+    },
+    {
+      "title": "6. Le congrès de Vienne cherche un équilibre",
+      "text": "Les vainqueurs redessinent les frontières en 1814-1815 pour éviter qu’une puissance domine seule le continent. Ils restaurent plusieurs dynasties, renforcent certains États tampons et négocient un équilibre entre grandes puissances. Il ne s’agit pas de revenir exactement à 1788 : vingt-cinq ans de guerre ont rendu impossible un simple effacement du passé."
+    },
+    {
+      "title": "7. Les idées nationales continuent de circuler",
+      "text": "Des populations parlant des langues proches ou partageant une mémoire politique réclament davantage d’unité ou d’autonomie. Grecs, Italiens, Allemands, Polonais et autres mouvements donnent des sens différents au mot nation. Le nationalisme peut libérer d’un empire, mais aussi exclure ceux qui ne correspondent pas à la définition dominante du peuple."
+    },
+    {
+      "title": "8. Révolutions de 1830 et 1848",
+      "text": "Les régimes restaurés sont contestés par des libéraux, des républicains et des mouvements sociaux. Les révolutions de 1848 éclatent dans de nombreuses villes européennes, portées par des revendications politiques et par la crise économique. Beaucoup échouent à court terme, mais elles accélèrent l’apprentissage politique et la question nationale."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Après 1815, l’Europe ne revient pas simplement en arrière : les vainqueurs veulent restaurer l’ordre, mais les idées de nation, de droits et de constitution continuent de circuler."
+    }
+  ],
+  "deeper": [
+    {
+      "title": "Repère",
+      "text": "Équilibre européen : système diplomatique visant à empêcher qu’une seule puissance domine durablement le continent."
+    },
+    {
+      "title": "Nuance",
+      "text": "Restaurer un roi ne veut pas dire restaurer exactement l’Ancien Régime : les sociétés ont changé."
+    },
+    {
+      "title": "Erreur fréquente",
+      "text": "S’arrêter à Waterloo. La vraie question est ce que l’Europe fait ensuite de l’héritage révolutionnaire et impérial."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quel est l’objectif principal du congrès de Vienne ?",
+      "a": "Restaurer un ordre monarchique et maintenir un équilibre entre les grandes puissances européennes.",
+      "choices": [
+        "Créer immédiatement une Europe républicaine fédérale.",
+        "Proclamer Napoléon roi héréditaire de tous les États allemands.",
+        "Supprimer toute diplomatie entre les puissances."
+      ],
+      "why": "Le congrès cherche stabilité et équilibre continental.",
+      "trap": "Voir Vienne comme une simple vengeance contre la France.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "nuance",
+      "q": "Pourquoi 1815 n’efface-t-il pas 1789 ?",
+      "a": "Parce que certaines réformes, idées de droits, pratiques administratives et attentes politiques ont déjà transformé l’Europe.",
+      "choices": [
+        "Parce que l’Ancien Régime revient partout exactement comme avant.",
+        "Parce que les guerres napoléoniennes n’ont touché aucun territoire.",
+        "Parce que les populations oublient immédiatement les constitutions."
+      ],
+      "why": "Les changements sociaux et politiques ne disparaissent pas d’un coup.",
+      "trap": "Confondre restauration dynastique et retour total en arrière.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "idée",
+      "q": "Que demandent souvent les libéraux du XIXe siècle ?",
+      "a": "Des constitutions, des libertés politiques, des assemblées et des garanties contre l’arbitraire.",
+      "choices": [
+        "Le rétablissement intégral des droits seigneuriaux.",
+        "La suppression définitive de toute presse politique.",
+        "L’interdiction de toute représentation nationale."
+      ],
+      "why": "Le libéralisme politique vise à limiter le pouvoir arbitraire.",
+      "trap": "Confondre libéralisme et démocratie complète immédiate.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "nation",
+      "q": "Pourquoi la question nationale devient-elle explosive ?",
+      "a": "Parce que des peuples contestent des frontières et dominations décidées sans eux par les puissances.",
+      "choices": [
+        "Parce que toutes les frontières européennes deviennent unanimement acceptées.",
+        "Parce que les identités politiques disparaissent après 1815.",
+        "Parce que les diplomates renoncent à toute décision territoriale."
+      ],
+      "why": "Le nationalisme remet en cause l’ordre de Vienne.",
+      "trap": "Croire que l’équilibre diplomatique suffit à satisfaire les populations.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quelle idée résume l’Europe après Napoléon ?",
+      "a": "Un ordre restauré tente de contenir des héritages révolutionnaires, libéraux et nationaux encore actifs.",
+      "choices": [
+        "Une Europe parfaitement immobile jusqu’en 1914.",
+        "Une disparition complète des monarchies dès 1815.",
+        "Une paix sociale totale sans révolutions ni contestations."
+      ],
+      "why": "La période est structurée par une tension durable.",
+      "trap": "Croire à une parenthèse refermée sans conséquences.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+}
 });
 
 
@@ -9650,8 +12138,12 @@ function switchHomeDiscipline(disciplineId) {
     currentGroup: firstWorld?.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
     currentWorld: firstWorld?.id || state.currentWorld,
     currentMysteryId: nextMystery?.id || null,
+    currentMysteryDiscipline: discipline.id,
+    currentLessonId: null,
+    lessonFocus: null,
     learnFilter: "all",
     learnSearch: "",
+    learnDrill: "chapters",
     discoverOffset: 0
   });
 }
@@ -9663,8 +12155,11 @@ function openModeLearn(disciplineId = activeDisciplineId(), worldId = null) {
     currentDiscipline: discipline.id,
     currentGroup: targetWorld?.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
     currentWorld: targetWorld?.id || state.currentWorld,
+    currentLessonId: null,
+    lessonFocus: null,
     learnFilter: "all",
-    learnSearch: ""
+    learnSearch: "",
+    learnDrill: worldId ? "courses" : "chapters"
   });
 }
 function modeSwitcherMarkup() {
@@ -10065,7 +12560,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "méthode",
         "q": "Quel est le premier réflexe pour lire une œuvre ?",
-        "a": "Commencer par observer et décrire précisément ce qui se voit avant de donner une interprétation.",
+        "a": "Commencer par observer et décrire précisément ce qui se voit avant de donner une interprétation.", choices: ["Identifier immédiatement l’artiste et réciter sa biographie avant de regarder l’image.", "Donner d’abord son avis personnel pour décider si l’œuvre est réussie.", "Chercher un symbole caché sans décrire les formes, les personnages ni l’espace."],
         "why": "Cela évite d’inventer un sens sans appui visuel.",
         "trap": "Commencer directement par le nom de l’artiste ou par un avis personnel.",
         "evidence": "Bloc 1."
@@ -10073,7 +12568,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "composition",
         "q": "Pourquoi la composition est-elle importante ?",
-        "a": "Parce qu’elle organise l’image, dirige le regard et donne un poids différent aux éléments.",
+        "a": "Parce qu’elle organise l’image, dirige le regard et donne un poids différent aux éléments.", choices: ["Parce qu’elle indique seulement la taille réelle de l’œuvre.", "Parce qu’elle sert à dater précisément l’image sans autre information.", "Parce qu’elle concerne uniquement les œuvres abstraites et non les scènes figuratives."],
         "why": "Le sens vient aussi de l’organisation visuelle.",
         "trap": "Croire que seul le sujet représenté compte.",
         "evidence": "Bloc 2."
@@ -10081,7 +12576,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "matière",
         "q": "Que peuvent apporter couleur, lumière et matière ?",
-        "a": "Elles créent une atmosphère, hiérarchisent les éléments et participent au sens de l’œuvre.",
+        "a": "Elles créent une atmosphère, hiérarchisent les éléments et participent au sens de l’œuvre.", choices: ["Elles servent uniquement à rendre l’œuvre agréable, sans participer à sa signification.", "Elles permettent surtout d’identifier le prix des pigments utilisés.", "Elles remplacent le sujet et le contexte dans toute interprétation."],
         "why": "La forme visuelle n’est pas une décoration secondaire.",
         "trap": "Les traiter comme de simples détails esthétiques.",
         "evidence": "Bloc 3."
@@ -10089,7 +12584,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "contexte",
         "q": "Pourquoi faut-il replacer l’œuvre dans son contexte ?",
-        "a": "Parce que la commande, l’époque, le lieu et le public modifient ce que l’image cherche à produire.",
+        "a": "Parce que la commande, l’époque, le lieu et le public modifient ce que l’image cherche à produire.", choices: ["Parce que le contexte donne automatiquement une interprétation unique et certaine.", "Parce qu’une œuvre ne peut être comprise que par les personnes de son époque.", "Parce que la date et le commanditaire suffisent sans observer l’image elle-même."],
         "why": "Une œuvre ne fonctionne pas pareil dans une église, un palais, un musée ou la rue.",
         "trap": "Lire toutes les images comme si elles avaient la même fonction.",
         "evidence": "Bloc 4."
@@ -10097,7 +12592,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle formule résume la bonne méthode ?",
-        "a": "Observer, décrire, relier au contexte, puis interpréter.",
+        "a": "Observer, décrire, relier au contexte, puis interpréter.", choices: ["Identifier, juger, puis chercher dans l’image ce qui confirme son premier avis.", "Nommer le style, mémoriser l’artiste, puis résumer le sujet en une phrase.", "Interpréter librement, puis utiliser le contexte seulement si l’image reste incompréhensible."],
         "why": "C’est le chemin le plus solide pour éviter le commentaire vague.",
         "trap": "Faire une fiche de noms ou dire seulement “j’aime / je n’aime pas”.",
         "evidence": "Conclusion."
@@ -10162,7 +12657,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "définition",
         "q": "Qu’est-ce qu’un plan au cinéma ?",
-        "a": "Une portion de film entre deux coupes, mais aussi un choix de cadrage, de distance, d’angle et de durée.",
+        "a": "Une portion de film entre deux coupes, mais aussi un choix de cadrage, de distance, d’angle et de durée.", choices: ["Une image fixe choisie dans le film, quelle que soit la présence de coupes.", "Une scène entière située dans un même lieu, même si elle contient plusieurs coupes.", "Un mouvement de caméra continu qui doit obligatoirement durer plusieurs minutes."],
         "why": "Le cours insiste sur la dimension technique et expressive du plan.",
         "trap": "Le réduire à une image isolée sans intention.",
         "evidence": "Bloc 1."
@@ -10170,7 +12665,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "effet",
         "q": "Que produit souvent un gros plan ?",
-        "a": "Il rapproche le spectateur d’un visage, d’un détail ou d’une émotion en imposant une forte attention.",
+        "a": "Il rapproche le spectateur d’un visage, d’un détail ou d’une émotion en imposant une forte attention.", choices: ["Il montre toujours le décor entier afin de situer l’action.", "Il rend le personnage moins important en l’éloignant du spectateur.", "Il sert surtout à accélérer le récit sans attirer l’attention sur un détail."],
         "why": "La distance change la relation au personnage ou à l’objet.",
         "trap": "Croire qu’un gros plan sert seulement à faire joli.",
         "evidence": "Bloc 2."
@@ -10178,7 +12673,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "angle",
         "q": "Pourquoi l’angle de caméra compte-t-il ?",
-        "a": "Parce qu’une plongée ou une contre-plongée peut orienter la perception d’un personnage ou d’une situation.",
+        "a": "Parce qu’une plongée ou une contre-plongée peut orienter la perception d’un personnage ou d’une situation.", choices: ["Parce que la plongée rend toujours un personnage méchant et la contre-plongée toujours héroïque.", "Parce que l’angle indique seulement la hauteur physique de la caméra sans effet de sens.", "Parce qu’un angle inhabituel remplace à lui seul le jeu des acteurs et le montage."],
         "why": "La hauteur de caméra influence la sensation de fragilité, de puissance ou de menace.",
         "trap": "Penser que tous les angles racontent la même chose.",
         "evidence": "Bloc 3."
@@ -10186,7 +12681,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "notion",
         "q": "Qu’appelle-t-on le hors-champ ?",
-        "a": "Ce qui existe dans l’univers du film mais reste en dehors de l’image visible.",
+        "a": "Ce qui existe dans l’univers du film mais reste en dehors de l’image visible.", choices: ["Une partie du tournage supprimée définitivement au montage.", "Un élément visible mais flou placé au fond du cadre.", "Le décor construit derrière la caméra et qui n’existe pas dans l’histoire."],
         "why": "Le hors-champ est créé par le cadre lui-même.",
         "trap": "Le confondre avec une erreur ou un élément absent du récit.",
         "evidence": "Bloc 4."
@@ -10194,7 +12689,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Pourquoi le cadrage est-il central dans l’analyse d’un film ?",
-        "a": "Parce qu’il construit le regard du spectateur et participe au récit autant que le scénario.",
+        "a": "Parce qu’il construit le regard du spectateur et participe au récit autant que le scénario.", choices: ["Parce qu’il permet de filmer tout ce que contient le scénario sans rien sélectionner.", "Parce qu’il fixe uniquement la qualité technique et la netteté de l’image.", "Parce qu’il sert à classer le film dans un genre avant même le montage."],
         "why": "C’est la conclusion du cours.",
         "trap": "Résumer seulement l’histoire sans regarder la mise en scène.",
         "evidence": "Conclusion."
@@ -10259,7 +12754,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "définition",
         "q": "Qu’est-ce qu’une hypothèse scientifique ?",
-        "a": "Une explication possible formulée de manière à pouvoir être testée par des faits ou des observations.",
+        "a": "Une explication possible formulée de manière à pouvoir être testée par des faits ou des observations.", choices: ["Une idée considérée comme vraie tant qu’aucun scientifique célèbre ne la conteste.", "Une conclusion définitive obtenue avant toute expérience ou observation.", "Une opinion personnelle formulée avec un vocabulaire scientifique."],
         "why": "Elle doit être exposée au risque d’être contredite.",
         "trap": "La confondre avec une simple opinion séduisante.",
         "evidence": "Bloc 2."
@@ -10267,7 +12762,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "méthode",
         "q": "Pourquoi mesure-t-on ?",
-        "a": "Pour sortir des impressions personnelles, comparer correctement et limiter les biais.",
+        "a": "Pour sortir des impressions personnelles, comparer correctement et limiter les biais.", choices: ["Pour obtenir le résultat attendu avec davantage de précision.", "Pour remplacer toute interprétation par des nombres forcément neutres.", "Pour prouver une hypothèse dès qu’une mesure va dans son sens."],
         "why": "Les sens et la mémoire peuvent tromper.",
         "trap": "Croire qu’une impression forte suffit comme preuve.",
         "evidence": "Bloc 3."
@@ -10275,7 +12770,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "preuve",
         "q": "Qu’est-ce qui rend un résultat plus solide ?",
-        "a": "Le fait qu’il soit vérifié, discuté, répété ou confirmé par plusieurs approches.",
+        "a": "Le fait qu’il soit vérifié, discuté, répété ou confirmé par plusieurs approches.", choices: ["Le fait qu’il soit spectaculaire et annoncé par une seule équipe reconnue.", "Le fait qu’il confirme une intuition ancienne sans contrôle indépendant.", "Le nombre de personnes qui y croient, même si la méthode n’est pas décrite."],
         "why": "La robustesse vient de la confrontation aux tests.",
         "trap": "Le croire vrai seulement parce qu’une personne connue l’affirme.",
         "evidence": "Blocs 3 et 4."
@@ -10283,7 +12778,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "nuance",
         "q": "Pourquoi une connaissance scientifique peut-elle changer ?",
-        "a": "Parce qu’elle peut être corrigée ou précisée quand de nouvelles preuves ou de meilleures méthodes apparaissent.",
+        "a": "Parce qu’elle peut être corrigée ou précisée quand de nouvelles preuves ou de meilleures méthodes apparaissent.", choices: ["Parce que les faits changent selon l’opinion dominante du moment.", "Parce qu’aucune connaissance scientifique ne peut être considérée comme fiable.", "Parce qu’une nouvelle théorie remplace toujours entièrement toutes les observations précédentes."],
         "why": "La correction est une force de la démarche scientifique.",
         "trap": "Dire que changer d’avis prouve que tout se vaut.",
         "evidence": "Bloc 4."
@@ -10291,7 +12786,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle différence avec une opinion ?",
-        "a": "La science doit fournir des preuves et des procédures que d’autres peuvent vérifier ou contester.",
+        "a": "La science doit fournir des preuves et des procédures que d’autres peuvent vérifier ou contester.", choices: ["Une opinion devient scientifique dès qu’elle est partagée par une majorité.", "La science ne peut être contestée que par d’autres spécialistes, jamais par des données.", "Une affirmation scientifique dépend surtout de l’autorité de la personne qui la présente."],
         "why": "C’est la discipline du doute organisé.",
         "trap": "Résumer la science à “croire les savants”.",
         "evidence": "Conclusion."
@@ -10356,7 +12851,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "définition",
         "q": "Que désigne l’offre ?",
-        "a": "La quantité que les vendeurs sont prêts à proposer sur un marché à différents prix.",
+        "a": "La quantité que les vendeurs sont prêts à proposer sur un marché à différents prix.", choices: ["La quantité que les consommateurs souhaitent acheter, quel que soit le prix.", "Le nombre total de produits déjà achetés dans le passé.", "Le prix maximal fixé par l’État pour un bien ou un service."],
         "why": "Elle dépend notamment des coûts, stocks et capacités de production.",
         "trap": "La confondre avec la demande des acheteurs.",
         "evidence": "Bloc 2."
@@ -10364,7 +12859,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "définition",
         "q": "Pourquoi la demande n’est-elle pas seulement l’envie ?",
-        "a": "Parce qu’elle dépend aussi du pouvoir d’achat, du prix, des alternatives et du contexte.",
+        "a": "Parce qu’elle dépend aussi du pouvoir d’achat, du prix, des alternatives et du contexte.", choices: ["Parce qu’elle correspond seulement aux besoins essentiels et non aux achats de loisirs.", "Parce que toute envie crée automatiquement le revenu nécessaire pour acheter.", "Parce qu’elle dépend uniquement de la publicité et jamais du prix ou des alternatives."],
         "why": "Vouloir un produit ne signifie pas pouvoir l’acheter.",
         "trap": "Réduire la demande au désir pur.",
         "evidence": "Bloc 3."
@@ -10372,7 +12867,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "mécanisme",
         "q": "Que se passe-t-il souvent si la demande augmente alors que l’offre reste limitée ?",
-        "a": "Le prix a tendance à monter, car davantage d’acheteurs se disputent une quantité limitée.",
+        "a": "Le prix a tendance à monter, car davantage d’acheteurs se disputent une quantité limitée.", choices: ["Le prix a tendance à baisser, car les vendeurs veulent attirer les nouveaux acheteurs.", "L’offre disparaît nécessairement et le marché cesse de fonctionner.", "Le prix reste toujours fixe tant que les coûts de production ne changent pas."],
         "why": "C’est le mécanisme central du cours.",
         "trap": "Dire que le prix baisse automatiquement.",
         "evidence": "Bloc 4."
@@ -10380,7 +12875,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "nuance",
         "q": "Pourquoi le schéma offre-demande ne suffit-il pas toujours ?",
-        "a": "Parce que les prix peuvent aussi dépendre des taxes, règles publiques, monopoles, subventions ou marchés mondiaux.",
+        "a": "Parce que les prix peuvent aussi dépendre des taxes, règles publiques, monopoles, subventions ou marchés mondiaux.", choices: ["Parce qu’il ne fonctionne que pour les produits gratuits ou subventionnés.", "Parce que l’offre et la demande n’ont aucun effet sur les prix réels.", "Parce que les entreprises fixent toujours leurs prix sans tenir compte des coûts ni des clients."],
         "why": "Les marchés réels sont encadrés par des institutions.",
         "trap": "Imaginer un marché toujours parfaitement libre et simple.",
         "evidence": "Bloc 4."
@@ -10388,7 +12883,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle question faut-il poser quand un prix bouge ?",
-        "a": "Qu’est-ce qui a changé du côté de l’offre, de la demande, des coûts, des règles ou du contexte ?",
+        "a": "Qu’est-ce qui a changé du côté de l’offre, de la demande, des coûts, des règles ou du contexte ?", choices: ["Quel vendeur a décidé seul d’augmenter son bénéfice ?", "Pourquoi les acheteurs acceptent-ils toujours n’importe quel prix ?", "Quel prix serait moralement juste, indépendamment des quantités et des coûts ?"],
         "why": "C’est la méthode la plus utile pour analyser un prix.",
         "trap": "Dire seulement “c’est cher” ou “c’est la faute des vendeurs”.",
         "evidence": "Conclusion."
@@ -10453,7 +12948,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "définition",
         "q": "Pourquoi une carte simplifie-t-elle forcément le monde ?",
-        "a": "Parce qu’elle sélectionne certaines informations pour rendre un espace lisible selon un objectif précis.",
+        "a": "Parce qu’elle sélectionne certaines informations pour rendre un espace lisible selon un objectif précis.", choices: ["Parce qu’une carte doit toujours réduire le nombre réel de pays représentés.", "Parce qu’elle copie fidèlement le territoire mais simplifie seulement les couleurs.", "Parce que seules les cartes anciennes manquent de place pour tout représenter."],
         "why": "Toute carte fait un tri.",
         "trap": "Croire qu’elle montre tout le réel.",
         "evidence": "Bloc 1."
@@ -10461,7 +12956,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "échelle",
         "q": "Que change l’échelle d’une carte ?",
-        "a": "Elle change le niveau de détail et peut modifier l’explication d’un phénomène.",
+        "a": "Elle change le niveau de détail et peut modifier l’explication d’un phénomène.", choices: ["Elle change uniquement la taille du papier, sans effet sur les informations visibles.", "Elle indique la hauteur des reliefs mais pas l’étendue de l’espace représenté.", "Elle rend une carte plus précise quand le nombre inscrit est plus grand, quelle que soit sa forme."],
         "why": "Un même espace ne se comprend pas pareil localement et mondialement.",
         "trap": "Penser qu’une seule échelle suffit toujours.",
         "evidence": "Bloc 2."
@@ -10469,7 +12964,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "projection",
         "q": "Pourquoi une projection déforme-t-elle toujours quelque chose ?",
-        "a": "Parce qu’elle transforme une surface proche d’une sphère en surface plane.",
+        "a": "Parce qu’elle transforme une surface proche d’une sphère en surface plane.", choices: ["Parce que les continents se déplacent pendant qu’on dessine la carte.", "Parce que les mesures de la Terre sont trop imprécises pour produire des formes fiables.", "Parce que toute carte choisit volontairement d’agrandir les pays les plus puissants."],
         "why": "On ne peut pas conserver parfaitement formes, surfaces, distances et angles à la fois.",
         "trap": "Chercher une carte plane totalement exacte.",
         "evidence": "Bloc 3."
@@ -10477,7 +12972,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "légende",
         "q": "Pourquoi la légende est-elle essentielle ?",
-        "a": "Parce qu’elle explique les couleurs, figurés, seuils et catégories utilisés par la carte.",
+        "a": "Parce qu’elle explique les couleurs, figurés, seuils et catégories utilisés par la carte.", choices: ["Parce qu’elle donne la liste complète des lieux absents de la carte.", "Parce qu’elle indique seulement l’auteur et la date de publication.", "Parce qu’elle garantit que les catégories choisies sont neutres et incontestables."],
         "why": "C’est la grammaire de la carte.",
         "trap": "Lire seulement les couleurs sans vérifier leur signification.",
         "evidence": "Bloc 4."
@@ -10485,7 +12980,7 @@ const BETA107_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quel réflexe faut-il avoir devant une carte ?",
-        "a": "Regarder le titre, la source, l’échelle, la légende, la projection et ce que la carte choisit de montrer ou de cacher.",
+        "a": "Regarder le titre, la source, l’échelle, la légende, la projection et ce que la carte choisit de montrer ou de cacher.", choices: ["Vérifier seulement si les frontières correspondent à celles d’aujourd’hui.", "Regarder d’abord les couleurs les plus visibles et en déduire le message.", "Comparer la taille des pays sans tenir compte de la projection ni de l’échelle."],
         "why": "C’est la méthode de lecture critique.",
         "trap": "La prendre comme une copie neutre du monde.",
         "evidence": "Conclusion."
@@ -10550,7 +13045,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "repère",
             "q": "Où la Renaissance artistique se développe-t-elle d’abord fortement ?",
-            "a": "Surtout dans les villes italiennes, avant de se diffuser en Europe.",
+            "a": "Surtout dans les villes italiennes, avant de se diffuser en Europe.", choices: ["Dans les cours royales du nord de l’Europe, avant toute expérience italienne.", "Dans les campagnes françaises, puis uniquement dans les monastères.", "Simultanément dans toute l’Europe sans centres ni circulations particulières."],
             "why": "Le cours insiste sur le rôle des villes italiennes et des commanditaires.",
             "trap": "Dire simplement “partout en Europe en même temps”.",
             "evidence": "Bloc 1."
@@ -10558,7 +13053,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "notion",
             "q": "À quoi sert la perspective linéaire ?",
-            "a": "À organiser la profondeur de l’image grâce à des lignes, un point de fuite et des proportions cohérentes.",
+            "a": "À organiser la profondeur de l’image grâce à des lignes, un point de fuite et des proportions cohérentes.", choices: ["À rendre toutes les figures de la même taille pour créer une image symbolique.", "À organiser les couleurs selon leur valeur religieuse et leur rareté.", "À placer le personnage principal au centre sans construire d’espace profond."],
             "why": "Elle donne l’impression d’un espace mesurable.",
             "trap": "La réduire à une couleur ou à un décor.",
             "evidence": "Bloc 2."
@@ -10566,7 +13061,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "analyse",
             "q": "Pourquoi la perspective est-elle plus qu’un simple truc de dessin ?",
-            "a": "Parce qu’elle montre l’idée que le monde peut être observé, mesuré et organisé par l’intelligence humaine.",
+            "a": "Parce qu’elle montre l’idée que le monde peut être observé, mesuré et organisé par l’intelligence humaine.", choices: ["Parce qu’elle permet de peindre plus rapidement avec moins de préparation.", "Parce qu’elle prouve que l’artiste copie exactement ce que voit l’œil, sans convention.", "Parce qu’elle remplace les mathématiques par l’inspiration individuelle."],
             "why": "Elle relie l’art aux mathématiques et à l’observation.",
             "trap": "Croire que c’est seulement décoratif.",
             "evidence": "Bloc 2."
@@ -10574,7 +13069,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "contexte",
             "q": "Quel rôle joue l’Antiquité dans la Renaissance ?",
-            "a": "Elle fournit des modèles de beauté, de proportions et de dignité humaine que les artistes réinventent.",
+            "a": "Elle fournit des modèles de beauté, de proportions et de dignité humaine que les artistes réinventent.", choices: ["Elle fournit des œuvres à copier exactement sans transformation ni nouveau contexte.", "Elle remplace les sujets chrétiens par des sujets uniquement païens.", "Elle conduit les artistes à rejeter les proportions du corps humain."],
             "why": "Les artistes s’inspirent des statues, ruines et textes anciens.",
             "trap": "Dire qu’ils copient simplement le passé.",
             "evidence": "Bloc 3."
@@ -10582,7 +13077,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "nuance",
             "q": "Pourquoi ne faut-il pas dire que la Renaissance efface totalement le Moyen Âge ?",
-            "a": "Parce que beaucoup d’œuvres restent religieuses et commandées par l’Église ou les puissants, même si la manière de représenter change.",
+            "a": "Parce que beaucoup d’œuvres restent religieuses et commandées par l’Église ou les puissants, même si la manière de représenter change.", choices: ["Parce que les artistes ignorent encore les textes et les formes de l’Antiquité.", "Parce que les commanditaires religieux disparaissent dès le XVe siècle.", "Parce que les techniques et les sujets restent exactement identiques à ceux des siècles précédents."],
             "why": "La rupture est réelle, mais progressive et mélangée à des continuités.",
             "trap": "Présenter la Renaissance comme un redémarrage total.",
             "evidence": "Bloc 4."
@@ -10647,7 +13142,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "repère",
             "q": "Pourquoi les premières vues Lumière impressionnent-elles le public ?",
-            "a": "Parce qu’elles montrent des images photographiques en mouvement, donnant une forte sensation de présence du réel.",
+            "a": "Parce qu’elles montrent des images photographiques en mouvement, donnant une forte sensation de présence du réel.", choices: ["Parce qu’elles racontent déjà des histoires longues avec vedettes et dialogues enregistrés.", "Parce qu’elles utilisent principalement des effets numériques et des décors peints.", "Parce qu’elles montrent pour la première fois des images fixes projetées sans mouvement."],
             "why": "Le choc vient de voir le réel bouger sur un écran.",
             "trap": "Croire qu’elles impressionnent par des scénarios complexes.",
             "evidence": "Bloc 1."
@@ -10655,7 +13150,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "notion",
             "q": "Que filment surtout les frères Lumière ?",
-            "a": "Des scènes courtes du quotidien, des gestes, des lieux, des foules ou des machines.",
+            "a": "Des scènes courtes du quotidien, des gestes, des lieux, des foules ou des machines.", choices: ["Des récits historiques en costumes tournés dans de grands studios.", "Des spectacles de magie entièrement joués devant un décor théâtral.", "Des actualités sonores commentées par des journalistes présents à l’écran."],
             "why": "Leur cinéma installe la puissance d’enregistrement du monde.",
             "trap": "Dire qu’ils tournent surtout des longs métrages de fiction.",
             "evidence": "Bloc 2."
@@ -10663,7 +13158,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "personnage",
             "q": "Qu’apporte Méliès à la naissance du cinéma ?",
-            "a": "Il montre que la caméra peut inventer l’impossible avec décors, trucages, arrêts de caméra et mise en scène.",
+            "a": "Il montre que la caméra peut inventer l’impossible avec décors, trucages, arrêts de caméra et mise en scène.", choices: ["Il invente le documentaire en filmant uniquement des scènes prises sur le vif.", "Il impose le montage invisible et le jeu réaliste du Hollywood classique.", "Il transforme la caméra en simple appareil d’enregistrement sans décors ni trucages."],
             "why": "Il vient de la magie et du spectacle.",
             "trap": "Le réduire à un simple opérateur d’actualités.",
             "evidence": "Bloc 3."
@@ -10671,7 +13166,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "exemple",
             "q": "Quel film de Méliès est cité comme exemple d’imaginaire scientifique et féerique ?",
-            "a": "Le Voyage dans la Lune.",
+            "a": "Le Voyage dans la Lune.", choices: ["L’Arrivée d’un train en gare de La Ciotat.", "La Sortie de l’usine Lumière à Lyon.", "L’Arroseur arrosé."],
             "why": "Le cours l’utilise pour montrer la fiction spectaculaire.",
             "trap": "Répondre Sortie d’usine, qui renvoie plutôt aux Lumière.",
             "evidence": "Bloc 3."
@@ -10679,7 +13174,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "synthèse",
             "q": "Quels sont les deux grands pôles présents dès la naissance du cinéma ?",
-            "a": "Enregistrer le monde et inventer un monde.",
+            "a": "Enregistrer le monde et inventer un monde.", choices: ["Filmer uniquement des événements réels et éviter toute mise en scène.", "Raconter des histoires longues ou enregistrer des discours politiques.", "Produire des films pour les salles ou pour les laboratoires scientifiques."],
             "why": "Lumière et Méliès symbolisent ces deux directions.",
             "trap": "Dire seulement “divertir” ou “informer”.",
             "evidence": "Conclusion."
@@ -10744,7 +13239,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "repère",
             "q": "À quelle période Galilée utilise-t-il la lunette pour observer le ciel ?",
-            "a": "Au début du XVIIe siècle.",
+            "a": "Au début du XVIIe siècle.", choices: ["Au XIIIe siècle, au moment des premières universités européennes.", "À la fin du XVIIIe siècle, pendant la Révolution française.", "Au milieu du XIXe siècle, après l’invention de la photographie."],
             "why": "C’est le moment de ses observations astronomiques majeures.",
             "trap": "Le placer dans l’Antiquité.",
             "evidence": "Express et bloc 1."
@@ -10752,7 +13247,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "instrument",
             "q": "Pourquoi la lunette est-elle décisive ?",
-            "a": "Parce qu’elle révèle des détails et des phénomènes que l’œil nu ne voyait pas correctement.",
+            "a": "Parce qu’elle révèle des détails et des phénomènes que l’œil nu ne voyait pas correctement.", choices: ["Parce qu’elle agrandit les textes anciens et permet de mieux lire Aristote.", "Parce qu’elle remplace toute mesure par une image forcément exacte.", "Parce qu’elle prouve immédiatement toutes les hypothèses de Galilée sans interprétation."],
             "why": "Elle transforme la manière d’observer.",
             "trap": "Dire qu’elle sert seulement à confirmer des traditions anciennes.",
             "evidence": "Bloc 2."
@@ -10760,7 +13255,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "observation",
             "q": "Que montrent les satellites observés autour de Jupiter ?",
-            "a": "Qu’il existe des corps célestes qui ne tournent pas directement autour de la Terre.",
+            "a": "Qu’il existe des corps célestes qui ne tournent pas directement autour de la Terre.", choices: ["Que tous les astres tournent autour du Soleil selon des orbites parfaitement circulaires.", "Que Jupiter est immobile au centre du système solaire.", "Que les satellites de Jupiter sont des étoiles fixes sans mouvement propre."],
             "why": "Cela fragilise l’idée que tout tourne autour de nous.",
             "trap": "Dire qu’ils prouvent que Jupiter tourne autour de la Terre.",
             "evidence": "Bloc 3."
@@ -10768,7 +13263,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "nuance",
             "q": "Pourquoi le conflit autour de Galilée est-il complexe ?",
-            "a": "Parce qu’il mêle interprétation religieuse, autorité, preuves, politique et prestige intellectuel.",
+            "a": "Parce qu’il mêle interprétation religieuse, autorité, preuves, politique et prestige intellectuel.", choices: ["Parce que l’Église refuse toute observation du ciel depuis l’Antiquité.", "Parce que Galilée possède dès le départ une preuve unique acceptée par tous.", "Parce que le conflit porte seulement sur une erreur de calcul sans enjeu d’autorité."],
             "why": "Le cours évite le résumé simpliste science contre religion.",
             "trap": "Le réduire à un duel caricatural.",
             "evidence": "Bloc 4."
@@ -10776,7 +13271,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "synthèse",
             "q": "Quelle grande leçon historique donne l’épisode Galilée ?",
-            "a": "Un instrument technique peut transformer les observations disponibles et donc notre vision du monde.",
+            "a": "Un instrument technique peut transformer les observations disponibles et donc notre vision du monde.", choices: ["Une nouvelle idée devient vraie dès qu’un instrument montre une image inattendue.", "Les instruments éliminent les débats, les erreurs et les interprétations scientifiques.", "Les découvertes scientifiques dépendent uniquement du courage individuel d’un savant isolé."],
             "why": "La lunette modifie la place de la Terre dans les débats savants.",
             "trap": "Dire seulement que Galilée a regardé le ciel.",
             "evidence": "Conclusion."
@@ -10841,7 +13336,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "définition",
             "q": "Qu’est-ce qu’un chant monodique ?",
-            "a": "Un chant organisé autour d’une seule ligne mélodique.",
+            "a": "Un chant organisé autour d’une seule ligne mélodique.", choices: ["Un chant sans mélodie, récité sur un rythme parlé.", "Un chant accompagné obligatoirement par plusieurs instruments.", "Un chant où plusieurs lignes mélodiques indépendantes se superposent."],
             "why": "Le chant grégorien est présenté comme généralement monodique.",
             "trap": "Le confondre avec plusieurs voix indépendantes.",
             "evidence": "Bloc 1."
@@ -10849,7 +13344,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "contexte",
             "q": "À quoi sert principalement le chant grégorien dans le cours ?",
-            "a": "À accompagner la prière, les offices et le temps liturgique de l’Église.",
+            "a": "À accompagner la prière, les offices et le temps liturgique de l’Église.", choices: ["À divertir un public de cour lors de concerts profanes.", "À accompagner les danses populaires et les fêtes urbaines.", "À mettre en valeur la virtuosité individuelle d’un chanteur soliste."],
             "why": "Il a d’abord une fonction rituelle.",
             "trap": "L’imaginer comme un concert moderne.",
             "evidence": "Bloc 1."
@@ -10857,7 +13352,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "invention",
             "q": "Pourquoi la notation musicale devient-elle importante ?",
-            "a": "Parce qu’elle permet de transmettre, conserver, enseigner et complexifier les mélodies.",
+            "a": "Parce qu’elle permet de transmettre, conserver, enseigner et complexifier les mélodies.", choices: ["Parce qu’elle fixe définitivement une seule manière de chanter chaque œuvre.", "Parce qu’elle permet de supprimer l’apprentissage oral et la mémoire des chanteurs.", "Parce qu’elle sert d’abord à attribuer chaque mélodie à un compositeur célèbre."],
             "why": "La mémoire seule devient insuffisante pour des répertoires plus vastes.",
             "trap": "Dire qu’elle sert seulement à décorer les manuscrits.",
             "evidence": "Bloc 2."
@@ -10865,7 +13360,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "notion",
             "q": "Qu’est-ce que la polyphonie change ?",
-            "a": "Elle superpose plusieurs voix différentes et oblige à penser leurs relations, tensions et résolutions.",
+            "a": "Elle superpose plusieurs voix différentes et oblige à penser leurs relations, tensions et résolutions.", choices: ["Elle fait chanter la même mélodie plus fort par un chœur plus nombreux.", "Elle remplace les voix par des instruments jouant tous à l’unisson.", "Elle supprime les règles de consonance et permet à chaque chanteur d’improviser librement."],
             "why": "Elle transforme la composition.",
             "trap": "Dire qu’elle signifie seulement chanter plus fort.",
             "evidence": "Bloc 3."
@@ -10873,7 +13368,7 @@ const BETA107_READY_PACKS = {
         {
             "kind": "synthèse",
             "q": "Quelle grande évolution résume ce cours ?",
-            "a": "Le passage d’une musique surtout transmise par la voix et le rite vers une musique plus notée, organisée et polyphonique.",
+            "a": "Le passage d’une musique surtout transmise par la voix et le rite vers une musique plus notée, organisée et polyphonique.", choices: ["Le passage d’une musique instrumentale savante à un chant uniquement oral.", "La disparition du chant religieux au profit des spectacles de cour.", "Le remplacement progressif de toutes les mélodies par des rythmes de danse."],
             "why": "C’est l’idée centrale de la leçon.",
             "trap": "Résumer le Moyen Âge musical à une absence de technique.",
             "evidence": "Conclusion."
@@ -11016,7 +13511,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "repère",
         "q": "Dans quel pays l’impressionnisme apparaît-il surtout ?",
-        "a": "En France.",
+        "a": "En France.", choices: ["Au début du XVIIIe siècle, autour des commandes de la cour de Versailles.", "Dans les années 1920, après la Première Guerre mondiale.", "À la fin du XVe siècle, pendant la Renaissance italienne."],
         "why": "Le cours situe le mouvement en France au XIXe siècle.",
         "trap": "Le présenter comme un mouvement d’abord italien ou grec antique.",
         "evidence": "Express et bloc 1."
@@ -11024,7 +13519,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "compréhension",
         "q": "Pourquoi les tableaux impressionnistes ont-ils pu paraître inachevés ?",
-        "a": "Parce que les touches restent visibles, les contours sont moins fermés et l’effet d’instant prime sur la finition lisse.",
+        "a": "Parce que les touches restent visibles, les contours sont moins fermés et l’effet d’instant prime sur la finition lisse.", choices: ["Les artistes veulent retrouver les couleurs sombres et lisses de la peinture académique.", "Ils cherchent à supprimer les effets de lumière pour privilégier le dessin préparatoire.", "Ils peignent surtout de mémoire en atelier afin d’éviter les changements du paysage."],
         "why": "C’est une critique centrale faite aux impressionnistes.",
         "trap": "Dire qu’ils ne savaient pas peindre.",
         "evidence": "Express et bloc 4."
@@ -11032,7 +13527,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "notion",
         "q": "Que cherchent-ils souvent à saisir ?",
-        "a": "La lumière, l’atmosphère et la perception d’un instant.",
+        "a": "La lumière, l’atmosphère et la perception d’un instant.", choices: ["Elles mélangent complètement les couleurs sur la palette pour obtenir des surfaces uniformes.", "Elles utilisent uniquement le noir et le blanc pour montrer les contrastes lumineux.", "Elles appliquent des couches parfaitement lisses afin d’effacer le geste du peintre."],
         "why": "C’est l’idée principale du mouvement.",
         "trap": "Seulement raconter des scènes mythologiques.",
         "evidence": "Bloc 2."
@@ -11040,7 +13535,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "contexte",
         "q": "Quels sujets modernes entrent dans leurs tableaux ?",
-        "a": "Les gares, boulevards, loisirs, cafés, danseuses, promenades ou scènes ordinaires de la vie moderne.",
+        "a": "Les gares, boulevards, loisirs, cafés, danseuses, promenades ou scènes ordinaires de la vie moderne.", choices: ["Uniquement des scènes mythologiques et religieuses éloignées du quotidien.", "Des batailles antiques, des rois et des cérémonies officielles exclusivement.", "Des paysages ruraux idéalisés où n’apparaissent ni ville ni loisirs modernes."],
         "why": "Le cours insiste sur la modernisation des sujets.",
         "trap": "Limiter le mouvement aux paysages vides.",
         "evidence": "Bloc 3."
@@ -11048,7 +13543,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Pourquoi l’impressionnisme compte-t-il dans l’histoire de l’art ?",
-        "a": "Il ouvre une voie moderne en montrant que peindre peut traduire une perception, pas seulement copier un sujet.",
+        "a": "Il ouvre une voie moderne en montrant que peindre peut traduire une perception, pas seulement copier un sujet.", choices: ["Parce qu’il restaure les règles académiques et impose un sujet unique à tous les peintres.", "Parce qu’il prouve que la peinture doit reproduire chaque détail avec une précision photographique.", "Parce qu’il fait disparaître le paysage et les scènes de la vie contemporaine."],
         "why": "C’est la conclusion du cours.",
         "trap": "Réduire le mouvement à une peinture décorative.",
         "evidence": "Bloc 5."
@@ -11109,7 +13604,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "repère",
         "q": "Quelle période correspond surtout au Hollywood classique présenté ici ?",
-        "a": "Des années 1930 aux années 1950 environ.",
+        "a": "Des années 1930 aux années 1950 environ.", choices: ["Des années 1890 aux années 1910, avant l’apparition des longs métrages.", "Des années 1960 aux années 1980, après la fin du système des studios.", "Des années 1990 aux années 2010, avec le développement des plateformes."],
         "why": "Le cours situe ce système au cœur du XXe siècle.",
         "trap": "Le placer uniquement avant 1900.",
         "evidence": "Express."
@@ -11117,7 +13612,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "organisation",
         "q": "Que contrôlent les grands studios ?",
-        "a": "Une grande partie de la fabrication : acteurs, équipes, décors, scénarios, promotion et parfois salles.",
+        "a": "Une grande partie de la fabrication : acteurs, équipes, décors, scénarios, promotion et parfois salles.", choices: ["Uniquement les salles de cinéma, tandis que les films sont produits par des équipes indépendantes.", "Seulement la distribution, sans contrats avec les acteurs ni contrôle des scénarios.", "Les journaux et les radios, mais pas les décors, les équipes ou la promotion des films."],
         "why": "C’est l’idée d’un système industriel.",
         "trap": "Croire que chaque film est fabriqué sans organisation collective.",
         "evidence": "Bloc 1."
@@ -11125,7 +13620,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "notion",
         "q": "Pourquoi les genres sont-ils importants ?",
-        "a": "Ils créent un contrat avec le spectateur et organisent les attentes autour de décors, personnages et situations.",
+        "a": "Ils créent un contrat avec le spectateur et organisent les attentes autour de décors, personnages et situations.", choices: ["Ils empêchent le public de prévoir le ton ou les situations du film.", "Ils sont seulement des catégories commerciales créées après la sortie des films.", "Ils obligent chaque film à reprendre exactement la même histoire et les mêmes personnages."],
         "why": "Le cours explique le rôle des genres.",
         "trap": "Dire qu’un genre empêche toute variation.",
         "evidence": "Bloc 2."
@@ -11133,7 +13628,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "compréhension",
         "q": "Qu’est-ce que le star-system ?",
-        "a": "La construction d’acteurs comme images publiques capables d’attirer le public et de promettre un type de film.",
+        "a": "La construction d’acteurs comme images publiques capables d’attirer le public et de promettre un type de film.", choices: ["Le recrutement d’acteurs inconnus pour empêcher le public de les reconnaître.", "Un système où les réalisateurs deviennent propriétaires des salles de cinéma.", "La possibilité pour chaque acteur de changer librement de studio et d’image publique à chaque film."],
         "why": "La star dépasse la simple présence d’un acteur.",
         "trap": "Réduire la star à son salaire.",
         "evidence": "Bloc 3."
@@ -11141,7 +13636,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Pourquoi Hollywood classique influence-t-il encore le cinéma actuel ?",
-        "a": "Parce qu’il a fixé des règles de récit, de genres, de stars et d’efficacité narrative encore reprises ou détournées.",
+        "a": "Parce qu’il a fixé des règles de récit, de genres, de stars et d’efficacité narrative encore reprises ou détournées.", choices: ["Parce qu’il a supprimé le montage et privilégié les plans très longs.", "Parce qu’il a remplacé les genres par un modèle unique de film historique.", "Parce qu’il a rendu inutiles les vedettes, la promotion et les récits structurés."],
         "why": "C’est la conclusion du cours.",
         "trap": "Le considérer comme un cinéma sans héritage.",
         "evidence": "Bloc 5."
@@ -11202,7 +13697,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "repère",
         "q": "À quel siècle Pasteur appartient-il principalement ?",
-        "a": "Au XIXe siècle.",
+        "a": "Au XIXe siècle.", choices: ["Au XVIIe siècle, en même temps que Galilée.", "Au XVIIIe siècle, avant la Révolution française.", "Au XXe siècle, après la découverte des antibiotiques."],
         "why": "Le cours situe la révolution microbienne dans ce contexte.",
         "trap": "Le placer dans l’Antiquité.",
         "evidence": "Express."
@@ -11210,7 +13705,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "notion",
         "q": "Quelle idée transforme la médecine ?",
-        "a": "Des micro-organismes peuvent être liés aux fermentations, infections et maladies.",
+        "a": "Des micro-organismes peuvent être liés aux fermentations, infections et maladies.", choices: ["Les maladies sont toujours provoquées par un déséquilibre moral ou émotionnel.", "Les fermentations se produisent spontanément sans organismes vivants.", "Tous les microbes sont dangereux et provoquent nécessairement une maladie."],
         "why": "C’est le cœur de la révolution microbienne.",
         "trap": "Dire que seules les humeurs expliquent les maladies.",
         "evidence": "Bloc 1."
@@ -11218,7 +13713,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "méthode",
         "q": "Pourquoi le laboratoire est-il important ?",
-        "a": "Parce qu’il permet de tester, comparer et contrôler les conditions pour produire des preuves.",
+        "a": "Parce qu’il permet de tester, comparer et contrôler les conditions pour produire des preuves.", choices: ["Parce qu’il permet de confirmer une idée en évitant les groupes de comparaison.", "Parce que les expériences de laboratoire reproduisent exactement toutes les situations humaines.", "Parce qu’un résultat obtenu une fois en laboratoire devient automatiquement vrai partout."],
         "why": "Le cours insiste sur la preuve expérimentale.",
         "trap": "Réduire Pasteur à une intuition sans expérience.",
         "evidence": "Bloc 2."
@@ -11226,7 +13721,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "application",
         "q": "À quoi sert la pasteurisation ?",
-        "a": "À chauffer certains liquides pour limiter des micro-organismes dangereux ou indésirables.",
+        "a": "À chauffer certains liquides pour limiter des micro-organismes dangereux ou indésirables.", choices: ["À stériliser complètement tout liquide en le congelant plusieurs jours.", "À ajouter des microbes utiles afin de provoquer une fermentation plus rapide.", "À rendre un produit plus nutritif en augmentant sa température au moment de le boire."],
         "why": "C’est une application concrète des travaux sur les microbes.",
         "trap": "La confondre avec une vaccination.",
         "evidence": "Bloc 3."
@@ -11234,7 +13729,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Pourquoi cette révolution dépasse-t-elle le laboratoire ?",
-        "a": "Parce qu’elle change l’alimentation, l’hygiène, la chirurgie, la prévention et la santé publique.",
+        "a": "Parce qu’elle change l’alimentation, l’hygiène, la chirurgie, la prévention et la santé publique.", choices: ["Parce qu’elle concerne seulement la fabrication du vin et de la bière.", "Parce qu’elle rend inutiles l’hygiène, la prévention et les pratiques chirurgicales.", "Parce qu’elle prouve qu’un vaccin peut guérir toutes les maladies déjà déclarées."],
         "why": "Le cours montre les conséquences sociales et médicales.",
         "trap": "La limiter à une découverte théorique.",
         "evidence": "Bloc 5."
@@ -11295,7 +13790,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "définition",
         "q": "Qu’est-ce que l’inflation ?",
-        "a": "Une hausse générale et durable des prix.",
+        "a": "Une hausse générale et durable des prix.", choices: ["Une hausse ponctuelle du prix d’un seul produit très demandé.", "Une baisse générale et durable de la valeur des salaires nominaux.", "Une augmentation de la quantité de biens disponibles sans changement de prix."],
         "why": "C’est la définition centrale du cours.",
         "trap": "La confondre avec la hausse isolée d’un seul prix.",
         "evidence": "Express et bloc 1."
@@ -11303,7 +13798,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "compréhension",
         "q": "Pourquoi l’inflation réduit-elle le pouvoir d’achat ?",
-        "a": "Parce que la même somme d’argent permet d’acheter moins de biens et services.",
+        "a": "Parce que la même somme d’argent permet d’acheter moins de biens et services.", choices: ["Parce que les billets perdent physiquement une partie de leur taille.", "Parce que les revenus baissent toujours exactement au même rythme que les prix montent.", "Parce que tous les produits deviennent plus rares dans les mêmes proportions."],
         "why": "Le cours explique la perte de valeur de la monnaie.",
         "trap": "Dire qu’on a forcément moins d’euros sur son compte.",
         "evidence": "Bloc 2."
@@ -11311,7 +13806,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "causes",
         "q": "Cite deux causes possibles d’inflation.",
-        "a": "Une demande trop forte, des coûts de production plus élevés, l’énergie chère ou les anticipations.",
+        "a": "Une demande trop forte, des coûts de production plus élevés, l’énergie chère ou les anticipations.", choices: ["Une baisse des coûts de l’énergie et une offre devenue plus abondante.", "Une diminution de la demande et un ralentissement des salaires.", "Une hausse de la productivité accompagnée d’une forte concurrence entre vendeurs."],
         "why": "Le cours présente plusieurs sources possibles.",
         "trap": "Croire qu’il n’existe qu’une seule cause.",
         "evidence": "Bloc 3."
@@ -11319,7 +13814,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "institution",
         "q": "Pourquoi les banques centrales peuvent-elles relever les taux ?",
-        "a": "Pour rendre le crédit plus cher, freiner une partie de la demande et ralentir l’inflation.",
+        "a": "Pour rendre le crédit plus cher, freiner une partie de la demande et ralentir l’inflation.", choices: ["Pour encourager davantage de crédits et accélérer la consommation.", "Pour augmenter directement les salaires et compenser la hausse des prix.", "Pour fixer administrativement le prix de chaque bien et service."],
         "why": "C’est un outil classique de politique monétaire.",
         "trap": "Dire que cela augmente directement tous les salaires.",
         "evidence": "Bloc 4."
@@ -11327,7 +13822,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Pourquoi l’inflation est-elle une notion quotidienne ?",
-        "a": "Parce qu’elle touche prix, revenus, épargne, crédits et choix de consommation.",
+        "a": "Parce qu’elle touche prix, revenus, épargne, crédits et choix de consommation.", choices: ["Parce qu’elle modifie seulement les statistiques publiques, pas les achats réels.", "Parce qu’elle touche uniquement les entreprises et jamais les ménages.", "Parce qu’elle augmente de la même manière tous les revenus, toutes les dettes et tous les prix."],
         "why": "Le cours relie la notion à la vie économique concrète.",
         "trap": "La réduire à un débat technique réservé aux banques.",
         "evidence": "Bloc 5."
@@ -11388,7 +13883,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "définition",
         "q": "Pourquoi une projection cartographique est-elle nécessaire ?",
-        "a": "Parce qu’il faut représenter une surface courbe sur une surface plane.",
+        "a": "Parce qu’il faut représenter une surface courbe sur une surface plane.", choices: ["Parce que la Terre est trop grande pour être dessinée à la même échelle.", "Parce que les frontières politiques changent plus vite que les cartes.", "Parce que les océans doivent être supprimés pour faire tenir les continents."],
         "why": "C’est le problème de base de toute carte du monde.",
         "trap": "Croire qu’une carte peut tout conserver parfaitement.",
         "evidence": "Bloc 1."
@@ -11396,7 +13891,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "repère",
         "q": "À quel usage la projection de Mercator est-elle particulièrement utile ?",
-        "a": "À la navigation maritime.",
+        "a": "À la navigation maritime.", choices: ["À comparer exactement la superficie réelle de tous les continents.", "À représenter les distances entre les pôles sans aucune déformation.", "À montrer la densité de population mondiale avec des surfaces proportionnelles."],
         "why": "Elle conserve les angles, ce qui aide les marins.",
         "trap": "Dire qu’elle sert d’abord à comparer les surfaces réelles.",
         "evidence": "Bloc 2."
@@ -11404,7 +13899,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "limite",
         "q": "Quelle grande déformation produit Mercator ?",
-        "a": "Elle agrandit fortement les régions proches des pôles.",
+        "a": "Elle agrandit fortement les régions proches des pôles.", choices: ["Elle réduit fortement les régions proches des pôles.", "Elle déforme seulement les océans mais conserve les continents à leur superficie réelle.", "Elle agrandit surtout les régions proches de l’équateur."],
         "why": "C’est le défaut principal présenté dans le cours.",
         "trap": "Dire qu’elle réduit le Groenland.",
         "evidence": "Bloc 3."
@@ -11412,7 +13907,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "compréhension",
         "q": "Pourquoi cette déformation peut-elle influencer notre vision du monde ?",
-        "a": "Parce qu’un territoire qui paraît plus grand peut sembler plus important.",
+        "a": "Parce qu’un territoire qui paraît plus grand peut sembler plus important.", choices: ["Parce que la projection indique directement la richesse et la puissance politique.", "Parce que les lecteurs connaissent toujours les superficies réelles et corrigent mentalement la carte.", "Parce qu’une carte n’influence jamais les représentations lorsque les frontières sont exactes."],
         "why": "Le cours relie carte et imagination géographique.",
         "trap": "Croire que la taille visuelle n’a aucun effet.",
         "evidence": "Bloc 3."
@@ -11420,7 +13915,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Quelle question faut-il poser devant une carte ?",
-        "a": "À quoi sert cette carte et quels choix de représentation fait-elle ?",
+        "a": "À quoi sert cette carte et quels choix de représentation fait-elle ?", choices: ["Quel pays a demandé que la carte soit dessinée de cette manière ?", "Pourquoi les continents ne sont-ils pas tous placés dans le même hémisphère ?", "La carte est-elle récente et contient-elle toutes les frontières actuelles ?"],
         "why": "C’est la conclusion méthodologique du cours.",
         "trap": "Prendre toute carte comme une copie neutre du monde.",
         "evidence": "Bloc 5."
@@ -11481,7 +13976,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "repère",
         "q": "Dans quel pays le jazz apparaît-il ?",
-        "a": "Aux États-Unis.",
+        "a": "Aux États-Unis.", choices: ["En France, dans les cabarets parisiens de la Belle Époque.", "Au Brésil, à partir des rythmes de la samba.", "En Allemagne, dans les conservatoires de musique classique."],
         "why": "Le cours situe sa naissance dans un contexte afro-américain américain.",
         "trap": "Le présenter comme une invention française médiévale.",
         "evidence": "Express."
@@ -11489,7 +13984,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "contexte",
         "q": "Quelle ville est souvent associée aux débuts du jazz ?",
-        "a": "La Nouvelle-Orléans.",
+        "a": "La Nouvelle-Orléans.", choices: ["Chicago, où le jazz apparaît avant de se diffuser vers le sud.", "New York, autour des studios de Broadway au XIXe siècle.", "Nashville, dans les premières émissions de musique country."],
         "why": "Le cours la présente comme un lieu majeur de brassage musical.",
         "trap": "Dire que toute l’histoire du jazz se limite à cette ville.",
         "evidence": "Bloc 1."
@@ -11497,7 +13992,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "notion",
         "q": "Pourquoi l’improvisation n’est-elle pas du hasard ?",
-        "a": "Parce qu’elle s’appuie sur un cadre, une écoute, une grille, une mélodie et une mémoire du style.",
+        "a": "Parce qu’elle s’appuie sur un cadre, une écoute, une grille, une mélodie et une mémoire du style.", choices: ["Parce qu’elle reproduit exactement une partition écrite sans variation.", "Parce qu’elle consiste à jouer n’importe quelles notes sans écouter les autres musiciens.", "Parce qu’elle remplace le rythme et l’harmonie par la seule virtuosité individuelle."],
         "why": "Le cours insiste sur la liberté contrôlée.",
         "trap": "Croire que les musiciens jouent sans règles.",
         "evidence": "Bloc 2."
@@ -11505,7 +14000,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "style",
         "q": "Quels éléments sont centraux dans le jazz ?",
-        "a": "L’improvisation, le swing, le timbre, le rythme et l’interaction entre musiciens.",
+        "a": "L’improvisation, le swing, le timbre, le rythme et l’interaction entre musiciens.", choices: ["La fidélité absolue à la partition, l’unisson et l’absence de variation.", "La symétrie des formes, la régularité métrique et le refus des timbres personnels.", "Le silence, la lenteur constante et la séparation stricte entre soliste et accompagnateurs."],
         "why": "Ce sont les marqueurs récurrents du cours.",
         "trap": "Réduire le jazz à une musique calme de restaurant.",
         "evidence": "Express et bloc 3."
@@ -11513,7 +14008,7 @@ const BETA109_READY_PACKS = {
       {
         "kind": "synthèse",
         "q": "Pourquoi le jazz influence-t-il autant le XXe siècle musical ?",
-        "a": "Parce qu’il invente une manière de transformer les matériaux, d’improviser et de faire entendre une voix personnelle.",
+        "a": "Parce qu’il invente une manière de transformer les matériaux, d’improviser et de faire entendre une voix personnelle.", choices: ["Parce qu’il reste un style local qui ne se mélange à aucun autre genre.", "Parce qu’il impose une seule manière de jouer à tous les musiciens du monde.", "Parce qu’il remplace complètement les musiques populaires antérieures dès son apparition."],
         "why": "C’est la conclusion du cours.",
         "trap": "Le voir comme un style figé.",
         "evidence": "Bloc 5."
@@ -12221,935 +14716,1319 @@ const BETA123_HISTORY_SPINE_LESSONS = {
 };
 const BETA123_HISTORY_SPINE_PACKS = {
   "civilizations-uruk-writing-state": {
-    "hook": "Uruk aide à comprendre une bascule essentielle : quand les villages, les temples, les stocks, les scribes et les chefs se combinent, on n’est plus seulement devant un habitat dense, mais devant une première forme d’État urbain.",
-    "keyFacts": [
-      "Repère : Mésopotamie du IVe millénaire av. J.-C.",
-      "Acteurs : temples, administrateurs, artisans, paysans, scribes",
-      "Rupture : ville, surplus, écriture comptable, hiérarchie sociale",
-      "Piège : croire que l’écriture naît d’abord pour raconter des romans ou des mythes"
-    ],
-    "express": [
-      "Uruk n’est pas seulement une grande ville ancienne. Elle représente une étape où la taille de l’habitat, la gestion des ressources et l’organisation du travail changent d’échelle. Des temples concentrent des biens, des responsables suivent les stocks, des artisans produisent pour un espace plus vaste que le village.",
-      "L’écriture apparaît dans ce contexte très concret. Avant d’être un outil littéraire, elle sert surtout à compter, enregistrer, contrôler des quantités, identifier des biens et suivre des échanges. C’est moins romantique qu’un poème, mais historiquement décisif : administrer devient possible autrement.",
-      "À retenir : Uruk montre que la civilisation ne se résume pas à des monuments impressionnants. Les étapes marquantes sont aussi administratives : stocker, mesurer, classer, gouverner. La ville devient un lieu de pouvoir parce qu’elle organise des hommes, des biens et des signes."
-    ],
-    "complete": [
-      {
-        "title": "1. Une ville plus complexe qu’un village",
-        "text": "Une ville comme Uruk rassemble davantage d’habitants, de métiers et de fonctions qu’un simple village agricole. On y trouve des espaces religieux, des ateliers, des lieux de stockage et des formes d’administration. Cette concentration transforme la société : il faut nourrir la population, organiser le travail, gérer les produits et coordonner des activités variées."
-      },
-      {
-        "title": "2. Le temple comme centre économique",
-        "text": "Le temple n’est pas seulement un lieu religieux. Dans les premières cités mésopotamiennes, il peut concentrer des terres, recevoir des produits, redistribuer des rations et employer des travailleurs. Religion, économie et pouvoir ne sont pas séparés comme dans nos catégories modernes."
-      },
-      {
-        "title": "3. L’écriture naît d’un besoin de gestion",
-        "text": "Les premiers signes écrits sont liés à la comptabilité : céréales, bétail, rations, objets, personnes. Cela ne veut pas dire que les habitants ne racontaient rien, mais les traces conservées montrent d’abord un usage administratif. L’État a besoin de mémoire stable."
-      },
-      {
-        "title": "4. Une hiérarchie plus visible",
-        "text": "Quand des surplus circulent et que des spécialistes apparaissent, les différences sociales deviennent plus nettes. Certains commandent, comptent, stockent ou protègent ; d’autres produisent. Uruk permet donc de voir une société qui s’organise par fonctions et par statuts."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Uruk est un bon cours-pivot parce qu’elle relie plusieurs étapes : ville, temples, surplus, écriture et pouvoir. Elle donne une ossature chronologique aux premières civilisations, au lieu de présenter seulement un mode de vie ou des objets isolés."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Rupture",
-        "text": "La ville change l’échelle de l’organisation sociale."
-      },
-      {
-        "label": "Écriture",
-        "text": "Les premiers usages sont très liés à l’administration."
-      },
-      {
-        "label": "Pouvoir",
-        "text": "Temple, stockage et hiérarchie forment une première structure d’État."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "Où se situe Uruk ?",
-        "a": "En Mésopotamie, dans le sud de l’Irak actuel.",
-        "why": "Cela situe la naissance de grandes cités dans un espace fluvial ancien.",
-        "trap": "La placer en Égypte ou en Grèce classique.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "notion",
-        "q": "Pourquoi Uruk est-elle plus qu’un village ?",
-        "a": "Parce qu’elle concentre habitants, temples, ateliers, stocks, administration et hiérarchies.",
-        "why": "La ville implique un changement d’échelle.",
-        "trap": "Réduire Uruk à un simple groupe de maisons.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "kind": "événement",
-        "q": "À quoi sert d’abord l’écriture dans ce contexte ?",
-        "a": "À enregistrer, compter et administrer des biens, des rations ou des échanges.",
-        "why": "L’écriture naît ici d’un besoin de gestion.",
-        "trap": "Dire qu’elle sert d’abord à écrire des romans.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "pouvoir",
-        "q": "Pourquoi le temple est-il central ?",
-        "a": "Il peut concentrer des ressources, organiser le travail et redistribuer des produits.",
-        "why": "Le religieux et l’économique sont liés.",
-        "trap": "En faire seulement un lieu de prière isolé.",
-        "evidence": "Bloc 2."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Pourquoi ce cours sert-il de repère ?",
-        "a": "Il relie ville, écriture, stockage, hiérarchie et pouvoir dans une première forme d’État urbain.",
-        "why": "C’est la colonne vertébrale des premières civilisations.",
-        "trap": "Ne retenir qu’un monument ou une date.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "Uruk aide à comprendre une bascule essentielle : quand les villages, les temples, les stocks, les scribes et les chefs se combinent, on n’est plus seulement devant un habitat dense, mais devant une première forme d’État urbain.",
+  "keyFacts": [
+    "Repère : Mésopotamie du IVe millénaire av. J.-C.",
+    "Acteurs : temples, administrateurs, artisans, paysans, scribes",
+    "Rupture : ville, surplus, écriture comptable, hiérarchie sociale",
+    "Piège : croire que l’écriture naît d’abord pour raconter des romans ou des mythes"
+  ],
+  "express": [
+    "Uruk n’est pas seulement une grande ville ancienne. Elle représente une étape où la taille de l’habitat, la gestion des ressources et l’organisation du travail changent d’échelle. Des temples concentrent des biens, des responsables suivent les stocks, des artisans produisent pour un espace plus vaste que le village.",
+    "L’écriture apparaît dans ce contexte très concret. Avant d’être un outil littéraire, elle sert surtout à compter, enregistrer, contrôler des quantités, identifier des biens et suivre des échanges. C’est moins romantique qu’un poème, mais historiquement décisif : administrer devient possible autrement.",
+    "À retenir : Uruk montre que la civilisation ne se résume pas à des monuments impressionnants. Les étapes marquantes sont aussi administratives : stocker, mesurer, classer, gouverner. La ville devient un lieu de pouvoir parce qu’elle organise des hommes, des biens et des signes."
+  ],
+  "complete": [
+    {
+      "title": "1. Une ville plus complexe qu’un village",
+      "text": "Une ville comme Uruk rassemble davantage d’habitants, de métiers et de fonctions qu’un simple village agricole. On y trouve des espaces religieux, des ateliers, des lieux de stockage et des formes d’administration. Cette concentration transforme la société : il faut nourrir la population, organiser le travail, gérer les produits et coordonner des activités variées."
+    },
+    {
+      "title": "2. Le temple comme centre économique",
+      "text": "Le temple n’est pas seulement un lieu religieux. Dans les premières cités mésopotamiennes, il peut concentrer des terres, recevoir des produits, redistribuer des rations et employer des travailleurs. Religion, économie et pouvoir ne sont pas séparés comme dans nos catégories modernes."
+    },
+    {
+      "title": "3. L’écriture naît d’un besoin de gestion",
+      "text": "Les premiers signes écrits sont liés à la comptabilité : céréales, bétail, rations, objets, personnes. Cela ne veut pas dire que les habitants ne racontaient rien, mais les traces conservées montrent d’abord un usage administratif. L’État a besoin de mémoire stable."
+    },
+    {
+      "title": "4. Une hiérarchie plus visible",
+      "text": "Quand des surplus circulent et que des spécialistes apparaissent, les différences sociales deviennent plus nettes. Certains commandent, comptent, stockent ou protègent ; d’autres produisent. Uruk permet donc de voir une société qui s’organise par fonctions et par statuts."
+    },
+    {
+      "title": "5. Une ville de plusieurs dizaines de milliers d’habitants",
+      "text": "À la fin du IVe millénaire av. J.-C., Uruk atteint une taille exceptionnelle pour son époque. Ses quartiers, enceintes, temples et ateliers supposent une coordination qui dépasse les relations d’un petit village. Nourrir des spécialistes non agricoles exige que des surplus soient produits, collectés puis redistribués."
+    },
+    {
+      "title": "6. Des jetons aux tablettes",
+      "text": "Avant les signes cunéiformes, des jetons d’argile servent probablement à représenter des quantités de biens. Les premières tablettes montrent ensuite des pictogrammes et des nombres. L’écriture ne naît pas achevée : elle se transforme progressivement pour enregistrer des opérations de plus en plus complexes."
+    },
+    {
+      "title": "7. L’État reste une hypothèse construite par les traces",
+      "text": "On parle d’État parce qu’on observe administration, grands travaux, hiérarchies et concentration de ressources. Mais les textes ne décrivent pas directement une constitution d’Uruk. Le terme aide à comparer, à condition de ne pas projeter nos ministères, frontières et citoyennetés modernes sur une société du IVe millénaire."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Uruk est un bon cours-pivot parce qu’elle relie plusieurs étapes : ville, temples, surplus, écriture et pouvoir. Elle donne une ossature chronologique aux premières civilisations, au lieu de présenter seulement un mode de vie ou des objets isolés."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Rupture",
+      "text": "La ville change l’échelle de l’organisation sociale."
+    },
+    {
+      "label": "Écriture",
+      "text": "Les premiers usages sont très liés à l’administration."
+    },
+    {
+      "label": "Pouvoir",
+      "text": "Temple, stockage et hiérarchie forment une première structure d’État."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Où se situe Uruk ?",
+      "a": "En Mésopotamie, dans le sud de l’Irak actuel.",
+      "choices": [
+        "Dans la vallée du Nil, près de l’actuelle ville du Caire.",
+        "Dans la vallée de l’Indus, à l’ouest de l’Inde actuelle.",
+        "En Anatolie centrale, sur les plateaux de l’actuelle Turquie."
+      ],
+      "why": "Cela situe la naissance de grandes cités dans un espace fluvial ancien.",
+      "trap": "La placer en Égypte ou en Grèce classique.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "notion",
+      "q": "Pourquoi Uruk est-elle plus qu’un village ?",
+      "a": "Parce qu’elle concentre habitants, temples, ateliers, stocks, administration et hiérarchies.",
+      "choices": [
+        "Parce qu’elle possède seulement des maisons plus grandes et davantage de terres cultivées.",
+        "Parce que tous ses habitants exercent la même activité et vivent sans hiérarchie.",
+        "Parce qu’elle est entourée de remparts mais ne concentre ni ateliers ni administration."
+      ],
+      "why": "La ville implique un changement d’échelle.",
+      "trap": "Réduire Uruk à un simple groupe de maisons.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "événement",
+      "q": "À quoi sert d’abord l’écriture dans ce contexte ?",
+      "a": "À enregistrer, compter et administrer des biens, des rations ou des échanges.",
+      "choices": [
+        "À raconter les exploits des rois et les mythes des dieux avant toute fonction comptable.",
+        "À écrire des lois égales pour tous les habitants de la ville.",
+        "À correspondre avec des royaumes lointains dans une langue alphabétique."
+      ],
+      "why": "L’écriture naît ici d’un besoin de gestion.",
+      "trap": "Dire qu’elle sert d’abord à écrire des romans.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "pouvoir",
+      "q": "Pourquoi le temple est-il central ?",
+      "a": "Il peut concentrer des ressources, organiser le travail et redistribuer des produits.",
+      "choices": [
+        "Il sert uniquement aux cérémonies religieuses sans gérer de biens ni de travailleurs.",
+        "Il remplace toute autorité politique par des décisions prises directement par les habitants.",
+        "Il abrite seulement les scribes chargés de raconter l’histoire de la ville."
+      ],
+      "why": "Le religieux et l’économique sont liés.",
+      "trap": "En faire seulement un lieu de prière isolé.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi ce cours sert-il de repère ?",
+      "a": "Il relie ville, écriture, stockage, hiérarchie et pouvoir dans une première forme d’État urbain.",
+      "choices": [
+        "Il montre qu’une ville peut se développer sans stocks, écriture ni hiérarchie.",
+        "Il prouve que l’écriture alphabétique précède toutes les formes d’administration.",
+        "Il relie la naissance de l’État à une conquête militaire unique menée par un roi connu."
+      ],
+      "why": "C’est la colonne vertébrale des premières civilisations.",
+      "trap": "Ne retenir qu’un monument ou une date.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "civilizations-hammurabi-babylon-law": {
-    "hook": "Hammurabi permet de sortir d’une histoire vague des premières civilisations : on voit un roi, une dynastie, une capitale, des conquêtes et une manière d’afficher l’ordre par la loi.",
-    "keyFacts": [
-      "Repère : Babylone, XVIIIe siècle av. J.-C.",
-      "Acteur : Hammurabi, roi amorrite de Babylone",
-      "Trace célèbre : stèle du Code de Hammurabi",
-      "Piège : croire que le code prouve une justice égalitaire au sens moderne"
-    ],
-    "express": [
-      "Hammurabi règne sur Babylone au XVIIIe siècle av. J.-C. Il n’est pas seulement un nom associé à un code juridique : il appartient à une dynastie qui transforme Babylone en puissance politique majeure de Mésopotamie. Son règne mêle guerre, diplomatie, administration et mise en scène de la justice.",
-      "La stèle du Code de Hammurabi est célèbre parce qu’elle présente des décisions et des principes juridiques sous l’autorité du roi. Elle ne décrit pas forcément toute la pratique quotidienne de la justice, mais elle montre comment le pouvoir veut apparaître : protéger l’ordre, punir, arbitrer et gouverner.",
-      "À retenir : Hammurabi donne un vrai repère dynastique. Il permet de comprendre que les premières civilisations ne sont pas seulement des villes et des fleuves, mais aussi des royaumes, des souverains, des conquêtes et une idéologie royale."
-    ],
-    "complete": [
-      {
-        "title": "1. Babylone devient une puissance",
-        "text": "Au début, Babylone n’est pas automatiquement la grande capitale mythique que l’on imagine. Sous Hammurabi, elle s’impose progressivement dans le jeu politique mésopotamien. Le roi mène des guerres, noue des alliances et profite des rivalités entre cités et royaumes voisins pour étendre son autorité."
-      },
-      {
-        "title": "2. Un roi conquérant et administrateur",
-        "text": "Hammurabi ne se résume pas à un législateur. Comme beaucoup de souverains anciens, il doit vaincre, négocier, percevoir, organiser l’irrigation, contrôler des villes et faire reconnaître son autorité. La loi fait partie d’un ensemble plus large de gouvernement."
-      },
-      {
-        "title": "3. Le code comme monument politique",
-        "text": "La stèle ne sert pas seulement à conserver des règles. Elle montre le roi recevant une légitimité divine et affirme qu’il rend la justice. Le texte construit donc une image : celle d’un souverain protecteur de l’ordre, même si la société reste très hiérarchisée."
-      },
-      {
-        "title": "4. Une justice inégale",
-        "text": "Le code distingue les statuts sociaux : homme libre, dépendant, esclave. Les peines peuvent varier selon la position de la victime et de l’auteur. C’est un document précieux, mais il ne faut pas lui attribuer nos principes contemporains d’égalité devant la loi."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Hammurabi est utile comme cours-pivot : il donne un nom, une dynastie, une capitale, une trace écrite et une idée politique. Il transforme un chapitre sur la Mésopotamie en récit structuré autour d’un règne."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Dynastie",
-        "text": "Babylone devient une puissance sous un roi identifiable."
-      },
-      {
-        "label": "Loi",
-        "text": "Le code est aussi un monument de légitimation royale."
-      },
-      {
-        "label": "Nuance",
-        "text": "La justice ancienne reste liée aux statuts sociaux."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "Quand Hammurabi règne-t-il ?",
-        "a": "Au XVIIIe siècle av. J.-C., en Mésopotamie.",
-        "why": "C’est le repère chronologique du cours.",
-        "trap": "Le placer au Moyen Âge.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "acteur",
-        "q": "Pourquoi Hammurabi est-il important ?",
-        "a": "Il fait de Babylone une puissance et associe son règne à une forte image de justice royale.",
-        "why": "Il combine conquête, administration et idéologie.",
-        "trap": "Ne retenir que son nom sans rôle politique.",
-        "evidence": "Blocs 1-2."
-      },
-      {
-        "kind": "trace",
-        "q": "Que montre la stèle du code ?",
-        "a": "Elle affiche une justice royale placée sous autorité divine et politique.",
-        "why": "Le monument construit une image du souverain.",
-        "trap": "La lire comme un simple manuel neutre.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "nuance",
-        "q": "Pourquoi ne faut-il pas parler d’égalité moderne ?",
-        "a": "Parce que les peines et droits varient selon les statuts sociaux.",
-        "why": "La société est hiérarchisée.",
-        "trap": "Croire que tous sont égaux devant la loi.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Pourquoi ce cours ajoute une colonne vertébrale ?",
-        "a": "Il donne un règne, une dynastie, une capitale, une conquête et une trace majeure.",
-        "why": "Il structure la Mésopotamie autour d’un jalon.",
-        "trap": "Rester au niveau vague des fleuves et des villes.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "Hammurabi permet de sortir d’une histoire vague des premières civilisations : on voit un roi, une dynastie, une capitale, des conquêtes et une manière d’afficher l’ordre par la loi.",
+  "keyFacts": [
+    "Repère : Babylone, XVIIIe siècle av. J.-C.",
+    "Acteur : Hammurabi, roi amorrite de Babylone",
+    "Trace célèbre : stèle du Code de Hammurabi",
+    "Piège : croire que le code prouve une justice égalitaire au sens moderne"
+  ],
+  "express": [
+    "Hammurabi règne sur Babylone au XVIIIe siècle av. J.-C. Il n’est pas seulement un nom associé à un code juridique : il appartient à une dynastie qui transforme Babylone en puissance politique majeure de Mésopotamie. Son règne mêle guerre, diplomatie, administration et mise en scène de la justice.",
+    "La stèle du Code de Hammurabi est célèbre parce qu’elle présente des décisions et des principes juridiques sous l’autorité du roi. Elle ne décrit pas forcément toute la pratique quotidienne de la justice, mais elle montre comment le pouvoir veut apparaître : protéger l’ordre, punir, arbitrer et gouverner.",
+    "À retenir : Hammurabi donne un vrai repère dynastique. Il permet de comprendre que les premières civilisations ne sont pas seulement des villes et des fleuves, mais aussi des royaumes, des souverains, des conquêtes et une idéologie royale."
+  ],
+  "complete": [
+    {
+      "title": "1. Babylone devient une puissance",
+      "text": "Au début, Babylone n’est pas automatiquement la grande capitale mythique que l’on imagine. Sous Hammurabi, elle s’impose progressivement dans le jeu politique mésopotamien. Le roi mène des guerres, noue des alliances et profite des rivalités entre cités et royaumes voisins pour étendre son autorité."
+    },
+    {
+      "title": "2. Un roi conquérant et administrateur",
+      "text": "Hammurabi ne se résume pas à un législateur. Comme beaucoup de souverains anciens, il doit vaincre, négocier, percevoir, organiser l’irrigation, contrôler des villes et faire reconnaître son autorité. La loi fait partie d’un ensemble plus large de gouvernement."
+    },
+    {
+      "title": "3. Le code comme monument politique",
+      "text": "La stèle ne sert pas seulement à conserver des règles. Elle montre le roi recevant une légitimité divine et affirme qu’il rend la justice. Le texte construit donc une image : celle d’un souverain protecteur de l’ordre, même si la société reste très hiérarchisée."
+    },
+    {
+      "title": "4. Une justice inégale",
+      "text": "Le code distingue les statuts sociaux : homme libre, dépendant, esclave. Les peines peuvent varier selon la position de la victime et de l’auteur. C’est un document précieux, mais il ne faut pas lui attribuer nos principes contemporains d’égalité devant la loi."
+    },
+    {
+      "title": "5. Une stèle destinée à être vue",
+      "text": "Au sommet de la stèle, Hammurabi se tient devant le dieu Shamash, associé à la justice. L’image affirme que l’autorité du roi s’inscrit dans un ordre divin. Le long texte qui suit n’est donc pas seulement un outil juridique : c’est aussi un monument qui présente le souverain comme protecteur des faibles et garant de l’équilibre."
+    },
+    {
+      "title": "6. Des cas concrets plutôt qu’un code moderne",
+      "text": "Les articles commencent souvent par une situation : si un homme fait ceci, alors telle conséquence s’applique. Ils concernent propriété, mariage, travail, blessures ou commerce. Le document ne fonctionne pas exactement comme un code exhaustif utilisé article par article par tous les juges ; il rassemble des décisions exemplaires et une idéologie de la justice royale."
+    },
+    {
+      "title": "7. La loi révèle la hiérarchie sociale",
+      "text": "La sanction dépend parfois du statut de l’auteur ou de la victime. Les femmes disposent de certaines protections patrimoniales, mais restent prises dans un ordre familial dominé par les hommes. Les esclaves sont traités comme personnes et comme biens. Lire la stèle consiste donc à observer à la fois les règles et les inégalités qu’elles normalisent."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Hammurabi est utile comme cours-pivot : il donne un nom, une dynastie, une capitale, une trace écrite et une idée politique. Il transforme un chapitre sur la Mésopotamie en récit structuré autour d’un règne."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Dynastie",
+      "text": "Babylone devient une puissance sous un roi identifiable."
+    },
+    {
+      "label": "Loi",
+      "text": "Le code est aussi un monument de légitimation royale."
+    },
+    {
+      "label": "Nuance",
+      "text": "La justice ancienne reste liée aux statuts sociaux."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quand Hammurabi règne-t-il ?",
+      "a": "Au XVIIIe siècle av. J.-C., en Mésopotamie.",
+      "choices": [
+        "Au XXXe siècle av. J.-C., au début des premières villes sumériennes.",
+        "Au Ve siècle av. J.-C., pendant les guerres médiques.",
+        "Au Ier siècle apr. J.-C., sous l’Empire romain."
+      ],
+      "why": "C’est le repère chronologique du cours.",
+      "trap": "Le placer au Moyen Âge.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "acteur",
+      "q": "Pourquoi Hammurabi est-il important ?",
+      "a": "Il fait de Babylone une puissance et associe son règne à une forte image de justice royale.",
+      "choices": [
+        "Il fonde la première ville de Mésopotamie et invente l’écriture cunéiforme.",
+        "Il unifie durablement tout le Proche-Orient pendant plusieurs siècles.",
+        "Il abolit les différences de statut et impose les mêmes peines à tous."
+      ],
+      "why": "Il combine conquête, administration et idéologie.",
+      "trap": "Ne retenir que son nom sans rôle politique.",
+      "evidence": "Blocs 1-2."
+    },
+    {
+      "kind": "trace",
+      "q": "Que montre la stèle du code ?",
+      "a": "Elle affiche une justice royale placée sous autorité divine et politique.",
+      "choices": [
+        "Une liste complète des décisions réellement prises dans chaque procès du royaume.",
+        "Une constitution démocratique votée par les habitants de Babylone.",
+        "Un texte qui sépare la justice du roi de toute référence aux dieux."
+      ],
+      "why": "Le monument construit une image du souverain.",
+      "trap": "La lire comme un simple manuel neutre.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "nuance",
+      "q": "Pourquoi ne faut-il pas parler d’égalité moderne ?",
+      "a": "Parce que les peines et droits varient selon les statuts sociaux.",
+      "choices": [
+        "Parce que les règles ne concernent que les esclaves et jamais les hommes libres.",
+        "Parce que la stèle donne seulement des conseils moraux sans prévoir de peines.",
+        "Parce que les femmes sont les seules personnes à bénéficier de droits écrits."
+      ],
+      "why": "La société est hiérarchisée.",
+      "trap": "Croire que tous sont égaux devant la loi.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi ce cours ajoute une colonne vertébrale ?",
+      "a": "Il donne un règne, une dynastie, une capitale, une conquête et une trace majeure.",
+      "choices": [
+        "Il montre une société sans dynastie ni capitale, organisée uniquement par des coutumes locales.",
+        "Il prouve que la loi écrite remplace complètement les conquêtes et l’administration.",
+        "Il sert surtout de transition entre la démocratie athénienne et le droit romain."
+      ],
+      "why": "Il structure la Mésopotamie autour d’un jalon.",
+      "trap": "Rester au niveau vague des fleuves et des villes.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "egypt-kingdoms-dynasties": {
-    "hook": "L’Égypte ne doit pas être un décor éternel avec des pyramides et des pharaons interchangeables. Les dynasties et les grands empires permettent de voir des phases : construction, crise, restauration, expansion et domination étrangère.",
-    "keyFacts": [
-      "Repères : Ancien Empire, Moyen Empire, Nouvel Empire",
-      "Ancien Empire : pyramides et pouvoir royal très centralisé",
-      "Nouvel Empire : expansion, grands pharaons, diplomatie et guerre",
-      "Piège : parler de 3000 ans d’Égypte comme si rien ne changeait"
-    ],
-    "express": [
-      "Pour comprendre l’Égypte ancienne, il faut éviter l’image d’une civilisation figée. Elle dure très longtemps, avec des périodes de puissance, de crise, de réunification et d’ouverture internationale. Les noms Ancien Empire, Moyen Empire et Nouvel Empire servent de grandes balises.",
-      "L’Ancien Empire est associé aux pyramides et à une monarchie très centralisée. Le Moyen Empire marque une restauration après des troubles. Le Nouvel Empire voit une Égypte plus conquérante et diplomatique, avec des figures comme Hatchepsout, Akhenaton, Toutânkhamon ou Ramsès II.",
-      "À retenir : les dynasties ne sont pas des listes de noms à apprendre par cœur. Elles servent à comprendre les rythmes du pouvoir : quand l’État se renforce, quand il se fragilise, quand il s’étend et quand il doit composer avec d’autres puissances."
-    ],
-    "complete": [
-      {
-        "title": "1. Des dynasties pour se repérer",
-        "text": "Les historiens classent l’Égypte en dynasties et en grandes périodes. Ce découpage n’est pas parfait, mais il évite de mélanger des moments séparés par des siècles. Un pharaon de l’Ancien Empire ne vit pas dans le même contexte qu’un pharaon du Nouvel Empire."
-      },
-      {
-        "title": "2. L’Ancien Empire et les pyramides",
-        "text": "L’Ancien Empire est souvent associé aux grandes pyramides. Ces monuments montrent une forte capacité d’organisation : travailleurs, ressources, administration, idéologie funéraire et pouvoir royal. Ce n’est pas seulement de l’architecture spectaculaire, c’est un indice d’État puissant."
-      },
-      {
-        "title": "3. Crises et restaurations",
-        "text": "Entre les grands empires, l’Égypte connaît des périodes plus instables. Le pouvoir central peut se fragmenter, les gouverneurs locaux gagner en autonomie, les ressources se tendre. Ces ruptures sont importantes car elles montrent que l’ordre pharaonique n’est pas automatique."
-      },
-      {
-        "title": "4. Le Nouvel Empire, puissance internationale",
-        "text": "Au Nouvel Empire, l’Égypte est davantage insérée dans un monde de grandes puissances. Elle combat, négocie, échange, construit des temples, met en scène ses rois. Ramsès II et Qadesh illustrent ce mélange de guerre, propagande et diplomatie."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "La chronologie dynastique donne de la profondeur. Elle transforme l’Égypte en histoire politique : des règnes, des crises, des reconstructions et des choix. Sans cette ossature, le chapitre risque de devenir seulement un catalogue de pyramides, de dieux et de momies."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Repères",
-        "text": "Ancien, Moyen et Nouvel Empire évitent de tout mélanger."
-      },
-      {
-        "label": "Pouvoir",
-        "text": "Les pyramides indiquent une forte organisation royale."
-      },
-      {
-        "label": "Évolution",
-        "text": "L’Égypte change selon les périodes de crise et d’expansion."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "Quels grands blocs faut-il retenir ?",
-        "a": "Ancien Empire, Moyen Empire et Nouvel Empire.",
-        "why": "Ce sont des balises utiles pour lire la longue durée égyptienne.",
-        "trap": "Dire que toute l’Égypte ancienne forme une seule époque immobile.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "notion",
-        "q": "Pourquoi les dynasties sont-elles utiles ?",
-        "a": "Elles donnent des repères de pouvoir, de succession et de contexte.",
-        "why": "Elles ne sont pas qu’une liste de noms.",
-        "trap": "Apprendre des noms sans comprendre les périodes.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "kind": "pouvoir",
-        "q": "Que montrent les pyramides de l’Ancien Empire ?",
-        "a": "Une forte capacité d’organisation politique, religieuse et administrative.",
-        "why": "Le monument révèle une structure d’État.",
-        "trap": "Les réduire à une prouesse décorative.",
-        "evidence": "Bloc 2."
-      },
-      {
-        "kind": "rupture",
-        "q": "Pourquoi les périodes intermédiaires comptent-elles ?",
-        "a": "Elles montrent des crises, fragmentations ou fragilités du pouvoir central.",
-        "why": "L’ordre pharaonique peut se briser.",
-        "trap": "Les effacer parce qu’elles sont moins célèbres.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Quel est le risque sans chronologie dynastique ?",
-        "a": "Transformer l’Égypte en décor éternel sans étapes politiques.",
-        "why": "La chronologie donne une ossature.",
-        "trap": "Mélanger Ramsès II, Khéops et Cléopâtre sans contexte.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "L’Égypte ne doit pas être un décor éternel avec des pyramides et des pharaons interchangeables. Les dynasties et les grands empires permettent de voir des phases : construction, crise, restauration, expansion et domination étrangère.",
+  "keyFacts": [
+    "Repères : Ancien Empire, Moyen Empire, Nouvel Empire",
+    "Ancien Empire : pyramides et pouvoir royal très centralisé",
+    "Nouvel Empire : expansion, grands pharaons, diplomatie et guerre",
+    "Piège : parler de 3000 ans d’Égypte comme si rien ne changeait"
+  ],
+  "express": [
+    "Pour comprendre l’Égypte ancienne, il faut éviter l’image d’une civilisation figée. Elle dure très longtemps, avec des périodes de puissance, de crise, de réunification et d’ouverture internationale. Les noms Ancien Empire, Moyen Empire et Nouvel Empire servent de grandes balises.",
+    "L’Ancien Empire est associé aux pyramides et à une monarchie très centralisée. Le Moyen Empire marque une restauration après des troubles. Le Nouvel Empire voit une Égypte plus conquérante et diplomatique, avec des figures comme Hatchepsout, Akhenaton, Toutânkhamon ou Ramsès II.",
+    "À retenir : les dynasties ne sont pas des listes de noms à apprendre par cœur. Elles servent à comprendre les rythmes du pouvoir : quand l’État se renforce, quand il se fragilise, quand il s’étend et quand il doit composer avec d’autres puissances."
+  ],
+  "complete": [
+    {
+      "title": "1. Des dynasties pour se repérer",
+      "text": "Les historiens classent l’Égypte en dynasties et en grandes périodes. Ce découpage n’est pas parfait, mais il évite de mélanger des moments séparés par des siècles. Un pharaon de l’Ancien Empire ne vit pas dans le même contexte qu’un pharaon du Nouvel Empire."
+    },
+    {
+      "title": "2. L’Ancien Empire et les pyramides",
+      "text": "L’Ancien Empire est souvent associé aux grandes pyramides. Ces monuments montrent une forte capacité d’organisation : travailleurs, ressources, administration, idéologie funéraire et pouvoir royal. Ce n’est pas seulement de l’architecture spectaculaire, c’est un indice d’État puissant."
+    },
+    {
+      "title": "3. Crises et restaurations",
+      "text": "Entre les grands empires, l’Égypte connaît des périodes plus instables. Le pouvoir central peut se fragmenter, les gouverneurs locaux gagner en autonomie, les ressources se tendre. Ces ruptures sont importantes car elles montrent que l’ordre pharaonique n’est pas automatique."
+    },
+    {
+      "title": "4. Le Nouvel Empire, puissance internationale",
+      "text": "Au Nouvel Empire, l’Égypte est davantage insérée dans un monde de grandes puissances. Elle combat, négocie, échange, construit des temples, met en scène ses rois. Ramsès II et Qadesh illustrent ce mélange de guerre, propagande et diplomatie."
+    },
+    {
+      "title": "5. Les dynasties sont un outil de classement",
+      "text": "Le découpage en dynasties vient en grande partie de Manéthon, prêtre égyptien écrivant à l’époque ptolémaïque. Les égyptologues l’utilisent encore, mais les frontières entre dynasties ne correspondent pas toujours à une rupture nette. Des familles peuvent se chevaucher ou gouverner différentes régions en même temps."
+    },
+    {
+      "title": "6. Ancien, Moyen et Nouvel Empire",
+      "text": "L’Ancien Empire est associé à la centralisation et aux grandes pyramides ; le Moyen Empire à une réunification durable et à l’expansion vers la Nubie ; le Nouvel Empire à une puissance militaire et diplomatique étendue au Levant. Entre eux, les “périodes intermédiaires” ne sont pas des siècles sans histoire, mais des phases de fragmentation et d’expérimentation politique."
+    },
+    {
+      "title": "7. Une chronologie longue et changeante",
+      "text": "L’Égypte pharaonique dure environ trois millénaires. Les temples, l’écriture hiéroglyphique et certains symboles donnent une impression de continuité, mais les capitales, frontières, élites et pratiques évoluent. Parler des “Égyptiens” comme d’un peuple immobile efface des transformations comparables à celles de toute autre histoire longue."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "La chronologie dynastique donne de la profondeur. Elle transforme l’Égypte en histoire politique : des règnes, des crises, des reconstructions et des choix. Sans cette ossature, le chapitre risque de devenir seulement un catalogue de pyramides, de dieux et de momies."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Repères",
+      "text": "Ancien, Moyen et Nouvel Empire évitent de tout mélanger."
+    },
+    {
+      "label": "Pouvoir",
+      "text": "Les pyramides indiquent une forte organisation royale."
+    },
+    {
+      "label": "Évolution",
+      "text": "L’Égypte change selon les périodes de crise et d’expansion."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quels grands blocs faut-il retenir ?",
+      "a": "Ancien Empire, Moyen Empire et Nouvel Empire.",
+      "choices": [
+        "Époque archaïque, période hellénistique et période romaine uniquement.",
+        "Ancien Royaume, Empire central et Empire tardif, sans périodes de crise.",
+        "Période des pyramides, période de Ramsès et période de Cléopâtre, qui se succèdent directement."
+      ],
+      "why": "Ce sont des balises utiles pour lire la longue durée égyptienne.",
+      "trap": "Dire que toute l’Égypte ancienne forme une seule époque immobile.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "notion",
+      "q": "Pourquoi les dynasties sont-elles utiles ?",
+      "a": "Elles donnent des repères de pouvoir, de succession et de contexte.",
+      "choices": [
+        "Elles indiquent seulement le style artistique des monuments sans lien avec les souverains.",
+        "Elles donnent une chronologie parfaitement certaine sans débats ni ruptures.",
+        "Elles montrent que chaque famille royale gouverne une région différente au même moment."
+      ],
+      "why": "Elles ne sont pas qu’une liste de noms.",
+      "trap": "Apprendre des noms sans comprendre les périodes.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "pouvoir",
+      "q": "Que montrent les pyramides de l’Ancien Empire ?",
+      "a": "Une forte capacité d’organisation politique, religieuse et administrative.",
+      "choices": [
+        "Que les pharaons de cette période abandonnent le pouvoir religieux aux prêtres.",
+        "Que l’Égypte dépend principalement de travailleurs et de matériaux importés de Grèce.",
+        "Que l’État est faible et incapable de mobiliser des ressources à grande échelle."
+      ],
+      "why": "Le monument révèle une structure d’État.",
+      "trap": "Les réduire à une prouesse décorative.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "rupture",
+      "q": "Pourquoi les périodes intermédiaires comptent-elles ?",
+      "a": "Elles montrent des crises, fragmentations ou fragilités du pouvoir central.",
+      "choices": [
+        "Elles correspondent à des périodes où toute société et toute administration disparaissent.",
+        "Elles montrent que les dynasties étrangères gouvernent toujours sans opposition.",
+        "Elles sont seulement des inventions modernes pour séparer les styles de pyramides."
+      ],
+      "why": "L’ordre pharaonique peut se briser.",
+      "trap": "Les effacer parce qu’elles sont moins célèbres.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quel est le risque sans chronologie dynastique ?",
+      "a": "Transformer l’Égypte en décor éternel sans étapes politiques.",
+      "choices": [
+        "Présenter chaque dynastie comme un État entièrement différent sans continuité.",
+        "Croire que le Nouvel Empire précède l’Ancien Empire et les premières pyramides.",
+        "Étudier les règnes uniquement par leurs monuments, sans repères de succession ou de crise."
+      ],
+      "why": "La chronologie donne une ossature.",
+      "trap": "Mélanger Ramsès II, Khéops et Cléopâtre sans contexte.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "greece-alexander-hellenistic-kingdoms": {
-    "hook": "Après Athènes et Sparte, l’histoire grecque ne s’arrête pas. Alexandre transforme l’échelle du monde grec, puis ses généraux fondent des royaumes où culture grecque, monarchies et traditions orientales se mélangent.",
-    "keyFacts": [
-      "Repère : Alexandre règne de -336 à -323",
-      "Rupture : conquête de l’empire perse",
-      "Après Alexandre : royaumes hellénistiques des Diadoques",
-      "Piège : croire que la Grèce se résume aux cités classiques"
-    ],
-    "express": [
-      "Alexandre de Macédoine hérite d’un royaume déjà renforcé par Philippe II. En quelques années, il conquiert l’empire perse et pousse l’horizon grec jusqu’à l’Égypte, la Mésopotamie, l’Iran et l’Indus. L’événement change l’échelle politique du monde méditerranéen.",
-      "À sa mort en -323, l’empire ne reste pas uni. Ses généraux, les Diadoques, se disputent l’héritage et fondent des royaumes : Lagides en Égypte, Séleucides en Asie, Antigonides en Macédoine. La dynastie devient alors un outil essentiel pour comprendre la suite.",
-      "À retenir : l’époque hellénistique n’est pas un simple épilogue. Elle crée des monarchies puissantes, des villes nouvelles comme Alexandrie, des échanges culturels intenses et un monde que Rome rencontrera ensuite."
-    ],
-    "complete": [
-      {
-        "title": "1. La Macédoine change le jeu grec",
-        "text": "Avant Alexandre, Philippe II a déjà transformé la Macédoine en puissance militaire. Les cités grecques, longtemps centrales dans le récit, doivent composer avec une monarchie capable d’imposer son autorité. La Grèce classique bascule vers une autre forme de pouvoir."
-      },
-      {
-        "title": "2. La conquête de l’empire perse",
-        "text": "Alexandre affronte et renverse l’empire achéménide. Les batailles sont importantes, mais l’enjeu est plus large : administration d’un immense territoire, fondation de villes, intégration de soldats et recherche d’une légitimité auprès de populations très diverses."
-      },
-      {
-        "title": "3. La mort d’Alexandre et les Diadoques",
-        "text": "Alexandre meurt jeune, sans succession stable. Ses généraux se partagent et se disputent l’empire. Cette étape est décisive : elle explique pourquoi l’héritage d’Alexandre devient une carte de royaumes plutôt qu’un empire unique."
-      },
-      {
-        "title": "4. Des dynasties hellénistiques",
-        "text": "Les Lagides, Séleucides et Antigonides gouvernent des espaces différents. Ils utilisent la langue et les formes grecques, mais s’adaptent aussi aux traditions locales. L’époque hellénistique est donc un mélange politique et culturel, pas une simple exportation de la Grèce."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Ce cours-pivot ajoute une étape marquante entre la Grèce des cités et Rome. Il donne des événements, des dynasties et une transition : conquête d’Alexandre, partage de l’empire, royaumes hellénistiques, puis intégration progressive dans la domination romaine."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Rupture",
-        "text": "Alexandre change l’échelle du monde grec."
-      },
-      {
-        "label": "Dynasties",
-        "text": "Les royaumes hellénistiques structurent l’après-Alexandre."
-      },
-      {
-        "label": "Transition",
-        "text": "Cette période relie cités grecques, Orient et Rome."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "Quand Alexandre règne-t-il ?",
-        "a": "De -336 à -323.",
-        "why": "Ce repère situe la conquête après la Grèce classique.",
-        "trap": "Le placer avant les guerres médiques.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "acteur",
-        "q": "Qui sont les Diadoques ?",
-        "a": "Les généraux et successeurs d’Alexandre qui se disputent son empire.",
-        "why": "Ils fondent les royaumes hellénistiques.",
-        "trap": "Les confondre avec des citoyens d’Athènes.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "dynastie",
-        "q": "Quelle dynastie gouverne l’Égypte hellénistique ?",
-        "a": "Les Lagides, aussi appelés Ptolémées.",
-        "why": "C’est un repère majeur jusqu’à Cléopâtre.",
-        "trap": "Dire les Mérovingiens.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "kind": "rupture",
-        "q": "Pourquoi l’empire d’Alexandre ne reste-t-il pas uni ?",
-        "a": "Sa mort laisse une succession instable et ses généraux se disputent l’héritage.",
-        "why": "La succession est une clé politique.",
-        "trap": "Croire qu’il avait préparé un État stable.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Pourquoi ajouter ce cours ?",
-        "a": "Il relie la Grèce classique à un monde de royaumes, d’échanges et de conquêtes avant Rome.",
-        "why": "Il donne une étape marquante et dynastique.",
-        "trap": "Arrêter l’histoire grecque à Athènes et Sparte.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "Après Athènes et Sparte, l’histoire grecque ne s’arrête pas. Alexandre transforme l’échelle du monde grec, puis ses généraux fondent des royaumes où culture grecque, monarchies et traditions orientales se mélangent.",
+  "keyFacts": [
+    "Repère : Alexandre règne de -336 à -323",
+    "Rupture : conquête de l’empire perse",
+    "Après Alexandre : royaumes hellénistiques des Diadoques",
+    "Piège : croire que la Grèce se résume aux cités classiques"
+  ],
+  "express": [
+    "Alexandre de Macédoine hérite d’un royaume déjà renforcé par Philippe II. En quelques années, il conquiert l’empire perse et pousse l’horizon grec jusqu’à l’Égypte, la Mésopotamie, l’Iran et l’Indus. L’événement change l’échelle politique du monde méditerranéen.",
+    "À sa mort en -323, l’empire ne reste pas uni. Ses généraux, les Diadoques, se disputent l’héritage et fondent des royaumes : Lagides en Égypte, Séleucides en Asie, Antigonides en Macédoine. La dynastie devient alors un outil essentiel pour comprendre la suite.",
+    "À retenir : l’époque hellénistique n’est pas un simple épilogue. Elle crée des monarchies puissantes, des villes nouvelles comme Alexandrie, des échanges culturels intenses et un monde que Rome rencontrera ensuite."
+  ],
+  "complete": [
+    {
+      "title": "1. La Macédoine change le jeu grec",
+      "text": "Avant Alexandre, Philippe II a déjà transformé la Macédoine en puissance militaire. Les cités grecques, longtemps centrales dans le récit, doivent composer avec une monarchie capable d’imposer son autorité. La Grèce classique bascule vers une autre forme de pouvoir."
+    },
+    {
+      "title": "2. La conquête de l’empire perse",
+      "text": "Alexandre affronte et renverse l’empire achéménide. Les batailles sont importantes, mais l’enjeu est plus large : administration d’un immense territoire, fondation de villes, intégration de soldats et recherche d’une légitimité auprès de populations très diverses."
+    },
+    {
+      "title": "3. La mort d’Alexandre et les Diadoques",
+      "text": "Alexandre meurt jeune, sans succession stable. Ses généraux se partagent et se disputent l’empire. Cette étape est décisive : elle explique pourquoi l’héritage d’Alexandre devient une carte de royaumes plutôt qu’un empire unique."
+    },
+    {
+      "title": "4. Des dynasties hellénistiques",
+      "text": "Les Lagides, Séleucides et Antigonides gouvernent des espaces différents. Ils utilisent la langue et les formes grecques, mais s’adaptent aussi aux traditions locales. L’époque hellénistique est donc un mélange politique et culturel, pas une simple exportation de la Grèce."
+    },
+    {
+      "title": "5. Une conquête très rapide",
+      "text": "De 334 à 323 av. J.-C., Alexandre bat les armées perses, prend les grandes capitales achéménides et avance jusqu’à l’Indus. Cette vitesse repose sur l’armée macédonienne réformée par Philippe II, mais aussi sur les divisions de l’Empire perse et sur la capacité d’Alexandre à reprendre certaines structures locales."
+    },
+    {
+      "title": "6. Après Alexandre, les Diadoques",
+      "text": "La mort du conquérant sans succession stable déclenche des décennies de guerres entre ses généraux. Des royaumes durables émergent : Antigonides en Macédoine, Séleucides en Asie, Lagides en Égypte. Le monde hellénistique n’est donc pas un empire unique continu, mais un ensemble de monarchies rivales reliées par des cultures et des échanges communs."
+    },
+    {
+      "title": "7. Des villes et des cultures mêlées",
+      "text": "Alexandrie d’Égypte devient un centre majeur de commerce et de savoir. Le grec sert largement dans l’administration et les échanges, tandis que les traditions locales continuent et se combinent avec des formes grecques. L’hellénisation n’est ni une disparition totale des cultures précédentes ni une simple copie de la Grèce classique."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Ce cours-pivot ajoute une étape marquante entre la Grèce des cités et Rome. Il donne des événements, des dynasties et une transition : conquête d’Alexandre, partage de l’empire, royaumes hellénistiques, puis intégration progressive dans la domination romaine."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Rupture",
+      "text": "Alexandre change l’échelle du monde grec."
+    },
+    {
+      "label": "Dynasties",
+      "text": "Les royaumes hellénistiques structurent l’après-Alexandre."
+    },
+    {
+      "label": "Transition",
+      "text": "Cette période relie cités grecques, Orient et Rome."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quand Alexandre règne-t-il ?",
+      "a": "De -336 à -323.",
+      "choices": [
+        "De -490 à -479, pendant les guerres médiques.",
+        "De -431 à -404, pendant la guerre du Péloponnèse.",
+        "De -146 à -30, après la conquête romaine de la Grèce."
+      ],
+      "why": "Ce repère situe la conquête après la Grèce classique.",
+      "trap": "Le placer avant les guerres médiques.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "acteur",
+      "q": "Qui sont les Diadoques ?",
+      "a": "Les généraux et successeurs d’Alexandre qui se disputent son empire.",
+      "choices": [
+        "Les magistrats élus dans les cités grecques après la mort d’Alexandre.",
+        "Les soldats perses intégrés à l’armée macédonienne avant les conquêtes.",
+        "Les rois locaux vaincus qui reçoivent chacun une province autonome."
+      ],
+      "why": "Ils fondent les royaumes hellénistiques.",
+      "trap": "Les confondre avec des citoyens d’Athènes.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "dynastie",
+      "q": "Quelle dynastie gouverne l’Égypte hellénistique ?",
+      "a": "Les Lagides, aussi appelés Ptolémées.",
+      "choices": [
+        "Les Séleucides, qui gouvernent aussi la Macédoine et la Grèce.",
+        "Les Antigonides, descendants directs des anciens pharaons.",
+        "Les Attalides, installés à Alexandrie après la mort de Cléopâtre."
+      ],
+      "why": "C’est un repère majeur jusqu’à Cléopâtre.",
+      "trap": "Dire les Mérovingiens.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "rupture",
+      "q": "Pourquoi l’empire d’Alexandre ne reste-t-il pas uni ?",
+      "a": "Sa mort laisse une succession instable et ses généraux se disputent l’héritage.",
+      "choices": [
+        "Parce qu’Alexandre partage lui-même son empire entre ses fils avant de mourir.",
+        "Parce que les peuples conquis retrouvent immédiatement leur indépendance sans guerre.",
+        "Parce que les cités grecques refusent toutes de reconnaître un pouvoir monarchique."
+      ],
+      "why": "La succession est une clé politique.",
+      "trap": "Croire qu’il avait préparé un État stable.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi ajouter ce cours ?",
+      "a": "Il relie la Grèce classique à un monde de royaumes, d’échanges et de conquêtes avant Rome.",
+      "choices": [
+        "Il montre le retour immédiat aux petites cités indépendantes sans royaumes ni dynasties.",
+        "Il prouve que les conquêtes d’Alexandre n’ont aucun effet culturel ou politique durable.",
+        "Il explique directement la naissance de l’Empire romain avant les guerres puniques."
+      ],
+      "why": "Il donne une étape marquante et dynastique.",
+      "trap": "Arrêter l’histoire grecque à Athènes et Sparte.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "rome-caesar-civil-wars": {
-    "hook": "Entre la République et l’Empire, il manque un nœud dramatique : les guerres civiles. César permet de comprendre comment une République conquérante peut être détruite de l’intérieur par ses propres succès.",
-    "keyFacts": [
-      "Repère : Ier siècle av. J.-C.",
-      "Acteurs : César, Pompée, Sénat, armées, peuple romain",
-      "Rupture : la République ne parvient plus à contrôler ses généraux",
-      "Piège : croire qu’Auguste arrive sans crise préalable"
-    ],
-    "express": [
-      "Rome domine déjà une grande partie de la Méditerranée quand la République entre en crise. Les conquêtes enrichissent certains, fragilisent d’autres, donnent un poids énorme aux généraux et multiplient les tensions politiques. César n’apparaît pas dans un vide : il est le produit d’un système déséquilibré.",
-      "Le conflit entre César et Pompée illustre la rupture. Quand César franchit le Rubicon en -49, il défie l’autorité du Sénat et déclenche une guerre civile. Sa victoire le place au sommet, mais son pouvoir personnel inquiète ceux qui pensent défendre la République.",
-      "À retenir : l’assassinat de César en -44 ne restaure pas vraiment l’ancien ordre. Il ouvre une nouvelle phase de conflits qui aboutira au pouvoir d’Auguste. César est donc un cours-pivot indispensable entre République et Empire."
-    ],
-    "complete": [
-      {
-        "title": "1. Une République saturée par les conquêtes",
-        "text": "Rome a conquis des territoires immenses, mais ses institutions restent celles d’une cité aristocratique. Les richesses, les esclaves, les provinces et les armées changent l’équilibre. Les magistratures traditionnelles peinent à contrôler des chefs militaires très populaires."
-      },
-      {
-        "title": "2. César et Pompée, deux ambitions opposées",
-        "text": "César construit son prestige par ses victoires, notamment en Gaule. Pompée incarne une autre figure de grand général et d’homme politique. Leur rivalité devient plus qu’une compétition personnelle : elle révèle l’incapacité de la République à arbitrer ses propres puissants."
-      },
-      {
-        "title": "3. Le Rubicon, une rupture symbolique",
-        "text": "Franchir le Rubicon avec une armée signifie entrer en Italie contre les règles politiques. La formule est célèbre parce qu’elle condense une décision irréversible : un chef militaire met son autorité personnelle au-dessus de l’ordre républicain."
-      },
-      {
-        "title": "4. Assassiner César ne suffit pas",
-        "text": "Les conjurés tuent César en pensant sauver la République. Mais les tensions profondes restent là : armées fidèles à des chefs, rivalités, violence politique, besoin de stabilité. La mort de César prépare donc plutôt une nouvelle guerre qu’un retour durable à l’ancien régime."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Ce cours installe la charnière : République conquérante, généraux puissants, guerre civile, pouvoir personnel, assassinat, puis Auguste. Sans cette étape, l’Empire romain paraît surgir trop vite et l’on ne comprend pas pourquoi les Romains acceptent un nouveau compromis politique."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Charnière",
-        "text": "César explique le passage violent de la République à l’Empire."
-      },
-      {
-        "label": "Événement",
-        "text": "Le Rubicon symbolise la rupture entre armée et autorité civile."
-      },
-      {
-        "label": "Conséquence",
-        "text": "L’assassinat ne règle pas la crise institutionnelle."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "À quel siècle se situe la crise de César ?",
-        "a": "Au Ier siècle av. J.-C.",
-        "why": "C’est la fin de la République romaine.",
-        "trap": "Le placer au IIIe siècle ap. J.-C.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "acteur",
-        "q": "Pourquoi César devient-il si puissant ?",
-        "a": "Ses victoires, son armée, son prestige et les déséquilibres de la République renforcent son autorité.",
-        "why": "Il profite d’une crise structurelle.",
-        "trap": "Dire qu’il devient empereur officiellement comme Auguste.",
-        "evidence": "Blocs 1-2."
-      },
-      {
-        "kind": "événement",
-        "q": "Que signifie le franchissement du Rubicon ?",
-        "a": "César entre en Italie avec son armée et défie l’autorité politique.",
-        "why": "C’est une rupture symbolique majeure.",
-        "trap": "Le réduire à un simple trajet géographique.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "conséquence",
-        "q": "Pourquoi l’assassinat de César ne restaure-t-il pas la République ?",
-        "a": "Parce que les tensions militaires et politiques restent ouvertes.",
-        "why": "La crise dépasse une personne.",
-        "trap": "Croire qu’un meurtre règle les institutions.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Pourquoi ce cours est-il nécessaire avant Auguste ?",
-        "a": "Il montre la guerre civile et la faillite des équilibres républicains.",
-        "why": "Auguste répond à une crise déjà profonde.",
-        "trap": "Passer directement de la République à l’Empire.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "Entre la République et l’Empire, il manque un nœud dramatique : les guerres civiles. César permet de comprendre comment une République conquérante peut être détruite de l’intérieur par ses propres succès.",
+  "keyFacts": [
+    "Repère : Ier siècle av. J.-C.",
+    "Acteurs : César, Pompée, Sénat, armées, peuple romain",
+    "Rupture : la République ne parvient plus à contrôler ses généraux",
+    "Piège : croire qu’Auguste arrive sans crise préalable"
+  ],
+  "express": [
+    "Rome domine déjà une grande partie de la Méditerranée quand la République entre en crise. Les conquêtes enrichissent certains, fragilisent d’autres, donnent un poids énorme aux généraux et multiplient les tensions politiques. César n’apparaît pas dans un vide : il est le produit d’un système déséquilibré.",
+    "Le conflit entre César et Pompée illustre la rupture. Quand César franchit le Rubicon en -49, il défie l’autorité du Sénat et déclenche une guerre civile. Sa victoire le place au sommet, mais son pouvoir personnel inquiète ceux qui pensent défendre la République.",
+    "À retenir : l’assassinat de César en -44 ne restaure pas vraiment l’ancien ordre. Il ouvre une nouvelle phase de conflits qui aboutira au pouvoir d’Auguste. César est donc un cours-pivot indispensable entre République et Empire."
+  ],
+  "complete": [
+    {
+      "title": "1. Une République saturée par les conquêtes",
+      "text": "Rome a conquis des territoires immenses, mais ses institutions restent celles d’une cité aristocratique. Les richesses, les esclaves, les provinces et les armées changent l’équilibre. Les magistratures traditionnelles peinent à contrôler des chefs militaires très populaires."
+    },
+    {
+      "title": "2. César et Pompée, deux ambitions opposées",
+      "text": "César construit son prestige par ses victoires, notamment en Gaule. Pompée incarne une autre figure de grand général et d’homme politique. Leur rivalité devient plus qu’une compétition personnelle : elle révèle l’incapacité de la République à arbitrer ses propres puissants."
+    },
+    {
+      "title": "3. Le Rubicon, une rupture symbolique",
+      "text": "Franchir le Rubicon avec une armée signifie entrer en Italie contre les règles politiques. La formule est célèbre parce qu’elle condense une décision irréversible : un chef militaire met son autorité personnelle au-dessus de l’ordre républicain."
+    },
+    {
+      "title": "4. Assassiner César ne suffit pas",
+      "text": "Les conjurés tuent César en pensant sauver la République. Mais les tensions profondes restent là : armées fidèles à des chefs, rivalités, violence politique, besoin de stabilité. La mort de César prépare donc plutôt une nouvelle guerre qu’un retour durable à l’ancien régime."
+    },
+    {
+      "title": "5. Le premier triumvirat, une alliance privée",
+      "text": "César, Pompée et Crassus associent leurs intérêts à partir de 60 av. J.-C. sans créer une institution officielle. Chacun apporte influence, richesse ou prestige militaire. Cette entente contourne les blocages du Sénat et montre comment les rivalités personnelles prennent le dessus sur les procédures républicaines."
+    },
+    {
+      "title": "6. La Gaule donne à César armée et prestige",
+      "text": "Les campagnes menées de 58 à 50 av. J.-C. enrichissent César, renforcent sa popularité et lui attachent des légions expérimentées. Elles sont aussi extrêmement violentes pour les populations gauloises. Le commandement provincial devient un moyen de construire une puissance politique personnelle capable de rivaliser avec Rome elle-même."
+    },
+    {
+      "title": "7. Le Rubicon ouvre une guerre civile",
+      "text": "En 49 av. J.-C., César franchit avec ses troupes la limite symbolique de sa province alors qu’il devrait déposer son commandement. Pompée et une partie du Sénat quittent l’Italie. Après sa victoire, César concentre les honneurs et les pouvoirs jusqu’à sa dictature perpétuelle, ce qui nourrit le complot qui l’assassine en 44."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Ce cours installe la charnière : République conquérante, généraux puissants, guerre civile, pouvoir personnel, assassinat, puis Auguste. Sans cette étape, l’Empire romain paraît surgir trop vite et l’on ne comprend pas pourquoi les Romains acceptent un nouveau compromis politique."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Charnière",
+      "text": "César explique le passage violent de la République à l’Empire."
+    },
+    {
+      "label": "Événement",
+      "text": "Le Rubicon symbolise la rupture entre armée et autorité civile."
+    },
+    {
+      "label": "Conséquence",
+      "text": "L’assassinat ne règle pas la crise institutionnelle."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "À quel siècle se situe la crise de César ?",
+      "a": "Au Ier siècle av. J.-C.",
+      "choices": [
+        "Au IIIe siècle av. J.-C., pendant la première guerre punique.",
+        "Au Ier siècle apr. J.-C., sous le règne d’Auguste.",
+        "Au Ve siècle apr. J.-C., lors de la fin de l’Empire d’Occident."
+      ],
+      "why": "C’est la fin de la République romaine.",
+      "trap": "Le placer au IIIe siècle ap. J.-C.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "acteur",
+      "q": "Pourquoi César devient-il si puissant ?",
+      "a": "Ses victoires, son armée, son prestige et les déséquilibres de la République renforcent son autorité.",
+      "choices": [
+        "Il hérite légalement de la royauté romaine et du commandement de toutes les provinces.",
+        "Il est élu empereur par l’ensemble des citoyens après la conquête de la Gaule.",
+        "Il contrôle le Sénat grâce à une richesse commerciale indépendante de toute armée."
+      ],
+      "why": "Il profite d’une crise structurelle.",
+      "trap": "Dire qu’il devient empereur officiellement comme Auguste.",
+      "evidence": "Blocs 1-2."
+    },
+    {
+      "kind": "événement",
+      "q": "Que signifie le franchissement du Rubicon ?",
+      "a": "César entre en Italie avec son armée et défie l’autorité politique.",
+      "choices": [
+        "Il quitte définitivement la Gaule et renonce à tout commandement militaire.",
+        "Il accepte de remettre son armée au Sénat avant de se présenter aux élections.",
+        "Il franchit une frontière extérieure de l’Empire pour commencer la conquête de la Bretagne."
+      ],
+      "why": "C’est une rupture symbolique majeure.",
+      "trap": "Le réduire à un simple trajet géographique.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "conséquence",
+      "q": "Pourquoi l’assassinat de César ne restaure-t-il pas la République ?",
+      "a": "Parce que les tensions militaires et politiques restent ouvertes.",
+      "choices": [
+        "Parce que les conjurés prennent immédiatement le contrôle de toutes les armées.",
+        "Parce que César avait déjà fondé une monarchie héréditaire acceptée par tous.",
+        "Parce que le Sénat abolit les institutions républicaines juste après sa mort."
+      ],
+      "why": "La crise dépasse une personne.",
+      "trap": "Croire qu’un meurtre règle les institutions.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi ce cours est-il nécessaire avant Auguste ?",
+      "a": "Il montre la guerre civile et la faillite des équilibres républicains.",
+      "choices": [
+        "Il montre qu’Auguste hérite d’une République stable et sans armées personnelles.",
+        "Il explique comment César crée directement le principat et règne comme premier empereur.",
+        "Il prouve que les guerres civiles cessent définitivement avant l’arrivée d’Octave."
+      ],
+      "why": "Auguste répond à une crise déjà profonde.",
+      "trap": "Passer directement de la République à l’Empire.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "northern-viking-worlds-kings-kingdoms": {
-    "hook": "Les Vikings ne sont pas seulement des équipages en raid. Entre le IXe et le XIe siècle, le Nord voit aussi se renforcer des rois, des territoires, des conversions et des dynasties qui transforment durablement la Scandinavie.",
-    "keyFacts": [
-      "Repère : IXe → XIe siècle",
-      "Espaces : Danemark, Norvège, Suède",
-      "Rupture : passage progressif de pouvoirs locaux à des royaumes plus structurés",
-      "Piège : imaginer des Vikings sans rois, sans lois et sans politique"
-    ],
-    "express": [
-      "Le monde viking est souvent raconté par les raids, les navires et les sagas. C’est utile, mais incomplet. En Scandinavie, des chefs locaux, des rois et des familles puissantes cherchent aussi à contrôler des régions, lever des hommes, imposer des alliances et transmettre leur pouvoir.",
-      "La christianisation joue un rôle politique. Adopter le christianisme peut rapprocher les rois du reste de l’Europe, renforcer leur légitimité et fournir des formes d’organisation écrite et ecclésiastique. Le changement religieux accompagne donc la construction de royaumes.",
-      "À retenir : les sociétés vikings ne disparaissent pas simplement après les raids. Elles se transforment en royaumes médiévaux nordiques. Cette étape donne une vraie colonne dynastique au chapitre."
-    ],
-    "complete": [
-      {
-        "title": "1. Des pouvoirs locaux nombreux",
-        "text": "Au départ, le Nord n’est pas un bloc politique unique. Des chefs, jarls, familles et assemblées exercent des pouvoirs locaux. L’autorité dépend de la richesse, des alliances, de la réputation guerrière, des dons et de la capacité à rassembler des hommes."
-      },
-      {
-        "title": "2. La montée des rois",
-        "text": "Progressivement, certains pouvoirs deviennent plus larges. Des rois cherchent à contrôler des territoires, des ports, des routes et des lieux de culte. Cette construction est lente, conflictuelle et différente selon le Danemark, la Norvège ou la Suède."
-      },
-      {
-        "title": "3. Christianisation et légitimité",
-        "text": "La conversion n’est pas seulement une affaire intime. Elle permet de rejoindre les réseaux diplomatiques chrétiens, de s’appuyer sur l’Église, de produire plus d’écrit et de présenter le roi comme un souverain légitime dans un langage européen."
-      },
-      {
-        "title": "4. Dynasties et mémoire",
-        "text": "Les sagas et les traditions royales reconstruisent parfois les origines des dynasties. Il faut les utiliser avec prudence, mais elles montrent que les Scandinaves médiévaux veulent donner une profondeur ancienne à leurs royaumes."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Ce cours complète le mode de vie viking par une évolution politique. Le fil à garder est : chefs locaux, raids, enrichissement, christianisation, rois plus solides, royaumes médiévaux. Le monde viking devient une partie de l’Europe des monarchies."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Politique",
-        "text": "Le monde viking possède des chefs, assemblées et rois."
-      },
-      {
-        "label": "Dynasties",
-        "text": "Les royaumes nordiques se structurent progressivement."
-      },
-      {
-        "label": "Religion",
-        "text": "La christianisation aide aussi à légitimer le pouvoir."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "Quelle période voit la structuration des royaumes nordiques ?",
-        "a": "Surtout entre le IXe et le XIe siècle.",
-        "why": "C’est la transition du monde viking vers des monarchies médiévales.",
-        "trap": "La placer uniquement à la Renaissance.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "notion",
-        "q": "Pourquoi ne faut-il pas réduire les Vikings aux raids ?",
-        "a": "Parce qu’ils ont aussi des pouvoirs locaux, assemblées, rois, alliances et constructions politiques.",
-        "why": "La société ne se limite pas à la violence maritime.",
-        "trap": "Oublier la politique interne.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "kind": "religion",
-        "q": "Pourquoi la christianisation compte-t-elle politiquement ?",
-        "a": "Elle renforce la légitimité des rois et les relie à l’Europe chrétienne.",
-        "why": "Religion et pouvoir se combinent.",
-        "trap": "La voir comme un détail privé.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "source",
-        "q": "Pourquoi les sagas doivent-elles être utilisées avec prudence ?",
-        "a": "Elles reconstruisent parfois la mémoire des dynasties après les faits.",
-        "why": "Elles sont précieuses mais pas neutres.",
-        "trap": "Les lire comme des archives exactes.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Quel fil chronologique retenir ?",
-        "a": "Chefs locaux, raids, enrichissement, christianisation, rois, royaumes médiévaux.",
-        "why": "C’est la colonne vertébrale politique du chapitre viking.",
-        "trap": "Ne garder que les bateaux et les pillages.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "Les Vikings ne sont pas seulement des équipages en raid. Entre le IXe et le XIe siècle, le Nord voit aussi se renforcer des rois, des territoires, des conversions et des dynasties qui transforment durablement la Scandinavie.",
+  "keyFacts": [
+    "Repère : IXe → XIe siècle",
+    "Espaces : Danemark, Norvège, Suède",
+    "Rupture : passage progressif de pouvoirs locaux à des royaumes plus structurés",
+    "Piège : imaginer des Vikings sans rois, sans lois et sans politique"
+  ],
+  "express": [
+    "Le monde viking est souvent raconté par les raids, les navires et les sagas. C’est utile, mais incomplet. En Scandinavie, des chefs locaux, des rois et des familles puissantes cherchent aussi à contrôler des régions, lever des hommes, imposer des alliances et transmettre leur pouvoir.",
+    "La christianisation joue un rôle politique. Adopter le christianisme peut rapprocher les rois du reste de l’Europe, renforcer leur légitimité et fournir des formes d’organisation écrite et ecclésiastique. Le changement religieux accompagne donc la construction de royaumes.",
+    "À retenir : les sociétés vikings ne disparaissent pas simplement après les raids. Elles se transforment en royaumes médiévaux nordiques. Cette étape donne une vraie colonne dynastique au chapitre."
+  ],
+  "complete": [
+    {
+      "title": "1. Des pouvoirs locaux nombreux",
+      "text": "Au départ, le Nord n’est pas un bloc politique unique. Des chefs, jarls, familles et assemblées exercent des pouvoirs locaux. L’autorité dépend de la richesse, des alliances, de la réputation guerrière, des dons et de la capacité à rassembler des hommes."
+    },
+    {
+      "title": "2. La montée des rois",
+      "text": "Progressivement, certains pouvoirs deviennent plus larges. Des rois cherchent à contrôler des territoires, des ports, des routes et des lieux de culte. Cette construction est lente, conflictuelle et différente selon le Danemark, la Norvège ou la Suède."
+    },
+    {
+      "title": "3. Christianisation et légitimité",
+      "text": "La conversion n’est pas seulement une affaire intime. Elle permet de rejoindre les réseaux diplomatiques chrétiens, de s’appuyer sur l’Église, de produire plus d’écrit et de présenter le roi comme un souverain légitime dans un langage européen."
+    },
+    {
+      "title": "4. Dynasties et mémoire",
+      "text": "Les sagas et les traditions royales reconstruisent parfois les origines des dynasties. Il faut les utiliser avec prudence, mais elles montrent que les Scandinaves médiévaux veulent donner une profondeur ancienne à leurs royaumes."
+    },
+    {
+      "title": "5. Unifier signifie négocier",
+      "text": "Les premiers rois danois, norvégiens ou suédois ne contrôlent pas immédiatement un territoire aux frontières fixes. Ils doivent obtenir l’appui de chefs locaux, distribuer richesses et honneurs, lever des hommes et parcourir le pays. Le royaume se construit par des alliances autant que par des victoires."
+    },
+    {
+      "title": "6. Monnaie, forteresses et lieux de pouvoir",
+      "text": "Des sites comme les forteresses circulaires danoises, les ports royaux ou les ateliers monétaires montrent une capacité croissante à mobiliser du travail et à contrôler les échanges. L’autorité royale devient visible dans le paysage. Ces équipements n’effacent pas les assemblées et pouvoirs locaux, mais ils modifient l’équilibre."
+    },
+    {
+      "title": "7. Christianisation et royauté se renforcent",
+      "text": "Adopter le christianisme facilite les relations diplomatiques avec les royaumes européens et fournit au roi des évêques, une écriture administrative et un langage sacré du pouvoir. En retour, le soutien royal aide l’Église à s’implanter. La conversion est donc à la fois religieuse, sociale et politique."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Ce cours complète le mode de vie viking par une évolution politique. Le fil à garder est : chefs locaux, raids, enrichissement, christianisation, rois plus solides, royaumes médiévaux. Le monde viking devient une partie de l’Europe des monarchies."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Politique",
+      "text": "Le monde viking possède des chefs, assemblées et rois."
+    },
+    {
+      "label": "Dynasties",
+      "text": "Les royaumes nordiques se structurent progressivement."
+    },
+    {
+      "label": "Religion",
+      "text": "La christianisation aide aussi à légitimer le pouvoir."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quelle période voit la structuration des royaumes nordiques ?",
+      "a": "Surtout entre le IXe et le XIe siècle.",
+      "choices": [
+        "Surtout entre le Ve et le VIIe siècle, avant les premiers raids documentés.",
+        "Uniquement après le XIIIe siècle, lorsque l’âge viking est terminé depuis longtemps.",
+        "Au XVe siècle, au moment de la formation des monarchies absolues européennes."
+      ],
+      "why": "C’est la transition du monde viking vers des monarchies médiévales.",
+      "trap": "La placer uniquement à la Renaissance.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "notion",
+      "q": "Pourquoi ne faut-il pas réduire les Vikings aux raids ?",
+      "a": "Parce qu’ils ont aussi des pouvoirs locaux, assemblées, rois, alliances et constructions politiques.",
+      "choices": [
+        "Parce que les raids sont menés uniquement par des rois déjà à la tête d’États centralisés.",
+        "Parce que les assemblées locales remplacent partout les chefs et empêchent toute monarchie.",
+        "Parce que les Scandinaves abandonnent le commerce et l’agriculture dès le début des raids."
+      ],
+      "why": "La société ne se limite pas à la violence maritime.",
+      "trap": "Oublier la politique interne.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "religion",
+      "q": "Pourquoi la christianisation compte-t-elle politiquement ?",
+      "a": "Elle renforce la légitimité des rois et les relie à l’Europe chrétienne.",
+      "choices": [
+        "Elle affaiblit toujours les rois en soumettant leurs sujets directement au pape.",
+        "Elle concerne seulement les croyances privées et ne change ni lois ni alliances.",
+        "Elle fait disparaître immédiatement toutes les coutumes et assemblées locales."
+      ],
+      "why": "Religion et pouvoir se combinent.",
+      "trap": "La voir comme un détail privé.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "source",
+      "q": "Pourquoi les sagas doivent-elles être utilisées avec prudence ?",
+      "a": "Elles reconstruisent parfois la mémoire des dynasties après les faits.",
+      "choices": [
+        "Parce qu’elles sont écrites par les contemporains exacts de chaque roi et ne contiennent aucune légende.",
+        "Parce qu’elles décrivent uniquement les dieux et ne parlent jamais de familles royales.",
+        "Parce qu’elles sont des archives administratives rédigées par les rois eux-mêmes."
+      ],
+      "why": "Elles sont précieuses mais pas neutres.",
+      "trap": "Les lire comme des archives exactes.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quel fil chronologique retenir ?",
+      "a": "Chefs locaux, raids, enrichissement, christianisation, rois, royaumes médiévaux.",
+      "choices": [
+        "Royaumes centralisés, disparition des chefs locaux, fin des échanges, puis premiers raids.",
+        "Raids isolés, refus du christianisme, disparition des rois et retour aux fermes indépendantes.",
+        "Assemblées démocratiques, abolition de l’esclavage, puis conquête de toute l’Europe du Nord."
+      ],
+      "why": "C’est la colonne vertébrale politique du chapitre viking.",
+      "trap": "Ne garder que les bateaux et les pillages.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "northern-viking-worlds-normandy-england-kiev": {
-    "hook": "Une autre étape marquante est essentielle : des groupes vikings ne se contentent pas de partir en raid, ils s’installent, négocient, gouvernent et fondent des principautés qui entrent dans l’histoire politique de l’Europe.",
-    "keyFacts": [
-      "Repères : Normandie en 911, Angleterre danoise, Rus’ de Kiev",
-      "Processus : raids, installation, conversion, gouvernement",
-      "Acteurs : Rollon, rois anglo-saxons et danois, princes de la Rus’",
-      "Piège : croire que l’installation viking reste extérieure aux États médiévaux"
-    ],
-    "express": [
-      "Les raids vikings peuvent déboucher sur autre chose que du pillage. Certains groupes s’installent, obtiennent des terres, contrôlent des villes, se convertissent et deviennent des acteurs politiques locaux. La violence initiale peut donc se transformer en principauté reconnue.",
-      "La Normandie est un exemple fort : au début du Xe siècle, Rollon et ses hommes reçoivent un territoire dans le royaume franc. En quelques générations, les descendants de Vikings deviennent des princes chrétiens parlant une langue romane et jouant un rôle majeur en Occident.",
-      "À retenir : Normandie, Angleterre danoise et Rus’ de Kiev donnent des événements et des étapes. Le monde viking devient dynastique, territorial et diplomatique."
-    ],
-    "complete": [
-      {
-        "title": "1. De la razzia à l’installation",
-        "text": "Un raid cherche un butin rapide. Une installation suppose autre chose : négocier, contrôler une terre, lever des ressources, gérer des populations et transmettre un pouvoir. C’est un changement majeur de logique historique."
-      },
-      {
-        "title": "2. La Normandie, un compromis politique",
-        "text": "Le traité traditionnellement associé à 911 montre un arrangement : le pouvoir franc cherche à stabiliser une zone menacée, tandis que Rollon obtient une base territoriale. L’ancien adversaire devient un prince intégré au jeu politique."
-      },
-      {
-        "title": "3. L’Angleterre, entre royaumes et conquêtes",
-        "text": "L’Angleterre subit des attaques, mais aussi des installations scandinaves. Des zones de droit et de peuplement danois apparaissent, puis des rois d’origine danoise peuvent gouverner l’ensemble du royaume. Là encore, les Vikings entrent dans la politique dynastique."
-      },
-      {
-        "title": "4. La Rus’ de Kiev",
-        "text": "À l’est, des Scandinaves participent aux routes commerciales et aux pouvoirs de la Rus’. Le cas est complexe, mêlé aux populations slaves et aux échanges byzantins, mais il rappelle que le monde viking regarde aussi vers les fleuves, l’argent et Constantinople."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Ce cours donne des étapes marquantes : raids, installation, traité, conversion, dynasties, principautés. Il évite de figer les Vikings en guerriers extérieurs et montre comment ils deviennent des bâtisseurs d’États médiévaux."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Événement",
-        "text": "La Normandie donne un repère politique autour de 911."
-      },
-      {
-        "label": "Transformation",
-        "text": "Des pillards peuvent devenir princes et gouvernants."
-      },
-      {
-        "label": "Espace",
-        "text": "L’impact viking va de l’Atlantique aux routes vers Byzance."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "Quel exemple montre l’intégration de Vikings dans le royaume franc ?",
-        "a": "La Normandie, associée à Rollon au début du Xe siècle.",
-        "why": "C’est un jalon politique fort.",
-        "trap": "Répondre Athènes.",
-        "evidence": "Express et bloc 2."
-      },
-      {
-        "kind": "processus",
-        "q": "Que change l’installation par rapport au raid ?",
-        "a": "Elle suppose contrôle d’un territoire, ressources, population et transmission du pouvoir.",
-        "why": "Ce n’est plus une attaque ponctuelle.",
-        "trap": "Confondre installation et simple pillage.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "kind": "Angleterre",
-        "q": "Pourquoi l’Angleterre est-elle importante ?",
-        "a": "Elle connaît des installations scandinaves et même des rois d’origine danoise.",
-        "why": "Le phénomène devient dynastique.",
-        "trap": "Limiter l’Angleterre à une seule attaque.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "est",
-        "q": "Que rappelle la Rus’ de Kiev ?",
-        "a": "Que les Scandinaves sont aussi liés aux fleuves, au commerce et aux routes vers Byzance.",
-        "why": "Le monde viking n’est pas seulement atlantique.",
-        "trap": "Oublier l’Europe de l’Est.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Pourquoi ce cours est-il un vrai pivot ?",
-        "a": "Il montre le passage de raids à des principautés et dynasties intégrées aux États médiévaux.",
-        "why": "Il ajoute des événements et des trajectoires politiques.",
-        "trap": "Garder seulement le mode de vie.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "Une autre étape marquante est essentielle : des groupes vikings ne se contentent pas de partir en raid, ils s’installent, négocient, gouvernent et fondent des principautés qui entrent dans l’histoire politique de l’Europe.",
+  "keyFacts": [
+    "Repères : Normandie en 911, Angleterre danoise, Rus’ de Kiev",
+    "Processus : raids, installation, conversion, gouvernement",
+    "Acteurs : Rollon, rois anglo-saxons et danois, princes de la Rus’",
+    "Piège : croire que l’installation viking reste extérieure aux États médiévaux"
+  ],
+  "express": [
+    "Les raids vikings peuvent déboucher sur autre chose que du pillage. Certains groupes s’installent, obtiennent des terres, contrôlent des villes, se convertissent et deviennent des acteurs politiques locaux. La violence initiale peut donc se transformer en principauté reconnue.",
+    "La Normandie est un exemple fort : au début du Xe siècle, Rollon et ses hommes reçoivent un territoire dans le royaume franc. En quelques générations, les descendants de Vikings deviennent des princes chrétiens parlant une langue romane et jouant un rôle majeur en Occident.",
+    "À retenir : Normandie, Angleterre danoise et Rus’ de Kiev donnent des événements et des étapes. Le monde viking devient dynastique, territorial et diplomatique."
+  ],
+  "complete": [
+    {
+      "title": "1. De la razzia à l’installation",
+      "text": "Un raid cherche un butin rapide. Une installation suppose autre chose : négocier, contrôler une terre, lever des ressources, gérer des populations et transmettre un pouvoir. C’est un changement majeur de logique historique."
+    },
+    {
+      "title": "2. La Normandie, un compromis politique",
+      "text": "Le traité traditionnellement associé à 911 montre un arrangement : le pouvoir franc cherche à stabiliser une zone menacée, tandis que Rollon obtient une base territoriale. L’ancien adversaire devient un prince intégré au jeu politique."
+    },
+    {
+      "title": "3. L’Angleterre, entre royaumes et conquêtes",
+      "text": "L’Angleterre subit des attaques, mais aussi des installations scandinaves. Des zones de droit et de peuplement danois apparaissent, puis des rois d’origine danoise peuvent gouverner l’ensemble du royaume. Là encore, les Vikings entrent dans la politique dynastique."
+    },
+    {
+      "title": "4. La Rus’ de Kiev",
+      "text": "À l’est, des Scandinaves participent aux routes commerciales et aux pouvoirs de la Rus’. Le cas est complexe, mêlé aux populations slaves et aux échanges byzantins, mais il rappelle que le monde viking regarde aussi vers les fleuves, l’argent et Constantinople."
+    },
+    {
+      "title": "5. La Normandie naît d’un compromis",
+      "text": "Au début du Xe siècle, le chef scandinave Rollon reçoit un territoire autour de la basse Seine en échange de sa fidélité et de la défense du royaume contre d’autres raids. Ses descendants adoptent le christianisme et la langue locale tout en conservant une identité politique propre. En quelques générations, des Vikings deviennent des princes normands."
+    },
+    {
+      "title": "6. L’Angleterre, entre conquête et intégration",
+      "text": "Des armées scandinaves s’installent dans une partie de l’Angleterre, souvent appelée Danelaw. Villes, noms de lieux, vocabulaire et pratiques juridiques témoignent de ces implantations. Plus tard, le roi danois Knut dirige au XIe siècle un ensemble comprenant Angleterre, Danemark et Norvège, sans créer pour autant un État national unifié au sens moderne."
+    },
+    {
+      "title": "7. Les routes de l’Est et la Rus’",
+      "text": "Des Scandinaves appelés Varègues empruntent les fleuves vers la Baltique, la mer Noire et Constantinople. Ils participent à la formation de principautés autour de Novgorod et Kiev, aux côtés de populations slaves et finno-ougriennes. La Rus’ de Kiev est donc issue d’interactions multiples, pas de l’œuvre isolée d’un seul peuple."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Ce cours donne des étapes marquantes : raids, installation, traité, conversion, dynasties, principautés. Il évite de figer les Vikings en guerriers extérieurs et montre comment ils deviennent des bâtisseurs d’États médiévaux."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Événement",
+      "text": "La Normandie donne un repère politique autour de 911."
+    },
+    {
+      "label": "Transformation",
+      "text": "Des pillards peuvent devenir princes et gouvernants."
+    },
+    {
+      "label": "Espace",
+      "text": "L’impact viking va de l’Atlantique aux routes vers Byzance."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quel exemple montre l’intégration de Vikings dans le royaume franc ?",
+      "a": "La Normandie, associée à Rollon au début du Xe siècle.",
+      "choices": [
+        "L’Islande, donnée à Rollon par le roi d’Angleterre au XIe siècle.",
+        "La Sicile, où Rollon fonde un duché après avoir conquis Rome.",
+        "La Bretagne, devenue un royaume danois indépendant au VIIIe siècle."
+      ],
+      "why": "C’est un jalon politique fort.",
+      "trap": "Répondre Athènes.",
+      "evidence": "Express et bloc 2."
+    },
+    {
+      "kind": "processus",
+      "q": "Que change l’installation par rapport au raid ?",
+      "a": "Elle suppose contrôle d’un territoire, ressources, population et transmission du pouvoir.",
+      "choices": [
+        "Elle permet de continuer les pillages sans administration ni relations avec les habitants.",
+        "Elle consiste seulement à hiverner quelques mois avant de repartir vers la Scandinavie.",
+        "Elle supprime les besoins d’alliances, de lois et d’intégration aux élites locales."
+      ],
+      "why": "Ce n’est plus une attaque ponctuelle.",
+      "trap": "Confondre installation et simple pillage.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "Angleterre",
+      "q": "Pourquoi l’Angleterre est-elle importante ?",
+      "a": "Elle connaît des installations scandinaves et même des rois d’origine danoise.",
+      "choices": [
+        "Elle reste entièrement à l’écart des migrations et des conquêtes scandinaves.",
+        "Elle est conquise une seule fois puis gouvernée sans mélange de populations ni de lois.",
+        "Elle fournit seulement des monastères à piller, sans installation ni pouvoir politique."
+      ],
+      "why": "Le phénomène devient dynastique.",
+      "trap": "Limiter l’Angleterre à une seule attaque.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "est",
+      "q": "Que rappelle la Rus’ de Kiev ?",
+      "a": "Que les Scandinaves sont aussi liés aux fleuves, au commerce et aux routes vers Byzance.",
+      "choices": [
+        "Que les Scandinaves voyagent uniquement vers l’ouest par l’océan Atlantique.",
+        "Que Kiev est une colonie construite directement par les rois de Norvège au XIe siècle.",
+        "Que les routes fluviales orientales servent seulement aux campagnes militaires contre Rome."
+      ],
+      "why": "Le monde viking n’est pas seulement atlantique.",
+      "trap": "Oublier l’Europe de l’Est.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Pourquoi ce cours est-il un vrai pivot ?",
+      "a": "Il montre le passage de raids à des principautés et dynasties intégrées aux États médiévaux.",
+      "choices": [
+        "Il montre que tous les Vikings deviennent rois dès qu’ils quittent la Scandinavie.",
+        "Il prouve que les raids cessent partout dès la première installation territoriale.",
+        "Il relie uniquement la Normandie à l’Angleterre, sans ouverture vers l’Europe orientale."
+      ],
+      "why": "Il ajoute des événements et des trajectoires politiques.",
+      "trap": "Garder seulement le mode de vie.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "medieval-west-clovis-merovingians": {
-    "hook": "Pour le Moyen Âge occidental, il faut un premier jalon dynastique : Clovis et les Mérovingiens. Sans eux, on passe trop vite de Rome à Charlemagne sans comprendre l’installation des royaumes francs.",
-    "keyFacts": [
-      "Repère : Clovis règne vers 481-511",
-      "Dynastie : Mérovingiens",
-      "Rupture : royaumes germaniques dans l’ancien espace romain",
-      "Événement clé : conversion de Clovis au christianisme catholique"
-    ],
-    "express": [
-      "Après la fin de l’Empire romain d’Occident, la Gaule n’est pas vide. Des royaumes germaniques s’y installent et héritent en partie du monde romain. Les Francs, avec Clovis, deviennent l’un des acteurs majeurs de cette recomposition.",
-      "Clovis remporte des victoires, étend son autorité et fonde une dynastie mérovingienne. Son baptême est essentiel car il rapproche le pouvoir franc de l’Église catholique et des élites gallo-romaines. La religion devient un outil de légitimité politique.",
-      "À retenir : Clovis n’est pas encore roi de France au sens moderne. Mais il est un pivot : il relie la Gaule romaine, les royaumes barbares, l’Église et la naissance progressive d’un royaume franc durable."
-    ],
-    "complete": [
-      {
-        "title": "1. Après Rome, des royaumes",
-        "text": "La chute de l’Empire romain d’Occident ne fait pas disparaître toutes les structures. Les villes, les évêques, les lois, les élites locales et la mémoire romaine continuent. Les nouveaux rois doivent donc gouverner dans un monde mélangé."
-      },
-      {
-        "title": "2. Les Francs s’imposent",
-        "text": "Clovis appartient aux Francs saliens. Par la guerre et les alliances, il étend son pouvoir sur une partie importante de la Gaule. Cette expansion donne une base territoriale à une dynastie qui dominera plusieurs générations."
-      },
-      {
-        "title": "3. Le baptême comme choix politique",
-        "text": "La conversion de Clovis au catholicisme n’est pas seulement une scène religieuse. Elle facilite les relations avec les évêques et avec une population gallo-romaine largement catholique. Le roi devient plus acceptable pour des élites déjà installées."
-      },
-      {
-        "title": "4. Les Mérovingiens, une dynastie",
-        "text": "Après Clovis, les Mérovingiens règnent sur des royaumes francs souvent partagés entre héritiers. Cela crée des rivalités, mais aussi une continuité dynastique. Comprendre ces partages évite d’imaginer un État français déjà unifié."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Clovis est un jalon indispensable : après Rome, avant Charlemagne. Il montre comment un pouvoir germanique s’installe dans l’ancien monde romain, s’allie à l’Église et fonde une dynastie durable."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Dynastie",
-        "text": "Les Mérovingiens structurent les premiers royaumes francs."
-      },
-      {
-        "label": "Religion",
-        "text": "Le baptême de Clovis renforce sa légitimité."
-      },
-      {
-        "label": "Transition",
-        "text": "Clovis relie Antiquité tardive et Moyen Âge occidental."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "À quelle dynastie appartient Clovis ?",
-        "a": "Aux Mérovingiens.",
-        "why": "C’est le premier grand jalon dynastique franc.",
-        "trap": "Dire les Capétiens.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "contexte",
-        "q": "Pourquoi l’après-Rome n’est-il pas un vide ?",
-        "a": "Parce que villes, évêques, élites et traditions romaines continuent.",
-        "why": "Les royaumes germaniques gouvernent un monde hérité de Rome.",
-        "trap": "Imaginer une rupture totale.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "kind": "religion",
-        "q": "Pourquoi le baptême de Clovis est-il important ?",
-        "a": "Il rapproche le pouvoir franc de l’Église catholique et des élites gallo-romaines.",
-        "why": "La conversion a une portée politique.",
-        "trap": "La réduire à une anecdote privée.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "nuance",
-        "q": "Pourquoi Clovis n’est-il pas roi de France au sens moderne ?",
-        "a": "Parce que l’État français n’existe pas encore sous cette forme.",
-        "why": "Il faut éviter l’anachronisme.",
-        "trap": "Projeter la France moderne au Ve siècle.",
-        "evidence": "Conclusion."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Quel rôle joue Clovis dans la chronologie ?",
-        "a": "Il sert de pivot entre Gaule romaine, royaumes germaniques, Église et royaume franc.",
-        "why": "Il donne une ossature à l’entrée dans le Moyen Âge.",
-        "trap": "Passer directement de Rome à Charlemagne.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "Pour le Moyen Âge occidental, il faut un premier jalon dynastique : Clovis et les Mérovingiens. Sans eux, on passe trop vite de Rome à Charlemagne sans comprendre l’installation des royaumes francs.",
+  "keyFacts": [
+    "Repère : Clovis règne vers 481-511",
+    "Dynastie : Mérovingiens",
+    "Rupture : royaumes germaniques dans l’ancien espace romain",
+    "Événement clé : conversion de Clovis au christianisme catholique"
+  ],
+  "express": [
+    "Après la fin de l’Empire romain d’Occident, la Gaule n’est pas vide. Des royaumes germaniques s’y installent et héritent en partie du monde romain. Les Francs, avec Clovis, deviennent l’un des acteurs majeurs de cette recomposition.",
+    "Clovis remporte des victoires, étend son autorité et fonde une dynastie mérovingienne. Son baptême est essentiel car il rapproche le pouvoir franc de l’Église catholique et des élites gallo-romaines. La religion devient un outil de légitimité politique.",
+    "À retenir : Clovis n’est pas encore roi de France au sens moderne. Mais il est un pivot : il relie la Gaule romaine, les royaumes barbares, l’Église et la naissance progressive d’un royaume franc durable."
+  ],
+  "complete": [
+    {
+      "title": "1. Après Rome, des royaumes",
+      "text": "La chute de l’Empire romain d’Occident ne fait pas disparaître toutes les structures. Les villes, les évêques, les lois, les élites locales et la mémoire romaine continuent. Les nouveaux rois doivent donc gouverner dans un monde mélangé."
+    },
+    {
+      "title": "2. Les Francs s’imposent",
+      "text": "Clovis appartient aux Francs saliens. Par la guerre et les alliances, il étend son pouvoir sur une partie importante de la Gaule. Cette expansion donne une base territoriale à une dynastie qui dominera plusieurs générations."
+    },
+    {
+      "title": "3. Le baptême comme choix politique",
+      "text": "La conversion de Clovis au catholicisme n’est pas seulement une scène religieuse. Elle facilite les relations avec les évêques et avec une population gallo-romaine largement catholique. Le roi devient plus acceptable pour des élites déjà installées."
+    },
+    {
+      "title": "4. Les Mérovingiens, une dynastie",
+      "text": "Après Clovis, les Mérovingiens règnent sur des royaumes francs souvent partagés entre héritiers. Cela crée des rivalités, mais aussi une continuité dynastique. Comprendre ces partages évite d’imaginer un État français déjà unifié."
+    },
+    {
+      "title": "5. Une Gaule déjà transformée",
+      "text": "Quand Clovis devient roi des Francs saliens à la fin du Ve siècle, l’Empire romain d’Occident a disparu, mais les villes, évêques, impôts, élites foncières et traditions juridiques romaines n’ont pas été effacés. Le royaume franc se construit en combinant héritages romains et pouvoirs militaires germaniques."
+    },
+    {
+      "title": "6. Le baptême comme choix politique et religieux",
+      "text": "La conversion de Clovis au christianisme nicéen, probablement autour de 500, le rapproche des évêques et des populations gallo-romaines, contrairement à plusieurs rois germaniques ariens. L’épisode est raconté surtout par Grégoire de Tours plusieurs décennies plus tard : il faut donc distinguer le fait, sa portée et la mise en scène postérieure."
+    },
+    {
+      "title": "7. Un royaume partagé entre héritiers",
+      "text": "À la mort d’un roi mérovingien, le territoire est souvent divisé entre ses fils selon une logique patrimoniale. Ces partages créent des royaumes comme Neustrie, Austrasie ou Bourgogne, qui peuvent coopérer ou se combattre. La dynastie n’est pas simplement une suite de “rois fainéants” : elle gouverne un espace complexe pendant plus de deux siècles."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Clovis est un jalon indispensable : après Rome, avant Charlemagne. Il montre comment un pouvoir germanique s’installe dans l’ancien monde romain, s’allie à l’Église et fonde une dynastie durable."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Dynastie",
+      "text": "Les Mérovingiens structurent les premiers royaumes francs."
+    },
+    {
+      "label": "Religion",
+      "text": "Le baptême de Clovis renforce sa légitimité."
+    },
+    {
+      "label": "Transition",
+      "text": "Clovis relie Antiquité tardive et Moyen Âge occidental."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "À quelle dynastie appartient Clovis ?",
+      "a": "Aux Mérovingiens.",
+      "choices": [
+        "Aux Carolingiens, dont il est le premier empereur.",
+        "Aux Capétiens, qui prennent le pouvoir en 987.",
+        "Aux Ottoniens, dynastie impériale du monde germanique."
+      ],
+      "why": "C’est le premier grand jalon dynastique franc.",
+      "trap": "Dire les Capétiens.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "contexte",
+      "q": "Pourquoi l’après-Rome n’est-il pas un vide ?",
+      "a": "Parce que villes, évêques, élites et traditions romaines continuent.",
+      "choices": [
+        "Parce que toutes les institutions romaines disparaissent le jour de la chute de l’Empire.",
+        "Parce que les nouveaux royaumes interdisent le christianisme et chassent les élites locales.",
+        "Parce que les villes sont abandonnées et toute administration devient impossible."
+      ],
+      "why": "Les royaumes germaniques gouvernent un monde hérité de Rome.",
+      "trap": "Imaginer une rupture totale.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "religion",
+      "q": "Pourquoi le baptême de Clovis est-il important ?",
+      "a": "Il rapproche le pouvoir franc de l’Église catholique et des élites gallo-romaines.",
+      "choices": [
+        "Il fait de Clovis le premier pape et lui donne une autorité sur tous les rois.",
+        "Il impose immédiatement la même religion à tous les peuples d’Europe occidentale.",
+        "Il rompt les liens avec les évêques gallo-romains et les anciennes élites urbaines."
+      ],
+      "why": "La conversion a une portée politique.",
+      "trap": "La réduire à une anecdote privée.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "nuance",
+      "q": "Pourquoi Clovis n’est-il pas roi de France au sens moderne ?",
+      "a": "Parce que l’État français n’existe pas encore sous cette forme.",
+      "choices": [
+        "Parce qu’il ne gouverne aucun territoire situé dans la future France.",
+        "Parce qu’il est seulement un chef militaire sans dynastie ni royaume.",
+        "Parce que le titre de roi n’existe pas encore dans les royaumes germaniques."
+      ],
+      "why": "Il faut éviter l’anachronisme.",
+      "trap": "Projeter la France moderne au Ve siècle.",
+      "evidence": "Conclusion."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quel rôle joue Clovis dans la chronologie ?",
+      "a": "Il sert de pivot entre Gaule romaine, royaumes germaniques, Église et royaume franc.",
+      "choices": [
+        "Il marque la disparition de toute tradition romaine et le début d’une société entièrement nouvelle.",
+        "Il fonde directement la monarchie capétienne et l’État centralisé français.",
+        "Il clôt l’époque médiévale en unifiant définitivement l’Europe occidentale."
+      ],
+      "why": "Il donne une ossature à l’entrée dans le Moyen Âge.",
+      "trap": "Passer directement de Rome à Charlemagne.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "medieval-west-charlemagne-carolingians": {
-    "hook": "Charlemagne donne le deuxième grand repère : après les Mérovingiens, les Carolingiens construisent un empire occidental qui tente de réorganiser pouvoir, Église, guerre et culture.",
-    "keyFacts": [
-      "Repère : Charlemagne, roi des Francs puis empereur en 800",
-      "Dynastie : Carolingiens",
-      "Événement : couronnement impérial à Rome le 25 décembre 800",
-      "Suite : partage de Verdun en 843"
-    ],
-    "express": [
-      "Les Carolingiens arrivent au pouvoir après les Mérovingiens. Pépin le Bref, puis Charlemagne, renforcent le lien entre royauté franque et papauté. La dynastie ne se contente pas de régner : elle cherche à restaurer une forme d’ordre impérial en Occident.",
-      "Charlemagne conquiert, administre et réforme. Son couronnement impérial en 800 donne une portée symbolique immense à son règne : l’idée d’empire renaît en Occident, même si cet empire n’est pas l’Empire romain reconstitué à l’identique.",
-      "À retenir : le cours ne doit pas seulement dire que Charlemagne a inventé l’école. Le vrai fil est dynastique et politique : Carolingiens, expansion, sacre impérial, réforme, puis fragilité de l’héritage avec Verdun."
-    ],
-    "complete": [
-      {
-        "title": "1. Des Mérovingiens aux Carolingiens",
-        "text": "Les Carolingiens ne sortent pas de nulle part. Ils sont d’abord des aristocrates puissants, maires du palais, qui finissent par remplacer les Mérovingiens. Cette transition montre que le pouvoir réel peut précéder le titre royal."
-      },
-      {
-        "title": "2. Conquérir et convertir",
-        "text": "Charlemagne mène de nombreuses campagnes. La conquête des Saxons, notamment, mêle guerre, intégration politique et christianisation forcée. L’empire carolingien est donc aussi une construction militaire et religieuse."
-      },
-      {
-        "title": "3. Le couronnement de 800",
-        "text": "Le 25 décembre 800, Charlemagne est couronné empereur à Rome. L’événement est central : il affirme une alliance avec la papauté et donne à l’Occident latin un empereur concurrent symbolique de Byzance."
-      },
-      {
-        "title": "4. Administrer un vaste empire",
-        "text": "Missi dominici, capitulaires, comtes, monastères, écoles et écriture caroline participent à l’organisation du pouvoir. L’empire reste difficile à contrôler, mais il produit un effort de gouvernement et de culture."
-      },
-      {
-        "title": "5. Verdun et la fragilité de l’héritage",
-        "text": "Après Charlemagne, l’unité se fragilise. En 843, le traité de Verdun partage l’empire entre ses petits-fils. Ce n’est pas la naissance immédiate de la France et de l’Allemagne, mais un jalon majeur dans la structuration de l’Europe occidentale."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Dynastie",
-        "text": "Les Carolingiens remplacent les Mérovingiens."
-      },
-      {
-        "label": "Événement",
-        "text": "Le couronnement de 800 marque le retour de l’idée impériale."
-      },
-      {
-        "label": "Rupture",
-        "text": "Verdun montre la fragilité de l’empire carolingien."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "Quelle dynastie est celle de Charlemagne ?",
-        "a": "Les Carolingiens.",
-        "why": "C’est le deuxième grand jalon franc.",
-        "trap": "Répondre les Mérovingiens pour Charlemagne.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "événement",
-        "q": "Quand Charlemagne est-il couronné empereur ?",
-        "a": "Le 25 décembre 800.",
-        "why": "C’est un repère majeur de l’Occident médiéval.",
-        "trap": "Le placer en 1789.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "pouvoir",
-        "q": "À quoi servent les missi dominici ?",
-        "a": "À contrôler et relayer l’autorité impériale dans les régions.",
-        "why": "Ils illustrent l’effort administratif.",
-        "trap": "Les confondre avec des chevaliers de croisade.",
-        "evidence": "Bloc 4."
-      },
-      {
-        "kind": "suite",
-        "q": "Que se passe-t-il à Verdun en 843 ?",
-        "a": "L’empire carolingien est partagé entre les petits-fils de Charlemagne.",
-        "why": "C’est un jalon de l’Europe médiévale.",
-        "trap": "Dire que Rome est fondée.",
-        "evidence": "Bloc 5."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Quel fil retenir sur Charlemagne ?",
-        "a": "Carolingiens, expansion, alliance avec l’Église, couronnement impérial, administration, partage de l’héritage.",
-        "why": "Cela donne une vraie chronologie.",
-        "trap": "Réduire le cours à l’école.",
-        "evidence": "Conclusion."
-      }
-    ]
-  },
+  "hook": "Charlemagne donne le deuxième grand repère : après les Mérovingiens, les Carolingiens construisent un empire occidental qui tente de réorganiser pouvoir, Église, guerre et culture.",
+  "keyFacts": [
+    "Repère : Charlemagne, roi des Francs puis empereur en 800",
+    "Dynastie : Carolingiens",
+    "Événement : couronnement impérial à Rome le 25 décembre 800",
+    "Suite : partage de Verdun en 843"
+  ],
+  "express": [
+    "Les Carolingiens arrivent au pouvoir après les Mérovingiens. Pépin le Bref, puis Charlemagne, renforcent le lien entre royauté franque et papauté. La dynastie ne se contente pas de régner : elle cherche à restaurer une forme d’ordre impérial en Occident.",
+    "Charlemagne conquiert, administre et réforme. Son couronnement impérial en 800 donne une portée symbolique immense à son règne : l’idée d’empire renaît en Occident, même si cet empire n’est pas l’Empire romain reconstitué à l’identique.",
+    "À retenir : le cours ne doit pas seulement dire que Charlemagne a inventé l’école. Le vrai fil est dynastique et politique : Carolingiens, expansion, sacre impérial, réforme, puis fragilité de l’héritage avec Verdun."
+  ],
+  "complete": [
+    {
+      "title": "1. Des Mérovingiens aux Carolingiens",
+      "text": "Les Carolingiens ne sortent pas de nulle part. Ils sont d’abord des aristocrates puissants, maires du palais, qui finissent par remplacer les Mérovingiens. Cette transition montre que le pouvoir réel peut précéder le titre royal."
+    },
+    {
+      "title": "2. Conquérir et convertir",
+      "text": "Charlemagne mène de nombreuses campagnes. La conquête des Saxons, notamment, mêle guerre, intégration politique et christianisation forcée. L’empire carolingien est donc aussi une construction militaire et religieuse."
+    },
+    {
+      "title": "3. Le couronnement de 800",
+      "text": "Le 25 décembre 800, Charlemagne est couronné empereur à Rome. L’événement est central : il affirme une alliance avec la papauté et donne à l’Occident latin un empereur concurrent symbolique de Byzance."
+    },
+    {
+      "title": "4. Administrer un vaste empire",
+      "text": "Missi dominici, capitulaires, comtes, monastères, écoles et écriture caroline participent à l’organisation du pouvoir. L’empire reste difficile à contrôler, mais il produit un effort de gouvernement et de culture."
+    },
+    {
+      "title": "5. Verdun et la fragilité de l’héritage",
+      "text": "Après Charlemagne, l’unité se fragilise. En 843, le traité de Verdun partage l’empire entre ses petits-fils. Ce n’est pas la naissance immédiate de la France et de l’Allemagne, mais un jalon majeur dans la structuration de l’Europe occidentale."
+    },
+    {
+      "title": "6. Une conquête presque permanente",
+      "text": "Charlemagne agrandit le royaume par des campagnes contre Lombards, Saxons, Avars et autres voisins. La conquête de la Saxe dure des décennies et s’accompagne de conversions forcées et de répressions. L’image du souverain lettré ne doit donc pas masquer la violence qui permet l’expansion carolingienne."
+    },
+    {
+      "title": "7. Gouverner par des relais",
+      "text": "Comtes, évêques et abbés administrent localement au nom du roi. Les missi dominici parcourent certaines régions pour transmettre les ordres et contrôler les responsables. Les capitulaires fixent des directives, mais leur application dépend des hommes et des rapports de force locaux : l’empire ne possède pas une bureaucratie moderne permanente."
+    },
+    {
+      "title": "8. Le couronnement impérial de 800",
+      "text": "À Rome, le pape Léon III couronne Charlemagne empereur le jour de Noël 800. Le geste renforce le prestige du souverain franc et affirme un nouvel empire chrétien en Occident, tout en compliquant les relations avec Byzance. Il associe durablement pouvoir politique, héritage romain et légitimation religieuse."
+    },
+    {
+      "title": "9. Ce qu’il faut retenir",
+      "text": "Charlemagne donne le deuxième grand repère : après les Mérovingiens, les Carolingiens construisent un empire occidental qui tente de réorganiser pouvoir, Église, guerre et culture."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Dynastie",
+      "text": "Les Carolingiens remplacent les Mérovingiens."
+    },
+    {
+      "label": "Événement",
+      "text": "Le couronnement de 800 marque le retour de l’idée impériale."
+    },
+    {
+      "label": "Rupture",
+      "text": "Verdun montre la fragilité de l’empire carolingien."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quelle dynastie est celle de Charlemagne ?",
+      "a": "Les Carolingiens.",
+      "choices": [
+        "Les Mérovingiens, dynastie qui gouverne encore après l’an 800.",
+        "Les Capétiens, qui commencent avec Pépin le Bref.",
+        "Les Plantagenêts, rois francs installés à Aix-la-Chapelle."
+      ],
+      "why": "C’est le deuxième grand jalon franc.",
+      "trap": "Répondre les Mérovingiens pour Charlemagne.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "événement",
+      "q": "Quand Charlemagne est-il couronné empereur ?",
+      "a": "Le 25 décembre 800.",
+      "choices": [
+        "Le 25 décembre 732, après la bataille de Poitiers.",
+        "Le 14 février 842, lors des serments de Strasbourg.",
+        "Le 10 août 843, au moment du traité de Verdun."
+      ],
+      "why": "C’est un repère majeur de l’Occident médiéval.",
+      "trap": "Le placer en 1789.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "pouvoir",
+      "q": "À quoi servent les missi dominici ?",
+      "a": "À contrôler et relayer l’autorité impériale dans les régions.",
+      "choices": [
+        "À choisir l’empereur lors d’une assemblée annuelle des guerriers.",
+        "À collecter uniquement les impôts des villes italiennes au profit du pape.",
+        "À diriger des monastères et copier les manuscrits pour la cour impériale."
+      ],
+      "why": "Ils illustrent l’effort administratif.",
+      "trap": "Les confondre avec des chevaliers de croisade.",
+      "evidence": "Bloc 4."
+    },
+    {
+      "kind": "suite",
+      "q": "Que se passe-t-il à Verdun en 843 ?",
+      "a": "L’empire carolingien est partagé entre les petits-fils de Charlemagne.",
+      "choices": [
+        "Charlemagne partage lui-même son empire entre trois fils avant son couronnement.",
+        "Les Carolingiens réunifient durablement l’Empire romain d’Occident.",
+        "Le pape place toutes les terres carolingiennes sous l’autorité directe de Rome."
+      ],
+      "why": "C’est un jalon de l’Europe médiévale.",
+      "trap": "Dire que Rome est fondée.",
+      "evidence": "Bloc 5."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quel fil retenir sur Charlemagne ?",
+      "a": "Carolingiens, expansion, alliance avec l’Église, couronnement impérial, administration, partage de l’héritage.",
+      "choices": [
+        "Mérovingiens, baptême de Clovis, conquête de la Gaule, puis couronnement royal en 987.",
+        "Capétiens, croisades, domaine royal, justice et centralisation autour de Paris.",
+        "Empire byzantin, conquêtes arabes, schisme religieux et prise de Constantinople."
+      ],
+      "why": "Cela donne une vraie chronologie.",
+      "trap": "Réduire le cours à l’école.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+},
   "medieval-west-capetians-monarchy": {
-    "hook": "Les Capétiens donnent le troisième jalon : on ne passe pas directement de Charlemagne à un État français puissant. Le pouvoir royal commence faible, puis se renforce par la dynastie, le domaine, l’administration et les conflits.",
-    "keyFacts": [
-      "Repère : Hugues Capet élu roi en 987",
-      "Dynastie : Capétiens directs puis branches cadettes",
-      "Processus : renforcement lent du domaine royal",
-      "Piège : croire que le roi de France contrôle tout le royaume dès 987"
-    ],
-    "express": [
-      "En 987, Hugues Capet devient roi. Le titre est prestigieux, mais son pouvoir réel reste limité par les grands seigneurs. La force des Capétiens vient d’abord de leur continuité dynastique : ils réussissent à transmettre la couronne de père en fils pendant plusieurs siècles.",
-      "Peu à peu, les rois agrandissent le domaine royal, imposent davantage leur justice, s’appuient sur des agents, des villes, l’Église et des conflits contre de grands princes. Philippe Auguste, Louis IX et Philippe le Bel marquent des étapes différentes du renforcement monarchique.",
-      "À retenir : les Capétiens sont indispensables pour comprendre la construction de la monarchie française. Ce n’est pas un événement unique, mais une montée lente du pouvoir royal."
-    ],
-    "complete": [
-      {
-        "title": "1. Un roi prestigieux mais faible",
-        "text": "Hugues Capet reçoit un titre qui compte symboliquement, mais il ne contrôle pas directement tout le royaume. De nombreux seigneurs disposent de terres, châteaux, droits et armées locales. La monarchie capétienne commence donc avec un pouvoir limité."
-      },
-      {
-        "title": "2. La continuité dynastique",
-        "text": "La grande réussite des premiers Capétiens est la transmission. En associant souvent le fils au trône du vivant du père, ils évitent des crises de succession. La dynastie construit peu à peu une habitude d’obéissance au même lignage."
-      },
-      {
-        "title": "3. Le domaine royal s’agrandit",
-        "text": "La puissance concrète du roi dépend de son domaine : terres, revenus, villes, routes, châteaux. Par héritages, mariages, confiscations ou conquêtes, les Capétiens agrandissent leur base matérielle et peuvent mieux financer leur autorité."
-      },
-      {
-        "title": "4. Philippe Auguste, Louis IX, Philippe le Bel",
-        "text": "Ces rois incarnent des étapes : victoire contre les Plantagenêts, prestige de la justice royale, affirmation face aux grands pouvoirs. Il ne faut pas les confondre, mais ils montrent tous un même mouvement : la monarchie devient plus présente."
-      },
-      {
-        "title": "5. Ce qu’il faut retenir",
-        "text": "Les Capétiens ajoutent une vraie colonne dynastique : 987, continuité, domaine royal, grands règnes, administration, justice. C’est le fil qui mène progressivement du morcellement féodal à une monarchie plus structurée."
-      }
-    ],
-    "deeper": [],
-    "takeaways": [
-      {
-        "label": "Dynastie",
-        "text": "Les Capétiens stabilisent la transmission du pouvoir royal."
-      },
-      {
-        "label": "Processus",
-        "text": "Le domaine royal s’agrandit lentement."
-      },
-      {
-        "label": "État",
-        "text": "Justice et administration renforcent la monarchie."
-      }
-    ],
-    "quiz": [
-      {
-        "kind": "repère",
-        "q": "Quelle date marque l’arrivée d’Hugues Capet ?",
-        "a": "987.",
-        "why": "C’est le repère de départ de la dynastie capétienne.",
-        "trap": "Répondre 800.",
-        "evidence": "Express."
-      },
-      {
-        "kind": "nuance",
-        "q": "Pourquoi le roi est-il faible au départ ?",
-        "a": "Parce que de grands seigneurs contrôlent largement leurs terres et leurs pouvoirs locaux.",
-        "why": "Le titre ne donne pas immédiatement un État fort.",
-        "trap": "Imaginer une France déjà centralisée.",
-        "evidence": "Bloc 1."
-      },
-      {
-        "kind": "dynastie",
-        "q": "Quelle est la grande force des premiers Capétiens ?",
-        "a": "La continuité de la transmission de père en fils.",
-        "why": "Elle stabilise progressivement la royauté.",
-        "trap": "Croire qu’ils changent de dynastie à chaque règne.",
-        "evidence": "Bloc 2."
-      },
-      {
-        "kind": "pouvoir",
-        "q": "Pourquoi le domaine royal est-il important ?",
-        "a": "Il fournit terres, revenus et bases concrètes à l’autorité du roi.",
-        "why": "Le pouvoir dépend aussi de ressources matérielles.",
-        "trap": "Le réduire à un symbole.",
-        "evidence": "Bloc 3."
-      },
-      {
-        "kind": "synthèse",
-        "q": "Quel fil retenir sur les Capétiens ?",
-        "a": "987, continuité dynastique, agrandissement du domaine, justice et administration royale.",
-        "why": "C’est la progression de la monarchie.",
-        "trap": "Mémoriser seulement une liste de rois.",
-        "evidence": "Conclusion."
-      }
-    ]
-  }
+  "hook": "Les Capétiens donnent le troisième jalon : on ne passe pas directement de Charlemagne à un État français puissant. Le pouvoir royal commence faible, puis se renforce par la dynastie, le domaine, l’administration et les conflits.",
+  "keyFacts": [
+    "Repère : Hugues Capet élu roi en 987",
+    "Dynastie : Capétiens directs puis branches cadettes",
+    "Processus : renforcement lent du domaine royal",
+    "Piège : croire que le roi de France contrôle tout le royaume dès 987"
+  ],
+  "express": [
+    "En 987, Hugues Capet devient roi. Le titre est prestigieux, mais son pouvoir réel reste limité par les grands seigneurs. La force des Capétiens vient d’abord de leur continuité dynastique : ils réussissent à transmettre la couronne de père en fils pendant plusieurs siècles.",
+    "Peu à peu, les rois agrandissent le domaine royal, imposent davantage leur justice, s’appuient sur des agents, des villes, l’Église et des conflits contre de grands princes. Philippe Auguste, Louis IX et Philippe le Bel marquent des étapes différentes du renforcement monarchique.",
+    "À retenir : les Capétiens sont indispensables pour comprendre la construction de la monarchie française. Ce n’est pas un événement unique, mais une montée lente du pouvoir royal."
+  ],
+  "complete": [
+    {
+      "title": "1. Un roi prestigieux mais faible",
+      "text": "Hugues Capet reçoit un titre qui compte symboliquement, mais il ne contrôle pas directement tout le royaume. De nombreux seigneurs disposent de terres, châteaux, droits et armées locales. La monarchie capétienne commence donc avec un pouvoir limité."
+    },
+    {
+      "title": "2. La continuité dynastique",
+      "text": "La grande réussite des premiers Capétiens est la transmission. En associant souvent le fils au trône du vivant du père, ils évitent des crises de succession. La dynastie construit peu à peu une habitude d’obéissance au même lignage."
+    },
+    {
+      "title": "3. Le domaine royal s’agrandit",
+      "text": "La puissance concrète du roi dépend de son domaine : terres, revenus, villes, routes, châteaux. Par héritages, mariages, confiscations ou conquêtes, les Capétiens agrandissent leur base matérielle et peuvent mieux financer leur autorité."
+    },
+    {
+      "title": "4. Philippe Auguste, Louis IX, Philippe le Bel",
+      "text": "Ces rois incarnent des étapes : victoire contre les Plantagenêts, prestige de la justice royale, affirmation face aux grands pouvoirs. Il ne faut pas les confondre, mais ils montrent tous un même mouvement : la monarchie devient plus présente."
+    },
+    {
+      "title": "5. Un roi puissant en titre, limité en pratique",
+      "text": "Hugues Capet est élu roi en 987, mais son domaine direct reste concentré autour de Paris et Orléans. De grands princes contrôlent des territoires parfois plus riches. La force des premiers Capétiens vient surtout de la continuité dynastique, du sacre et de leur capacité à transmettre la couronne de père en fils."
+    },
+    {
+      "title": "6. Philippe Auguste change l’échelle du domaine royal",
+      "text": "Au début du XIIIe siècle, Philippe Auguste confisque et conquiert une grande partie des possessions françaises du roi d’Angleterre Jean sans Terre. La victoire de Bouvines en 1214 renforce son prestige. Des baillis et sénéchaux permettent ensuite de mieux administrer les territoires agrandis."
+    },
+    {
+      "title": "7. Justice, monnaie et administration",
+      "text": "Les Capétiens renforcent leur autorité en faisant du roi un juge supérieur, en développant des archives et des officiers, et en contrôlant davantage la monnaie. Cette construction est lente et connaît des reculs. La monarchie ne devient pas “absolue” au Moyen Âge, mais elle acquiert des outils qui élargissent progressivement sa présence."
+    },
+    {
+      "title": "8. Ce qu’il faut retenir",
+      "text": "Les Capétiens ajoutent une vraie colonne dynastique : 987, continuité, domaine royal, grands règnes, administration, justice. C’est le fil qui mène progressivement du morcellement féodal à une monarchie plus structurée."
+    }
+  ],
+  "deeper": [],
+  "takeaways": [
+    {
+      "label": "Dynastie",
+      "text": "Les Capétiens stabilisent la transmission du pouvoir royal."
+    },
+    {
+      "label": "Processus",
+      "text": "Le domaine royal s’agrandit lentement."
+    },
+    {
+      "label": "État",
+      "text": "Justice et administration renforcent la monarchie."
+    }
+  ],
+  "quiz": [
+    {
+      "kind": "repère",
+      "q": "Quelle date marque l’arrivée d’Hugues Capet ?",
+      "a": "987.",
+      "choices": [
+        "800, avec le couronnement impérial de Charlemagne.",
+        "843, avec le partage de l’empire carolingien à Verdun.",
+        "1214, avec la victoire de Philippe Auguste à Bouvines."
+      ],
+      "why": "C’est le repère de départ de la dynastie capétienne.",
+      "trap": "Répondre 800.",
+      "evidence": "Express."
+    },
+    {
+      "kind": "nuance",
+      "q": "Pourquoi le roi est-il faible au départ ?",
+      "a": "Parce que de grands seigneurs contrôlent largement leurs terres et leurs pouvoirs locaux.",
+      "choices": [
+        "Parce qu’il ne possède aucune terre et dépend entièrement du pape.",
+        "Parce que la couronne est élective chaque année par l’ensemble des paysans.",
+        "Parce que le royaume est déjà administré par des villes indépendantes sans seigneurs."
+      ],
+      "why": "Le titre ne donne pas immédiatement un État fort.",
+      "trap": "Imaginer une France déjà centralisée.",
+      "evidence": "Bloc 1."
+    },
+    {
+      "kind": "dynastie",
+      "q": "Quelle est la grande force des premiers Capétiens ?",
+      "a": "La continuité de la transmission de père en fils.",
+      "choices": [
+        "La conquête rapide de toute l’Europe occidentale par une grande armée permanente.",
+        "Le contrôle immédiat de toutes les terres du royaume dès le règne d’Hugues Capet.",
+        "L’élection régulière de rois issus de familles différentes pour éviter les conflits."
+      ],
+      "why": "Elle stabilise progressivement la royauté.",
+      "trap": "Croire qu’ils changent de dynastie à chaque règne.",
+      "evidence": "Bloc 2."
+    },
+    {
+      "kind": "pouvoir",
+      "q": "Pourquoi le domaine royal est-il important ?",
+      "a": "Il fournit terres, revenus et bases concrètes à l’autorité du roi.",
+      "choices": [
+        "Il est seulement symbolique, car le roi tire tous ses revenus des impôts nationaux.",
+        "Il correspond aux terres de tous les seigneurs qui obéissent directement au roi.",
+        "Il sert uniquement à installer des monastères sans fonction économique ou politique."
+      ],
+      "why": "Le pouvoir dépend aussi de ressources matérielles.",
+      "trap": "Le réduire à un symbole.",
+      "evidence": "Bloc 3."
+    },
+    {
+      "kind": "synthèse",
+      "q": "Quel fil retenir sur les Capétiens ?",
+      "a": "987, continuité dynastique, agrandissement du domaine, justice et administration royale.",
+      "choices": [
+        "987, monarchie immédiatement centralisée, armée nationale et disparition des seigneurs.",
+        "Élection permanente des rois, réduction du domaine et autonomie croissante des princes.",
+        "Conquête de l’Italie, couronnement impérial et partage du royaume entre les héritiers."
+      ],
+      "why": "C’est la progression de la monarchie.",
+      "trap": "Mémoriser seulement une liste de rois.",
+      "evidence": "Conclusion."
+    }
+  ],
+  "contentRevision": "beta174-depth-pass"
+}
 };
 (function registerBeta123HistorySpine() {
   if (!Array.isArray(data.worlds)) data.worlds = [];
@@ -13378,12 +16257,12 @@ function renderShell(content) {
       ${content}
       ${navMarkup}
     </main>`;
-  app.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
+  app.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", event => {
     const tab = btn.dataset.tab;
-    if (!tab || tab === state.tab) return;
-    const patch = { tab };
-    if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
-    setState(patch, { save: false });
+    if (!tab) return;
+    event.preventDefault?.();
+    if (typeof beta131NavigateTo === "function") beta131NavigateTo(tab);
+    else setState({ tab }, { save: true });
   }));
   activateTextControls(app);
 }
@@ -13533,8 +16412,8 @@ function setState(patch, options = {}) {
   state = { ...state, ...normalizedPatch };
   beta114NormalizeState();
   beta113MarkMotion(previous, state, normalizedPatch);
-  if (options.save !== false && patchNeedsPersistentSave(normalizedPatch)) queueSaveState();
-  render(options.renderImmediate ? { immediate: true } : {});
+  if (options.save !== false) queueSaveState();
+  if (options.render !== false) render(options.renderImmediate ? { immediate: true } : {});
   beta171ScheduleTabDataRefresh(previous.tab, state.tab);
 }
 
@@ -14477,7 +17356,7 @@ try {
   const changed = beta124HydrateProfileFromIdentity();
   beta124MirrorCurrentIdentity();
   if (changed) saveState();
-  beta124RefreshSocialData({ force: false, reason: "startup" }).catch(() => {});
+  // Les écrans sociaux déclenchent eux-mêmes leur chargement à l’ouverture.
 } catch {}
 
 window.HistoDailyBeta124 = {
@@ -14909,7 +17788,7 @@ socialBackendMarkup = function beta126SocialBackendMarkup() {
   return html.replace("</section>", `<div class="beta126-social-alert"><strong>${count}</strong><span>demande${count > 1 ? "s" : ""} d’ami à valider</span></div></section>`);
 };
 try {
-  beta125FetchFriendRequests?.({ force: true }).catch(() => {});
+  // Les données sociales sont chargées uniquement à l’ouverture des écrans concernés.
   window.HistoDailyBeta126 = { version: BETA126_VERSION, fetchProfile: beta126FetchPublicProfile, requests: beta125FriendRequestsState };
 } catch {}
 
@@ -15790,6 +18669,8 @@ function beta131NavigateTo(tab) {
     patch.currentMysteryDiscipline = activeDisciplineId();
   }
   if (tab === "learn") {
+    patch.learnDrill = "chapters";
+    patch.currentLessonId = null;
     patch.lessonFocus = null;
     patch.lessonView = state.lessonView || "express";
   }
@@ -15825,7 +18706,7 @@ function beta131InstallNavigationDelegation() {
 
 function beta131RepairStartupTab() {
   let changed = false;
-  if (state.beta131NavFixVersion !== BETA131_NAV_FIX_VERSION) {
+  if (Number(state.storageSchemaVersion || 0) < 2 && state.beta131NavFixVersion !== BETA131_NAV_FIX_VERSION) {
     state.beta131NavFixVersion = BETA131_NAV_FIX_VERSION;
     // Pour une app quotidienne, on évite de rouvrir sur un écran social lourd après mise à jour.
     if (["rank", "publicProfile"].includes(state.tab)) {
@@ -15873,7 +18754,7 @@ function beta131InstallNavLayerFix() {
     .tab-rank .bottom-nav{z-index:2147483000!important;}
     .tab-rank .leaderboard-modern{position:relative;z-index:1;}
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 const beta131PreviousRenderShell = renderShell;
@@ -15916,7 +18797,7 @@ function beta133AbortableFetch(url, options = {}, timeoutMs = 5500) {
 
 function beta133NormalizeStartup() {
   let changed = false;
-  if (state.beta133SafeVersion !== BETA132_SAFE_VERSION) {
+  if (Number(state.storageSchemaVersion || 0) < 2 && state.beta133SafeVersion !== BETA132_SAFE_VERSION) {
     state.beta133SafeVersion = BETA132_SAFE_VERSION;
     // Après un bug de classement, on force une reprise saine sur Accueil.
     state.tab = "home";
@@ -16054,7 +18935,7 @@ function beta133InstallStyle() {
     .tab-rank .leaderboard-modern{min-height:70px;}
     .tab-rank .social-backend.compact{position:relative;z-index:2;}
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 try {
@@ -16092,11 +18973,13 @@ function beta133SwitchDiscipline(id, { openLearn = false } = {}) {
     currentMysteryDiscipline: discipline.id,
     learnFilter: "all",
     learnSearch: "",
+    learnDrill: "chapters",
+    currentLessonId: null,
+    lessonFocus: null,
     discoverOffset: 0
   };
   if (openLearn) {
     patch.tab = "learn";
-    patch.learnDrill = "chapters";
   } else {
     patch.tab = "home";
   }
@@ -16164,7 +19047,7 @@ function beta133InstallDisciplineStyle() {
       -webkit-user-select:none!important;
     }
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 // On remplace aussi les fonctions directes, pour que les anciens écouteurs
@@ -16356,7 +19239,7 @@ function beta134InstallProfileTapStyle() {
       z-index:10!important;
     }
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 try {
@@ -16397,7 +19280,7 @@ profileSettingsMarkup = function beta135ProfileSettingsMarkup() {
 };
 try {
   window.HistoDaily = { version: BETA135_COPY_CLEAN_VERSION, profileTapFix: true, copyClean: true };
-  if (state.beta135CopyCleanVersion !== BETA135_COPY_CLEAN_VERSION) {
+  if (Number(state.storageSchemaVersion || 0) < 2 && state.beta135CopyCleanVersion !== BETA135_COPY_CLEAN_VERSION) {
     state.beta135CopyCleanVersion = BETA135_COPY_CLEAN_VERSION;
     saveState();
   }
@@ -16467,7 +19350,7 @@ function beta136InstallMysteryActionStyle() {
       isolation:isolate!important;
     }
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 try {
@@ -16591,7 +19474,7 @@ function beta139InstallModeSwipeStyle() {
       -webkit-user-select:none!important;
     }
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 try {
@@ -16792,8 +19675,11 @@ openModeLearn = function beta139OpenModeLearn(disciplineId = activeDisciplineId(
     currentDiscipline: discipline.id,
     currentGroup: targetWorld.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
     currentWorld: targetWorld.id,
+    currentLessonId: null,
+    lessonFocus: null,
     learnFilter: "all",
-    learnSearch: ""
+    learnSearch: "",
+    learnDrill: worldId ? "courses" : "chapters"
   }, { save: true });
 };
 
@@ -16808,8 +19694,11 @@ switchHomeDiscipline = function beta139SwitchHomeDiscipline(disciplineId) {
     currentWorld: firstWorld?.id || state.currentWorld,
     currentMysteryId: nextMystery?.id || null,
     currentMysteryDiscipline: discipline.id,
+    currentLessonId: null,
+    lessonFocus: null,
     learnFilter: "all",
     learnSearch: "",
+    learnDrill: "chapters",
     discoverOffset: 0
   }, { save: true });
 };
@@ -16836,7 +19725,7 @@ function beta139InstallDisciplineContentStyle() {
     .mode-world-item[data-mode-world]{cursor:pointer;}
     .discipline-empty-card .after-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 try {
@@ -16997,7 +19886,7 @@ try {
   const style = document.createElement("style");
   style.id = "beta140-cancel-request-style";
   style.textContent = `.beta140-cancel-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.beta140-cancel-card .danger-action{touch-action:manipulation;}`;
-  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  if (!document.getElementById(style.id)) void style;
   state.beta140CancelRequestVersion = BETA140_CANCEL_REQUEST_VERSION;
   queueSaveState(50);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA140_CANCEL_REQUEST_VERSION, friendRequestCancelFix: true };
@@ -17412,11 +20301,11 @@ try {
   const style = document.createElement("style");
   style.id = "beta142-online-hardening-style";
   style.textContent = `.beta142-online-tools{margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}.beta142-diagnostic{margin-top:10px}.beta142-diagnostic summary{cursor:pointer;color:var(--muted);font-weight:800}.beta142-diagnostic-grid{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:10px;font-size:.88rem}.beta142-diagnostic-grid span{color:var(--muted)}.beta142-diagnostic-grid strong{font-weight:800;overflow-wrap:anywhere}`;
-  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  if (!document.getElementById(style.id)) void style;
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA142_ONLINE_HARDENING_VERSION, onlineHardening: true };
   state.beta142OnlineHardeningVersion = BETA142_ONLINE_HARDENING_VERSION;
   queueSaveState(50);
-  syncMyProfileToServer({ source: "startup-beta142" }).catch(() => {});
+  // Synchronisation différée jusqu’à une action sociale ou l’ouverture du profil.
 } catch {}
 
 
@@ -17570,7 +20459,7 @@ try {
   const style = document.createElement("style");
   style.id = "beta145-online-audit-style";
   style.textContent = `.beta145-audit-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta145-audit-line span{color:var(--muted)}.beta145-audit-line strong{font-weight:800}`;
-  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  if (!document.getElementById(style.id)) void style;
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA145_ONLINE_AUDIT_VERSION, onlineAudit: true, localSocialCleanup: true };
   state.beta145OnlineAuditVersion = BETA145_ONLINE_AUDIT_VERSION;
   queueSaveState(50);
@@ -17696,7 +20585,7 @@ try {
   const style = document.createElement("style");
   style.id = "beta146-online-resilience-style";
   style.textContent = `.beta146-consistency-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta146-consistency-line span{color:var(--muted)}.beta146-consistency-line strong{font-weight:800}`;
-  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  if (!document.getElementById(style.id)) void style;
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA146_ONLINE_RESILIENCE_VERSION, onlineResilience: true, localOutboxIdentityRewrite: true };
   state.beta146OnlineResilienceVersion = BETA146_ONLINE_RESILIENCE_VERSION;
   queueSaveState(50);
@@ -17785,12 +20674,12 @@ function beta147ScheduleSilentRepair(source = "startup") {
   window.setTimeout(() => beta147RunSilentRepair({ source }).catch(() => {}), delay);
 }
 try {
-  beta147ScheduleSilentRepair("startup");
+  // La réparation silencieuse automatique a été retirée : elle reste disponible manuellement.
   const style = document.createElement("style");
   style.id = "beta147-release-hardening-style";
   style.textContent = `.beta147-release-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta147-release-line span{color:var(--muted)}.beta147-release-line strong{font-weight:800}`;
-  if (!document.getElementById(style.id)) document.head.appendChild(style);
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA147_RELEASE_HARDENING_VERSION, releaseHardening: true, silentOnlineRepair: true };
+  if (!document.getElementById(style.id)) void style;
+  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA147_RELEASE_HARDENING_VERSION, releaseHardening: true, silentOnlineRepair: false };
   state.beta147ReleaseHardeningVersion = BETA147_RELEASE_HARDENING_VERSION;
   queueSaveState(80);
 } catch {}
@@ -17942,7 +20831,7 @@ try {
   const style = document.createElement("style");
   style.id = "beta148-preflight-clean-style";
   style.textContent = `.beta148-support-card details{border:0}.beta148-support-card summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}.beta148-support-card summary::-webkit-details-marker{display:none}.beta148-support-card summary strong{display:block;font-size:1rem;margin-top:2px}.beta148-support-card summary small{color:var(--muted);font-size:.78rem}.beta148-preflight-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta148-preflight-line span{color:var(--muted)}.beta148-preflight-line strong{font-weight:800}.beta148-actions button{min-height:38px}`;
-  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  if (!document.getElementById(style.id)) void style;
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA148_PREFLIGHT_CLEAN_VERSION, preflightClean: true };
 } catch {}
 
@@ -18094,11 +20983,11 @@ try {
       return previousHealthMarkup().replace("</details></section>", `<div class="home-actions-row beta149-actions"><button type="button" class="ghost" data-beta149-regression-check>Contrôler l’appareil</button></div></details></section>`);
     };
   }
-  beta149RunRegressionGuard({ silent: true }).catch(() => {});
+  // Le contrôle complet est manuel afin de ne pas scanner tout le contenu au démarrage.
   const style = document.createElement("style");
   style.id = "beta149-regression-guard-style";
   style.textContent = `.beta149-regression-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta149-regression-line span{color:var(--muted)}.beta149-regression-line strong{font-weight:800}.beta149-actions{margin-top:10px}.beta149-actions button{min-height:38px}`;
-  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  if (!document.getElementById(style.id)) void style;
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA149_REGRESSION_GUARD_VERSION, regressionGuard: true };
   state.beta149RegressionGuardVersion = BETA149_REGRESSION_GUARD_VERSION;
   queueSaveState(100);
@@ -18246,7 +21135,7 @@ function beta152InstallProductPolishStyle() {
     .release-card li{margin:.34rem 0;color:#d8e4f1;line-height:1.38;}
     @media(max-width:430px){.beta152-discipline-empty{grid-template-columns:1fr}.beta152-discipline-empty .discipline-empty-icon{width:54px;height:54px}.beta152-discipline-empty .after-actions{display:grid;grid-template-columns:1fr;}}
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 try {
@@ -18364,7 +21253,7 @@ try {
   const style = document.createElement("style");
   style.id = "beta153-release-candidate-style";
   style.textContent = `.beta153-rc-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta153-rc-line span{color:var(--muted)}.beta153-rc-line strong{font-weight:800}.warning-note{color:#fde68a}`;
-  if (!document.getElementById(style.id)) document.head.appendChild(style);
+  if (!document.getElementById(style.id)) void style;
   state.beta153ReleaseCandidateVersion = BETA153_RELEASE_CANDIDATE_VERSION;
   queueSaveState(100);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA153_RELEASE_CANDIDATE_VERSION, releaseCandidate: true };
@@ -18546,7 +21435,7 @@ function beta154InstallStyle() {
     .beta154-actions{margin-top:10px;gap:8px;flex-wrap:wrap}.beta154-actions button{min-height:40px}
     @media(max-width:430px){.beta154-readiness-grid{grid-template-columns:1fr}.beta154-actions{display:grid}.beta154-actions button{width:100%}}
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 try {
@@ -18694,7 +21583,7 @@ function beta155InstallStyle() {
     .beta155-final-grid strong{display:block;margin-top:2px;font-size:.88rem;line-height:1.2}.beta155-actions{margin-top:10px}.beta155-actions button{min-height:40px}
     @media(max-width:430px){.beta155-final-grid{grid-template-columns:1fr}.beta155-actions{display:grid}.beta155-actions button{width:100%}}
   `;
-  document.head.appendChild(style);
+  void style;
 }
 try {
   beta155RecoverIdentityFromSnapshot();
@@ -18741,7 +21630,7 @@ function beta156ReleaseLocalCleanup() {
       patch.currentLessonId = null;
       if ((patch.tab || state.tab) === "lesson") patch.tab = "learn";
     }
-    const mysteryIds = new Set((mysteries || []).map(m => m.id));
+    const mysteryIds = new Set((data.mysteries || []).map(m => m.id));
     if (state.currentMysteryId && !mysteryIds.has(state.currentMysteryId)) patch.currentMysteryId = dailyMystery?.()?.id || null;
 
     const myCode = normalizeFriendCode(friendCode?.() || "");
@@ -18849,7 +21738,7 @@ function beta156InstallStyle() {
     .beta156-readiness-grid strong{display:block;margin-top:2px;font-size:.88rem;line-height:1.2}.beta156-actions{margin-top:10px}.beta156-actions button{min-height:40px}
     @media(max-width:430px){.beta156-readiness-grid{grid-template-columns:1fr}.beta156-actions{display:grid}.beta156-actions button{width:100%}}
   `;
-  document.head.appendChild(style);
+  void style;
 }
 
 try {
@@ -18975,7 +21864,7 @@ try {
   handleQuizChoice = function beta165HandleQuizChoice(lessonId, qi, ci){ const lesson=allLessons().find(l=>key(l.id)===key(lessonId)); if(!lesson) return false; const content=buildLessonContent(lesson), items=normalizeQuizPack(content.quiz,lesson,content), item=items[qi]; if(!item) return false; const k=key(lesson.id), p=lessonQuizState(k); if(Number.isInteger(p.answers?.[qi])||Number.isInteger(p.answers?.[String(qi)])||p.passed) return false; const choices=quizChoicesFor(item,items,lesson,content,qi), choice=choices[ci]; if(!choice) return false; const answers={...(p.answers||{}),[qi]:ci}, correct={...(p.correct||{}),[qi]:Boolean(choice.correct)}; const ccount=Object.values(correct).filter(Boolean).length, acount=Object.keys(answers).length, threshold=lessonQuizPassThreshold(items.length), passed=acount>=items.length&&ccount>=threshold, failed=acount>=items.length&&!passed; const quizProgress={...(state.quizProgress||{}),[k]:{...p,answers,correct,attempts:Number(p.attempts||0)+1,passed}}; const newly=passed&&!lessonDone(lesson.id), completedLessons=newly?{...(state.completedLessons||{}),[lesson.id]:true}:state.completedLessons, achievements=newly?{...(state.achievements||{}),firstLesson:true}:state.achievements, gain=newly?Number(lesson.xp||55):0; const quizFeedback={...(state.quizFeedback||{}),[k]:passed?`Quiz réussi : ${ccount}/${items.length}. Cours validé automatiquement.`:failed?`Score : ${ccount}/${items.length}. Il faut au moins ${threshold}/${items.length}.`:choice.correct?`Correct. ${ccount}/${items.length} bonne(s).`:`Réponse fausse. Continue : validation à ${threshold}/${items.length}.`}; setSafe({quizProgress,quizFeedback,quizStep:{...qmap("quizStep"),[k]:qi},completedLessons,achievements,xp:xpTotal()+gain,lessonView:"quiz",lessonFocus:null}); if(gain) try{showXPToast?.(gain,"leçon validée")}catch{}; return true; };
   resetLessonQuiz = function beta165ResetLessonQuiz(lessonId){ const k=key(lessonId), qp={...(state.quizProgress||{})}, qf={...(state.quizFeedback||{})}, qs={...qmap("quizStep")}; delete qp[k]; delete qf[k]; delete qs[k]; setSafe({quizProgress:qp,quizFeedback:qf,quizStep:qs,lessonView:"quiz",lessonFocus:null}); };
   const prevLessonText = typeof renderLessonText === "function" ? renderLessonText : null;
-  if (prevLessonText) renderLessonText = function beta165RenderLessonText(lesson,content){ if(typeof lessonView==="function"&&lessonView()!=="quiz") return prevLessonText(lesson,content); const items=normalizeQuizPack(content.quiz,lesson,content), rt=quizRuntime(lesson.id,items.length), facts=(typeof lessonKeyFacts==="function"?lessonKeyFacts(lesson,content):[]), feedback=state.quizFeedback?.[key(lesson.id)]||""; const intro=`<section class="lesson-hook beta165-lesson-hook"><span class="card-label">Quiz final</span><p>${esc(content.hook||lesson.title||"Réponds aux questions.")}</p></section>`, tabs=`<section class="lesson-choice-panel quiz-flow-panel beta165-quiz-tabs"><div><span class="card-label">Étape finale</span><h2>Quiz en ${items.length} étapes</h2><p>Une question à la fois : moins lourd, plus lisible.</p></div><div class="lesson-view-tabs">${lessonTabButton("express","⚡ Relire express","court")}${lessonTabButton("complete","📚 Relire complet","5 min")}</div><small>${rt.correct}/${items.length} bonnes · seuil ${rt.threshold}/${items.length}</small></section>`, factsHtml=facts.length?`<div class="key-facts beta165-quiz-facts"><b>Repères utiles</b>${facts.slice(0,4).map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:""; if(rt.finished||rt.passed) return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${rt.correct}/${items.length}</small></div><div class="beta165-score-panel ${rt.passed?"good":"bad"}"><b>${rt.passed?"✅ Cours validé":"Score insuffisant"}</b><span>${rt.passed?"L’XP du cours est prise en compte dans le classement total.":`Il faut ${rt.threshold}/${items.length}. Recommence pour valider.`}</span></div>${feedback?`<p class="quiz-global-feedback ${rt.passed?"good":""}">${esc(feedback)}</p>`:""}<div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="express">Relire le cours</button></div></section>`; const i=rt.step,item=items[i],choices=quizChoicesFor(item,items,lesson,content,i), selectedRaw=rt.p.answers?.[i]??rt.p.answers?.[String(i)], selected=Number.isInteger(selectedRaw)?selectedRaw:null, answered=Number.isInteger(selected), ok=Boolean(rt.p.correct?.[i]||rt.p.correct?.[String(i)]), selectedChoice=answered?choices[selected]:null; return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${i+1}/${items.length}</h2></div><small>${rt.correct}/${items.length} bonnes</small></div><div class="beta165-quiz-progress" aria-hidden="true">${items.map((_,n)=>`<i class="${Number.isInteger(rt.p.answers?.[n])||Number.isInteger(rt.p.answers?.[String(n)])?(rt.p.correct?.[n]||rt.p.correct?.[String(n)]?"ok":"ko"):n===i?"current":""}"></i>`).join("")}</div>${feedback?`<p class="quiz-global-feedback">${esc(feedback)}</p>`:""}<article class="quiz-card beta165-single-question ${answered?(ok?"correct":"wrong"):"open"}"><div class="quiz-question-head"><b>${i+1}</b><div>${item.kind?`<em>${esc(item.kind)}</em>`:""}<h3>${esc(item.q)}</h3></div></div><div class="quiz-choices" role="group" aria-label="Question ${i+1}">${choices.map((ch,n)=>`<button type="button" class="quiz-choice ${selected===n?(ch.correct?"selected correct":"selected wrong"):""}" data-quiz-choice="${i}" data-choice-index="${n}" ${answered?"disabled":""}><span>${String.fromCharCode(65+n)}</span>${esc(ch.text)}</button>`).join("")}</div>${answered?(ok?`<p class="quiz-result good"><b>Correct.</b> ${esc(item.why||"")}</p>`:`<p class="quiz-result bad"><b>Raté.</b> ${esc(selectedChoice?.trap||item.trap||"La réponse ne colle pas assez au cours.")}</p>`):`<p class="quiz-result neutral">Choisis une réponse pour continuer.</p>`}</article><div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Recommencer</button>${answered?`<button type="button" data-quiz-next="${esc(lesson.id)}">${rt.answered>=items.length?"Voir le bilan":"Continuer"}</button>`:`<span>Réponds pour continuer.</span>`}</div></section>`; };
+  if (prevLessonText) renderLessonText = function beta165RenderLessonText(lesson,content){ if(typeof lessonView==="function"&&lessonView()!=="quiz") return prevLessonText(lesson,content); const items=normalizeQuizPack(content.quiz,lesson,content), rt=quizRuntime(lesson.id,items.length), facts=(typeof lessonKeyFacts==="function"?lessonKeyFacts(lesson,content):[]), feedback=state.quizFeedback?.[key(lesson.id)]||""; const intro=`<section class="lesson-hook beta165-lesson-hook"><span class="card-label">Quiz final</span><p>${esc(content.hook||lesson.title||"Réponds aux questions.")}</p></section>`, tabs=`<section class="lesson-choice-panel quiz-flow-panel beta165-quiz-tabs"><div><span class="card-label">Étape finale</span><h2>Quiz en ${items.length} étapes</h2><p>Une question à la fois : moins lourd, plus lisible.</p></div><div class="lesson-view-tabs">${lessonTabButton("express","⚡ Relire express","court")}${lessonTabButton("complete","📚 Relire complet","5 min")}</div><small>${rt.correct}/${items.length} bonnes · seuil ${rt.threshold}/${items.length}</small></section>`, factsHtml=facts.length?`<div class="key-facts beta165-quiz-facts"><b>Repères utiles</b>${facts.slice(0,4).map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:""; if(rt.finished||rt.passed) return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${rt.correct}/${items.length}</small></div><div class="beta165-score-panel ${rt.passed?"good":"bad"}"><b>${rt.passed?"✅ Cours validé":"Score insuffisant"}</b><span>${rt.passed?"L’XP du cours est prise en compte dans le classement total.":`Il faut ${rt.threshold}/${items.length}. Recommence pour valider.`}</span></div>${feedback?`<p class="quiz-global-feedback ${rt.passed?"good":""}">${esc(feedback)}</p>`:""}<div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="express">Relire le cours</button></div></section>`; const i=rt.step,item=items[i],choices=quizChoicesFor(item,items,lesson,content,i), selectedRaw=rt.p.answers?.[i]??rt.p.answers?.[String(i)], selected=Number.isInteger(selectedRaw)?selectedRaw:null, answered=Number.isInteger(selected), ok=Boolean(rt.p.correct?.[i]||rt.p.correct?.[String(i)]), selectedChoice=answered?choices[selected]:null; return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${i+1}/${items.length}</h2></div><small>${rt.correct}/${items.length} bonnes</small></div><div class="beta165-quiz-progress" aria-hidden="true">${items.map((_,n)=>`<i class="${Number.isInteger(rt.p.answers?.[n])||Number.isInteger(rt.p.answers?.[String(n)])?(rt.p.correct?.[n]||rt.p.correct?.[String(n)]?"ok":"ko"):n===i?"current":""}"></i>`).join("")}</div>${feedback?`<p class="quiz-global-feedback">${esc(feedback)}</p>`:""}<article class="quiz-card beta165-single-question ${answered?(ok?"correct":"wrong"):"open"}"><div class="quiz-question-head"><b>${i+1}</b><div>${item.kind?`<em>${esc(item.kind)}</em>`:""}<h3>${esc(item.q)}</h3></div></div><div class="quiz-choices" role="group" aria-label="Question ${i+1}">${choices.map((ch,n)=>`<button type="button" class="quiz-choice ${selected===n?(ch.correct?"selected correct":"selected wrong"):""}" data-quiz-choice="${i}" data-choice-index="${n}" ${answered?"disabled":""}><span>${String.fromCharCode(65+n)}</span>${esc(ch.text)}</button>`).join("")}</div>${answered?(ok?`<p class="quiz-result good"><b>Correct.</b> ${esc(item.a||"")}</p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"Cette réponse reprend précisément l’idée expliquée dans le cours.")}</p>${item.evidence?`<p class="quiz-evidence"><strong>À retrouver dans le cours :</strong> ${esc(item.evidence)}</p>`:""}`:`<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${esc(item.a||"")}</strong></p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"La correction reprend l’idée explicitement expliquée dans le cours.")}</p>${item.trap?`<p class="quiz-trap"><strong>Le piège :</strong> ${esc(item.trap)}</p>`:""}${item.evidence?`<p class="quiz-evidence"><strong>À revoir dans le cours :</strong> ${esc(item.evidence)}</p>`:""}`):`<p class="quiz-result neutral">Choisis la réponse la plus précise. La correction apparaîtra après ton choix.</p>`}</article><div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Recommencer</button>${answered?`<button type="button" data-quiz-next="${esc(lesson.id)}">${rt.answered>=items.length?"Voir le bilan":"Continuer"}</button>`:`<span>Réponds pour continuer.</span>`}</div></section>`; };
 
   function findMystery(id){ try { return mysteryById?.(id) || null; } catch { return null; } }
   function openMystery(id, feedback=""){ const m=findMystery(id); if(!m) return setSafe({tab:"mystery",archiveFeedback:"Mystère introuvable."}); let d="history"; try{d=mysteryDisciplineId?.(m)||activeDisciplineId?.()||"history"}catch{} setSafe({tab:"mystery",currentMysteryId:m.id,currentMysteryDiscipline:d,currentDiscipline:d,archiveFeedback:feedback}); topSoon(); }
@@ -18984,7 +21873,7 @@ try {
   function bindStableActions(){ try{document.querySelectorAll("[data-rank-scope]").forEach(b=>b.onclick=()=>setSafe({tab:"rank",rankScope:b.dataset.rankScope||"daily"}))}catch{} try{document.querySelectorAll("[data-view-profile]").forEach(b=>b.onclick=()=>viewProfile?.(b.dataset.viewProfile))}catch{} try{document.querySelectorAll("[data-open-profile]").forEach(b=>b.onclick=()=>setSafe({tab:"profile"}))}catch{} try{document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>setSafe({tab:"home"}))}catch{} }
   const oldSave = typeof saveState === "function" ? saveState : null; if(oldSave) saveState=function beta165SaveState(){ repairSocial(); saveProfile("save"); return oldSave(); };
   const oldSet = typeof setState === "function" ? setState : null; if(oldSet) setState=function beta165SetState(patch={},options={}){ if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"rankScope")) patch={...patch,rankScope:VALID_SCOPES.has(patch.rankScope)?patch.rankScope:"daily"}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"friends")) patch={...patch,friends:normalizeFriends(patch.friends)}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"pseudo")) patch={...patch,pseudo:str(patch.pseudo).slice(0,18)||state.pseudo||"Invité"}; const r=oldSet(patch,options); try{if(repairSocial()) queueSaveState?.(120)}catch{} try{saveProfile("setState")}catch{} return r; };
-  try { repairSocial(); saveProfile("startup"); const style=document.createElement("style"); style.id="beta165-stabilisation-style"; style.textContent=`[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase}.beta165-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px}.beta165-friend-add-form button{min-height:52px}.rank-tabs [data-rank-scope]{pointer-events:auto!important;touch-action:manipulation!important;position:relative;z-index:3}.beta165-rank-summary{grid-template-columns:repeat(4,minmax(0,1fr))}.beta165-leaderboard .rank-row{touch-action:manipulation;pointer-events:auto}.beta165-quiz-runner{content-visibility:auto;contain-intrinsic-size:620px;overflow:clip}.beta165-quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 16px}.beta165-quiz-progress i{height:8px;border-radius:999px;background:rgba(255,255,255,.14)}.beta165-quiz-progress i.current{background:rgba(246,196,83,.82)}.beta165-quiz-progress i.ok{background:rgba(72,213,151,.85)}.beta165-quiz-progress i.ko{background:rgba(251,113,133,.82)}.beta165-single-question .quiz-choice{touch-action:manipulation;pointer-events:auto;min-height:54px}.beta165-quiz-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px}.beta165-quiz-footer button{min-height:48px}.beta165-score-panel{display:grid;gap:4px;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055)}.beta165-score-panel.good{border-color:rgba(72,213,151,.45);background:rgba(72,213,151,.12)}.complete-course-panel,.leaderboard-modern,.friends-list-card{content-visibility:auto;contain-intrinsic-size:900px}.skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important}@media(max-width:520px){.beta165-rank-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.beta165-friend-add-form,.beta165-quiz-footer{grid-template-columns:1fr;display:grid}.beta165-friend-add-form button,.beta165-quiz-footer button{width:100%}}`; if(!document.getElementById(style.id)) document.head.appendChild(style); state.beta165StabilisationVersion=BETA165_VERSION; window.HistoDaily={...(window.HistoDaily||{}),version:BETA165_VERSION,beta165Stabilisation:true,quizFlow:true,leaderboardTotalXp:true}; queueSaveState?.(150); if(["rank","profile","lesson","mystery","publicProfile"].includes(state.tab)) renderSoon(); } catch(e){ try{console.warn("beta165",e)}catch{} }
+  try { repairSocial(); saveProfile("startup"); const style=document.createElement("style"); style.id="beta165-stabilisation-style"; style.textContent=`[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase}.beta165-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px}.beta165-friend-add-form button{min-height:52px}.rank-tabs [data-rank-scope]{pointer-events:auto!important;touch-action:manipulation!important;position:relative;z-index:3}.beta165-rank-summary{grid-template-columns:repeat(4,minmax(0,1fr))}.beta165-leaderboard .rank-row{touch-action:manipulation;pointer-events:auto}.beta165-quiz-runner{content-visibility:auto;contain-intrinsic-size:620px;overflow:clip}.beta165-quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 16px}.beta165-quiz-progress i{height:8px;border-radius:999px;background:rgba(255,255,255,.14)}.beta165-quiz-progress i.current{background:rgba(246,196,83,.82)}.beta165-quiz-progress i.ok{background:rgba(72,213,151,.85)}.beta165-quiz-progress i.ko{background:rgba(251,113,133,.82)}.beta165-single-question .quiz-choice{touch-action:manipulation;pointer-events:auto;min-height:54px}.beta165-quiz-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px}.beta165-quiz-footer button{min-height:48px}.beta165-score-panel{display:grid;gap:4px;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055)}.beta165-score-panel.good{border-color:rgba(72,213,151,.45);background:rgba(72,213,151,.12)}.complete-course-panel,.leaderboard-modern,.friends-list-card{content-visibility:auto;contain-intrinsic-size:900px}.skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important}@media(max-width:520px){.beta165-rank-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.beta165-friend-add-form,.beta165-quiz-footer{grid-template-columns:1fr;display:grid}.beta165-friend-add-form button,.beta165-quiz-footer button{width:100%}}`; if(!document.getElementById(style.id)) void style; state.beta165StabilisationVersion=BETA165_VERSION; window.HistoDaily={...(window.HistoDaily||{}),version:BETA165_VERSION,beta165Stabilisation:true,quizFlow:true,leaderboardTotalXp:true}; queueSaveState?.(150); if(["rank","profile","lesson","mystery","publicProfile"].includes(state.tab)) renderSoon(); } catch(e){ try{console.warn("beta165",e)}catch{} }
 })();
 
 
@@ -19328,7 +22217,7 @@ try {
       .rank-profile-spacer{width:58px;}
       @media(max-width:520px){.beta167-rank-row{grid-template-columns:30px minmax(0,1fr) auto;grid-template-areas:"rank name button" "rank score button";gap:3px 8px;padding:12px 10px}.beta167-rank-row>span{grid-area:rank}.beta167-rank-row>strong{grid-area:name}.beta167-rank-row>em{grid-area:score;font-size:.86rem}.rank-profile-btn{grid-area:button;min-width:64px;padding:8px 10px}.rank-profile-spacer{grid-area:button;width:64px}}
     `;
-    document.head.appendChild(style);
+    void style;
   }
 
   try {
@@ -19389,9 +22278,20 @@ function beta171ScheduleConnectivityRefresh(reason = "visible", { force = false 
         beta124RefreshSocialData?.({ force, reason }).catch?.(() => {});
       }
     } catch {}
-    try { beta147ScheduleSilentRepair?.(reason); } catch {}
+    // Pas de réparation réseau globale sur focus : seulement les files utiles ci-dessus.
   }, 220);
 }
+function beta172FlushDurableState() {
+  try {
+    if (saveStateTimer) {
+      window.clearTimeout(saveStateTimer);
+      saveStateTimer = null;
+    }
+    saveState();
+  } catch {}
+}
+window.addEventListener("pagehide", beta172FlushDurableState);
+window.addEventListener("beforeunload", beta172FlushDurableState);
 window.addEventListener("online", () => {
   isOnline = true;
   beta171ScheduleConnectivityRefresh("online", { force: true });
@@ -19403,6 +22303,10 @@ window.addEventListener("offline", () => {
 });
 window.addEventListener("focus", () => beta171ScheduleConnectivityRefresh("focus"));
 document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    beta172FlushDurableState();
+    return;
+  }
   if (document.visibilityState !== "visible") return;
   try {
     applyDisciplineTheme();
@@ -19413,19 +22317,19 @@ document.addEventListener("visibilitychange", () => {
   beta171ScheduleConnectivityRefresh("visible");
 });
 
-(function histodailyBeta171Bootstrap(){
-  const VERSION = "1.0.0-beta.171";
+(function histodailyBeta172Bootstrap(){
+  const VERSION = "1.0.0-beta.174";
   let booted = false;
   function boot(){
     if (booted) return;
     booted = true;
     try { beta114NormalizeState(); } catch {}
     try {
-      state.beta171ArchitectureVersion = VERSION;
-      window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, architectureStable: true };
+      state.beta172ArchitectureVersion = VERSION;
+      window.HistoDaily = { version: VERSION, architectureStable: true, storageSchema: 2 };
     } catch {}
     try { render({ immediate: true }); } catch (error) {
-      try { console.error("HistoDaily beta171 boot", error); } catch {}
+      try { console.error("HistoDaily beta172 boot", error); } catch {}
     }
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });

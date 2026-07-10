@@ -1,23 +1,16 @@
-# HistoDaily — beta156 release readiness
+# Déployer HistoDaily 1.0.0-beta.174 sur Vercel
 
-Version `1.0.0-beta.156`.
+1. Extraire entièrement le zip.
+2. Remplacer tous les fichiers de l’ancien déploiement par ceux de cette version.
+3. Conserver les variables d’environnement Supabase déjà configurées dans Vercel.
+4. Déployer le dossier racine, qui contient `index.html` et `vercel.json`.
+5. Après le déploiement, effectuer une actualisation forcée du navigateur.
+6. Pour une PWA déjà installée, la fermer complètement puis la rouvrir afin que le cache `beta174` soit activé.
 
-Cette version continue le durcissement pré-test public sans ajouter de contenu ni fonctionnalité lourde.
+Aucune modification du schéma Supabase n’est requise pour cette mise à jour de contenu.
 
-## beta156
+## Vérification rapide
 
-- Nouveau contrôle final non destructif : `/api/v1/system/release-check`.
-- `health` indique maintenant `releaseCheckReady`.
-- Assistance profil enrichie avec un bouton discret **Contrôle final**.
-- Nettoyage local supplémentaire des états impossibles avant test privé.
-- Détection plus claire d’un ancien cache PWA ou d’une version API différente.
-- Service worker/cache renouvelés en `1.0.0-beta.156`.
-
-## Déploiement
-
-1. Déployer le contenu du zip sur Vercel.
-2. Garder les variables d’environnement Supabase existantes.
-3. Ouvrir l’app avec `?fresh=156` si une PWA installée garde un ancien cache.
-4. Dans Profil → Assistance, lancer **Contrôle final** si besoin.
-
-Aucun changement SQL obligatoire.
+- Ouvrir un cours puis son quiz.
+- Vérifier que chaque question affiche quatre propositions.
+- Choisir volontairement une mauvaise réponse : la bonne réponse, l’explication, le piège et le passage à revoir doivent apparaître.

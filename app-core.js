@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.171",
-  assetsVersion: "1.0.0-beta.171",
+  version: "1.0.0-beta.174",
+  assetsVersion: "1.0.0-beta.174",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 171",
+    versionLabel: "beta 174",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Navigation stabilisée : Sciences, Géographie et les autres disciplines gardent maintenant leur vrai contexte.",
-      "Performance améliorée : un seul système de clics, moins de rendus inutiles et fin des boucles réseau du profil.",
-      "PWA plus rapide : les fichiers versionnés s’ouvrent depuis le cache pendant que la mise à jour se fait en arrière-plan."
+      "Cours approfondis : les 41 leçons les plus courtes ont été enrichies avec des exemples, acteurs et mécanismes précis.",
+      "Moins de généralités : chaque cours retravaillé distingue davantage les faits, les sources, les nuances et les conséquences.",
+      "Niveau harmonisé : aucun cours complet publié ne reste sous l’équivalent d’environ trois minutes de lecture."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
