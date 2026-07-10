@@ -30,11 +30,11 @@ const data = {
 const DISCIPLINES = [
   { id: "history", title: "Histoire", emoji: "🏛️", accent: "#f6c453", description: "Périodes, peuples, événements et grands repères." },
   { id: "art", title: "Art", emoji: "🎨", accent: "#fb7185", description: "Histoire de l’art, œuvres, artistes et mouvements." },
-  { id: "cinema", title: "Cinéma", emoji: "🎬", accent: "#a78bfa", description: "Histoire du cinéma, films, réalisateurs et courants." },
+  { id: "cinema", title: "Cinéma", emoji: "🎬", accent: "#8b5cf6", description: "Histoire du cinéma, films, réalisateurs et courants." },
   { id: "science-inventions", title: "Sciences & inventions", emoji: "🧪", accent: "#56d6ff", description: "Histoire des sciences, découvertes et inventions." },
-  { id: "economy", title: "Économie", emoji: "📈", accent: "#48d597", description: "Marchés, crises, monnaies et grandes notions." },
+  { id: "economy", title: "Économie", emoji: "📈", accent: "#10b981", description: "Marchés, crises, monnaies et grandes notions." },
   { id: "geography", title: "Géographie", emoji: "🗺️", accent: "#84cc16", description: "Pays, milieux, villes, frontières et cartes." },
-  { id: "music", title: "Musique", emoji: "🎼", accent: "#f59e0b", description: "Histoire de la musique, styles, compositeurs et révolutions sonores." }
+  { id: "music", title: "Musique", emoji: "🎼", accent: "#fb7185", description: "Histoire de la musique, styles, compositeurs et révolutions sonores." }
 ];
 
 const DISCIPLINE_OUTLINES = {

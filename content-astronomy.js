@@ -5,7 +5,7 @@
   "id": "astronomy",
   "title": "Astronomie",
   "emoji": "🌌",
-  "accent": "#7c8cff",
+  "accent": "#fbbf24",
   "description": "Univers, étoiles, planètes, observation et exploration spatiale."
 };
   const GROUPS = [

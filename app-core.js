@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.193",
-  assetsVersion: "1.0.0-beta.193",
+  version: "1.0.0-beta.194",
+  assetsVersion: "1.0.0-beta.194",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 193",
+    versionLabel: "beta 194",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Correctif critique : l’ouverture des cours ne déclenche plus l’écran de sécurité d’affichage.",
-      "Audit global validé sur les 106 cours, les 8 disciplines et les principales pages de l’application.",
-      "Les modules visuels sont désormais optionnels au chargement : un cache partiellement mis à jour ne bloque plus l’app."
+      "Refonte ciblée des illustrations : économie, musique et cinéma gagnent des visuels plus soignés et plus lisibles.",
+      "Astronomie adopte une identité plus marquée, plus sombre et dorée, inspirée de l’imaginaire du trou noir.",
+      "Les palettes d’accent des cartes et icônes ont aussi été resserrées pour mieux coller aux disciplines."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
