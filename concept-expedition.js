@@ -2,7 +2,7 @@
 (function histodailyBeta187Concept(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.197";
+  const VERSION = "1.0.0-beta.198";
   const ROOT_ID = "hd187-layer";
   const SEARCH_LIMIT = 24;
   const appRoot = document.getElementById("app");

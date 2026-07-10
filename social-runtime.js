@@ -3,7 +3,7 @@
    les demandes par code et la sémantique des classements. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-beta.196";
+  const VERSION = "1.0.0-beta.198";
   const API_TIMEOUT_MS = 8000;
   const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
 
