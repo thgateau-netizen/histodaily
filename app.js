@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.177";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.178";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -8930,6 +8930,9 @@ function disciplineEmptyMarkup(discipline) {
     <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>La discipline est prête dans l’interface, pas encore remplie.</h2><p>On garde l’app légère : pas besoin d’ajouter cinquante cours vides. Dès qu’on écrira les contenus, ils apparaîtront ici avec le même système express, cours complet et quiz.</p></div>
   </section>`;
 }
+function chapterDisplayTitle(value, fallback = "Chapitre") {
+  return String(value || fallback).replace(/^\s*\d+\.\s*/, "").trim() || fallback;
+}
 function treeGroupCard(group, active, disciplineId = activeDisciplineId()) {
   const total = treeLessonCountForGroup(group.id, disciplineId);
   const done = treeDoneCountForGroup(group.id, disciplineId);
@@ -8937,7 +8940,7 @@ function treeGroupCard(group, active, disciplineId = activeDisciplineId()) {
   return `<article class="tree-card period-card ${active ? "active" : ""}" data-tree-group="${escapeHtml(group.id)}" tabindex="0" role="button">
     <div class="tree-card-main">
       <span class="tree-kicker">${escapeHtml(group.range || "période")}</span>
-      <h2>${escapeHtml(group.title || "Période")}</h2>
+      <h2>${escapeHtml(chapterDisplayTitle(group.title, "Période"))}</h2>
       <p>${escapeHtml(group.description || "Choisis une période pour voir ses peuples, civilisations et grands thèmes.")}</p>
     </div>
     <div class="tree-progress-line"><span>${done}/${total} cours</span><b>${progress}%</b></div>
@@ -9040,11 +9043,11 @@ function renderLearn() {
     <header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>Choisis une discipline</h1><p class="tree-subtitle">Tu choisis d’abord le domaine, puis les chapitres disponibles.</p></div></header>
     ${disciplineSelectorMarkup(disciplineId)}
     <section class="tree-overview card">
-      <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>${escapeHtml(group.title || "Période")}</h2><p>${escapeHtml(group.description || "Choisis une période puis un thème pour ne pas mélanger tous les cours.")}</p></div>
+      <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>${escapeHtml(chapterDisplayTitle(group.title, "Période"))}</h2><p>${escapeHtml(group.description || "Choisis une période puis un thème pour ne pas mélanger tous les cours.")}</p></div>
       <div class="tree-overview-stats"><div><b>${groupTotal ? `${groupDone}/${groupTotal}` : "plan"}</b><span>${groupTotal ? "cours terminés" : "chapitre posé"}</span></div><div><b>${lessons.length ? `${worldDone}/${lessons.length}` : "plan"}</b><span>${escapeHtml(world.title || "thème")}</span></div><div><b>${worldProgress}%</b><span>progression thème</span></div></div>
     </section>
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">1 · Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === groupId, disciplineId)).join("")}</div></section>
-    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">2 · Thèmes du chapitre</span><h2>${escapeHtml(group.title || "Parcours")}</h2></div><small>${worlds.length} thèmes</small></div><div class="tree-grid themes-grid">${worlds.map(item => treeWorldCard(item, item.id === world.id)).join("")}</div></section>
+    <section class="tree-section"><div class="section-title-row"><div><span class="card-label">Thèmes du chapitre</span><h2>${escapeHtml(chapterDisplayTitle(group.title, "Parcours"))}</h2></div><small>${worlds.length} thèmes</small></div><div class="tree-grid themes-grid">${worlds.map(item => treeWorldCard(item, item.id === world.id)).join("")}</div></section>
     ${learnFilterMarkup(lessons, shownLessons)}
     <section class="tree-section"><div class="section-title-row"><div><span class="card-label">3 · Cours</span><h2>${world.emoji || "📚"} ${escapeHtml(world.title || "Cours")}</h2><p class="tree-context-line">${escapeHtml(world.subtitle || "Un parcours rangé par ordre logique.")}</p></div><small>${shownLessons.length}/${lessons.length} visibles</small></div><div class="tree-lesson-list">${shownLessons.map((lesson, index) => treeLessonCard(lesson, index, world)).join("") || `<div class="card empty-filter-card"><h2>${lessons.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${lessons.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre thème ou reviens au parcours principal.") : "Explore un autre thème pour l’instant."}</p>${lessons.length ? `<button data-learn-filter="all">Voir tous les cours disponibles</button>` : ""}</div>`}</div></section>`);
   $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
@@ -16786,7 +16789,7 @@ function beta117GroupProgressMarkup(groupId, disciplineId = activeDisciplineId()
 function beta117ChapterHero(group, discipline, groupId, disciplineId) {
   const worlds = treeWorldsForGroup(groupId, disciplineId);
   return `<section class="card beta117-chapter-hero" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">${escapeHtml(discipline.title)} · chapitre ouvert</span><h2>${escapeHtml(group.title || "Chapitre")}</h2><p>${escapeHtml(group.description || "Les cours de ce chapitre sont rangés ici, sans réafficher toute la carte du parcours.")}</p></div><small>${worlds.length} thème${worlds.length > 1 ? "s" : ""}</small></div>
+    <div class="section-title-row"><div><span class="card-label">${escapeHtml(discipline.title)} · chapitre ouvert</span><h2>${escapeHtml(chapterDisplayTitle(group.title, "Chapitre"))}</h2><p>${escapeHtml(group.description || "Les cours de ce chapitre sont rangés ici, sans réafficher toute la carte du parcours.")}</p></div><small>${worlds.length} thème${worlds.length > 1 ? "s" : ""}</small></div>
     ${beta117GroupProgressMarkup(groupId, disciplineId)}
   </section>`;
 }
@@ -16818,7 +16821,7 @@ function beta117RenderLearnCourses(disciplineId, discipline, groupId, group) {
   const shownItems = beta117FilteredLessonItems(items);
   const plannedWorlds = worlds.filter(world => treeLessonsForWorld(world.id).length === 0);
   renderShell(`
-    <header class="topbar tree-topbar beta117-course-topbar"><button data-back-chapters>←</button><div><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(group.title || "Chapitre")}</h1><p class="tree-subtitle">Liste des cours du chapitre. Le reste du parcours est masqué pour garder la page légère.</p></div></header>
+    <header class="topbar tree-topbar beta117-course-topbar"><button data-back-chapters>←</button><div><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(chapterDisplayTitle(group.title, "Chapitre"))}</h1><p class="tree-subtitle">Liste des cours du chapitre. Le reste du parcours est masqué pour garder la page légère.</p></div></header>
     ${beta117ChapterHero(group, discipline, groupId, disciplineId)}
     ${learnFilterMarkup(items.map(item => item.lesson), shownItems.map(item => item.lesson))}
     <section class="tree-section beta117-course-list"><div class="section-title-row"><div><span class="card-label">Cours du chapitre</span><h2>${shownItems.length}/${items.length} cours visible${shownItems.length > 1 ? "s" : ""}</h2></div><button type="button" class="ghost beta117-back-inline" data-back-chapters>← Chapitres</button></div><div class="tree-lesson-list">${shownItems.map((item, index) => treeLessonCard(item.lesson, index, item.world)).join("") || `<div class="card empty-filter-card"><h2>${items.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${items.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Aucun cours ne correspond au filtre actuel.") : "Ce chapitre sera ouvert quand ses cours seront prêts."}</p>${items.length ? `<button data-learn-filter="all">Voir tous les cours du chapitre</button>` : ""}</div>`}</div></section>
@@ -22318,7 +22321,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 (function histodailyBeta172Bootstrap(){
-  const VERSION = "1.0.0-beta.177";
+  const VERSION = "1.0.0-beta.181";
   let booted = false;
   function boot(){
     if (booted) return;
@@ -22326,7 +22329,7 @@ document.addEventListener("visibilitychange", () => {
     try { beta114NormalizeState(); } catch {}
     try {
       state.beta172ArchitectureVersion = VERSION;
-      window.HistoDaily = { version: VERSION, architectureStable: true, storageSchema: 2 };
+      window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, architectureStable: true, storageSchema: 2 };
     } catch {}
     try { render({ immediate: true }); } catch (error) {
       try { console.error("HistoDaily beta172 boot", error); } catch {}

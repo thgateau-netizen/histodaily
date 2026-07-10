@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.177",
-  assetsVersion: "1.0.0-beta.177",
+  version: "1.0.0-beta.185",
+  assetsVersion: "1.0.0-beta.185",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 177",
+    versionLabel: "beta 185",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "7 nouveaux cours : un dans chaque discipline, avec 35 nouvelles questions.",
-      "14 nouveaux mystères reliés aux cours et répartis dans tous les domaines.",
-      "Aide anti-frustration après trois indices : forme du nom et choix guidé éliminatoire."
+      "Passe de débogage globale : quiz, mystères, sauvetage par cours, révisions et récompenses vérifiés contre les doubles gains.",
+      "Navigation fiabilisée : titre de page synchronisé avec l’écran et la discipline réellement ouverts.",
+      "Parcours clarifié : suppression des numéros de chapitres discontinus après filtrage du contenu."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

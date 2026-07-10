@@ -1,9 +1,9 @@
-/* HistoDaily beta 177 — runtime multijoueur isolé.
+/* HistoDaily beta 178 — runtime multijoueur isolé.
    Le moteur solo reste inchangé. Ce module corrige uniquement les appels API,
    les demandes par code et la sémantique des classements. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-beta.177";
+  const VERSION = "1.0.0-beta.178";
   const API_TIMEOUT_MS = 8000;
   const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
 
