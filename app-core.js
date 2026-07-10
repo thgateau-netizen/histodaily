@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.200",
-  assetsVersion: "1.0.0-beta.200",
+  version: "1.0.0-beta.201",
+  assetsVersion: "1.0.0-beta.201",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 200",
+    versionLabel: "beta 201",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Accueil : le véritable sélecteur de disciplines a été corrigé, sans double carré ni icône décentrée.",
-      "Musique, cinéma et économie utilisent de nouveaux pictogrammes plus lisibles dans les petites cartes.",
-      "Les notes de version ont été nettoyées pour ne présenter que les changements de la beta 200."
+      "Refonte des headers : l’accueil et les pages de cours ont maintenant un en-tête plus premium, plus visuel et plus éditorial.",
+      "Les en-têtes reprennent la couleur de la discipline, une illustration dédiée et une meilleure hiérarchie de lecture.",
+      "Le résultat est plus pro, plus beau et plus identifiable, sans alourdir le rendu mobile."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

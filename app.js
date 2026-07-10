@@ -12285,12 +12285,14 @@ function renderHome() {
   const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
   const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} gemme${reward.gems > 1 ? "s" : ""} si tu résous aujourd’hui`;
   renderShell(`
-    <header class="hero compact home-clean-hero home-mode-hero" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div>
+    <header class="hero compact home-clean-hero home-mode-hero hd201-premium-header" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="hd201-header-copy">
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
+        <p class="hd201-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours clair, beau et progressif pour apprendre sans surcharge.")}</p>
         <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
+      ${beta201HeaderVisual(discipline.id, "HD")}
     </header>
 
     ${modeSwitcherMarkup()}
@@ -16815,6 +16817,12 @@ function beta117MysteryToolMarkup(disciplineId = activeDisciplineId()) {
   return `<button type="button" class="ghost beta-mystery-refresh" data-beta-refresh-mystery title="Outil de bêta : changer le mystère affiché aujourd’hui">↻ Autre mystère</button>${tested ? `<small class="beta-mystery-count">test ${tested + 1}/${pool.length}</small>` : ""}`;
 }
 
+function beta201HeaderVisual(disciplineId = activeDisciplineId(), badge = "HD") {
+  const discipline = disciplineById(disciplineId || "history");
+  const art = (window.HD_ART && typeof HD_ART.hero === "function") ? HD_ART.hero(discipline.id) : "";
+  return `<div class="hd201-header-side" aria-hidden="true"><div class="hd201-header-art">${art}</div><div class="hd201-header-badge">${escapeHtml(String(badge || "HD").slice(0, 3))}</div></div>`;
+}
+
 function beta117GroupLessonItems(groupId, disciplineId = activeDisciplineId()) {
   return treeWorldsForGroup(groupId, disciplineId).flatMap(world =>
     treeLessonsForWorld(world.id).map(lesson => ({ lesson, world }))
@@ -16843,7 +16851,7 @@ function beta117PlannedWorldsMarkup(worlds) {
 }
 function beta117RenderLearnChapters(disciplineId, discipline, groups) {
   renderShell(`
-    <header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Choisis un grand chapitre. Ensuite, la page se concentre sur les cours.</p></div></header>
+    <header class="topbar tree-topbar hd201-premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="hd201-back" data-back-home>←</button><div class="hd201-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle hd201-header-subtitle">Choisis un grand chapitre. Ensuite, la page se concentre sur les cours.</p></div>${beta201HeaderVisual(discipline.id, "HD")}</header>
     ${disciplineSelectorMarkup(disciplineId)}
     <section class="tree-section beta117-chapter-list"><div class="section-title-row"><div><span class="card-label">Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === treeActiveGroupId(disciplineId), disciplineId)).join("")}</div></section>
   `);
@@ -16865,7 +16873,7 @@ function beta117RenderLearnCourses(disciplineId, discipline, groupId, group) {
   const shownItems = beta117FilteredLessonItems(items);
   const plannedWorlds = worlds.filter(world => treeLessonsForWorld(world.id).length === 0);
   renderShell(`
-    <header class="topbar tree-topbar beta117-course-topbar"><button data-back-chapters>←</button><div><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(chapterDisplayTitle(group.title, "Chapitre"))}</h1><p class="tree-subtitle">Liste des cours du chapitre. Le reste du parcours est masqué pour garder la page légère.</p></div></header>
+    <header class="topbar tree-topbar beta117-course-topbar hd201-premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="hd201-back" data-back-chapters>←</button><div class="hd201-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(chapterDisplayTitle(group.title, "Chapitre"))}</h1><p class="tree-subtitle hd201-header-subtitle">Liste des cours du chapitre. Le reste du parcours est masqué pour garder la page légère.</p></div>${beta201HeaderVisual(discipline.id, "HD")}</header>
     ${beta117ChapterHero(group, discipline, groupId, disciplineId)}
     ${learnFilterMarkup(items.map(item => item.lesson), shownItems.map(item => item.lesson))}
     <section class="tree-section beta117-course-list"><div class="section-title-row"><div><span class="card-label">Cours du chapitre</span><h2>${shownItems.length}/${items.length} cours visible${shownItems.length > 1 ? "s" : ""}</h2></div><button type="button" class="ghost beta117-back-inline" data-back-chapters>← Chapitres</button></div><div class="tree-lesson-list">${shownItems.map((item, index) => treeLessonCard(item.lesson, index, item.world)).join("") || `<div class="card empty-filter-card"><h2>${items.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${items.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Aucun cours ne correspond au filtre actuel.") : "Ce chapitre sera ouvert quand ses cours seront prêts."}</p>${items.length ? `<button data-learn-filter="all">Voir tous les cours du chapitre</button>` : ""}</div>`}</div></section>
@@ -16906,7 +16914,7 @@ renderLearn = function beta117RenderLearn() {
   const discipline = disciplineById(disciplineId);
   const groups = treeGroups(disciplineId);
   if (!groups.length) {
-    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Les premiers cours de cette discipline arrivent progressivement.</p></div></header>${disciplineSelectorMarkup(disciplineId)}${disciplineEmptyMarkup(discipline)}`);
+    renderShell(`<header class="topbar tree-topbar hd201-premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="hd201-back" data-back-home>←</button><div class="hd201-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle hd201-header-subtitle">Les premiers cours de cette discipline arrivent progressivement.</p></div>${beta201HeaderVisual(discipline.id, "HD")}</header>${disciplineSelectorMarkup(disciplineId)}${disciplineEmptyMarkup(discipline)}`);
     $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
     document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
     return;
@@ -16927,12 +16935,14 @@ renderHome = function beta117RenderHome() {
   const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
   const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} gemme${reward.gems > 1 ? "s" : ""} si tu résous aujourd’hui`;
   renderShell(`
-    <header class="hero compact home-clean-hero home-mode-hero" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div>
+    <header class="hero compact home-clean-hero home-mode-hero hd201-premium-header" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="hd201-header-copy">
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
+        <p class="hd201-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours clair, beau et progressif pour apprendre sans surcharge.")}</p>
         <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
+      ${beta201HeaderVisual(discipline.id, "HD")}
     </header>
     ${modeSwitcherMarkup()}
     ${modeSnapshotMarkup(disciplineId)}

@@ -2957,3 +2957,130 @@ body.hd184-premium::before{
   .home-mode-switcher .mode-pill,
   .beta182-discipline-tabs button{min-width:140px!important;padding:9px 11px!important;}
 }
+
+
+/* beta 201 — headers premium */
+.hd201-premium-header,
+.hd201-premium-topbar{
+  position:relative;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--discipline-accent,#f6c453) 26%,rgba(255,255,255,.11));
+  background:
+    radial-gradient(circle at 100% 0,color-mix(in srgb,var(--discipline-accent,#f6c453) 24%,transparent),transparent 38%),
+    linear-gradient(145deg,rgba(255,255,255,.095),rgba(255,255,255,.04));
+  box-shadow:0 24px 50px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.hd201-premium-header::before,
+.hd201-premium-topbar::before{
+  content:"";
+  position:absolute;
+  inset:auto auto -54px -54px;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--discipline-accent,#f6c453) 16%,transparent),transparent 70%);
+  pointer-events:none;
+}
+.hd201-premium-header{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 108px;
+  gap:14px;
+  align-items:start;
+  padding:20px 18px 18px;
+  border-radius:32px;
+}
+.hd201-premium-topbar{
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr) 92px;
+  gap:12px;
+  align-items:start;
+  justify-content:unset;
+  padding:16px;
+  margin:8px 0 14px;
+  border-radius:30px;
+}
+.hd201-header-copy{position:relative;z-index:1;min-width:0}
+.hd201-premium-topbar h1{
+  margin:.08rem 0 0;
+  font-size:clamp(1.58rem,7.2vw,2.35rem);
+  line-height:.96;
+  letter-spacing:-.06em;
+  text-wrap:balance;
+}
+.hd201-premium-header .eyebrow,
+.hd201-premium-topbar .eyebrow{
+  color:color-mix(in srgb,var(--discipline-accent,#f6c453) 84%,white);
+  letter-spacing:.11em;
+}
+.hd201-header-subtitle{
+  margin:10px 0 0;
+  color:#d8e6f5!important;
+  font-size:.93rem;
+  line-height:1.42;
+  max-width:46ch;
+}
+.hd201-header-side{position:relative;z-index:1;min-height:94px}
+.hd201-header-art{
+  height:100%;
+  min-height:94px;
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hd201-header-art .hd-art,
+.hd201-header-art .hd-art--hero{height:100%}
+.hd201-header-art .hd-art-svg{
+  width:100%;
+  height:100%;
+  display:block;
+  transform:scale(1.06);
+}
+.hd201-header-badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:40px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  background:rgba(5,9,20,.34);
+  border:1px solid color-mix(in srgb,var(--discipline-accent,#f6c453) 42%,rgba(255,255,255,.14));
+  color:color-mix(in srgb,var(--discipline-accent,#f6c453) 88%,white);
+  font-weight:1000;
+  letter-spacing:.08em;
+  box-shadow:0 8px 22px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hd201-back{
+  width:44px!important;
+  height:44px!important;
+  border-radius:16px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  background:rgba(5,9,20,.28)!important;
+  border:1px solid rgba(255,255,255,.11)!important;
+  color:#f7fbff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+}
+.hd201-premium-header .hero-metrics{margin-top:14px}
+.hd201-premium-header .hero-metrics span,
+.hd201-premium-header .version-pill{
+  background:rgba(5,9,20,.34);
+  border-color:rgba(255,255,255,.11);
+}
+@media (max-width:520px){
+  .hd201-premium-header{grid-template-columns:minmax(0,1fr) 88px;padding:18px 16px 16px;border-radius:28px}
+  .hd201-premium-topbar{grid-template-columns:40px minmax(0,1fr) 76px;padding:14px;border-radius:26px}
+  .hd201-header-art,.hd201-header-side{min-height:78px}
+  .hd201-header-badge{width:34px;height:34px;border-radius:12px;font-size:.78rem}
+}
+@media (max-width:390px){
+  .hd201-premium-header{grid-template-columns:minmax(0,1fr) 78px}
+  .hd201-premium-topbar{grid-template-columns:38px minmax(0,1fr) 68px}
+  .hd201-header-art,.hd201-header-side{min-height:70px}
+}
