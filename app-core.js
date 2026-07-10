@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.175",
-  assetsVersion: "1.0.0-beta.175",
+  version: "1.0.0-beta.176",
+  assetsVersion: "1.0.0-beta.176",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 174",
+    versionLabel: "beta 176",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Cours approfondis : les 41 leçons les plus courtes ont été enrichies avec des exemples, acteurs et mécanismes précis.",
-      "Moins de généralités : chaque cours retravaillé distingue davantage les faits, les sources, les nuances et les conséquences.",
-      "Niveau harmonisé : aucun cours complet publié ne reste sous l’équivalent d’environ trois minutes de lecture."
+      "Multijoueur réparé : les routes API Vercel sont réellement exposées.",
+      "Classements corrigés : score des mystères séparé de l’XP totale du profil.",
+      "Demandes d’amis fiabilisées : code vérifié, acceptation idempotente et annulation sûre."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

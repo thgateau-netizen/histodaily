@@ -1,2 +1,5 @@
 const { handleRequest } = require('../../lib/hd-api');
-module.exports = (req, res) => handleRequest(req, res);
+
+module.exports = async function histodailyApiRouter(req, res) {
+  return handleRequest(req, res);
+};
