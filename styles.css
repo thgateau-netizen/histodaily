@@ -2847,3 +2847,23 @@ body.hd184-premium::before{
   .hd198-rank-row{grid-template-columns:34px minmax(0,1fr) auto;padding:11px 10px;gap:9px}
   .hd198-rank-current{font-size:.72rem;padding:7px 8px}
 }
+
+
+/* beta 199 — mini cartes disciplines accueil */
+.hd187-map-domains{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+.hd187-map-domains::-webkit-scrollbar{display:none}
+.hd187-map-domains button{display:grid;grid-template-columns:58px 1fr;grid-template-rows:auto auto;align-items:center;column-gap:14px;min-width:190px;padding:14px 14px 14px 12px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.hd187-map-domains button.active{background:radial-gradient(circle at 110% -10%,color-mix(in srgb,var(--node-accent,#f6c453) 22%,transparent),transparent 45%),linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.045));border-color:color-mix(in srgb,var(--node-accent,#f6c453) 54%,rgba(255,255,255,.14))}
+.hd187-map-domains button>.mini-discipline-icon{grid-row:1 / span 2;display:flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:20px;padding:0;background:linear-gradient(180deg,color-mix(in srgb,var(--node-accent,#f6c453) 16%,rgba(255,255,255,.03)),rgba(255,255,255,.03));border:1px solid color-mix(in srgb,var(--node-accent,#f6c453) 28%,rgba(255,255,255,.08));box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.hd187-map-domains button>.mini-discipline-icon .hd-icon{display:flex;align-items:center;justify-content:center;width:24px;height:24px;margin:0!important;color:#e9f1fb}
+.hd187-map-domains button>.mini-discipline-icon .hd-icon svg{width:24px;height:24px}
+.hd187-map-domains button>.mini-discipline-icon .hd-icon-premium,.hd187-map-domains button>.mini-discipline-icon .hd-icon-chip{width:24px;height:24px;padding:0;border-radius:0;background:transparent;border:none;box-shadow:none;color:#f8fbff}
+.hd187-map-domains button>.mini-discipline-icon .hd-icon-plain{width:24px;height:24px}
+.hd187-map-domains button>b{align-self:end;font-size:1rem;line-height:1.05;text-align:left;letter-spacing:-.01em}
+.hd187-map-domains button>small{align-self:start;font-size:.82rem;color:var(--muted);line-height:1.05;text-align:left}
+.hd187-map-domains button.active>.mini-discipline-icon{background:linear-gradient(180deg,color-mix(in srgb,var(--node-accent,#f6c453) 24%,rgba(255,255,255,.05)),rgba(255,255,255,.05));}
+.hd-icon-plain{display:inline-flex;align-items:center;justify-content:center}
+.hd-icon-plain::before,.hd-icon-plain::after{display:none!important}
+
+/* légère simplification des grosses icônes musique/cinéma/économie */
+.hd-art--music .hd-art-svg,.hd-art--cinema .hd-art-svg,.hd-art--economy .hd-art-svg{transform:scale(1.02)}

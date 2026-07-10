@@ -45,5 +45,6 @@
   function world(worldObj, disciplineObj){ const base = disciplineObj?.id || worldObj?.disciplineId || worldObj?.id?.split('-')[0]; return render(disciplineMap[base] || fromText(worldObj?.title, 'lesson'), 'hd-icon-chip hd-icon-premium'); }
   function lesson(lessonObj, worldObj, disciplineObj){ const base = disciplineObj?.id || worldObj?.disciplineId || lessonObj?.disciplineId || worldObj?.id?.split('-')[0]; return render(disciplineMap[base] || fromText(lessonObj?.title, 'lesson'), 'hd-icon-chip hd-icon-premium'); }
   function action(name){ return render(name, 'hd-icon-chip hd-icon-premium'); }
-window.HD_ICONS = { render, discipline, world, lesson, action, fromText };
+  function rawDiscipline(d){ const id = typeof d === "string" ? d : d?.id; return render(disciplineMap[id] || "lesson", "hd-icon-plain"); }
+window.HD_ICONS = { render, discipline, world, lesson, action, rawDiscipline, fromText };
 })();
