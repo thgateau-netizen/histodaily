@@ -2,7 +2,7 @@
 (function histodailyBeta183Audit(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.185";
+  const VERSION = "1.0.0-beta.186";
   const FOLD_KEY = "histodaily_ui_profile_fold_beta183";
   const PLAN_KEY = "histodaily_ui_plan_expanded_beta183";
   const appRoot = document.getElementById("app");

@@ -49,10 +49,13 @@
   try {
     modeContinueMarkup = function beta182ModeContinueMarkup(disciplineId = activeDisciplineId()) {
       const discipline = disciplineById(disciplineId);
-      const lessons = availableDisciplineLessons(discipline.id);
-      const done = lessons.filter(lessonIsDone).length;
+      let totalLessons = [];
+      try {
+        totalLessons = (lessonsForDiscipline(discipline.id) || []).filter(lesson => typeof isCuratedLesson !== "function" || isCuratedLesson(lesson));
+      } catch { totalLessons = availableDisciplineLessons(discipline.id); }
+      const done = totalLessons.filter(lessonIsDone).length;
       const next = activeNextLesson(discipline.id);
-      const progress = lessons.length ? Math.round((done / lessons.length) * 100) : 0;
+      const progress = totalLessons.length ? Math.round((done / totalLessons.length) * 100) : 0;
 
       if (!next) {
         return `<section class="card beta182-next-card complete" style="--discipline-accent:${esc(discipline.accent)}">
@@ -67,7 +70,7 @@
       const started = Number(state.quizProgress?.[next.id]?.answeredCount || 0) > 0;
       return `<section class="card beta182-next-card" style="--discipline-accent:${esc(discipline.accent)}">
         <div class="beta182-next-icon">${next.emoji || world.emoji || discipline.emoji || "📚"}</div>
-        <div class="beta182-next-copy"><span class="card-label">À continuer · ${done}/${lessons.length || 0}</span><h2>${esc(lessonTitle(next))}</h2><p>${esc(world.title || discipline.title)} · ${progress}% du domaine validé</p></div>
+        <div class="beta182-next-copy"><span class="card-label">À continuer · ${done}/${totalLessons.length || 0}</span><h2>${esc(lessonTitle(next))}</h2><p>${esc(world.title || discipline.title)} · ${progress}% du domaine validé</p></div>
         <button type="button" data-home-continue="${esc(next.id)}" data-home-continue-view="${started ? "quiz" : "express"}">${started ? "Reprendre" : "Commencer"}</button>
       </section>`;
     };
@@ -144,6 +147,16 @@
     return fold;
   }
 
+  function revealActiveHorizontal(containerSelector, activeSelector) {
+    window.requestAnimationFrame(() => {
+      const container = document.querySelector(containerSelector);
+      const active = container?.querySelector(activeSelector);
+      if (!container || !active) return;
+      const target = active.offsetLeft - Math.max(0, (container.clientWidth - active.offsetWidth) / 2);
+      container.scrollLeft = Math.max(0, target);
+    });
+  }
+
   function polishHome() {
     const shell = document.querySelector(".app-shell.tab-home");
     if (!shell) return;
@@ -151,6 +164,7 @@
     shell.querySelector(".home-secondary-actions")?.remove();
     shell.querySelector(".home-mode-card")?.remove();
     shell.querySelector(".home-clean-hero h1")?.setAttribute("aria-label", "HistoDaily, un rendez-vous quotidien de culture générale");
+    revealActiveHorizontal(".beta182-home-shell .home-mode-switcher", ".mode-pill.active");
     const plan = shell.querySelector(".beta180-daily-plan");
     if (plan) {
       plan.classList.add("beta182-daily-plan");
@@ -166,6 +180,7 @@
     const hub = shell.querySelector(".beta181-learning-hub");
     if (picker && hub && hub.nextElementSibling === picker) hub.insertAdjacentElement("beforebegin", picker);
     shell.querySelectorAll(".tree-card").forEach(card => card.classList.add("beta182-tree-card"));
+    revealActiveHorizontal(".beta182-learn-shell .beta182-discipline-tabs", "button.active");
   }
 
   function polishProfile() {

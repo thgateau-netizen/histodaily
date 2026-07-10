@@ -9022,7 +9022,7 @@ function renderLearn() {
   const discipline = disciplineById(disciplineId);
   const groups = treeGroups(disciplineId);
   if (!groups.length) {
-    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>Choisis une discipline</h1><p class="tree-subtitle">Histoire, art, cinéma, sciences, économie ou géographie.</p></div></header>
+    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>Choisis une discipline</h1><p class="tree-subtitle">Histoire, sciences, astronomie, arts et culture générale.</p></div></header>
       ${disciplineSelectorMarkup(disciplineId)}
       ${disciplineEmptyMarkup(discipline)}`);
     $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));

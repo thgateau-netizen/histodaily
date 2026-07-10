@@ -348,7 +348,17 @@
     "geo-risks": ["🌋", "Expert des risques"],
     "music-baroque": ["🎻", "Maître du baroque"],
     "music-jazz-blues": ["🎷", "Oreille jazz"],
-    "music-rap-electronic": ["🎧", "Beatmaker curieux"]
+    "music-rap-electronic": ["🎧", "Beatmaker curieux"],
+    "astro-scales": ["📏", "Mesureur du cosmos"],
+    "astro-cosmology": ["🌠", "Cosmologiste curieux"],
+    "astro-stellar-life": ["⭐", "Explorateur des étoiles"],
+    "astro-sun": ["☀️", "Veilleur solaire"],
+    "astro-formation-rocky": ["🪨", "Architecte des planètes"],
+    "astro-giants-moons": ["🪐", "Voyageur des mondes géants"],
+    "astro-small-bodies": ["☄️", "Chasseur de comètes"],
+    "astro-exoplanets-life": ["🌍", "Chercheur d’autres mondes"],
+    "astro-observation": ["🔭", "Observateur du ciel"],
+    "astro-spaceflight": ["🚀", "Navigateur spatial"]
   };
 
   const DISCIPLINE_MEDALS = {
@@ -358,7 +368,8 @@
     "science-inventions": ["🧪", "Esprit scientifique"],
     economy: ["📈", "Économiste en herbe"],
     geography: ["🗺️", "Géographe du monde"],
-    music: ["🎼", "Mélomane accompli"]
+    music: ["🎼", "Mélomane accompli"],
+    astronomy: ["🌌", "Astronome accompli"]
   };
 
   function collectionDefinitions() {
