@@ -1064,7 +1064,10 @@
         weeklyStatus,
         reconcileWeeklyReward,
         activePathProgress,
-        allReviewEntries
+        allReviewEntries,
+        openReviewSession,
+        openDailyCourse,
+        relatedLessonsFor
       },
       auditProgression() {
         return {

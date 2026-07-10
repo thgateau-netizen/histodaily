@@ -2,7 +2,7 @@
 (function histodailyBeta185VisualUpgrade(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.186";
+  const VERSION = "1.0.0-beta.187";
   const appRoot = document.getElementById("app");
   if (!appRoot) return;
 

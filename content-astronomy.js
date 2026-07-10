@@ -1,6 +1,6 @@
 /* HistoDaily beta 186 — Astronomie devient une discipline autonome. */
 (function histodailyBeta186Astronomy(){
-  const VERSION = "1.0.0-beta.186";
+  const VERSION = "1.0.0-beta.187";
   const DISCIPLINE = {
   "id": "astronomy",
   "title": "Astronomie",
