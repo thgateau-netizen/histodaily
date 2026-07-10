@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.176";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.177";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -22318,7 +22318,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 (function histodailyBeta172Bootstrap(){
-  const VERSION = "1.0.0-beta.176";
+  const VERSION = "1.0.0-beta.177";
   let booted = false;
   function boot(){
     if (booted) return;

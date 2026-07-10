@@ -1,6 +1,6 @@
 /* HistoDaily beta 175 — refonte éditoriale des domaines hors Histoire et des mystères. */
 (function histodailyBeta175Editorial(){
-  const VERSION = "1.0.0-beta.176";
+  const VERSION = "1.0.0-beta.177";
   const PACKS = {
   "art-read-image-basics": {
     "hook": "Une œuvre n’est ni une énigme à deviner ni une illustration à résumer. Elle produit du sens par son format, son espace, sa lumière, sa matière, sa fonction et la place qu’elle impose au spectateur.",

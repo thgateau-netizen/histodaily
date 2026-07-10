@@ -1,6 +1,6 @@
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.176",
-  assetsVersion: "1.0.0-beta.176",
+  version: "1.0.0-beta.177",
+  assetsVersion: "1.0.0-beta.177",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -15,12 +15,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 176",
+    versionLabel: "beta 177",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Multijoueur réparé : les routes API Vercel sont réellement exposées.",
-      "Classements corrigés : score des mystères séparé de l’XP totale du profil.",
-      "Demandes d’amis fiabilisées : code vérifié, acceptation idempotente et annulation sûre."
+      "7 nouveaux cours : un dans chaque discipline, avec 35 nouvelles questions.",
+      "14 nouveaux mystères reliés aux cours et répartis dans tous les domaines.",
+      "Aide anti-frustration après trois indices : forme du nom et choix guidé éliminatoire."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
