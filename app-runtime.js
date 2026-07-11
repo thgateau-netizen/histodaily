@@ -1758,7 +1758,7 @@
         if (lesson && !choices.some(item => item.id === lesson.id)) choices.push(lesson);
       }
       return `<section class="card beta182-discovery-card" style="--discipline-accent:${esc(discipline.accent)}">
-        <div class="section-title-row"><div><span class="card-label">À découvrir</span><h2>Trois cours, sans surcharge</h2></div><button type="button" class="ghost mini-button" data-open-mode-learn="${esc(discipline.id)}">Tout voir</button></div>
+        <div class="section-title-row"><div><span class="card-label">À découvrir</span><h2>Trois cours à découvrir</h2></div><button type="button" class="ghost mini-button" data-open-mode-learn="${esc(discipline.id)}">Tout voir</button></div>
         <div class="beta182-discovery-row">${choices.map(lesson => {
           let world = {};
           try { world = lessonWorld(lesson) || {}; } catch {}
@@ -3780,7 +3780,7 @@
     const progress = disciplineProgress(disciplineId);
     return `<section class="hd214-library-hero" style="--hd214-accent:${esc(discipline.accent)}">
       <div class="hd214-hero-icon">${HD_ICONS.discipline(discipline)}</div>
-      <div class="hd214-hero-copy"><span>PARCOURS · ${esc(discipline.title)}</span><h2>${progress.total ? `${progress.total} cours, rangés sans surcharge` : "Une nouvelle discipline se prépare"}</h2><p>${esc(discipline.description || "Progresse par périodes, thèmes et cours courts ou complets.")}</p></div>
+      <div class="hd214-hero-copy"><span>PARCOURS · ${esc(discipline.title)}</span><h2>${progress.total ? `${progress.total} cours disponibles` : "Une nouvelle discipline se prépare"}</h2><p>${esc(discipline.description || "Progresse par périodes, thèmes et cours courts ou complets.")}</p></div>
       <div class="hd214-progress-ring" style="--hd214-progress:${progress.progress}"><strong>${progress.progress}%</strong><small>${progress.done}/${progress.total || 0}</small></div>
       <div class="hd214-hero-stats"><span><b>${progress.chapters}</b> chapitres</span><span><b>${progress.themes}</b> thèmes</span><span><b>${progress.done}</b> validés</span></div>
     </section>`;
@@ -5110,7 +5110,7 @@
 (function histodailyBeta219VisualV2(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.230.0";
+  const VERSION = "1.0.0-beta.231.0";
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -5444,4 +5444,35 @@
       else if (state?.tab === "profile") upgradeProfile();
     }, 0);
   } catch {}
+})();
+
+/* Beta 231 — le dossier Astronomie affiché sur l’accueil ouvre réellement Résoudre. */
+(function histodailyBeta231AstronomyDailyMystery(){
+  const FEATURED_ID = "astro-mystery-black-hole-231";
+  if (typeof mysteryForDisciplineDayOffset !== "function") return;
+
+  try {
+    if (!state.beta231AstroDossierReady) {
+      state.betaMysteryShift = { ...(state.betaMysteryShift || {}), astronomy: 0 };
+      state.beta231AstroDossierReady = true;
+      if (typeof queueSaveState === "function") queueSaveState(80);
+    }
+  } catch {}
+
+  const previousMysteryForDisciplineDayOffset = mysteryForDisciplineDayOffset;
+  mysteryForDisciplineDayOffset = function beta231MysteryForDisciplineDayOffset(disciplineId = activeDisciplineId(), offset = 0) {
+    const id = disciplineById(disciplineId || "history").id;
+    const shift = typeof beta117MysteryShift === "function" ? beta117MysteryShift(id) : 0;
+    if (id === "astronomy" && Number(offset) === 0 && shift === 0) {
+      const featured = (data.mysteries || []).find(item => item?.id === FEATURED_ID);
+      if (featured) return featured;
+    }
+    return previousMysteryForDisciplineDayOffset(id, offset);
+  };
+
+  mysteryForDayOffset = function beta231MysteryForDayOffset(offset = 0) {
+    return mysteryForDisciplineDayOffset(activeDisciplineId(), offset);
+  };
+  dailyMystery = function beta231DailyMystery() { return mysteryForDayOffset(0); };
+  isTodayMystery = function beta231IsTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); };
 })();

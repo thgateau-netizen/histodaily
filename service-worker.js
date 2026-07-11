@@ -1,21 +1,22 @@
-const CACHE_NAME = "histodaily-beta230-v1";
-const APP_VERSION = "1.0.0-beta.230.0";
+const CACHE_NAME = "histodaily-beta231-v1";
+const APP_VERSION = "1.0.0-beta.231.0";
 const ASSETS = [
   "/",
   "/index.html",
-  "/app.css?v=1.0.0-beta.230.0",
-  "/lessons-lite.js?v=1.0.0-beta.230.0",
-  "/app-bootstrap.js?v=1.0.0-beta.230.0",
-  "/app.js?v=1.0.0-beta.230.0",
-  "/content-library.js?v=1.0.0-beta.230.0",
-  "/app-runtime.js?v=1.0.0-beta.230.0",
-  "/visual-v4.js?v=1.0.0-beta.230.0",
+  "/app.css?v=1.0.0-beta.231.0",
+  "/lessons-lite.js?v=1.0.0-beta.231.0",
+  "/app-bootstrap.js?v=1.0.0-beta.231.0",
+  "/app.js?v=1.0.0-beta.231.0",
+  "/content-library.js?v=1.0.0-beta.231.0",
+  "/app-runtime.js?v=1.0.0-beta.231.0",
+  "/visual-v4.js?v=1.0.0-beta.231.0",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
   "/icon-512.png",
   "/apple-touch-icon.png",
-  "/favicon.ico"
+  "/favicon.ico",
+  "/hero-astronomy-art-v3-faded.png"
 ];
 
 self.addEventListener("install", event => {

@@ -843,7 +843,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Cette maîtrise rend possibles chaleur, lumière, cuisson et veillées prolongées."
     ],
     "explanation": "La maîtrise du feu n’est pas un gadget technique : elle transforme l’alimentation, les veillées, la protection, la mobilité et les formes de sociabilité.",
-    "caseTitle": "Transformation technique à identifier",
+    "caseTitle": "Transformation technique",
     "blockedGuesses": [
       "feu"
     ],
@@ -874,7 +874,7 @@ const HISTO_DAILY_MYSTERIES = [
       "L’ensemble est lié au pharaon, à l’au-delà et à des horizons de pierre comme Gizeh."
     ],
     "explanation": "Les pyramides d’Égypte sont des tombes royales, mais elles prouvent aussi la puissance administrative, religieuse et économique du royaume.",
-    "caseTitle": "Ensemble monumental à identifier",
+    "caseTitle": "Ensemble monumental",
     "blockedGuesses": [
       "egypte",
       "égypte",
@@ -908,7 +908,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Femmes, esclaves et métèques restent hors du corps civique."
     ],
     "explanation": "La démocratie athénienne est fondatrice, mais elle reste directe, masculine, civique et fortement excluante.",
-    "caseTitle": "Régime politique à identifier",
+    "caseTitle": "Régime politique",
     "blockedGuesses": [
       "démocratie",
       "democratie",
@@ -942,7 +942,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Ils relient îles Britanniques, Atlantique Nord, monde franc, Rus’ et Méditerranée."
     ],
     "explanation": "Les Vikings ne sont pas seulement des pillards : ce sont des acteurs scandinaves de mobilité, de commerce, de guerre, de colonisation et de recomposition politique.",
-    "caseTitle": "Groupe historique à identifier",
+    "caseTitle": "Groupe historique",
     "blockedGuesses": [
       "empire",
       "royaume",
@@ -991,7 +991,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Code civil, préfets, centralisation, légende et campagnes militaires lui sont associés."
     ],
     "explanation": "Napoléon stabilise une partie de la Révolution tout en construisant un pouvoir autoritaire et conquérant.",
-    "caseTitle": "Personnage à identifier",
+    "caseTitle": "Personnage",
     "blockedGuesses": [
       "empire",
       "royaume",
@@ -1039,7 +1039,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Il ne s’agit pas seulement de Homo sapiens, mais de lignées humaines antérieures ou voisines."
     ],
     "explanation": "Les premiers hominidés rappellent que l’évolution humaine est un buisson, pas une ligne droite.",
-    "caseTitle": "Groupe humain ancien à identifier",
+    "caseTitle": "Groupe humain ancien",
     "blockedGuesses": [
       "sapiens",
       "homo sapiens",
@@ -1072,7 +1072,7 @@ const HISTO_DAILY_MYSTERIES = [
       "La taille de la pierre ouvre l’accès à de nouveaux tranchants et à de nouvelles ressources."
     ],
     "explanation": "Les premiers outils montrent une capacité de transformation du milieu et de transmission des savoir-faire.",
-    "caseTitle": "Innovation technique à identifier",
+    "caseTitle": "Innovation technique",
     "blockedGuesses": [
       "pierre",
       "caillou",
@@ -1107,7 +1107,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Elle consiste à produire une partie de la nourriture plutôt qu’à seulement la prélever."
     ],
     "explanation": "L’agriculture transforme les rapports au territoire, au temps, à l’alimentation et au pouvoir.",
-    "caseTitle": "Transformation économique à identifier",
+    "caseTitle": "Transformation économique",
     "blockedGuesses": [
       "village",
       "villages",
@@ -1140,7 +1140,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Sans lui, l’Égypte pharaonique ne s’organise pas de la même façon."
     ],
     "explanation": "Le Nil structure l’Égypte ancienne : il nourrit les terres, impose des calendriers, facilite les transports et soutient l’État pharaonique.",
-    "caseTitle": "Espace naturel à identifier",
+    "caseTitle": "Espace naturel",
     "blockedGuesses": [
       "egypte",
       "égypte",
@@ -1172,7 +1172,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Cette civilisation est liée à la Crète et à une écriture encore difficile à interpréter."
     ],
     "explanation": "Les Minoens montrent une Méditerranée du Bronze connectée, brillante et difficile à lire faute de textes pleinement compris.",
-    "caseTitle": "Civilisation à identifier",
+    "caseTitle": "Civilisation",
     "blockedGuesses": [
       "Crète",
       "crete",
@@ -1207,7 +1207,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Les tablettes en linéaire B permettent de lire une forme ancienne du grec."
     ],
     "explanation": "Les Mycéniens sont passionnants parce qu’ils relient monde palatial, guerre, écriture administrative et mémoire épique.",
-    "caseTitle": "Civilisation à identifier",
+    "caseTitle": "Civilisation",
     "blockedGuesses": [
       "empire",
       "royaume",
@@ -1261,7 +1261,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Voile, rames, faible tirant d’eau et coque souple expliquent son efficacité."
     ],
     "explanation": "Le navire viking explique une partie de la mobilité scandinave : il connecte mers, fleuves, raids, échanges et installations.",
-    "caseTitle": "Objet technique à identifier",
+    "caseTitle": "Objet technique",
     "blockedGuesses": [
       "viking",
       "vikings",
@@ -1293,7 +1293,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Le roi doit la maintenir contre le désordre pour légitimer son autorité."
     ],
     "explanation": "Maât est essentielle pour comprendre que le pharaon n’est pas seulement un chef : il est présenté comme le garant de l’ordre cosmique et social.",
-    "caseTitle": "Notion à identifier",
+    "caseTitle": "Notion",
     "blockedGuesses": [
       "empire",
       "royaume",
@@ -1344,7 +1344,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Athènes, Sparte et l’Empire perse sont au cœur de l’affrontement."
     ],
     "explanation": "Les guerres médiques comptent parce qu’elles renforcent certaines cités grecques et nourrissent une mémoire politique durable.",
-    "caseTitle": "Conflit à identifier",
+    "caseTitle": "Conflit",
     "blockedGuesses": [
       "empire",
       "royaume",
@@ -1395,7 +1395,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Princeps, héritier de César et début du Principat orientent vers lui."
     ],
     "explanation": "Auguste montre comment un régime peut changer profondément tout en conservant des formes anciennes pour paraître légitime.",
-    "caseTitle": "Personnage à identifier",
+    "caseTitle": "Personnage",
     "blockedGuesses": [
       "empire",
       "royaume",
@@ -1447,7 +1447,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Droits, nation, privilèges abolis et été 1789 donnent la clé."
     ],
     "explanation": "La Révolution française naît d’une crise financière et politique, puis redéfinit souveraineté, droits et ordre social.",
-    "caseTitle": "Rupture politique à identifier",
+    "caseTitle": "Rupture politique",
     "blockedGuesses": [
       "france",
       "bastille",
@@ -1483,7 +1483,7 @@ const HISTO_DAILY_MYSTERIES = [
       "Le parti bolchevik saisit l’occasion après l’effondrement de l’autorité monarchique."
     ],
     "explanation": "La révolution russe transforme le XXe siècle : elle donne naissance à un modèle politique qui structure ensuite la guerre froide.",
-    "caseTitle": "Rupture politique à identifier",
+    "caseTitle": "Rupture politique",
     "blockedGuesses": [
       "russie",
       "urss",

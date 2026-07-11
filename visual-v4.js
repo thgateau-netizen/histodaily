@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.230.0";
+  const VERSION = "1.0.0-beta.231.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }
@@ -12,7 +12,7 @@
   const safe = (fn, fallback = null) => { try { const value = fn(); return value ?? fallback; } catch { return fallback; } };
   let profileMountGeneration = 0;
 
-  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual", "hd225-visual", "hd226-visual", "hd227-visual", "hd228-visual", "hd229-visual", "hd230-visual");
+  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual", "hd225-visual", "hd226-visual", "hd227-visual", "hd228-visual", "hd229-visual", "hd230-visual", "hd231-visual");
 
   function disciplineLabel(discipline){
     const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", astronomy:"Astronomie", economy:"Économie", geography:"Géographie", music:"Musique" };
@@ -85,18 +85,18 @@
     return { index:4, type:lesson ? "lesson" : "mystery", view:"complete", eyebrow:"Expédition terminée", title:"Mission accomplie", text:lesson ? `Le dossier et « ${lessonTitle(lesson)} » sont validés.` : "Le dossier du jour est validé.", action:lesson ? "Revoir le cours" : "Revoir le dossier", meta:`Nouveau dossier dans ${safe(() => timeToNextDaily(), "quelques heures")}` };
   }
 
-  function stageForDiscipline(stage, disciplineId){
-    if (disciplineId !== "astronomy") return stage;
+  function cleanDossierTitle(value){
+    const cleaned = String(value || "")
+      .replace(/\s+à identifier$/i, "")
+      .replace(/^Sujet du jour$/i, "Dossier du jour")
+      .trim();
+    return cleaned || "Dossier du jour";
+  }
+
+  function stageForDiscipline(stage){
     return {
       ...stage,
-      type: "catalog",
-      view: "express",
-      index: 1,
-      eyebrow: "Dossier du jour",
-      title: "Trou noir à identifier",
-      text: "Sa gravité déforme l’espace-temps et fixe une frontière au-delà de laquelle aucune lumière ne ressort. Comprendre le trou noir, c’est relier masse, effondrement stellaire et horizon des événements.",
-      action: "Explorer l’astronomie",
-      meta: "6 notions clés"
+      title: cleanDossierTitle(stage?.title)
     };
   }
 

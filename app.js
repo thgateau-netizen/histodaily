@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.230.0";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.231.0";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -401,9 +401,16 @@ function lessonDone(id) { return Boolean(state.completedLessons[id]); }
 /* LTS: ancienne implémentation de activeWorld supprimée (409-409). */
 function mysterySolved(id) { return Boolean(state.solvedMysteries[id]); }
 function short(text, n = 110) { return String(text || "").length > n ? String(text).slice(0, n - 1) + "…" : String(text || ""); }
+function cleanMysteryHeading(value, fallback = "Dossier du jour") {
+  const cleaned = String(value || "")
+    .replace(/\s+à identifier$/i, "")
+    .replace(/^Sujet du jour$/i, "Dossier du jour")
+    .trim();
+  return cleaned || fallback;
+}
 function mysteryDisplayTitle(mystery) {
   if (!mystery) return "Mystère";
-  return mysterySolved(mystery.id) ? mystery.title : (mystery.caseTitle || "Sujet à identifier");
+  return cleanMysteryHeading(mysterySolved(mystery.id) ? mystery.title : mystery.caseTitle);
 }
 function mysteryTeaser(mystery) {
   if (!mystery) return "";
@@ -1114,7 +1121,7 @@ function activateTextControls(root = document) {
 }
 
 /* LTS: ancienne implémentation de renderShell supprimée (1272-1296). */
-function navButton(tab, icon, label) { return `<button data-tab="${tab}" class="nav-item ${state.tab === tab ? "active" : ""}"><span>${HD_ICONS.action(icon)}</span><small>${label}</small></button>`; }
+function navButton(tab, icon, label) { const active = state.tab === tab || (state.tab === "mystery" && tab === "home"); return `<button data-tab="${tab}" class="nav-item ${active ? "active" : ""}" aria-current="${active ? "page" : "false"}"><span>${HD_ICONS.action(icon)}</span><small>${label}</small></button>`; }
 
 /* LTS: ancienne implémentation de renderHome supprimée (1299-1364). */
 
@@ -1329,7 +1336,7 @@ function sentenceChunks(text = "") {
 
 function mysteryKindLabel(mystery = {}, lesson = {}) {
   const t = normalize(`${mystery.id || ""} ${mystery.answer || ""} ${mystery.title || ""} ${lesson.title || ""}`);
-  if (/mansa|napoleon|alexandre|auguste|constantin|charlemagne|ashoka|sundiata|toussaint|hammurabi/.test(t)) return "Personnage à identifier";
+  if (/mansa|napoleon|alexandre|auguste|constantin|charlemagne|ashoka|sundiata|toussaint|hammurabi/.test(t)) return "Personnage historique";
   if (/feu|outil|bronze|fer|imprimerie|presse|internet|arpanet|intelligence artificielle|modeles de langage|navire|quipu|ecriture|cuneiforme|hieroglyphe|lineaire b|calendrier/.test(t)) return "Technique, support ou système de signes";
   if (/democratie|republique|empire|construction europeenne|ceca|bipolarisation|decolonisation|societe seigneuriale|universites|accord de paris|cop21/.test(t)) return "Institution, régime ou organisation politique";
   if (/revolution|guerre|peste|pandemie|shoah|11 septembre|chute|crise|conquete|terreur|mediques|punique/.test(t)) return "Événement ou rupture historique";
@@ -1466,10 +1473,10 @@ function maskMysteryAnswerOnly(text = "", mystery = {}) {
 }
 
 function mysterySafeCaseTitle(mystery = {}) {
-  const fromTitle = maskMysteryAnswerOnly(mystery.title || "", mystery).replace(/^Dossier\s*:\s*/i, "").trim();
+  const fromTitle = cleanMysteryHeading(maskMysteryAnswerOnly(mystery.title || "", mystery).replace(/^Dossier\s*:\s*/i, "").trim(), "");
   if (fromTitle && fromTitle.length >= 12 && !/^le sujet$/i.test(fromTitle)) return fromTitle;
-  const fromCase = maskMysteryAnswerOnly(mystery.caseTitle || "Sujet à identifier", mystery).replace(/^Dossier\s*:\s*/i, "").trim();
-  return fromCase || "Sujet à identifier";
+  const fromCase = cleanMysteryHeading(maskMysteryAnswerOnly(mystery.caseTitle || "Dossier du jour", mystery).replace(/^Dossier\s*:\s*/i, "").trim());
+  return fromCase || "Dossier du jour";
 }
 
 function buildProgressiveClues(mystery = {}) {
@@ -7522,7 +7529,7 @@ function renderLessonText(lesson, content) {
   const memoCard = "";
   return `${intro}${tabs}
     <section class="express-coach-card" data-focus-target="express">
-      <div class="section-title-row"><div><span class="card-label">Format court</span><h2>Express</h2></div><small>utile et concret</small></div>
+      <div class="section-title-row"><div><span class="card-label">Format court</span><h2>Express</h2></div><small>${expressBits.length} points essentiels</small></div>
       ${keyFactsMarkup}
       <div class="express-steps clean-express">${expressCards}${memoCard}</div>
     </section>
@@ -7549,7 +7556,7 @@ function renderMystery() {
     <section class="card mystery-card big quick-mystery case-file-card">
       <div class="card-label">${difficultyStars(mystery.difficulty)} · ${difficultyLabel(mystery.difficulty)} · ${today ? (solved ? "quotidien terminé" : `quotidien · +${reward.gems} gemme${reward.gems > 1 ? "s" : ""}`) : "archive débloquée"}</div>
       ${mysteryBriefMarkup(mystery, lesson)}
-      <p class="case-title-hidden">${escapeHtml(mystery.caseTitle || "Sujet à identifier")}</p>
+      <p class="case-title-hidden">${escapeHtml(mystery.caseTitle || "Sujet du jour")}</p>
       <p class="prompt">${escapeHtml(mysteryPublicPrompt(mystery))}</p>
       <div class="mystery-meter"><span>Réponse précise</span><span>${hints}/${Math.min(3, (mystery.clues || []).length)} indices choisis</span><span>${tries} essai${tries > 1 ? "s" : ""}</span><span>${mysteryScore(mystery.id)} XP possible</span></div>
       ${!solved ? `<div class="score-explain"><b>Barème clair</b><span>indice choisi : -${SCORE_PENALTY_HINT} XP potentiel · essai supplémentaire : -${SCORE_PENALTY_EXTRA_TRY} XP · aucune aide donnée automatiquement</span></div>${scoreBreakdownMarkup(mystery.id)}` : ""}
@@ -7560,7 +7567,7 @@ function renderMystery() {
     ${solved && lesson ? `<section class="card after-mystery">
       <div class="card-label">Après le mystère</div>
       <h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(lesson.title)}</h2>
-      <p>Tu as débloqué la porte d’entrée. Maintenant tu choisis : stop, résumé express, ou cours complet. Rien n’est imposé.</p>
+      <p>Le dossier est résolu. Poursuis avec le résumé express ou le cours complet.</p>
       <div class="after-actions">
         <button class="ghost" data-home-stop>Je m’arrête là</button>
         <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="express">Résumé 1 min</button>
@@ -7570,7 +7577,7 @@ function renderMystery() {
     <section class="card mystery-progress-card daily-loop-card">
       <div class="card-label">Rendez-vous quotidien</div>
       <h2>${solved && today ? "Dossier du jour terminé" : today ? "Un dossier par jour" : "Archive ouverte"}</h2>
-      <p>${solved && today ? `C’est volontaire : pas de binge. Nouveau dossier dans ${timeToNextDaily()}, avec une nouvelle chance de marquer fort.` : "Le mystère principal reste celui du jour. Les archives sont un rattrapage limité, pas un mode infini."}</p>
+      <p>${solved && today ? `Nouveau dossier dans ${timeToNextDaily()}. Reviens demain pour poursuivre ta série.` : "Le dossier du jour reste prioritaire. Les archives récentes sont accessibles avec des gemmes."}</p>
       <div class="mystery-progress-grid">
         <div><strong>${stats.solved}/${stats.total}</strong><span>mystères résolus</span></div>
         <div><strong>${state.gems || 0}</strong><span>gemmes dispo</span></div>
@@ -11449,7 +11456,7 @@ const DISCIPLINE_MODE_MYSTERIES = [
     "discipline": "art",
     "difficulty": "difficile",
     "title": "La lumière avant le contour",
-    "caseTitle": "Mouvement artistique à identifier",
+    "caseTitle": "Mouvement artistique",
     "subjectType": "mouvement artistique",
     "periodHint": "France · seconde moitié du XIXe siècle",
     "lessonId": "art-impressionism-modern-life",
@@ -11488,7 +11495,7 @@ const DISCIPLINE_MODE_MYSTERIES = [
     "discipline": "cinema",
     "difficulty": "difficile",
     "title": "Quand filmer devient inventer",
-    "caseTitle": "Pionnier du cinéma à identifier",
+    "caseTitle": "Pionnier du cinéma",
     "subjectType": "pionnier du cinéma",
     "periodHint": "France · débuts du cinéma",
     "lessonId": "cinema-early-lumiere-melies",
@@ -11524,7 +11531,7 @@ const DISCIPLINE_MODE_MYSTERIES = [
     "discipline": "science-inventions",
     "difficulty": "difficile",
     "title": "Le ciel devient une preuve",
-    "caseTitle": "Savant à identifier",
+    "caseTitle": "Savant",
     "subjectType": "savant et observateur",
     "periodHint": "Italie · début du XVIIe siècle",
     "lessonId": "sci-galileo-revolution",
@@ -11561,7 +11568,7 @@ const DISCIPLINE_MODE_MYSTERIES = [
     "discipline": "economy",
     "difficulty": "moyen",
     "title": "La monnaie perd du terrain",
-    "caseTitle": "Notion économique à identifier",
+    "caseTitle": "Notion économique",
     "subjectType": "notion économique",
     "periodHint": "Économie contemporaine",
     "lessonId": "eco-inflation-money-value",
@@ -11598,7 +11605,7 @@ const DISCIPLINE_MODE_MYSTERIES = [
     "discipline": "geography",
     "difficulty": "difficile",
     "title": "Une carte vraie pour naviguer, fausse pour comparer",
-    "caseTitle": "Projection cartographique à identifier",
+    "caseTitle": "Projection cartographique",
     "subjectType": "projection cartographique",
     "periodHint": "Géographie · représentation du monde",
     "lessonId": "geo-mercator-projection",
@@ -11634,7 +11641,7 @@ const DISCIPLINE_MODE_MYSTERIES = [
     "discipline": "music",
     "difficulty": "difficile",
     "title": "Une règle qui laisse inventer",
-    "caseTitle": "Genre musical à identifier",
+    "caseTitle": "Genre musical",
     "subjectType": "genre musical",
     "periodHint": "États-Unis · XXe siècle",
     "lessonId": "music-jazz-birth",
@@ -11828,7 +11835,7 @@ function renderHome() {
       <div class="premium-header-copy">
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
-        <p class="premium-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours clair, beau et progressif pour apprendre sans surcharge.")}</p>
+        <p class="premium-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours progressif pour comprendre et retenir.")}</p>
         <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
       ${premiumHeaderVisual(discipline.id)}
@@ -13581,7 +13588,7 @@ const BETA109_MODE_MYSTERIES = [
     "discipline": "art",
     "difficulty": "difficile",
     "title": "La lumière avant le contour",
-    "caseTitle": "Mouvement artistique à identifier",
+    "caseTitle": "Mouvement artistique",
     "subjectType": "mouvement artistique",
     "periodHint": "France · seconde moitié du XIXe siècle",
     "lessonId": "art-impressionism-modern-life",
@@ -13620,7 +13627,7 @@ const BETA109_MODE_MYSTERIES = [
     "discipline": "cinema",
     "difficulty": "difficile",
     "title": "Une usine à récits parfaitement lisibles",
-    "caseTitle": "Période du cinéma à identifier",
+    "caseTitle": "Période du cinéma",
     "subjectType": "période et système de production cinématographique",
     "periodHint": "États-Unis · années 1930-1950",
     "lessonId": "cinema-hollywood-studio-system",
@@ -13659,7 +13666,7 @@ const BETA109_MODE_MYSTERIES = [
     "discipline": "science-inventions",
     "difficulty": "difficile",
     "title": "L’invisible entre au laboratoire",
-    "caseTitle": "Savant à identifier",
+    "caseTitle": "Savant",
     "subjectType": "savant et expérimentateur",
     "periodHint": "France · XIXe siècle",
     "lessonId": "sci-pasteur-microbes-vaccines",
@@ -13695,7 +13702,7 @@ const BETA109_MODE_MYSTERIES = [
     "discipline": "music",
     "difficulty": "moyen",
     "title": "Quand une voix ne suffit plus",
-    "caseTitle": "Transformation musicale à identifier",
+    "caseTitle": "Transformation musicale",
     "subjectType": "transformation musicale",
     "periodHint": "Europe chrétienne · Moyen Âge",
     "lessonId": "music-gregorian-polyphony",
@@ -13757,7 +13764,7 @@ const BETA121_MODE_MYSTERIES = [
     "discipline": "art",
     "difficulty": "difficile",
     "title": "La profondeur devient calculable",
-    "caseTitle": "Technique de représentation à identifier",
+    "caseTitle": "Technique de représentation",
     "subjectType": "technique de représentation artistique",
     "periodHint": "Renaissance italienne · XVe siècle",
     "lessonId": "art-renaissance-perspective",
@@ -13794,7 +13801,7 @@ const BETA121_MODE_MYSTERIES = [
     "discipline": "economy",
     "difficulty": "moyen",
     "title": "Le prix cherche son équilibre",
-    "caseTitle": "Mécanisme économique à identifier",
+    "caseTitle": "Mécanisme économique",
     "subjectType": "mécanisme économique",
     "periodHint": "Économie · marchés et prix",
     "lessonId": "eco-supply-demand-basics",
@@ -13830,7 +13837,7 @@ const BETA121_MODE_MYSTERIES = [
     "discipline": "geography",
     "difficulty": "moyen",
     "title": "Un centimètre pour changer de monde",
-    "caseTitle": "Notion cartographique à identifier",
+    "caseTitle": "Notion cartographique",
     "subjectType": "notion cartographique",
     "periodHint": "Géographie · lecture de cartes",
     "lessonId": "geo-maps-scale-basics",
@@ -13869,7 +13876,7 @@ const BETA121_MODE_MYSTERIES = [
     "discipline": "science-inventions",
     "difficulty": "moyen",
     "title": "Une idée ne suffit pas",
-    "caseTitle": "Méthode scientifique à identifier",
+    "caseTitle": "Méthode scientifique",
     "subjectType": "méthode de preuve scientifique",
     "periodHint": "Sciences · méthode et expérimentation",
     "lessonId": "sci-method-proof-basics",
@@ -13919,7 +13926,7 @@ const BETA122_MODE_MYSTERIES = [
     "discipline": "art",
     "difficulty": "moyen",
     "title": "L’ordre invisible du regard",
-    "caseTitle": "Notion d’analyse d’image à identifier",
+    "caseTitle": "Notion d’analyse d’image",
     "subjectType": "notion d’analyse d’image",
     "periodHint": "Art · méthode de lecture d’œuvre",
     "lessonId": "art-read-image-basics",
@@ -13957,7 +13964,7 @@ const BETA122_MODE_MYSTERIES = [
     "discipline": "cinema",
     "difficulty": "moyen",
     "title": "Ce que la caméra accepte de montrer",
-    "caseTitle": "Notion de langage cinématographique à identifier",
+    "caseTitle": "Notion de langage cinématographique",
     "subjectType": "notion de langage cinématographique",
     "periodHint": "Cinéma · langage de l’image",
     "lessonId": "cinema-shot-frame-basics",
@@ -13994,7 +14001,7 @@ const BETA122_MODE_MYSTERIES = [
     "discipline": "economy",
     "difficulty": "moyen",
     "title": "Quand tout ne peut pas être illimité",
-    "caseTitle": "Notion économique à identifier",
+    "caseTitle": "Notion économique",
     "subjectType": "notion économique",
     "periodHint": "Économie · bases des choix",
     "lessonId": "eco-supply-demand-basics",
@@ -14032,7 +14039,7 @@ const BETA122_MODE_MYSTERIES = [
     "discipline": "geography",
     "difficulty": "moyen",
     "title": "Trouver un point sans raconter le paysage",
-    "caseTitle": "Outil de localisation à identifier",
+    "caseTitle": "Outil de localisation",
     "subjectType": "outil de localisation géographique",
     "periodHint": "Géographie · lecture de cartes",
     "lessonId": "geo-maps-scale-basics",
@@ -14071,7 +14078,7 @@ const BETA122_MODE_MYSTERIES = [
     "discipline": "music",
     "difficulty": "moyen",
     "title": "Une seule ligne pour tenir le rite",
-    "caseTitle": "Forme musicale à identifier",
+    "caseTitle": "Forme musicale",
     "subjectType": "forme musicale religieuse",
     "periodHint": "Europe médiévale · musique religieuse",
     "lessonId": "music-gregorian-polyphony",
@@ -14108,7 +14115,7 @@ const BETA122_MODE_MYSTERIES = [
     "discipline": "science-inventions",
     "difficulty": "facile",
     "title": "Une réponse provisoire à mettre en danger",
-    "caseTitle": "Étape de méthode scientifique à identifier",
+    "caseTitle": "Étape de méthode scientifique",
     "subjectType": "étape de méthode scientifique",
     "periodHint": "Sciences · démarche expérimentale",
     "lessonId": "sci-method-proof-basics",
@@ -15797,10 +15804,9 @@ function renderShell(content) {
   applyDisciplineTheme();
   const immersiveLesson = state.tab === "lesson";
   const motionClass = beta113ConsumeMotionClass();
-  const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav" aria-label="Navigation principale">
+  const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav hd183-bottom-nav" aria-label="Navigation principale">
         ${navButton("home", "home", "Accueil")}
         ${navButton("learn", "courses", "Cours")}
-        ${navButton("mystery", "mystery", "Mystère")}
         ${navButton("rank", "ranking", "Classement")}
         ${navButton("profile", "profile", "Profil")}
       </nav>`;
@@ -16307,7 +16313,7 @@ function beta117MysteryToolMarkup(disciplineId = activeDisciplineId()) {
   const pool = publicMysteries(disciplineId);
   if (pool.length <= 1) return "";
   const tested = beta117MysteryShift(disciplineId);
-  return `<button type="button" class="ghost beta-mystery-refresh" data-beta-refresh-mystery title="Outil de bêta : changer le mystère affiché aujourd’hui">↻ Autre mystère</button>${tested ? `<small class="beta-mystery-count">test ${tested + 1}/${pool.length}</small>` : ""}`;
+  return `<button type="button" class="ghost beta-mystery-refresh" data-beta-refresh-mystery title="Afficher un autre dossier">↻ Autre mystère</button>`;
 }
 
 function premiumHeaderVisual(disciplineId = activeDisciplineId()) {
@@ -16432,7 +16438,7 @@ renderHome = function beta117RenderHome() {
       <div class="premium-header-copy">
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
-        <p class="premium-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours clair, beau et progressif pour apprendre sans surcharge.")}</p>
+        <p class="premium-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours progressif pour comprendre et retenir.")}</p>
         <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
       ${premiumHeaderVisual(discipline.id)}

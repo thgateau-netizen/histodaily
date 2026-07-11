@@ -5734,3 +5734,45 @@ body{
     height: calc(100% - 50px);
   }
 }
+
+/* =========================================================
+   HistoDaily beta 231 — content coherence + stable ranking nav
+   ========================================================= */
+.hd231-visual .bottom-nav.hd183-bottom-nav{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+.hd231-visual .tab-rank{
+  min-height:100svh;
+  padding-bottom:calc(104px + env(safe-area-inset-bottom))!important;
+}
+.hd231-visual .tab-rank .bottom-nav{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  width:min(calc(100% - 24px),566px)!important;
+  min-height:68px!important;
+  height:auto!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  transform:translate3d(-50%,0,0)!important;
+  -webkit-transform:translate3d(-50%,0,0)!important;
+  transition:none!important;
+  animation:none!important;
+  contain:layout paint;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.hd231-visual .tab-rank .bottom-nav .nav-item,
+.hd231-visual .tab-rank .bottom-nav .nav-item:active{
+  min-width:0!important;
+  min-height:52px!important;
+  transform:none!important;
+  animation:none!important;
+  transition:background-color .12s ease,border-color .12s ease,color .12s ease!important;
+}
+.hd231-visual .tab-rank.motion-enter .bottom-nav,
+.hd231-visual .performance-smart .tab-rank .bottom-nav,
+.hd231-visual .performance-balanced .tab-rank .bottom-nav{
+  animation:none!important;
+  transform:translate3d(-50%,0,0)!important;
+}
