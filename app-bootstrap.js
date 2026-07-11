@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.207",
-  assetsVersion: "1.0.0-beta.208.0",
+  version: "1.0.0-beta.210.0",
+  assetsVersion: "1.0.0-beta.210.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 207",
+    versionLabel: "beta 210",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Consolidation profonde : les anciennes couches graphiques ont été retirées au profit d’un seul système visuel.",
-      "Le vieux module premium beta 184 et le CSS injecté dynamiquement ne peuvent plus entrer en conflit avec les écrans actuels.",
-      "Headers, cartes, sélecteurs, classement et navigation reposent désormais sur une feuille de style unique et stable."
+      "L’accueil devient vivant : il affiche la prochaine action, le temps restant et l’avancement du jour directement dans le bandeau.",
+      "L’Expédition du jour est désormais un vrai parcours : briefing, chemin en quatre jalons, récompense et rythme sur sept jours.",
+      "La fin de mission ouvre un sujet surprise au lieu de laisser une carte figée, avec un compte à rebours vers le prochain dossier."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },

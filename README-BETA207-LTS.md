@@ -62,3 +62,23 @@ Le dossier peut être déployé tel quel sur Vercel. Après mise en ligne, ouvri
 - Expédition du jour restructurée autour de la prochaine action, avec parcours en quatre étapes, progression animée et informations de durée.
 - Accueil rendu plus vivant par des animations CSS légères, respectant `prefers-reduced-motion`.
 - Cache PWA renouvelé (`histodaily-beta208-v1`) et ressources repérées `1.0.0-beta.208.0`.
+
+
+## Parcours quotidien 209.0
+
+- Ajout d’un indicateur d’élan du jour avec progression visuelle.
+- Estimation dynamique du temps et des étapes restantes.
+- Sur mobile, les quatre étapes deviennent un chemin compact en quatre jalons.
+- Réduction de la hauteur totale de l’expédition sans perdre la prochaine action mise en avant.
+- Cache PWA renouvelé (`histodaily-beta209-v1`) et ressources repérées `1.0.0-beta.209.0`.
+
+
+## Beta 210 — accueil vivant et expédition V2
+
+- Bandeau d’accueil dynamique : date, prochaine action, progression en quatre jalons et reprise immédiate.
+- Nouveau briefing quotidien non-spoilant avec numéro de dossier, discipline et teaser.
+- Parcours visuel cliquable en quatre étapes : résoudre, comprendre, relier, retenir.
+- Récompense quotidienne et rythme des sept derniers jours visibles sans ouvrir le profil.
+- État de fin de mission complet avec compte à rebours et ouverture d’un sujet surprise.
+- Retour haptique léger sur les actions compatibles et animations désactivées avec `prefers-reduced-motion`.
+- Cache PWA renouvelé (`histodaily-beta210-v1`) et ressources repérées `1.0.0-beta.210.0`.
