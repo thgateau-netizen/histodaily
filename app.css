@@ -4744,3 +4744,457 @@ body{
   .hd220-head-metrics button:first-child{display:none}.hd220-world{min-width:98px}.hd220-expedition-copy{max-width:96%}.hd220-expedition-art{opacity:.3}.hd220-expedition-copy h2{font-size:1.88rem}.hd220-route b{font-size:.55rem}.hd220-mastery-grid{grid-template-columns:1fr}.hd220-star{min-width:100px}.hd220-star b{font-size:.62rem}.hd220-profile-summary span{font-size:.52rem}
 }
 @media(prefers-reduced-motion:reduce){.hd220-world,.hd220-expedition-action>button,.hd220-next-card{transition:none!important}.hd220-visual *{scroll-behavior:auto!important}}
+
+/* =========================================================
+   HistoDaily beta 221 — debug et nettoyage Visual V3
+   ========================================================= */
+
+/* Le profil V3 est une reconstruction. Les anciennes cartes de premier niveau
+   ne doivent jamais réapparaître derrière lui lors des améliorations asynchrones. */
+.hd220-profile-shell > :not(.system-status):not(.beta115-status):not(.hd220-profile):not(.beta182-profile-fold):not(.bottom-nav){
+  display:none!important;
+}
+.hd220-profile-shell > .hd220-profile,
+.hd220-profile-shell > .system-status,
+.hd220-profile-shell > .beta115-status,
+.hd220-profile-shell > .beta182-profile-fold,
+.hd220-profile-shell > .bottom-nav{
+  display:revert;
+}
+
+/* Évite les débordements fantômes dans les rails horizontaux et améliore le
+   comportement tactile sans animation continue. */
+.hd220-world-switcher,
+.hd220-next-rail,
+.hd220-collection-rail,
+.hd220-badge-rail{
+  max-width:100%;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.hd220-world,
+.hd220-expedition-action>button,
+.hd220-progress-strip>button,
+.hd220-next-card,
+.hd220-section-cap button,
+.hd220-profile-head button{
+  min-height:44px;
+  touch-action:manipulation;
+}
+.hd220-expedition-copy h2{
+  overflow-wrap:break-word;
+  text-wrap:balance;
+}
+.hd220-medal-card h3{
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+
+/* Le flou de la barre fixe était coûteux sur mobile et pouvait fusionner
+   visuellement avec les cartes situées dessous. Fond opaque, rendu plus net. */
+.hd220-home-shell .bottom-nav,
+.hd220-profile-shell .bottom-nav{
+  background:#07111d!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+
+/* Les sections hors écran du profil ne sont peintes qu'au moment utile sur les
+   navigateurs compatibles. Aucun effet fonctionnel sur les autres. */
+@supports (content-visibility:auto){
+  .hd220-profile > section:not(.hd220-player-hero){
+    content-visibility:auto;
+    contain-intrinsic-size:260px;
+  }
+}
+
+/* Sur les écrans très étroits, la constellation devient une composition en
+   liste : aucun chevauchement possible entre les trois satellites. */
+@media(max-width:340px){
+  .hd220-constellation{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    height:auto;
+    min-height:0;
+    padding:12px;
+    overflow:visible;
+  }
+  .hd220-constellation::before,
+  .hd220-orbit{display:none!important}
+  .hd220-you{
+    position:static;
+    width:64px;
+    height:64px;
+    margin:0 auto 4px;
+    transform:none;
+  }
+  .hd220-star,
+  .hd220-star.favorite,
+  .hd220-star.memory,
+  .hd220-star.discovery{
+    position:static;
+    width:100%;
+    min-width:0;
+    max-width:none;
+  }
+  .hd220-expedition-copy h2{font-size:1.7rem!important}
+}
+
+/* =========================================================
+   HistoDaily beta 222 — Visual V4 / accueil premium
+   Inspiré de la maquette validée : univers visible, illustration
+   contenue, hiérarchie forte et rendu statique peu coûteux.
+   ========================================================= */
+
+.hd222-home-shell{
+  width:min(100%,590px)!important;
+  padding:calc(14px + env(safe-area-inset-top)) 16px calc(104px + env(safe-area-inset-bottom))!important;
+}
+.hd222-home{gap:20px}
+.hd222-home-head{padding:4px 4px 0}
+.hd222-home .hd220-brand span{font-size:.72rem;letter-spacing:.19em;text-shadow:0 0 22px color-mix(in srgb,var(--world) 40%,transparent)}
+.hd222-home .hd220-brand h1{font-size:clamp(2rem,8vw,2.72rem);letter-spacing:-.065em}
+.hd222-home .hd220-head-metrics{gap:8px}
+.hd222-home .hd220-head-metrics button{min-width:58px;min-height:44px;padding:8px 12px;border-radius:16px;background:#0b1624;border-color:rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.055)}
+.hd222-home .hd220-head-metrics span,.hd222-home .hd220-head-metrics b{font-size:.82rem}
+
+.hd222-section-cap{align-items:center;padding:0 4px 9px}
+.hd222-section-cap>span{font-size:.72rem;letter-spacing:.17em;color:#8f9db0}
+.hd222-section-cap>small{color:#5f7187;font-size:.61rem;font-weight:800}
+
+.hd222-worlds{min-width:0}
+.hd222-world-switcher{
+  gap:10px;
+  padding:3px 28px 7px 3px;
+  scroll-snap-type:x mandatory;
+  scroll-padding-inline:50%;
+}
+.hd222-world-switcher::after{content:"";flex:0 0 18px}
+.hd222-world{
+  grid-template-columns:40px minmax(56px,auto);
+  min-width:128px;
+  min-height:68px;
+  padding:10px 12px;
+  border-radius:20px;
+  border-color:rgba(255,255,255,.085);
+  background:linear-gradient(145deg,rgba(255,255,255,.052),rgba(255,255,255,.022));
+  color:#eef3f8;
+  scroll-snap-align:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+}
+.hd222-world>span{
+  width:40px;height:40px;border-radius:14px;
+  background:color-mix(in srgb,var(--world) 12%,#0a1623);
+  border-color:color-mix(in srgb,var(--world) 34%,transparent);
+  color:color-mix(in srgb,var(--world) 82%,white);
+}
+.hd222-world>span .hd-icon{width:22px;height:22px}
+.hd222-world b{font-size:.79rem;line-height:1.05;white-space:normal;text-wrap:balance}
+.hd222-world i{font-size:.62rem;color:#7d8ca0}
+.hd222-world.active{
+  color:#fff;
+  border-color:var(--world);
+  background:
+    radial-gradient(circle at 80% 0%,color-mix(in srgb,var(--world) 25%,transparent),transparent 54%),
+    linear-gradient(145deg,color-mix(in srgb,var(--world) 16%,#0d1a2a),#0b1725 72%);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--world) 18%,transparent),0 14px 32px color-mix(in srgb,var(--world) 18%,rgba(0,0,0,.28)),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hd222-world.active>span{background:color-mix(in srgb,var(--world) 22%,#0c1725);border-color:color-mix(in srgb,var(--world) 70%,white)}
+.hd222-world.active i{color:color-mix(in srgb,var(--world) 72%,white)}
+
+.hd222-expedition{
+  min-height:0;
+  padding:22px;
+  border-radius:36px;
+  border-color:color-mix(in srgb,var(--world) 48%,rgba(255,255,255,.08));
+  background:
+    radial-gradient(circle at 76% 31%,color-mix(in srgb,var(--world) 19%,transparent),transparent 34%),
+    radial-gradient(circle at 4% 0%,color-mix(in srgb,var(--world) 16%,transparent),transparent 42%),
+    linear-gradient(145deg,#11243a 0%,#091727 52%,#06111e 100%);
+  box-shadow:0 32px 78px rgba(0,0,0,.38),0 0 45px color-mix(in srgb,var(--world) 7%,transparent),inset 0 1px 0 rgba(255,255,255,.075);
+}
+.hd222-expedition::before{
+  z-index:0;
+  background:
+    linear-gradient(90deg,rgba(3,9,17,.07),rgba(3,9,17,.16) 46%,rgba(3,9,17,.03)),
+    radial-gradient(circle at 72% 45%,transparent,rgba(3,9,17,.13) 70%);
+}
+.hd222-expedition .hd220-expedition-glow{left:auto;right:-90px;bottom:-120px;opacity:.42;filter:blur(76px)}
+.hd222-expedition .hd220-expedition-top{position:relative;z-index:4}
+.hd222-expedition .hd220-expedition-top>span{min-height:32px;padding:7px 13px;border-color:color-mix(in srgb,var(--world) 55%,transparent);background:color-mix(in srgb,var(--world) 10%,rgba(4,11,20,.64));font-size:.68rem;letter-spacing:.13em}
+.hd222-expedition .hd220-expedition-top>b{font-size:.88rem}.hd222-expedition .hd220-expedition-top b i{font-size:1.35rem}
+
+.hd222-expedition-body{
+  position:relative;
+  z-index:2;
+  min-height:298px;
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+}
+.hd222-expedition-copy{
+  position:relative;
+  z-index:3;
+  width:69%;
+  max-width:none;
+  margin:0;
+  padding:20px 0 8px;
+}
+.hd222-expedition-copy::after{
+  content:"";position:absolute;z-index:-1;inset:-20px -45px -18px -22px;
+  background:radial-gradient(ellipse at 12% 48%,rgba(5,12,21,.92) 0%,rgba(5,12,21,.62) 48%,transparent 78%);
+  pointer-events:none;
+}
+.hd222-expedition-copy .hd220-expedition-symbol{width:56px;height:56px;margin-bottom:18px;border-radius:19px;border-color:color-mix(in srgb,var(--world) 48%,transparent);background:linear-gradient(145deg,color-mix(in srgb,var(--world) 20%,#102237),#0c1a2b);box-shadow:0 12px 28px color-mix(in srgb,var(--world) 15%,transparent),inset 0 1px 0 rgba(255,255,255,.08)}
+.hd222-expedition-copy .hd220-expedition-symbol .hd-icon{width:30px;height:30px}
+.hd222-expedition-copy h2{
+  max-width:11.4ch;
+  font-size:clamp(2.45rem,9.2vw,3.45rem);
+  line-height:.93;
+  letter-spacing:-.068em;
+  text-wrap:balance;
+  overflow-wrap:normal;
+  word-break:normal;
+  text-shadow:0 3px 28px rgba(0,0,0,.42);
+}
+.hd222-expedition.is-long .hd222-expedition-copy{width:76%}
+.hd222-expedition.is-long .hd222-expedition-copy h2{max-width:13.7ch;font-size:clamp(2rem,7.8vw,2.82rem);line-height:.96}
+.hd222-expedition-copy p{max-width:31ch;margin-top:17px;color:#b9c5d2;font-size:.94rem;line-height:1.48;-webkit-line-clamp:4;text-shadow:0 2px 18px rgba(0,0,0,.48)}
+.hd222-expedition-art{
+  position:absolute;
+  z-index:1;
+  right:-4px;
+  top:2px;
+  width:53%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  opacity:.96;
+}
+.hd222-expedition-art::after{content:"";position:absolute;inset:14% 8% 8%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--world) 15%,transparent),transparent 70%);pointer-events:none}
+.hd222-hero-svg{position:relative;z-index:1;display:block;width:100%;height:100%;max-width:330px;max-height:292px;overflow:visible}
+.discipline-cinema .hd222-expedition-art{width:57%;right:-7px}
+.discipline-cinema .hd222-expedition-copy{width:79%}
+.discipline-cinema .hd222-expedition-copy h2{max-width:14.5ch;font-size:clamp(1.95rem,7.45vw,2.72rem)}
+.discipline-science-inventions .hd222-expedition-art{width:55%}
+.discipline-economy .hd222-expedition-art{width:54%}
+
+.hd222-expedition-action{position:relative;z-index:5;margin-top:5px}
+.hd222-expedition-action>button{min-height:64px;padding:13px 15px 13px 20px;border-radius:21px;background:linear-gradient(105deg,color-mix(in srgb,var(--world) 86%,white),var(--world))!important;box-shadow:0 18px 38px color-mix(in srgb,var(--world) 24%,transparent),inset 0 1px 0 rgba(255,255,255,.26);font-size:1.02rem}
+.hd222-expedition-action>button b{width:40px;height:40px;border-radius:14px;font-size:1.2rem}
+.hd222-expedition-action>small{font-size:.66rem;color:#90a1b2}
+.hd222-expedition .hd220-route{margin-top:22px;padding-top:20px}
+.hd222-expedition .hd220-route span{width:34px;height:34px;font-size:.72rem}
+.hd222-expedition .hd220-route>div:not(:last-child)::after{top:16px;left:calc(50% + 18px);right:calc(-50% + 18px)}
+.hd222-expedition .hd220-route b{font-size:.67rem}
+
+.hd222-progress-strip{
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px 14px;
+  padding:14px 15px;
+  border-radius:23px;
+  background:linear-gradient(145deg,rgba(255,255,255,.048),rgba(255,255,255,.018));
+}
+.hd222-progress-strip>.hd222-progress-title{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;justify-content:initial;gap:10px}
+.hd222-progress-title>span{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;border:1px solid color-mix(in srgb,var(--world) 30%,transparent);background:color-mix(in srgb,var(--world) 11%,#0b1724)}
+.hd222-progress-title>span .hd-icon{width:23px;height:23px}
+.hd222-progress-title>b{min-width:0;color:#e2e9f1;font-size:.83rem;line-height:1.12;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd222-progress-title>em{color:var(--world);font-size:.78rem;font-style:normal;font-weight:950}
+.hd222-progress-strip>i{grid-column:1;margin-left:52px}
+.hd222-progress-strip>button{min-width:96px;border-radius:15px}
+
+.hd222-next-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  overflow:visible;
+  padding:1px;
+  scroll-snap-type:none;
+}
+.hd222-next-grid .hd220-next-card{
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) 28px;
+  align-items:center;
+  gap:10px;
+  flex:none;
+  min-width:0;
+  min-height:108px;
+  padding:13px;
+  border-radius:21px;
+  cursor:pointer;
+}
+.hd222-next-grid .hd220-next-icon{width:42px;height:42px;margin:0;border-radius:14px}
+.hd222-next-grid .hd220-next-card>div:nth-child(2){min-width:0}
+.hd222-next-grid .hd220-next-card small{font-size:.56rem}
+.hd222-next-grid .hd220-next-card h3{margin:5px 0 4px;font-size:.83rem;line-height:1.12;-webkit-line-clamp:2}
+.hd222-next-grid .hd220-next-card p{font-size:.62rem;-webkit-line-clamp:1}
+.hd222-next-grid .hd220-next-card>span{display:grid;place-items:center;width:28px;height:28px;margin:0;padding:0;border-radius:50%;background:rgba(255,255,255,.055);color:#cbd7e3;font-size:.9rem}
+
+.hd222-home-shell .bottom-nav{
+  width:min(calc(100% - 24px),566px)!important;
+  min-height:68px!important;
+  bottom:7px!important;
+  padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+  border-radius:24px!important;
+  background:#07111d!important;
+  box-shadow:0 18px 46px rgba(0,0,0,.52),inset 0 1px 0 rgba(255,255,255,.055)!important;
+}
+.hd222-home-shell .nav-item{min-height:52px!important;border-radius:17px!important}
+.hd222-home-shell .nav-item.active{border:1px solid color-mix(in srgb,var(--discipline-accent,var(--world)) 64%,white)!important;background:linear-gradient(145deg,color-mix(in srgb,var(--discipline-accent,var(--world)) 23%,#10233a),#0c1a2b)!important;color:color-mix(in srgb,var(--discipline-accent,var(--world)) 72%,white)!important;box-shadow:0 0 24px color-mix(in srgb,var(--discipline-accent,var(--world)) 14%,transparent)!important}
+
+@media(max-width:430px){
+  .hd222-home-shell{padding-left:12px!important;padding-right:12px!important}
+  .hd222-world{min-width:124px}
+  .hd222-expedition{padding:20px;border-radius:32px}
+  .hd222-expedition-body{min-height:292px}
+  .hd222-expedition-copy{width:72%}
+  .hd222-expedition-copy h2{font-size:clamp(2.18rem,9.4vw,2.82rem)}
+  .hd222-expedition.is-long .hd222-expedition-copy{width:82%}
+  .hd222-expedition.is-long .hd222-expedition-copy h2{font-size:clamp(1.85rem,7.8vw,2.35rem)}
+  .hd222-expedition-copy p{font-size:.87rem;max-width:28ch}
+  .hd222-expedition-art{width:54%;right:-9px}
+  .discipline-cinema .hd222-expedition-art{width:58%;right:-12px}
+  .discipline-cinema .hd222-expedition-copy{width:86%}
+  .discipline-cinema .hd222-expedition-copy h2{font-size:clamp(1.78rem,7.25vw,2.15rem);max-width:15.5ch}
+  .hd222-expedition-action>small{display:none}
+  .hd222-next-grid .hd220-next-card{grid-template-columns:39px minmax(0,1fr) 26px;padding:11px;gap:8px}
+  .hd222-next-grid .hd220-next-icon{width:39px;height:39px}
+}
+@media(max-width:370px){
+  .hd222-home .hd220-brand h1{font-size:1.92rem}
+  .hd222-home .hd220-head-metrics button{min-width:52px;padding:7px 9px}
+  .hd222-world{min-width:116px;grid-template-columns:36px minmax(50px,auto);padding:9px 10px}
+  .hd222-world>span{width:36px;height:36px}
+  .hd222-expedition-body{min-height:280px}
+  .hd222-expedition-copy{width:78%}
+  .hd222-expedition-copy h2{font-size:2rem}
+  .hd222-expedition-copy p{font-size:.81rem;-webkit-line-clamp:3}
+  .hd222-expedition-art{width:56%;opacity:.78}
+  .hd222-next-grid{grid-template-columns:1fr}
+  .hd222-next-grid .hd220-next-card{min-height:88px}
+  .hd222-progress-title>b{font-size:.75rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .hd222-world-switcher{scroll-behavior:auto!important}
+}
+
+/* Le premier et le dernier univers peuvent eux aussi être réellement centrés. */
+.hd222-world-switcher{padding-left:0;padding-right:0}
+.hd222-world-switcher::before,
+.hd222-world-switcher::after{content:"";flex:0 0 max(18px,calc(50% - 68px))}
+
+/* =========================================================
+   HistoDaily beta 223 — home polish + astronomy hero
+   Closer to the approved mockup, still lightweight.
+   ========================================================= */
+.hd223-visual .hd222-home-shell{
+  width:min(100%,600px)!important;
+}
+.hd223-visual .hd222-world{
+  min-width:134px;
+  min-height:72px;
+  border-radius:22px;
+}
+.hd223-visual .hd222-world.active{
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--world) 22%,transparent),0 18px 42px color-mix(in srgb,var(--world) 24%,rgba(0,0,0,.34)),0 0 28px color-mix(in srgb,var(--world) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hd223-visual .hd222-expedition{
+  overflow:hidden;
+}
+.hd223-visual .hd222-expedition-art{
+  overflow:hidden;
+}
+.hd223-visual .hd222-expedition-art::before{
+  content:"";
+  position:absolute;
+  inset:2% 2% 0% 8%;
+  border-radius:30px;
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0));
+  opacity:.8;
+  pointer-events:none;
+}
+.hd223-visual .hd222-next-grid .hd220-next-card,
+.hd223-visual .hd222-progress-strip{
+  backdrop-filter: blur(8px);
+}
+.hd223-visual .discipline-astronomy .hd222-expedition{
+  border-color:rgba(124,92,255,.58);
+  background:
+    radial-gradient(circle at 78% 30%, rgba(130,104,255,.30), transparent 26%),
+    radial-gradient(circle at 72% 12%, rgba(255,170,122,.12), transparent 28%),
+    radial-gradient(circle at 86% 70%, rgba(62,88,255,.18), transparent 28%),
+    linear-gradient(145deg,#12133f 0%,#0a1240 44%,#060d25 100%);
+  box-shadow:0 34px 84px rgba(0,0,0,.42),0 0 52px rgba(124,92,255,.14),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hd223-visual .discipline-astronomy .hd220-expedition-top>span{
+  border-color:rgba(135,103,255,.62);
+  background:rgba(100,73,224,.12);
+  color:#b89bff;
+}
+.hd223-visual .discipline-astronomy .hd222-expedition-copy{
+  width:50%;
+  padding-top:14px;
+}
+.hd223-visual .discipline-astronomy .hd222-expedition-copy::after{
+  inset:-22px -18px -14px -20px;
+  background:radial-gradient(ellipse at 8% 44%, rgba(5,9,24,.95) 0%, rgba(6,10,28,.86) 42%, rgba(7,12,27,.28) 70%, transparent 86%);
+}
+.hd223-visual .discipline-astronomy .hd222-expedition-copy h2{
+  max-width:7.4ch;
+  font-size:clamp(2.5rem,9vw,3.45rem);
+  line-height:.92;
+}
+.hd223-visual .discipline-astronomy .hd222-expedition-copy p{
+  max-width:19ch;
+  color:#c8d0ea;
+  font-size:.95rem;
+}
+.hd223-visual .discipline-astronomy .hd222-expedition-art{
+  width:61%;
+  right:-2px;
+  top:10px;
+  height:calc(100% - 10px);
+  opacity:1;
+}
+.hd223-visual .discipline-astronomy .hd222-expedition-art::after{
+  inset:8% 5% 3% 9%;
+  border-radius:34px;
+  background:radial-gradient(circle at 50% 45%, rgba(160,127,255,.16), transparent 68%);
+}
+.hd223-visual .hd223-blackhole{
+  position:relative;
+  z-index:1;
+  width:100%;
+  height:100%;
+  max-width:392px;
+  max-height:308px;
+  background-image:url('./hero-astronomy-blackhole.png');
+  background-position:center;
+  background-size:contain;
+  background-repeat:no-repeat;
+  filter:drop-shadow(0 18px 36px rgba(0,0,0,.34)) drop-shadow(0 0 38px rgba(120,92,255,.16));
+}
+.hd223-visual .discipline-astronomy .hd222-expedition-action>button{
+  background:linear-gradient(105deg,#8e6cff,#4d74ff)!important;
+  box-shadow:0 18px 42px rgba(88,87,255,.26), inset 0 1px 0 rgba(255,255,255,.24);
+}
+.hd223-visual .discipline-astronomy .hd222-progress-title>em,
+.hd223-visual .discipline-astronomy .hd220-section-cap b{
+  color:#9f86ff;
+}
+@media(max-width:430px){
+  .hd223-visual .discipline-astronomy .hd222-expedition-copy{width:54%}
+  .hd223-visual .discipline-astronomy .hd222-expedition-copy h2{font-size:clamp(2.12rem,8.6vw,2.72rem)}
+  .hd223-visual .discipline-astronomy .hd222-expedition-copy p{font-size:.86rem;max-width:18ch}
+  .hd223-visual .discipline-astronomy .hd222-expedition-art{width:60%;right:-8px;top:18px;height:calc(100% - 18px)}
+  .hd223-visual .hd222-world{min-width:128px}
+}
+@media(max-width:370px){
+  .hd223-visual .discipline-astronomy .hd222-expedition-copy{width:58%}
+  .hd223-visual .discipline-astronomy .hd222-expedition-copy h2{font-size:1.98rem}
+  .hd223-visual .discipline-astronomy .hd222-expedition-copy p{font-size:.8rem;max-width:16ch}
+  .hd223-visual .discipline-astronomy .hd222-expedition-art{width:58%;opacity:.96}
+}

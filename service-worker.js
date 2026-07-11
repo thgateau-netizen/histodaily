@@ -1,15 +1,15 @@
-const CACHE_NAME = "histodaily-beta220-v1";
-const APP_VERSION = "1.0.0-beta.220.0";
+const CACHE_NAME = "histodaily-beta222-v1";
+const APP_VERSION = "1.0.0-beta.222.0";
 const ASSETS = [
   "/",
   "/index.html",
-  "/app.css?v=1.0.0-beta.220.0",
-  "/lessons-lite.js?v=1.0.0-beta.220.0",
-  "/app-bootstrap.js?v=1.0.0-beta.220.0",
-  "/app.js?v=1.0.0-beta.220.0",
-  "/content-library.js?v=1.0.0-beta.220.0",
-  "/app-runtime.js?v=1.0.0-beta.220.0",
-  "/visual-v3.js?v=1.0.0-beta.220.0",
+  "/app.css?v=1.0.0-beta.222.0",
+  "/lessons-lite.js?v=1.0.0-beta.222.0",
+  "/app-bootstrap.js?v=1.0.0-beta.222.0",
+  "/app.js?v=1.0.0-beta.222.0",
+  "/content-library.js?v=1.0.0-beta.222.0",
+  "/app-runtime.js?v=1.0.0-beta.222.0",
+  "/visual-v4.js?v=1.0.0-beta.222.0",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
@@ -21,7 +21,14 @@ const ASSETS = [
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    await cache.addAll(ASSETS);
+    // Un seul asset optionnel en erreur ne doit pas invalider toute
+    // l’installation du service worker. Les fichiers essentiels seront
+    // de toute façon récupérés à la première requête réseau réussie.
+    await Promise.allSettled(ASSETS.map(async asset => {
+      const request = new Request(asset, { cache: "reload" });
+      const response = await fetch(request);
+      if (response.ok) await cache.put(request, response.clone());
+    }));
     await self.skipWaiting();
   })());
 });

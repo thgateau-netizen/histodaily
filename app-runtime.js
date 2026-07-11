@@ -5110,7 +5110,7 @@
 (function histodailyBeta219VisualV2(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.220.0";
+  const VERSION = "1.0.0-beta.222.0";
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -5377,6 +5377,10 @@
   }
 
   function upgradeProfile(){
+    // La V3 reconstruit le profil après le rendu historique. Ne pas relancer
+    // l’ancien relooking asynchrone : il provoquait des déplacements et
+    // superpositions visibles quelques millisecondes après l’ouverture.
+    if (document.documentElement.classList.contains("hd220-visual")) return;
     const shell = document.querySelector(".app-shell.tab-profile");
     if (!shell) return;
     shell.classList.add("hd219-profile-shell");
