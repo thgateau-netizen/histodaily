@@ -1481,8 +1481,8 @@
     const collections = prioritizedCollections();
     const unlockedCount = collections.filter(definition => state.collectionUnlocks?.[definition.id] || collectionProgress(definition).complete).length;
     const collectionSection = document.createElement("section");
-    collectionSection.className = "card beta179-profile-collections";
-    collectionSection.innerHTML = `<div class="section-title-row"><div><span class="card-label">Collections</span><h2>${HD_ICONS.action("medal")} ${unlockedCount} médaille${unlockedCount > 1 ? "s" : ""} débloquée${unlockedCount > 1 ? "s" : ""}</h2><p>Chaque médaille correspond à un thème réellement terminé, pas à un achat ni à un simple niveau.</p></div><button type="button" class="ghost" data-beta180-collections-all>Voir les ${collections.length}</button></div><div class="beta179-collection-grid">${collectionCardsMarkup(collections, 4)}</div>`;
+    collectionSection.className = "card beta179-profile-collections hd217-profile-collections";
+    collectionSection.innerHTML = `<header class="hd217-collections-head"><div><span class="card-label">Collections</span><h2>Tes médailles</h2><p>Termine un thème pour transformer sa progression en médaille.</p></div><div class="hd217-collections-actions"><strong>${unlockedCount}/${collections.length}</strong><button type="button" class="ghost" data-beta180-collections-all>Tout voir</button></div></header><div class="beta179-collection-grid">${collectionCardsMarkup(collections, 4)}</div>`;
 
     const weeklyWrapper = document.createElement("div");
     weeklyWrapper.innerHTML = weeklyProgressMarkup();
@@ -2380,7 +2380,7 @@
 (function histodailyBeta187Concept(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.215.0";
+  const VERSION = "1.0.0-beta.216.0";
   const ROOT_ID = "hd187-layer";
   const SEARCH_LIMIT = 24;
   const appRoot = document.getElementById("app");
@@ -3092,12 +3092,22 @@
   function curiosityMarkup(){
     const data = curiosityData();
     const favorite = data.favorites[0];
-    return `<section class="card hd187-curiosity-card">
-      <div class="section-title-row"><div><span class="card-label">Profil de curiosité</span><h2>${favorite ? `${HD_ICONS.discipline(favorite.discipline)} Ton univers personnel se dessine` : "Commence à construire ton profil"}</h2><p>Les recommandations combinent tes goûts, les notions à consolider et une part de découverte inattendue.</p></div><button type="button" class="ghost" data-hd187-open-map>Voir la carte</button></div>
-      <div class="hd187-curiosity-grid">
-        <div><span>Affinités</span><b>${data.favorites.length ? data.favorites.map(row => `${HD_ICONS.discipline(row.discipline)} ${row.discipline.title}`).join(" · ") : "Encore aucune tendance"}</b></div>
-        <div><span>À consolider</span><b>${data.weak ? `${HD_ICONS.discipline(data.weak.discipline)} ${data.weak.discipline.title}${data.weak.reviews ? ` · ${data.weak.reviews} rappel${data.weak.reviews > 1 ? "s" : ""}` : ""}` : "Mémoire à jour"}</b></div>
-        <div><span>Découverte proposée</span><b>${data.unexplored ? `${HD_ICONS.discipline(data.unexplored.discipline)} ${data.unexplored.discipline.title}` : "Explorer une connexion inattendue"}</b></div>
+    const affinityChips = data.favorites.length
+      ? data.favorites.map(row => `<span class="hd217-affinity-chip">${HD_ICONS.discipline(row.discipline)}<b>${esc(row.discipline.title)}</b></span>`).join("")
+      : `<span class="hd217-empty-value">Explore quelques cours pour faire apparaître tes affinités.</span>`;
+    const weakTitle = data.weak ? esc(data.weak.discipline.title) : "Mémoire à jour";
+    const weakMeta = data.weak?.reviews ? `${data.weak.reviews} rappel${data.weak.reviews > 1 ? "s" : ""} prévu${data.weak.reviews > 1 ? "s" : ""}` : "Aucun rappel urgent";
+    const discoveryTitle = data.unexplored ? esc(data.unexplored.discipline.title) : "Connexion inattendue";
+    const discoveryMeta = data.unexplored ? "Un domaine encore peu exploré" : "Une nouvelle piste sera proposée bientôt";
+    return `<section class="card hd187-curiosity-card hd217-curiosity-card">
+      <header class="hd217-curiosity-head">
+        <div><span class="card-label">Profil de curiosité</span><h2>${favorite ? "Ta curiosité prend forme" : "Construis ta carte personnelle"}</h2><p>Un aperçu simple de ce que tu explores, de ce qui mérite un rappel et de ta prochaine découverte.</p></div>
+        <button type="button" class="ghost hd217-curiosity-map" data-hd187-open-map><span>${HD_ICONS.action("map")}</span><b>Voir la carte</b></button>
+      </header>
+      <div class="hd217-curiosity-list">
+        <article class="hd217-curiosity-row affinity"><span class="hd217-curiosity-icon">${favorite ? HD_ICONS.discipline(favorite.discipline) : HD_ICONS.action("spark")}</span><div><small>Tes affinités</small><div class="hd217-affinity-list">${affinityChips}</div></div></article>
+        <article class="hd217-curiosity-row memory"><span class="hd217-curiosity-icon">${data.weak ? HD_ICONS.discipline(data.weak.discipline) : HD_ICONS.action("check")}</span><div><small>À renforcer</small><strong>${weakTitle}</strong><em>${esc(weakMeta)}</em></div></article>
+        <article class="hd217-curiosity-row discovery"><span class="hd217-curiosity-icon">${data.unexplored ? HD_ICONS.discipline(data.unexplored.discipline) : HD_ICONS.action("mystery")}</span><div><small>Prochaine découverte</small><strong>${discoveryTitle}</strong><em>${esc(discoveryMeta)}</em></div></article>
       </div>
     </section>`;
   }
@@ -3723,7 +3733,7 @@
 (function histodailyBeta214CourseExperience(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.215.0";
+  const VERSION = "1.0.0-beta.216.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>\"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char])); }
@@ -4090,7 +4100,7 @@
 /* ===== HistoDaily beta 215 — intégrité de navigation ===== */
 (function histodailyBeta215NavigationIntegrity(){
   "use strict";
-  const VERSION = "1.0.0-beta.215.0";
+  const VERSION = "1.0.0-beta.216.0";
 
   function stampVersion(){
     try {
@@ -4131,4 +4141,766 @@
   try { queueMicrotask(stampVersion); } catch {}
   try { window.setTimeout(stampVersion, 0); window.setTimeout(stampVersion, 250); } catch {}
   window.HistoDailyNavigationAudit = { run: runAudit };
+})();
+
+
+/* ===== HistoDaily beta 216 — audit éditorial complet et chapitre Vikings final ===== */
+(function histodailyBeta216Quality(){
+  "use strict";
+  const VERSION = "1.0.0-beta.216.0";
+  const VIKING_IDS = Object.freeze([
+    "northern-viking-worlds-scandinavie",
+    "northern-viking-worlds-raids-vikings",
+    "northern-viking-worlds-navires-vikings",
+    "northern-viking-worlds-colonisation-atlantique",
+    "northern-viking-worlds-viking-commerce",
+    "northern-viking-worlds-christianisation-nord",
+    "northern-viking-worlds-vie-quotidienne",
+    "northern-viking-worlds-societe-droit-femmes",
+    "northern-viking-worlds-croyances-sagas-runes",
+    "northern-viking-worlds-kings-kingdoms",
+    "northern-viking-worlds-normandy-england-kiev"
+  ]);
+  const PATCHES = {
+  "northern-viking-worlds-raids-vikings": {},
+  "northern-viking-worlds-scandinavie": {
+    "appendComplete": [
+      {
+        "title": "8. Comment l’archéologie reconstitue ce monde",
+        "text": "Les textes écrits au moment même sont rares en Scandinavie avant le IXe siècle. Pour comprendre la vie avant les raids, les historiens croisent donc plusieurs traces : plans de maisons longues, fosses de stockage, ossements animaux, graines carbonisées, outils, déchets d’ateliers, tombes, inscriptions et objets importés. Une perle venue de loin ou une monnaie étrangère ne prouve pas qu’un habitant a lui-même parcouru toute la route ; elle prouve en revanche qu’il appartient à une chaîne d’échanges. Les grands halls et les dépôts précieux renseignent surtout sur les élites, tandis que les fermes ordinaires montrent la base rurale de la société. Cette méthode évite deux caricatures : une Scandinavie isolée et primitive, ou au contraire un peuple entier déjà tourné vers la conquête. Avant l’âge viking, les savoir-faire maritimes, les hiérarchies sociales et les réseaux existent déjà ; les raids vont les mobiliser à une échelle nouvelle."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Mot important",
+        "text": "Viking désigne d’abord une activité d’expédition, pas l’identité permanente de tous les Scandinaves."
+      },
+      {
+        "title": "Trace à observer",
+        "text": "Ribe, Kaupang et Birka révèlent des lieux d’artisanat et d’échange, mais ils ne représentent pas toute la population rurale."
+      },
+      {
+        "title": "Piège à éviter",
+        "text": "Une tombe riche renseigne surtout sur un statut et une mise en scène funéraire, pas sur le quotidien de chaque habitant."
+      }
+    ]
+  },
+  "northern-viking-worlds-navires-vikings": {
+    "express": [
+      "Les Scandinaves construisent plusieurs types de bateaux : navires de guerre longs et rapides, cargos plus larges, petites embarcations de pêche et de transport local. Il n’existe donc pas un modèle unique appelé simplement « drakkar ».",
+      "Les coques à clin sont légères et souples. La voile carrée donne la vitesse en mer ; les avirons permettent de manœuvrer et d’avancer sans vent. Le faible tirant d’eau facilite plages et fleuves.",
+      "Un navire exige bois sélectionné, fer, cordages, une grande voile de laine, des artisans, des vivres et un équipage discipliné. Il représente une capacité collective et le prestige du chef qui le finance.",
+      "À retenir : Oseberg, Gokstad et Skuldelev prouvent la diversité des constructions. Le bateau rend raid, commerce et colonisation possibles, mais les décisions politiques et sociales expliquent l’usage qui en est fait."
+    ],
+    "quizQuestionPatches": {
+      "4": {
+        "q": "Pourquoi le navire ne suffit-il pas à expliquer l’expansion scandinave ?"
+      }
+    },
+    "complete": [
+      {
+        "title": "1. Il n’existe pas un seul « bateau viking »",
+        "text": "L’expression « navire viking » rassemble des embarcations très différentes. Certains bâtiments sont longs, étroits et rapides, adaptés à la guerre, au transport d’un équipage nombreux et aux débarquements. D’autres sont plus larges et plus profonds afin d’emporter des marchandises, des animaux, du bois ou des réserves sur de longues distances. Des bateaux plus petits servent à la pêche, aux traversées locales et aux déplacements dans les fjords. Cette diversité est essentielle : la même civilisation maritime ne résout pas le raid, le commerce atlantique et la navigation côtière avec un modèle unique."
+      },
+      {
+        "title": "2. Une coque légère construite à clin",
+        "text": "Les bordés sont souvent assemblés à clin : chaque planche chevauche légèrement la précédente et est fixée par des rivets. La coque obtenue reste relativement légère et souple, capable d’absorber une partie des contraintes de la mer. Le bois doit être choisi, fendu et façonné avec précision ; la construction mobilise des charpentiers expérimentés, du fer, des cordages, de la laine pour la voile et beaucoup de travail collectif. Posséder un grand navire suppose donc des ressources et un pouvoir d’organisation. C’est un outil technique, mais aussi une démonstration de richesse et de prestige."
+      },
+      {
+        "title": "3. Voile, avirons et faible tirant d’eau",
+        "text": "La voile carrée fournit l’essentiel de la propulsion lorsque le vent est favorable. Les avirons permettent de manœuvrer, de quitter un rivage, d’avancer sans vent ou de progresser dans un passage étroit. Le faible tirant d’eau de nombreux navires facilite l’approche des plages, le débarquement et la remontée de certains fleuves. Une troupe peut ainsi éviter les ports fortifiés, choisir un point d’arrivée et repartir rapidement. Cette mobilité explique une partie de l’effet de surprise des raids, mais elle sert aussi aux échanges et aux migrations."
+      },
+      {
+        "title": "4. Naviguer sans carte moderne",
+        "text": "Les marins utilisent l’expérience des côtes, la position du Soleil, les étoiles lorsque le ciel le permet, les vents, les courants, la couleur de l’eau, les oiseaux et la connaissance transmise des routes. Les traversées atlantiques demandent de planifier les saisons et d’accepter une forte incertitude. Il faut rester prudent avec les récits de « pierre de soleil » présentée comme un instrument universel : certaines hypothèses sont discutées et ne remplacent pas l’ensemble des savoirs pratiques. La navigation est d’abord une compétence collective acquise par l’observation et l’expérience."
+      },
+      {
+        "title": "5. Un équipage, des vivres et une discipline",
+        "text": "Le navire ne fonctionne pas seul. Il faut réunir un équipage, répartir les tâches, entretenir la coque et la voile, embarquer de l’eau, de la nourriture, des armes ou une cargaison, puis décider quand prendre la mer. La vitesse dépend du vent, du chargement, de l’état du bateau et de la fatigue. Les longues traversées exposent au froid, à l’humidité, au mal de mer et au manque de place. La réussite d’une expédition révèle donc une organisation sociale autant qu’une prouesse de charpenterie."
+      },
+      {
+        "title": "6. Oseberg, Gokstad et Skuldelev : les preuves matérielles",
+        "text": "Les navires funéraires d’Oseberg et de Gokstad, en Norvège, montrent la qualité des constructions et la place symbolique du bateau auprès des élites. Les cinq épaves de Skuldelev, retrouvées dans le fjord de Roskilde, représentent plusieurs usages, du navire de guerre au cargo. Elles avaient été coulées pour barrer un chenal vers le XIe siècle. Les archéologues étudient les bois, les réparations et les dimensions ; des répliques grandeur nature permettent ensuite de tester vitesse, tenue à la mer et besoins d’équipage. L’archéologie expérimentale ne reconstitue pas parfaitement le passé, mais elle vérifie ce qui est techniquement plausible."
+      },
+      {
+        "title": "7. Ce que le navire explique — et ce qu’il n’explique pas",
+        "text": "Le navire ouvre des possibilités : frapper vite, transporter de l’argent, relier des marchés, atteindre l’Islande ou le Groenland. Il ne décide pourtant ni de partir en raid, ni de coloniser, ni de commercer. Ces choix dépendent de chefs, de familles, de rivalités, de demandes économiques et de situations politiques. Réduire l’expansion scandinave à une invention navale serait donc insuffisant. La bonne synthèse associe une technologie efficace à des sociétés capables de financer, construire, équiper et employer ces bateaux de plusieurs façons."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Technique",
+        "text": "Construction à clin : les planches de la coque se chevauchent, ce qui permet une structure légère et flexible."
+      },
+      {
+        "title": "Méthode",
+        "text": "Les répliques navigantes testent des hypothèses, mais leurs performances dépendent aussi des matériaux, des équipages et des choix de reconstruction."
+      },
+      {
+        "title": "Nuance",
+        "text": "Le mot drakkar est moderne et ne désigne pas dans les sources médiévales une catégorie précise de tous les navires vikings."
+      }
+    ]
+  },
+  "northern-viking-worlds-colonisation-atlantique": {
+    "express": [
+      "À partir de la fin du IXe siècle, des familles scandinaves progressent vers l’ouest par étapes : archipels du nord de l’Écosse, Féroé, Islande puis Groenland. Elles transportent bétail, outils et semences afin de créer des fermes.",
+      "L’Islande devient une société durable avec des exploitations, des chefs et l’Althing vers 930. Au Groenland, les établissements vivent plusieurs siècles grâce à l’élevage, la chasse et l’exportation d’ivoire de morse.",
+      "Vers l’an 1000, L’Anse aux Meadows prouve une présence nordique à Terre-Neuve. Le site confirme l’arrivée en Amérique du Nord, mais pas une vaste colonie permanente ni une terre jusque-là inhabitée.",
+      "À retenir : atteindre, explorer, exploiter et coloniser sont quatre réalités différentes. L’Islande est durablement colonisée ; le Groenland reste fragile ; Vinland correspond surtout à des voyages et à une base limitée."
+    ],
+    "complete": [
+      {
+        "title": "1. Une progression d’île en île",
+        "text": "L’expansion vers l’Atlantique Nord ne se fait pas d’un seul bond. Des navigateurs scandinaves fréquentent d’abord les archipels proches de l’Écosse, les Féroé et les routes de la mer du Nord. À partir de la fin du IXe siècle, des familles s’installent en Islande. Ces déplacements mélangent recherche de terres, rivalités politiques, commerce, aventure et stratégies familiales. Les navires transportent des personnes, mais aussi du bétail, des outils, des semences et les éléments nécessaires à une ferme. Une colonisation demande donc beaucoup plus qu’un équipage de guerriers."
+      },
+      {
+        "title": "2. L’Islande : construire une société",
+        "text": "L’Islande est peuplée durablement par des colons venus surtout de Norvège et des régions déjà scandinavisées des îles Britanniques. Ils occupent des terres, fondent des fermes et créent des réseaux locaux. Vers 930, l’Althing devient une assemblée générale où des chefs et des hommes libres se rencontrent pour proclamer le droit et régler des conflits. Ce n’est pas une démocratie moderne : le pouvoir reste inégal et les dépendants ou esclaves ne participent pas de la même manière. L’exemple islandais montre néanmoins que la migration produit des institutions, pas seulement des campements temporaires."
+      },
+      {
+        "title": "3. Le Groenland : vivre à la limite",
+        "text": "Selon la tradition, Érik le Rouge conduit des colons vers le Groenland à la fin du Xe siècle. Ils établissent surtout deux ensembles de fermes dans les zones du sud-ouest où l’élevage est possible. Les habitants élèvent des animaux, chassent, pêchent et exportent notamment de l’ivoire de morse vers l’Europe. Leur survie dépend d’un équilibre fragile : climat, pâturages, accès au bois, navigation saisonnière et demande commerciale. Les établissements durent plusieurs siècles, ce qui interdit de les décrire comme un échec immédiat."
+      },
+      {
+        "title": "4. Vinland et L’Anse aux Meadows",
+        "text": "Les sagas islandaises racontent des voyages plus à l’ouest, vers des régions appelées Helluland, Markland et Vinland. Elles ont été écrites longtemps après les événements et mélangent mémoire, littérature et traditions familiales. L’archéologie apporte une preuve indépendante : à L’Anse aux Meadows, à Terre-Neuve, des bâtiments et objets d’inspiration nordique attestent une présence autour de l’an 1000. Le site montre que des Scandinaves ont atteint l’Amérique du Nord plusieurs siècles avant Christophe Colomb. Il ne prouve pas l’existence d’une vaste colonie permanente."
+      },
+      {
+        "title": "5. Rencontres et limites de l’installation",
+        "text": "Les sagas évoquent des rencontres, des échanges et des affrontements avec les populations autochtones, désignées par un terme ancien qu’il faut manier avec prudence. Les Scandinaves arrivent dans des territoires déjà habités et connus par d’autres sociétés. Leur petit nombre, la distance avec le Groenland, les difficultés d’approvisionnement et les conflits possibles limitent la durée de leur présence. Distinguer la capacité d’atteindre un rivage de celle d’y maintenir une société sur plusieurs générations est l’une des clés du cours."
+      },
+      {
+        "title": "6. Pourquoi les colonies groenlandaises disparaissent",
+        "text": "Les établissements nordiques du Groenland disparaissent à la fin du Moyen Âge. Les historiens évitent aujourd’hui une explication unique. Le refroidissement climatique, l’évolution des marchés de l’ivoire, l’isolement, la baisse des liaisons maritimes, la fragilité démographique et les choix économiques ont pu se combiner. Les contacts avec les populations inuit doivent aussi être étudiés sans inventer un scénario simple de guerre finale. Une colonie peut durer longtemps puis devenir non viable lorsque plusieurs équilibres se dégradent à la fois."
+      },
+      {
+        "title": "7. Découvrir, explorer, exploiter, coloniser",
+        "text": "Atteindre un lieu signifie qu’un voyage a réussi. L’explorer suppose d’en reconnaître une partie. L’exploiter consiste à y prélever des ressources, parfois de manière saisonnière. Le coloniser implique des installations durables, des familles, une production, des règles et une transmission entre générations. L’Islande devient une société de colons ; le Groenland accueille des établissements durables mais fragiles ; L’Anse aux Meadows témoigne plutôt d’une base nordique limitée. Cette distinction empêche de transformer chaque trace de passage en « découverte » suivie d’un peuplement permanent."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Date repère",
+        "text": "Vers 930 : mise en place de l’Althing islandais ; vers l’an 1000 : présence nordique attestée à Terre-Neuve."
+      },
+      {
+        "title": "Source",
+        "text": "Les sagas sont précieuses pour les traditions de voyage, mais l’archéologie est indispensable pour vérifier les lieux et les chronologies."
+      },
+      {
+        "title": "Nuance",
+        "text": "Dire que les Vikings « découvrent l’Amérique » efface les populations qui y vivent déjà et confond arrivée européenne et première occupation humaine."
+      }
+    ]
+  },
+  "northern-viking-worlds-viking-commerce": {
+    "express": [
+      "Ribe, Hedeby, Birka et Kaupang relient la Scandinavie à de grands réseaux. Fourrures, ambre, fer, ivoire et esclaves circulent ; argent, verre, soieries, vin et objets de prestige arrivent de régions lointaines.",
+      "Les dirhams islamiques trouvés au Nord prouvent des connexions jusqu’aux réseaux du califat. Ils passent souvent par de nombreux intermédiaires et peuvent être découpés puis pesés pour leur valeur en argent.",
+      "À l’Est, les voyageurs suivent la Baltique, la Volga et le Dniepr vers les mondes slaves, Byzance et le monde musulman. Ils commercent, servent comme guerriers, prélèvent parfois des tributs et transportent des captifs.",
+      "À retenir : raid et commerce ne sont pas deux univers étanches. Les mêmes routes et parfois les mêmes hommes relient échanges, esclavage, violence, redistribution des richesses et construction du pouvoir local."
+    ],
+    "quizQuestionPatches": {
+      "4": {
+        "q": "Comment résumer la relation entre commerce, violence et pouvoir dans les mondes vikings ?"
+      }
+    },
+    "complete": [
+      {
+        "title": "1. Des places d’échange au cœur des réseaux",
+        "text": "Ribe, Hedeby, Birka ou Kaupang ne sont pas de simples villages agricoles. Ce sont des lieux où se rencontrent artisans, navigateurs, chefs, marchands et voyageurs. On y travaille le métal, l’os, l’ambre, le verre ou les textiles ; on y répare des bateaux et on échange des produits locaux contre des objets venus de loin. Leur importance varie selon les périodes et les pouvoirs qui les protègent. Ces ports montrent que les mondes scandinaves sont intégrés à des réseaux européens avant même que les grands raids dominent les chroniques occidentales."
+      },
+      {
+        "title": "2. Ce qui circule",
+        "text": "Les Scandinaves exportent notamment fourrures, peaux, ambre, fer, pierre à aiguiser, bois, ivoire de morse et parfois des produits issus de la chasse. Ils importent argent, verrerie, soieries, bijoux, vin, armes ou objets de prestige. Les cargaisons dépendent des routes et des opportunités ; il n’existe pas un commerce uniforme. Un objet trouvé dans une tombe peut avoir parcouru plusieurs étapes et changé plusieurs fois de propriétaire. L’archéologie renseigne donc sur la circulation, mais pas toujours sur l’identité du voyageur qui l’a transporté."
+      },
+      {
+        "title": "3. L’argent pesé et les dirhams",
+        "text": "De nombreux trésors contiennent des pièces d’argent islamiques, appelées dirhams, frappées très loin de la Scandinavie. Elles peuvent être conservées comme monnaies, mais aussi découpées et pesées selon la valeur du métal. Des fragments de bijoux et des lingots forment ce que les archéologues appellent parfois le hacksilver, l’argent fractionné. Ces découvertes prouvent l’existence de connexions avec les marchés du monde musulman, souvent par de multiples intermédiaires. Elles ne signifient pas que chaque possesseur scandinave a voyagé jusqu’à Bagdad."
+      },
+      {
+        "title": "4. Les routes de l’Est",
+        "text": "Depuis la Baltique, des groupes scandinaves suivent les fleuves et utilisent des portages pour rejoindre les bassins de la Volga et du Dniepr. Ces itinéraires conduisent vers les mondes slaves, la mer Noire, Byzance et les réseaux du califat. Les voyageurs transportent parfois leurs bateaux ou leurs marchandises d’un cours d’eau à l’autre. Ils commercent, servent comme guerriers, prélèvent des tributs ou s’intègrent à des pouvoirs locaux. Les routes de l’Est rappellent que l’âge viking ne se résume pas aux côtes de France et d’Angleterre."
+      },
+      {
+        "title": "5. Captifs et esclavage",
+        "text": "Les êtres humains font aussi partie des circulations. Des captifs pris lors de raids ou de guerres peuvent être rançonnés, gardés comme dépendants ou vendus. Les marchés d’Irlande, de la Baltique et des routes orientales participent à cette économie. Les sources écrites sont incomplètes et les traces archéologiques difficiles à interpréter, mais l’esclavage est suffisamment présent pour interdire une image romantique du marchand aventureux. Guerre et commerce ne sont pas deux mondes séparés : la violence peut fournir une partie des biens et des personnes échangés."
+      },
+      {
+        "title": "6. Redistribuer pour gouverner",
+        "text": "Un chef ne renforce pas son pouvoir en accumulant silencieusement toute sa richesse. Il offre des armes, des bijoux, de l’argent, des vêtements ou des festins afin d’attirer des fidèles et de récompenser des services. Les objets importés ont une valeur matérielle, mais aussi sociale : ils prouvent l’accès à des réseaux lointains. Contrôler un port, protéger une route ou prélever une taxe peut donc consolider une autorité politique. Le commerce nourrit les hiérarchies autant que la consommation quotidienne."
+      },
+      {
+        "title": "7. Commerce et raid : une même mobilité",
+        "text": "Un même équipage peut commercer dans un port, louer ses armes, exiger un tribut ou profiter d’une faiblesse pour piller. Les catégories modernes de marchand, pirate, colon ou mercenaire ne correspondent pas toujours à des identités fixes. Cela ne signifie pas que toutes les activités se valent moralement : le pillage et l’esclavage restent des violences. La bonne synthèse est historique : les routes, les navires, l’argent, les captifs et les alliances relient économie et pouvoir dans un système où échange pacifique et contrainte peuvent alterner."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Objet repère",
+        "text": "Les dirhams trouvés en Scandinavie sont des indices de réseaux à très longue distance, souvent composés de nombreuses étapes."
+      },
+      {
+        "title": "Notion",
+        "text": "Hacksilver : argent découpé ou fragmenté, utilisé selon son poids plutôt que seulement selon la valeur faciale d’une monnaie."
+      },
+      {
+        "title": "Piège",
+        "text": "Remplacer le cliché du pillard par celui du commerçant pacifique masque l’esclavage, les tributs et les rapports de force."
+      }
+    ]
+  },
+  "northern-viking-worlds-christianisation-nord": {
+    "quizQuestionPatches": {
+      "3": {
+        "q": "Pourquoi les sagas ne décrivent-elles pas directement les conversions du Xe siècle ?"
+      },
+      "4": {
+        "q": "Que devient le monde viking avec la christianisation des royaumes nordiques ?"
+      }
+    },
+    "complete": [
+      {
+        "title": "1. Une conversion qui dure plusieurs générations",
+        "text": "Le christianisme ne surgit pas brutalement dans une Scandinavie isolée. Marchands, captifs, missionnaires et Scandinaves ayant voyagé dans les îles Britanniques ou le monde franc mettent depuis longtemps les croyances en contact. Des individus peuvent adopter une croix sans abandonner immédiatement tous les rites anciens. Les régions, les familles et les élites évoluent à des rythmes différents. Parler de christianisation désigne donc un processus social et politique, pas la date unique où un peuple entier change de religion."
+      },
+      {
+        "title": "2. Pourquoi les rois soutiennent la nouvelle religion",
+        "text": "Pour un roi, le christianisme apporte des alliances avec d’autres souverains, des spécialistes de l’écriture, des évêques et une idéologie qui peut présenter le pouvoir comme voulu par Dieu. La pierre de Jelling, élevée au Xe siècle par Harald à la Dent bleue, affirme qu’il a gagné le Danemark et la Norvège et « fait chrétiens les Danois » : c’est autant un programme royal qu’un constat sur chaque habitant. La conversion aide à construire une image d’unité, même lorsque l’autorité reste négociée et incomplète."
+      },
+      {
+        "title": "3. Églises, missionnaires et nouvelles institutions",
+        "text": "La christianisation suppose de bâtir des églises, former un clergé, créer des diocèses, organiser les rites et relier les communautés nordiques à l’Église occidentale. Les missionnaires dépendent souvent de la protection des élites. Les cimetières, les croix, les inscriptions et l’évolution des pratiques funéraires permettent de suivre ces transformations. Le changement ne concerne pas seulement la foi personnelle : il modifie le calendrier, le mariage, la mémoire des morts, l’écrit et les relations avec les pouvoirs étrangers."
+      },
+      {
+        "title": "4. Coexistence, adaptation et résistance",
+        "text": "Pendant une longue période, symboles chrétiens et références anciennes coexistent. Des pendentifs en forme de marteau de Thor peuvent affirmer une tradition locale face à la croix ; d’autres objets mélangent les signes. Certains chefs se convertissent pour des raisons diplomatiques, tandis que des communautés conservent des rites antérieurs. Les récits de conversion forcée existent, notamment autour de certains rois norvégiens, mais ils ont souvent été rédigés plus tard et servent aussi à exalter leur autorité. Il faut donc croiser textes et archéologie."
+      },
+      {
+        "title": "5. Le compromis islandais autour de l’an 1000",
+        "text": "Les traditions islandaises racontent qu’une décision de l’Althing adopte officiellement le christianisme afin d’éviter la division de la société. Le récit met en scène un compromis : une religion commune dans l’espace public, avec une tolérance provisoire de certaines pratiques privées. Les détails sont discutés, car les textes sont tardifs, mais l’épisode illustre une réalité importante : la religion touche au droit, aux alliances et à la paix civile. La conversion peut résulter d’une négociation politique autant que d’une prédication."
+      },
+      {
+        "title": "6. Ce que la christianisation change pour les royaumes",
+        "text": "L’Église fournit des réseaux internationaux, des lieux de pouvoir, une culture écrite latine et des modèles de royauté. Les rois soutiennent des évêchés, frappent des monnaies, fondent des églises et utilisent de nouveaux rituels. En retour, ils doivent composer avec des autorités religieuses et des normes qui dépassent leur royaume. La transformation rapproche le Danemark, la Norvège et la Suède des autres monarchies européennes. Elle accompagne le passage de pouvoirs locaux concurrents à des royaumes médiévaux plus durables."
+      },
+      {
+        "title": "7. Fin des Vikings ou transformation du Nord ?",
+        "text": "La christianisation ne fait pas disparaître soudain les navires, le commerce ou les ambitions guerrières. Des rois chrétiens comme Knut dirigent encore de vastes conquêtes. Ce qui change progressivement, ce sont les institutions, les identités politiques, l’écriture et l’intégration diplomatique. L’expression « fin de l’âge viking » sert de repère, souvent associé au XIe siècle, mais elle décrit une transformation plus qu’un arrêt net. Les sociétés scandinaves deviennent des royaumes chrétiens tout en conservant et réinterprétant une partie de leur héritage."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Monument",
+        "text": "La grande pierre de Jelling associe mémoire dynastique, affirmation royale et christianisation du Danemark."
+      },
+      {
+        "title": "Méthode",
+        "text": "Les récits de conversions spectaculaires doivent être comparés aux tombes, aux églises et aux inscriptions, qui montrent des rythmes régionaux."
+      },
+      {
+        "title": "Nuance",
+        "text": "Conversion officielle d’un roi ou d’une assemblée ne signifie pas disparition immédiate de toutes les anciennes pratiques."
+      }
+    ]
+  },
+  "northern-viking-worlds-vie-quotidienne": {
+    "quizQuestionPatches": {
+      "4": {
+        "q": "Sur quoi reposent concrètement les voyages et expéditions vikings ?"
+      }
+    },
+    "complete": [
+      {
+        "title": "1. La maisonnée au centre de la vie",
+        "text": "La majorité des habitants vit dans des exploitations rurales. La maison longue abrite des personnes de statuts différents et parfois des animaux dans des espaces organisés autour du feu, du stockage et du travail. La maisonnée comprend la famille, mais aussi des dépendants, des ouvriers et des esclaves. Elle produit une grande partie de ce qu’elle consomme, tout en restant reliée aux voisins, aux marchés et aux chefs locaux. La ferme est à la fois un lieu de vie, une unité économique et une base du rang social."
+      },
+      {
+        "title": "2. Produire au rythme des saisons",
+        "text": "Les tâches changent au fil de l’année : labourer, semer, récolter, couper le foin, surveiller les troupeaux, pêcher, réparer les bâtiments, préparer le bois et conserver les aliments. L’hiver rend les réserves décisives. Les réserves, les récoltes et l’élevage conditionnent directement la survie de la maisonnée. Une mauvaise récolte, une maladie animale ou un printemps tardif peuvent fragiliser tout le groupe. Les céréales, les produits laitiers, la viande, le poisson, les légumes et les plantes cueillies composent des régimes variables selon les régions et le statut. Le quotidien est donc dominé par le travail et l’incertitude bien plus que par l’aventure."
+      },
+      {
+        "title": "3. Textiles, vêtements et travail invisible",
+        "text": "La fabrication textile exige énormément de temps : préparer la laine ou le lin, filer, tisser, teindre, couper et réparer. Les vêtements protègent du climat, mais indiquent aussi le statut par la qualité des tissus, les couleurs, les broches et les ornements. Les métiers à tisser, pesons, fuseaux et fragments de tissus sont des sources majeures. Une voile de laine représente elle aussi une quantité considérable de matière et de travail. Les expéditions maritimes reposent donc en partie sur une production domestique souvent moins visible dans les récits guerriers."
+      },
+      {
+        "title": "4. Artisans et lieux spécialisés",
+        "text": "Les fermes pratiquent de nombreux travaux, mais certains artisans se spécialisent : forgerons, charpentiers, fabricants de peignes, bijoutiers ou constructeurs de bateaux. Dans des places comme Ribe, Birka ou Hedeby, les archéologues retrouvent moules, scories, chutes d’os et déchets de production. Les objets ordinaires — couteaux, serrures, pots, peignes, aiguilles — montrent une culture matérielle élaborée. Tous les habitants ne possèdent pas les mêmes biens : la qualité et l’origine des objets révèlent les écarts de richesse et l’accès aux réseaux."
+      },
+      {
+        "title": "5. Corps, santé et hygiène",
+        "text": "Les squelettes indiquent traumatismes, usure liée au travail, infections, carences et différences d’alimentation. Les peignes, pinces et objets de toilette montrent un soin du corps, sans autoriser à imaginer les normes sanitaires modernes. La fumée des foyers, le froid, les accidents et les maladies rendent la vie difficile. L’espérance de vie moyenne est abaissée par une forte mortalité infantile, mais certains adultes atteignent un âge avancé. L’archéologie rappelle que la vie viking concerne des enfants, des personnes âgées et des travailleurs, pas seulement des hommes armés."
+      },
+      {
+        "title": "6. Des rôles sociaux inégaux",
+        "text": "Les hommes et femmes libres peuvent gérer des biens et participer à la production, mais leurs droits et attentes diffèrent. Les femmes de certaines maisonnées dirigent l’exploitation en l’absence d’un conjoint et contrôlent des tâches essentielles ; cela ne crée pas une égalité générale. Les enfants travaillent progressivement selon leur âge. Les dépendants et esclaves accomplissent une partie des tâches agricoles et domestiques sans disposer de la même liberté. Le quotidien révèle donc une société hiérarchisée où le confort des uns peut reposer sur la contrainte imposée aux autres."
+      },
+      {
+        "title": "7. Le quotidien rend les expéditions possibles",
+        "text": "Un navire doit être construit, une voile tissée, des vivres préparés et un équipage libéré temporairement de certaines tâches. Les richesses rapportées peuvent ensuite acheter des terres, financer un mariage, récompenser des fidèles ou améliorer une ferme. Le raid et le commerce ne sont pas séparés de la vie ordinaire : ils s’appuient sur elle et la transforment. La formule à retenir est simple : derrière chaque voyage se trouvent des maisonnées rurales, du travail artisanal, des hiérarchies et une organisation saisonnière."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Trace",
+        "text": "Foyers, graines, ossements, outils et déchets d’atelier racontent souvent mieux le quotidien que les grandes sagas."
+      },
+      {
+        "title": "Idée forte",
+        "text": "La voile de laine relie directement travail textile domestique et mobilité maritime."
+      },
+      {
+        "title": "Piège",
+        "text": "Des peignes et objets de toilette prouvent des pratiques de soin, pas une hygiène identique à la nôtre."
+      }
+    ]
+  },
+  "northern-viking-worlds-societe-droit-femmes": {
+    "complete": [
+      {
+        "title": "1. Une société de statuts",
+        "text": "Le monde viking n’est pas composé d’individus égaux. Les chefs et grandes familles possèdent terres, clientèles et objets de prestige. Les hommes et femmes libres disposent de droits variables selon la région, la richesse et la famille. D’autres personnes vivent dans la dépendance, et les esclaves — souvent appelés thralls dans les sources nordiques — peuvent être vendus, transmis ou exploités. La frontière entre catégories n’est pas toujours simple, mais la liberté juridique constitue une différence fondamentale. Parler d’assemblées ne doit donc jamais faire oublier cette hiérarchie."
+      },
+      {
+        "title": "2. La parenté et la maisonnée",
+        "text": "L’individu appartient à une famille élargie qui protège ses intérêts, organise mariages et héritages et intervient dans les conflits. La maisonnée réunit production, autorité domestique et réputation. Une personne isolée possède moins de moyens pour défendre ses droits. Les alliances entre lignages structurent le pouvoir local, tandis que les dons et les festins entretiennent les fidélités. Cette importance de la parenté explique pourquoi les querelles peuvent se prolonger sur plusieurs générations et pourquoi une compensation doit souvent être acceptée par tout un groupe."
+      },
+      {
+        "title": "3. Le thing : une assemblée, pas une démocratie moderne",
+        "text": "Le thing est une assemblée où des hommes libres se réunissent pour proclamer le droit, entendre des accusations, reconnaître des accords et négocier des décisions. Certains espaces ont des assemblées locales et d’autres de plus grande échelle. Il n’existe pas partout le même règlement, et les chefs riches influencent fortement les débats. Les femmes, esclaves et dépendants ne participent pas à égalité. Le thing montre néanmoins que la société possède des procédures publiques : la force privée n’est pas la seule manière de régler un conflit."
+      },
+      {
+        "title": "4. Honneur, compensation et vengeance",
+        "text": "La réputation est une ressource politique. Protéger les siens, tenir une promesse, se montrer généreux ou courageux renforce l’honneur ; subir une offense sans réponse peut l’affaiblir. Les lois prévoient souvent des compensations selon le dommage et le statut de la victime. Accepter un paiement peut arrêter l’escalade, mais une famille peut aussi choisir la vengeance. Les sagas dramatisent ces conflits et ne sont pas des comptes rendus neutres ; elles révèlent toutefois combien droit, honneur et rapports de force sont liés."
+      },
+      {
+        "title": "5. Les femmes : capacités réelles, limites fortes",
+        "text": "Selon les régions et les périodes, une femme libre peut posséder ou gérer des biens, recevoir un héritage, diriger une ferme et parfois demander une séparation. Les veuves de familles puissantes disposent souvent d’une marge d’action importante. Les tombes riches montrent que certaines femmes occupent un rang élevé, mais le mobilier funéraire ne décrit pas automatiquement leur fonction politique. La société reste dominée par les lignages et les hommes libres dans la guerre et les assemblées. Il faut donc éviter à la fois l’image de femmes sans aucun pouvoir et celle d’une égalité moderne."
+      },
+      {
+        "title": "6. Esclavage, captifs et domination",
+        "text": "Les esclaves travaillent dans les fermes, les maisons et les ateliers. Certains viennent de raids ou de commerce à longue distance ; d’autres naissent dans la dépendance. Leur présence augmente la capacité de production et le prestige des propriétaires. Les sources parlent peu de leur propre expérience, car elles sont surtout produites par les groupes dominants. L’archéologie et les textes permettent néanmoins d’affirmer que l’esclavage n’est pas marginal. Oublier cette dimension transforme abusivement la société viking en communauté libre de paysans-guerriers."
+      },
+      {
+        "title": "7. Comment connaître le droit viking",
+        "text": "Les grands codes de lois scandinaves ont souvent été écrits après l’âge viking, lorsque les royaumes sont christianisés. Ils conservent des éléments plus anciens, mais ils ne peuvent pas être projetés tels quels deux siècles en arrière. Les pierres runiques, les lieux d’assemblée, les sagas et les comparaisons régionales complètent le dossier. L’historien doit distinguer une pratique attestée, une tradition racontée plus tard et une reconstruction moderne. La synthèse juste est celle d’une société réglée mais inégale, où coutumes et assemblées limitent sans supprimer la violence."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Institution",
+        "text": "Thing : assemblée publique de groupes libres, influencée par les hiérarchies et non équivalente au suffrage universel."
+      },
+      {
+        "title": "Nuance",
+        "text": "Les droits des femmes varient selon le statut, la région et la situation familiale ; aucun slogan unique ne résume toute la période."
+      },
+      {
+        "title": "Angle mort",
+        "text": "Les esclaves ont laissé peu de récits personnels : l’absence de voix écrite ne signifie pas absence sociale."
+      }
+    ]
+  },
+  "northern-viking-worlds-croyances-sagas-runes": {
+    "quizQuestionPatches": {
+      "4": {
+        "q": "Pourquoi les sagas et les Eddas ne sont-elles pas des témoignages contemporains de l’âge viking ?"
+      }
+    },
+    "complete": [
+      {
+        "title": "1. Des croyances sans autorité centrale",
+        "text": "Les religions nordiques anciennes ne possèdent ni livre sacré unique, ni Église centralisée, ni dogme fixé partout de la même manière. Les rites varient selon les régions, les familles et les circonstances. Des chefs peuvent présider des sacrifices et des fêtes, tandis que la pratique quotidienne se déroule aussi dans les fermes et les lieux naturels. Les textes disponibles ont souvent été écrits après la christianisation. Il faut donc parler de traditions religieuses multiples plutôt que d’un système parfaitement uniforme connu dans tous ses détails."
+      },
+      {
+        "title": "2. Odin, Thor, Freyja et les autres dieux",
+        "text": "Odin est associé à la souveraineté, à la poésie, à la connaissance et à la guerre ; Thor au tonnerre, à la force et à la protection ; Freyja à la fertilité, au désir et à certains morts guerriers. Loki joue un rôle ambigu dans de nombreux récits. Ces fonctions se chevauchent et les cultes locaux ne suivent pas forcément la hiérarchie des manuels modernes. Les noms de lieux, les pendentifs et les poèmes suggèrent que Thor est particulièrement populaire dans certaines régions, tandis qu’Odin apparaît fortement dans les traditions des élites guerrières et poétiques."
+      },
+      {
+        "title": "3. Un cosmos raconté par des mythes",
+        "text": "Les Eddas décrivent Midgard, le monde des humains, Asgard, les géants, l’arbre Yggdrasil et le Ragnarök. Ces récits donnent une vision puissante du destin, des alliances et de la fin du monde. Mais ils sont conservés dans des manuscrits médiévaux rédigés dans une Islande chrétienne. Les auteurs ont pu organiser des traditions orales diverses et les présenter de façon plus cohérente qu’elles ne l’étaient auparavant. Le mythe est donc une source, à condition de toujours demander quand et pourquoi il a été mis par écrit."
+      },
+      {
+        "title": "4. Mourir : plusieurs destins possibles",
+        "text": "Le Valhalla, où Odin accueille une partie des guerriers morts, est célèbre, mais il ne représente pas le destin de tous. Les textes évoquent aussi le domaine de Freyja, Hel et d’autres formes de séjour des morts. Les pratiques funéraires sont très variées : crémation ou inhumation, tombe simple ou monumentale, bateau entier ou symbolique, objets, animaux et parfois sacrifices. Ces différences peuvent exprimer statut, région, époque et choix familial. Une tombe ne livre pas une doctrine complète de l’au-delà, mais elle montre comment les vivants construisent la mémoire du défunt."
+      },
+      {
+        "title": "5. Les runes sont d’abord une écriture",
+        "text": "Le futhark est un alphabet utilisé pour inscrire des noms, des marques de propriété, des mémoires, des messages et des dédicaces. Les pierres runiques du Xe et du XIe siècle commémorent souvent un parent, un voyage ou une construction. Certaines inscriptions ont une fonction magique ou protectrice, mais cela ne transforme pas chaque rune en symbole ésotérique. Beaucoup de textes sont courts parce que graver demande du temps et de l’espace. Les runes témoignent aussi de la christianisation lorsque croix et prières apparaissent sur les monuments."
+      },
+      {
+        "title": "6. Sagas et Eddas : tardives mais irremplaçables",
+        "text": "Les sagas islandaises sont écrites surtout aux XIIe et XIIIe siècles, bien après les événements qu’elles racontent. Elles préservent des noms, des généalogies, des souvenirs de colonisation et une connaissance fine des conflits sociaux, mais elles sont aussi des œuvres littéraires. L’Edda poétique rassemble des poèmes de dates diverses ; l’Edda de Snorri explique les mythes aux poètes chrétiens. Ces textes ne doivent être ni crus mot à mot ni rejetés en bloc. Ils gagnent en valeur lorsqu’ils sont croisés avec les inscriptions, les objets et les tombes."
+      },
+      {
+        "title": "7. Une religion transformée par la conversion",
+        "text": "Pendant la christianisation, anciennes et nouvelles références coexistent. Un marteau de Thor peut répondre symboliquement à une croix ; une pierre runique peut utiliser l’alphabet traditionnel pour une prière chrétienne. Les mythes continuent d’être racontés après la conversion, parfois comme héritage poétique plutôt que comme culte vivant. C’est grâce à des auteurs chrétiens que beaucoup de récits ont été conservés, mais leur regard modifie aussi ce qu’ils transmettent. La prudence sur les sources n’appauvrit pas le sujet : elle permet de distinguer croyance ancienne, mémoire médiévale et réinvention moderne."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Alphabet",
+        "text": "Le futhark récent comporte seize signes durant une grande partie de l’âge viking ; les runes servent à écrire des sons, pas uniquement à pratiquer la magie."
+      },
+      {
+        "title": "Source",
+        "text": "Snorri Sturluson écrit au XIIIe siècle dans une société chrétienne : son Edda est capitale, mais postérieure de plusieurs générations."
+      },
+      {
+        "title": "Piège",
+        "text": "Le Valhalla ne résume ni toutes les croyances sur la mort ni l’expérience religieuse de toute la population."
+      }
+    ]
+  },
+  "northern-viking-worlds-kings-kingdoms": {
+    "express": [
+      "Entre le IXe et le XIe siècle, la Scandinavie passe progressivement d’un paysage de chefs et de petits pouvoirs concurrents à des royaumes plus durables. Cette évolution n’est ni linéaire ni identique au Danemark, en Norvège et en Suède.",
+      "Les rois s’appuient sur la guerre, les tributs, les ports, les fidèles armés et les alliances familiales. Forteresses, monnaies, grands halls et monuments comme Jelling rendent leur autorité visible, sans supprimer les assemblées ni les élites locales.",
+      "La christianisation renforce la légitimité royale et fournit écriture, évêques et relations diplomatiques. En retour, le roi protège l’Église et tente d’imposer une organisation plus stable du territoire.",
+      "À retenir : l’âge viking ne se termine pas parce que les Scandinaves disparaissent. Les chefs, réseaux et conquêtes se transforment en monarchies chrétiennes intégrées à l’Europe médiévale."
+    ],
+    "complete": [
+      {
+        "title": "1. Avant les royaumes : une mosaïque de pouvoirs",
+        "text": "Au début de l’âge viking, les régions scandinaves sont dominées par des chefs, des familles puissantes et des rois dont l’autorité peut être limitée. Leur pouvoir repose sur les terres, les halls, les fidèles armés, la réputation et la capacité à redistribuer des richesses. Une victoire ou une expédition réussie attire des partisans ; une défaite peut les disperser. Les assemblées locales et les lignages conservent une grande importance. Il ne faut donc pas imaginer dès 800 trois États correspondant exactement au Danemark, à la Norvège et à la Suède modernes."
+      },
+      {
+        "title": "2. Guerre, tributs et fidélités",
+        "text": "Pour élargir son autorité, un roi doit contrôler des routes, obtenir des tributs, conclure des mariages et vaincre ou rallier des rivaux. Les richesses tirées du commerce et des expéditions servent à nourrir une suite, offrir des armes et financer des constructions. Cette logique rend la monarchie dynamique mais fragile : le pouvoir dépend encore fortement de la personne du souverain. Les successions provoquent des conflits, et plusieurs prétendants peuvent gouverner des régions différentes ou revendiquer le même titre."
+      },
+      {
+        "title": "3. Des trajectoires différentes",
+        "text": "Le Danemark paraît se structurer relativement tôt autour de lieux comme Jelling et d’un contrôle des détroits. En Norvège, les récits attribuent à Harald à la Belle Chevelure une grande unification, mais cette tradition tardive simplifie probablement un processus plus long. En Suède, les pouvoirs autour du lac Mälar et d’Uppsala évoluent selon d’autres rythmes. Le mot « unification » doit donc être manié avec prudence : il peut signifier domination militaire, fidélité de chefs locaux ou capacité à prélever des ressources, pas administration uniforme de tout le territoire."
+      },
+      {
+        "title": "4. Montrer et organiser le pouvoir",
+        "text": "Les grands halls accueillent banquets, alliances et cérémonies. Les forteresses circulaires danoises, souvent associées au règne de Harald à la Dent bleue, révèlent une capacité à mobiliser beaucoup de travail et à planifier des sites. Les monnaies portant un nom royal, les routes, les ports et les monuments dynastiques rendent l’autorité visible. La pierre de Jelling associe le roi, la mémoire de ses parents, le territoire et le christianisme. Ces traces montrent un pouvoir plus structuré, même si elles expriment aussi une ambition et non un contrôle absolu."
+      },
+      {
+        "title": "5. Christianisation et légitimité royale",
+        "text": "La nouvelle religion aide les souverains à rejoindre le monde diplomatique chrétien. Les évêques et clercs maîtrisent l’écriture, les chartes et les modèles de gouvernement. Le roi peut se présenter comme protecteur de l’Église et responsable de l’unité religieuse. La conversion n’est pourtant pas un simple outil cynique : les convictions personnelles et les dynamiques sociales comptent aussi. Surtout, l’alliance entre monarchie et Église crée des institutions capables de survivre davantage à la mort d’un chef."
+      },
+      {
+        "title": "6. Dynasties, mémoire et sources",
+        "text": "Les rois font construire des monuments et entretenir des généalogies pour présenter leur domination comme légitime et ancienne. Les sagas rédigées plus tard organisent les règnes en récits cohérents, avec héros fondateurs et batailles décisives. Elles conservent des traditions utiles mais projettent parfois les monarchies médiévales sur une époque où le pouvoir est plus fragmenté. L’archéologie, les monnaies, les inscriptions et les sources étrangères permettent de contrôler ces récits. Une dynastie n’existe pas seulement par le sang : elle doit convaincre les élites de reconnaître sa continuité."
+      },
+      {
+        "title": "7. De l’âge viking aux monarchies médiévales",
+        "text": "Au XIe siècle, les royaumes nordiques possèdent davantage d’institutions chrétiennes, de centres royaux et de liens européens. Les expéditions ne cessent pas immédiatement : Knut règne sur un vaste ensemble autour de la mer du Nord, et des Scandinaves servent encore à l’étranger. Mais les conquérants agissent désormais de plus en plus comme des rois chrétiens, avec des territoires et des successions. Le fil chronologique à retenir est donc : pouvoirs locaux, enrichissement et guerre, affirmation dynastique, christianisation, puis consolidation progressive de monarchies médiévales."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Monument",
+        "text": "Jelling combine tombeaux, pierres runiques, église et affirmation dynastique : c’est un observatoire privilégié de la formation du royaume danois."
+      },
+      {
+        "title": "Nuance",
+        "text": "« Unifier » ne signifie pas administrer partout comme un État moderne ; l’obéissance reste souvent négociée avec les chefs locaux."
+      },
+      {
+        "title": "Méthode",
+        "text": "Les sagas royales doivent être croisées avec monnaies, forteresses, inscriptions et sources étrangères."
+      }
+    ]
+  },
+  "northern-viking-worlds-normandy-england-kiev": {
+    "express": [
+      "Les raids peuvent devenir des installations. Quand un groupe contrôle durablement un territoire, il doit prélever des ressources, gouverner une population, négocier avec ses voisins et transmettre le pouvoir.",
+      "En Normandie, Rollon et ses hommes reçoivent au début du Xe siècle un territoire du roi franc. Leurs descendants deviennent des princes chrétiens et francophones. En Angleterre, les installations du Danelaw puis le règne de Knut montrent d’autres formes d’intégration et de conquête.",
+      "À l’Est, des Scandinaves empruntent les fleuves vers Byzance et participent aux réseaux qui entourent la formation de la Rus’. Ils se mêlent aux populations slaves et finno-ougriennes ; l’État de Kiev ne peut pas être décrit comme une simple colonie viking.",
+      "À retenir : Normandie, Angleterre et Rus’ montrent comment mobilité scandinave, adaptation locale et pouvoir dynastique transforment des expéditions en principautés médiévales."
+    ],
+    "complete": [
+      {
+        "title": "1. S’installer change la nature du pouvoir",
+        "text": "Un raid peut être mené rapidement par un équipage qui repart avec du butin. Une installation durable exige autre chose : tenir des terres, nourrir des hommes, lever des ressources, rendre la justice, négocier avec les élites locales et organiser une succession. Les nouveaux venus sont presque toujours moins nombreux que les populations qu’ils dominent ou côtoient. Pour durer, ils doivent donc s’adapter, conclure des mariages, adopter des langues et utiliser des institutions existantes. La conquête devient progressivement un gouvernement."
+      },
+      {
+        "title": "2. La Normandie : du chef scandinave au prince franc",
+        "text": "Au début du Xe siècle, le roi franc Charles le Simple reconnaît à Rollon un territoire autour de la basse Seine, traditionnellement associé à l’accord de 911. En échange, Rollon doit protéger la région et entrer dans l’ordre politique chrétien. Les groupes scandinaves ne remplacent pas toute la population. Leurs descendants adoptent rapidement le christianisme, une langue romane et les formes de pouvoir franques. Le nom de Normandie conserve la mémoire des « hommes du Nord », mais le duché devient une principauté profondément intégrée à l’Occident."
+      },
+      {
+        "title": "3. Le Danelaw et les sociétés anglo-scandinaves",
+        "text": "À partir de l’arrivée de la Grande Armée en 865, des groupes scandinaves conquièrent et occupent une partie de l’Angleterre. La zone appelée plus tard Danelaw connaît des implantations, des villes dynamiques comme York et des formes de droit influencées par les nouveaux venus. Les noms de lieux et l’archéologie montrent des contacts durables. Il ne s’agit pas d’un territoire culturellement pur : Scandinaves et Anglo-Saxons échangent, se marient et adoptent des pratiques communes. Les rois du Wessex reconquièrent progressivement ces régions, mais l’héritage demeure."
+      },
+      {
+        "title": "4. Knut et l’empire de la mer du Nord",
+        "text": "En 1016, Knut devient roi d’Angleterre puis règne aussi sur le Danemark et la Norvège. Son ensemble politique repose sur des flottes, des élites locales et une royauté chrétienne. Knut se présente comme un souverain légitime, soutient l’Église et utilise les institutions anglaises plutôt que de gouverner seulement comme chef d’une armée étrangère. Son empire ne survit pas longtemps à sa mort en 1035, ce qui montre à la fois l’ampleur atteinte par les dynasties scandinaves et la fragilité d’une construction dépendante d’un souverain."
+      },
+      {
+        "title": "5. Les routes de l’Est et la formation de la Rus’",
+        "text": "Des Scandinaves appelés Varègues dans certaines sources parcourent la Baltique et les fleuves vers la mer Noire et la Volga. Ils commercent, servent comme guerriers et participent à des réseaux de tribut. Les traditions médiévales associent des figures nordiques aux débuts des pouvoirs de Novgorod et de Kiev. Les historiens débattent depuis longtemps de leur rôle exact. La Rus’ se forme dans un espace peuplé de groupes slaves, finno-ougriens et autres ; elle résulte d’interactions et ne peut pas être réduite à l’importation d’un État tout fait par quelques Vikings."
+      },
+      {
+        "title": "6. Byzance, conversion et adaptation",
+        "text": "Les routes orientales conduisent jusqu’à Constantinople, où des Scandinaves servent notamment dans la garde varangienne. La Rus’ de Kiev développe des relations commerciales et diplomatiques avec Byzance. Le baptême du prince Vladimir à la fin du Xe siècle et l’adoption du christianisme byzantin inscrivent le pouvoir kiévien dans un autre univers religieux que les royaumes scandinaves occidentaux. Cet exemple confirme qu’une élite mobile change d’identité politique au contact des sociétés locales au lieu de conserver indéfiniment une culture intacte."
+      },
+      {
+        "title": "7. Trois régions, une même leçon",
+        "text": "Normandie, Angleterre et Rus’ ne suivent pas le même chemin. La première naît d’un compromis avec un roi franc ; la deuxième combine conquêtes, colonies et reconquêtes ; la troisième se développe sur des routes fluviales et dans un monde slave et byzantin. Le point commun est la transformation : des Scandinaves deviennent ducs, rois, marchands, soldats ou membres de nouvelles élites. Leurs descendants gouvernent avec des langues, religions et institutions locales. L’âge viking produit ainsi des dynasties médiévales plutôt qu’une diaspora restée partout identique."
+      }
+    ],
+    "deeper": [
+      {
+        "title": "Repère",
+        "text": "911 est la date traditionnellement associée à l’accord entre Rollon et Charles le Simple ; 1016 marque l’accession de Knut au trône d’Angleterre."
+      },
+      {
+        "title": "Nuance",
+        "text": "Le rôle scandinave dans la formation de la Rus’ est réel mais débattu ; il ne faut ni l’effacer ni réduire Kiev à une colonie nordique."
+      },
+      {
+        "title": "Idée forte",
+        "text": "Une conquête durable transforme aussi les conquérants, qui adoptent souvent la langue, la religion et les institutions du territoire."
+      }
+    ]
+  }
+};
+  const SOURCE_NOTE = Object.freeze([
+    "Musée des navires vikings de Roskilde — épaves de Skuldelev et archéologie expérimentale",
+    "National Museum of Denmark — société, monuments de Jelling et culture matérielle",
+    "British Museum — échanges, argent, objets et réseaux vikings",
+    "L’Anse aux Meadows / Parks Canada — présence nordique à Terre-Neuve",
+    "Sources médiévales croisées avec l’archéologie : Eddas, sagas, pierres runiques et chroniques"
+  ]);
+
+  function applyVikingPatches(){
+    if (typeof READY_LESSON_PACKS !== "object" || !READY_LESSON_PACKS) return false;
+    Object.entries(PATCHES).forEach(([id, patch]) => {
+      const current = READY_LESSON_PACKS[id] && typeof READY_LESSON_PACKS[id] === "object" ? READY_LESSON_PACKS[id] : {};
+      const next = { ...current, ...patch };
+      if (Array.isArray(patch.appendComplete)) next.complete = [...(Array.isArray(current.complete) ? current.complete : []), ...patch.appendComplete];
+      if (patch.quizQuestionPatches && Array.isArray(current.quiz)) {
+        next.quiz = current.quiz.map((item, index) => ({ ...item, ...(patch.quizQuestionPatches[String(index)] || {}) }));
+      }
+      delete next.appendComplete;
+      delete next.quizQuestionPatches;
+      next.editorialStatus = "published-final";
+      next.contentRevision = "beta216-viking-final";
+      next.sources = SOURCE_NOTE;
+      READY_LESSON_PACKS[id] = next;
+      try { PUBLISHED_LESSON_IDS?.add?.(id); } catch {}
+    });
+    return true;
+  }
+
+  applyVikingPatches();
+
+  const STOP = new Set("alors au aux avec ce ces dans de des du elle elles en est et eux il ils je la le les leur lui mais ne nos notre nous on ou par pas pour que qui sa se ses son sur tu un une vos votre vous y être avoir comme plus moins très cette ces cela celui celle entre vers sans sous chez dont où quand pourquoi parce afin peut peuvent fait font aussi tout toute tous toutes même ainsi chaque après avant depuis lors pendant tandis soit sont était étaient été étant".split(/\s+/));
+  const normalize = value => String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr-FR").replace(/[^a-z0-9]+/g, " ").trim();
+  const words = value => String(value ?? "").trim().split(/\s+/).filter(Boolean);
+  const tokens = value => [...new Set(normalize(value).split(/\s+/).filter(token => token.length >= 4 && !STOP.has(token)))];
+  const esc = value => { try { return escapeHtml(String(value ?? "")); } catch { return String(value ?? "").replace(/[&<>\"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[char])); } };
+  const issue = (code, severity, message, detail = {}) => ({ code, severity, message, ...detail });
+
+  function lessonBody(content){
+    return [content?.hook, ...(content?.keyFacts || []), ...(content?.express || []), ...(content?.complete || []).map(block => block?.text || ""), ...(content?.takeaways || []).map(item => typeof item === "string" ? item : item?.text || ""), ...(content?.deeper || []).map(item => item?.text || "")].join(" ");
+  }
+  function supportScore(answer, body){
+    const wanted = tokens(answer);
+    if (!wanted.length) return { ratio: 1, matched: [], missing: [] };
+    const haystack = new Set(tokens(body));
+    const matched = wanted.filter(token => haystack.has(token));
+    return { ratio: matched.length / wanted.length, matched, missing: wanted.filter(token => !haystack.has(token)) };
+  }
+  function disciplineIdForLesson(lesson){
+    try { return worldDisciplineId(lessonWorld(lesson)); } catch { return "history"; }
+  }
+  function rawPackFor(id){
+    try { return READY_LESSON_PACKS?.[id] || null; } catch { return null; }
+  }
+  function auditLesson(lesson, duplicateQuestions){
+    let content;
+    try { content = buildLessonContent(lesson); } catch (error) { content = { unavailable: true, error: String(error?.message || error) }; }
+    const pack = rawPackFor(lesson.id);
+    const rowIssues = [];
+    const complete = Array.isArray(content?.complete) ? content.complete : [];
+    const express = Array.isArray(content?.express) ? content.express.filter(Boolean) : [];
+    const quiz = Array.isArray(content?.quiz) ? content.quiz : [];
+    const completeWords = words(complete.map(block => block?.text || "").join(" ")).length;
+    const expressWords = words(express.join(" ")).length;
+    const body = lessonBody(content);
+    if (content?.unavailable) rowIssues.push(issue("lesson-unavailable", "critical", "Cours indisponible"));
+    if (!lesson?.id) rowIssues.push(issue("missing-id", "critical", "Identifiant manquant"));
+    if (!content?.hook || words(content.hook).length < 12) rowIssues.push(issue("weak-hook", "warning", "Accroche trop faible"));
+    if (express.length < 4) rowIssues.push(issue("express-count", "warning", `Express ${express.length}/4`));
+    if (expressWords < 120) rowIssues.push(issue("express-short", "warning", `Express court (${expressWords} mots)`));
+    if (complete.length < 5) rowIssues.push(issue("section-count", "warning", `Seulement ${complete.length} sections`));
+    if (completeWords < 300) rowIssues.push(issue("course-very-short", "critical", `Cours très court (${completeWords} mots)`));
+    else if (completeWords < 450) rowIssues.push(issue("course-short", "warning", `Cours court (${completeWords} mots)`));
+    if (quiz.length !== 5) rowIssues.push(issue("quiz-count", "critical", `Quiz ${quiz.length}/5`));
+    const seenLocal = new Set();
+    quiz.forEach((item, index) => {
+      const prefix = `Question ${index + 1}`;
+      const q = normalize(item?.q);
+      const answer = normalize(item?.a);
+      const choices = Array.isArray(item?.choices) ? item.choices.filter(Boolean) : [];
+      if (!q || !answer) rowIssues.push(issue("quiz-missing-field", "critical", `${prefix} incomplète`, { questionIndex: index }));
+      if (choices.length !== 3) rowIssues.push(issue("distractor-count", "warning", `${prefix} : ${choices.length} distracteur(s)`, { questionIndex: index }));
+      const normalizedChoices = choices.map(normalize);
+      if (new Set(normalizedChoices).size !== normalizedChoices.length) rowIssues.push(issue("duplicate-distractor", "critical", `${prefix} contient deux distracteurs identiques`, { questionIndex: index }));
+      if (normalizedChoices.includes(answer)) rowIssues.push(issue("answer-in-distractors", "critical", `${prefix} répète la bonne réponse parmi les distracteurs`, { questionIndex: index }));
+      if (q && seenLocal.has(q)) rowIssues.push(issue("duplicate-question-local", "critical", `${prefix} duplique une autre question du cours`, { questionIndex: index }));
+      seenLocal.add(q);
+      const support = supportScore(item?.a, body);
+      if (support.ratio < 0.45 && support.matched.length < 3) rowIssues.push(issue("answer-weakly-supported", "warning", `${prefix} : réponse difficile à retrouver dans le cours`, { questionIndex: index, support: Math.round(support.ratio * 100), missingTokens: support.missing.slice(0, 8) }));
+      if (q && duplicateQuestions.get(q) > 1) rowIssues.push(issue("duplicate-question-global", "warning", `${prefix} existe dans plusieurs cours`, { questionIndex: index }));
+      if (!item?.why || words(item.why).length < 3) rowIssues.push(issue("missing-explanation", "warning", `${prefix} sans explication utile`, { questionIndex: index }));
+    });
+    if (!Array.isArray(content?.takeaways) || content.takeaways.length < 2) rowIssues.push(issue("takeaways", "info", "Moins de deux idées à retenir"));
+    if (!pack?.contentRevision) rowIssues.push(issue("revision-tag", "info", "Révision éditoriale non datée"));
+    return {
+      id: String(lesson?.id || ""),
+      title: content?.title || lesson?.title || "Cours",
+      discipline: disciplineIdForLesson(lesson),
+      worldId: (() => { try { return lessonWorldId(lesson.id); } catch { return ""; } })(),
+      completeWords,
+      completeSections: complete.length,
+      expressWords,
+      expressCount: express.length,
+      quizCount: quiz.length,
+      editorialStatus: pack?.editorialStatus || content?.editorialStatus || "",
+      revision: pack?.contentRevision || "",
+      vikingFinal: VIKING_IDS.includes(String(lesson?.id)) && pack?.contentRevision === "beta216-viking-final",
+      issues: rowIssues
+    };
+  }
+
+  function auditStructure(lessons, worlds){
+    const issues = [];
+    const lessonIds = new Set(lessons.map(lesson => String(lesson.id)));
+    const worldIds = new Set(worlds.map(world => String(world.id)));
+    const counts = new Map();
+    lessons.forEach(lesson => counts.set(String(lesson.id), (counts.get(String(lesson.id)) || 0) + 1));
+    for (const [id, count] of counts) if (count > 1) issues.push(issue("duplicate-lesson-id", "critical", `Identifiant de cours dupliqué : ${id} ×${count}`));
+    lessons.forEach(lesson => {
+      let worldId = "";
+      try { worldId = String(lessonIndex()?.worldByLessonId?.get?.(lesson.id) || ""); } catch {}
+      if (!worldId || !worldIds.has(worldId)) issues.push(issue("invalid-world-link", "critical", `Cours sans chapitre valide : ${lesson.id}`, { lessonId: lesson.id, worldId }));
+    });
+    worlds.forEach(world => {
+      let count = 0;
+      try { count = treeLessonsForWorld(world.id).length; } catch {}
+      if (!count && !world?.planned) issues.push(issue("orphan-world", "warning", `Chapitre sans cours : ${world.id}`, { worldId: world.id }));
+    });
+    (Array.isArray(data?.mysteries) ? data.mysteries : []).forEach(mystery => {
+      if (mystery?.lessonId && !lessonIds.has(String(mystery.lessonId))) issues.push(issue("mystery-broken-lesson", "critical", `Mystère relié à un cours absent : ${mystery.id} → ${mystery.lessonId}`, { mysteryId: mystery.id, lessonId: mystery.lessonId }));
+    });
+    const stored = (() => { try { return state.expeditionPreferences?.sessionsByDay?.[localDayKey()] || null; } catch { return null; } })();
+    if (stored) {
+      if (stored.mysteryId && !mysteryById(stored.mysteryId)) issues.push(issue("expedition-mystery", "critical", `Expédition : mystère absent ${stored.mysteryId}`));
+      for (const field of ["primaryLessonId", "connectionLessonId"]) if (stored[field] && !lessonIds.has(String(stored[field]))) issues.push(issue("expedition-lesson", "critical", `Expédition : cours absent ${stored[field]}`, { field }));
+    }
+    Object.entries(state?.reviewQueue || {}).forEach(([key, entry]) => {
+      const lesson = lessonById(entry?.lessonId);
+      if (!lesson) return issues.push(issue("review-orphan", "critical", `Révision orpheline : ${key}`, { key }));
+      const quizCount = (() => { try { return buildLessonContent(lesson)?.quiz?.length || 0; } catch { return 0; } })();
+      const index = Number(entry?.questionIndex);
+      if (!Number.isInteger(index) || index < 0 || index >= quizCount) issues.push(issue("review-index", "critical", `Révision hors quiz : ${key}`, { key, quizCount }));
+      if (!Number.isFinite(Number(entry?.dueAt))) issues.push(issue("review-date", "warning", `Révision sans date valide : ${key}`, { key }));
+    });
+    Object.keys(state?.completedLessons || {}).forEach(id => { if (!lessonIds.has(String(id))) issues.push(issue("progress-orphan", "warning", `Progression liée à un ancien cours : ${id}`, { lessonId: id })); });
+    return issues;
+  }
+
+  function runAudit(options = {}){
+    const lessons = typeof curatedLessons === "function" ? curatedLessons() : [];
+    const worlds = typeof curatedWorlds === "function" ? curatedWorlds() : [];
+    const duplicateQuestions = new Map();
+    lessons.forEach(lesson => {
+      let quiz = [];
+      try { quiz = buildLessonContent(lesson)?.quiz || []; } catch {}
+      quiz.forEach(item => { const key = normalize(item?.q); if (key) duplicateQuestions.set(key, (duplicateQuestions.get(key) || 0) + 1); });
+    });
+    const rows = lessons.map(lesson => auditLesson(lesson, duplicateQuestions));
+    const structure = auditStructure(lessons, worlds);
+    const allIssues = [...structure, ...rows.flatMap(row => row.issues.map(entry => ({ ...entry, lessonId: row.id, lessonTitle: row.title, discipline: row.discipline })))];
+    const severity = { critical: 0, warning: 0, info: 0 };
+    allIssues.forEach(entry => { severity[entry.severity] = Number(severity[entry.severity] || 0) + 1; });
+    const byDiscipline = {};
+    rows.forEach(row => {
+      const bucket = byDiscipline[row.discipline] || (byDiscipline[row.discipline] = { lessons: 0, valid: 0, issues: 0, averageWords: 0, totalWords: 0 });
+      bucket.lessons += 1; bucket.totalWords += row.completeWords; bucket.issues += row.issues.length;
+      if (!row.issues.some(entry => entry.severity === "critical" || entry.severity === "warning")) bucket.valid += 1;
+    });
+    Object.values(byDiscipline).forEach(bucket => { bucket.averageWords = bucket.lessons ? Math.round(bucket.totalWords / bucket.lessons) : 0; delete bucket.totalWords; });
+    const vikings = rows.filter(row => VIKING_IDS.includes(row.id));
+    const summary = {
+      version: VERSION,
+      generatedAt: new Date().toISOString(),
+      lessons: rows.length,
+      worlds: worlds.length,
+      valid: rows.filter(row => !row.issues.some(entry => entry.severity === "critical" || entry.severity === "warning")).length,
+      severity,
+      structureIssues: structure.length,
+      vikingLessons: vikings.length,
+      vikingFinal: vikings.filter(row => row.vikingFinal).length,
+      vikingAverageWords: vikings.length ? Math.round(vikings.reduce((sum, row) => sum + row.completeWords, 0) / vikings.length) : 0,
+      vikingBlockingIssues: vikings.reduce((sum, row) => sum + row.issues.filter(entry => entry.severity === "critical" || entry.severity === "warning").length, 0)
+    };
+    const report = { summary, byDiscipline, structure, vikings, issues: allIssues };
+    if (options.includeRows !== false) report.rows = rows;
+    return report;
+  }
+
+  function closeDiagnostic(){ document.querySelector?.(".hd216-diagnostic")?.remove?.(); document.documentElement?.classList?.remove?.("hd216-diagnostic-open"); }
+  function downloadReport(report){
+    try {
+      const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a"); anchor.href = url; anchor.download = `histodaily-audit-${localDayKey?.() || "beta216"}.json`; anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {}
+  }
+  function openDiagnostic(){
+    closeDiagnostic();
+    const report = runAudit({ includeRows: true });
+    const modal = document.createElement("div");
+    modal.className = "hd216-diagnostic";
+    const worst = report.rows.filter(row => row.issues.some(entry => entry.severity !== "info")).sort((a, b) => b.issues.filter(i => i.severity === "critical").length - a.issues.filter(i => i.severity === "critical").length || b.issues.length - a.issues.length).slice(0, 30);
+    modal.innerHTML = `<div class="hd216-diagnostic-backdrop" data-hd216-close></div><section class="hd216-diagnostic-panel" role="dialog" aria-modal="true" aria-label="Diagnostic HistoDaily"><header><div><span>Mode interne · beta 216</span><h1>Qualité des contenus</h1><p>Audit de la structure, des cours, des quiz, des révisions et de l’expédition enregistrée.</p></div><button type="button" data-hd216-close aria-label="Fermer">✕</button></header><div class="hd216-audit-kpis"><div><b>${report.summary.lessons}</b><span>cours</span></div><div><b>${report.summary.valid}</b><span>sans alerte</span></div><div class="bad"><b>${report.summary.severity.critical}</b><span>critiques</span></div><div><b>${report.summary.severity.warning}</b><span>avertissements</span></div></div><section class="hd216-viking-audit"><span>Chapitre pilote</span><h2>Vikings · ${report.summary.vikingFinal}/${report.summary.vikingLessons} cours finalisés</h2><p>${report.summary.vikingAverageWords} mots en moyenne · ${report.summary.vikingBlockingIssues ? `${report.summary.vikingBlockingIssues} alerte(s) restante(s)` : "aucune alerte bloquante"}</p></section><div class="hd216-audit-actions"><button type="button" data-hd216-download>Exporter le JSON</button><button type="button" class="ghost" data-hd216-refresh>Relancer</button></div><section class="hd216-audit-list"><h2>Cours à reprendre en priorité</h2>${worst.length ? worst.map(row => `<article><div><b>${esc(row.title)}</b><small>${esc(row.id)} · ${row.completeWords} mots</small></div><ul>${row.issues.filter(entry => entry.severity !== "info").slice(0, 4).map(entry => `<li class="${entry.severity}">${esc(entry.message)}</li>`).join("")}</ul></article>`).join("") : `<p class="good">Aucune alerte éditoriale importante.</p>`}</section></section>`;
+    document.body.appendChild(modal); document.documentElement.classList.add("hd216-diagnostic-open");
+    modal.querySelectorAll("[data-hd216-close]").forEach(button => button.addEventListener("click", closeDiagnostic));
+    modal.querySelector("[data-hd216-download]")?.addEventListener("click", () => downloadReport(report));
+    modal.querySelector("[data-hd216-refresh]")?.addEventListener("click", () => { closeDiagnostic(); openDiagnostic(); });
+    return report;
+  }
+
+  function repairReviewQueue(){
+    const queue = state?.reviewQueue && typeof state.reviewQueue === "object" ? state.reviewQueue : {};
+    let removed = 0, repaired = 0;
+    Object.entries(queue).forEach(([key, raw]) => {
+      const entry = raw && typeof raw === "object" ? { ...raw } : null;
+      const lesson = entry ? lessonById(entry.lessonId) : null;
+      const count = lesson ? (buildLessonContent(lesson)?.quiz?.length || 0) : 0;
+      const index = Number(entry?.questionIndex);
+      if (!entry || !lesson || !Number.isInteger(index) || index < 0 || index >= count) { delete queue[key]; removed += 1; return; }
+      const stage = Math.max(0, Math.min(4, Number(entry.stage || 0)));
+      const dueAt = Number.isFinite(Number(entry.dueAt)) ? Number(entry.dueAt) : Date.now();
+      if (stage !== Number(entry.stage || 0) || dueAt !== Number(entry.dueAt)) repaired += 1;
+      queue[key] = { ...entry, lessonId: String(entry.lessonId), questionIndex: index, stage, dueAt, source: entry.source || "quiz-error" };
+    });
+    state.reviewQueue = queue;
+    if (removed || repaired) try { queueSaveState?.(80); } catch {}
+    return { removed, repaired, remaining: Object.keys(queue).length };
+  }
+
+  const reviewRepair = repairReviewQueue();
+  try {
+    state.beta216QualityVersion = VERSION;
+    queueSaveState?.(80);
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, contentAuditV2: true, vikingChapterFinal: true, diagnosticMode: true, reviewQueueIntegrity: true };
+    window.HistoDailyContentAudit = { run: runAudit };
+    window.HistoDailyQuality = { version: VERSION, run: runAudit, open: openDiagnostic, close: closeDiagnostic, repairReviewQueue, reviewRepair, vikingIds: VIKING_IDS };
+  } catch {}
+
+  try {
+    const params = new URLSearchParams(location.search || "");
+    if (params.get("diagnostic") === "1" || String(location.hash || "").toLowerCase() === "#diagnostic") setTimeout(openDiagnostic, 120);
+  } catch {}
+  try {
+    if (state?.tab === "lesson" && VIKING_IDS.includes(String(state.currentLessonId || ""))) render({ immediate: true });
+  } catch {}
 })();

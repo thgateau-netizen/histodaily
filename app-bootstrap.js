@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.215.0",
-  assetsVersion: "1.0.0-beta.215.0",
+  version: "1.0.0-beta.217.0",
+  assetsVersion: "1.0.0-beta.217.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 215",
+    versionLabel: "beta 217",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Le parcours du jour garde désormais le même dossier et les mêmes cours, même après avoir exploré une autre discipline.",
-      "Le lecteur ne propose plus le cours suivant tant que le quiz en cours n’est pas réellement terminé et validé.",
-      "La progression du quiz affiche clairement le nombre de réponses données : 2/5 reste 2/5, jamais un faux parcours terminé."
+      "L’expédition du jour est plus lisible : moins de cadres imbriqués, textes plus grands et une action principale évidente.",
+      "Le profil de curiosité devient un résumé compact en trois lignes au lieu d’un grand bloc difficile à parcourir.",
+      "Les collections utilisent des cartes pleine largeur sur mobile : les titres comme Cartographe ne se coupent plus au milieu."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
@@ -93,7 +93,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.215.0",
+  version: "1.0.0-beta.217.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

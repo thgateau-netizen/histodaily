@@ -82,3 +82,13 @@ Le dossier peut être déployé tel quel sur Vercel. Après mise en ligne, ouvri
 - État de fin de mission complet avec compte à rebours et ouverture d’un sujet surprise.
 - Retour haptique léger sur les actions compatibles et animations désactivées avec `prefers-reduced-motion`.
 - Cache PWA renouvelé (`histodaily-beta211-v1`) et ressources repérées `1.0.0-beta.211.0`.
+
+## Beta 216 — audit éditorial et chapitre Vikings final
+
+- Ajout d’un audit global des 106 cours, 52 mondes, quiz, mystères, Expédition, révisions et sauvegardes de progression.
+- Diagnostic interne accessible par `?diagnostic=1`, `#diagnostic` ou `HistoDailyQuality.open()`, avec export JSON.
+- Réparation prudente des entrées invalides de la file de révision.
+- Réécriture complète des 11 cours du chapitre Vikings : Express en quatre parties, cours complets de 562 à 838 mots et cinq questions expliquées.
+- Verrouillage éditorial de ces cours avec le statut `published-final` et la révision `beta216-viking-final`.
+- Rapport transparent livré dans `AUDIT-BETA216.md` et `AUDIT-BETA216.json` : le chapitre Vikings atteint le standard final, tandis que l’audit identifie précisément la dette restante dans les autres disciplines.
+- Cache PWA renouvelé (`histodaily-beta216-v1`) et ressources repérées `1.0.0-beta.216.0`.
