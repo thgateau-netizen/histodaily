@@ -81,4 +81,4 @@ Le dossier peut être déployé tel quel sur Vercel. Après mise en ligne, ouvri
 - Récompense quotidienne et rythme des sept derniers jours visibles sans ouvrir le profil.
 - État de fin de mission complet avec compte à rebours et ouverture d’un sujet surprise.
 - Retour haptique léger sur les actions compatibles et animations désactivées avec `prefers-reduced-motion`.
-- Cache PWA renouvelé (`histodaily-beta210-v1`) et ressources repérées `1.0.0-beta.210.0`.
+- Cache PWA renouvelé (`histodaily-beta211-v1`) et ressources repérées `1.0.0-beta.211.0`.

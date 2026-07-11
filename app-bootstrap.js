@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.210.0",
-  assetsVersion: "1.0.0-beta.210.0",
+  version: "1.0.0-beta.213.0",
+  assetsVersion: "1.0.0-beta.213.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 210",
+    versionLabel: "beta 213",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "L’accueil devient vivant : il affiche la prochaine action, le temps restant et l’avancement du jour directement dans le bandeau.",
-      "L’Expédition du jour est désormais un vrai parcours : briefing, chemin en quatre jalons, récompense et rythme sur sept jours.",
-      "La fin de mission ouvre un sujet surprise au lieu de laisser une carte figée, avec un compte à rebours vers le prochain dossier."
+      "Le bandeau d’accueil indique maintenant la prochaine action réelle au lieu d’un résumé générique.",
+      "L’Expédition révèle progressivement le sujet, affiche un défi de précision et explique le lien entre les deux cours.",
+      "La fin du parcours devient un vrai moment de récompense : bilan, durée, score, partage et sujet bonus."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
@@ -93,7 +93,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.207",
+  version: "1.0.0-beta.213.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

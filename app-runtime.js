@@ -4,7 +4,7 @@
 
 /* HistoDaily beta 178 — dernier indice = cours correspondant. */
 (function histodailyBeta178CourseRescue(){
-  const VERSION = "1.0.0-beta.210.0";
+  const VERSION = "1.0.0-beta.213.0";
   const RESCUE_SCORE = 12;
   state.mysteryCourseRescue = (state.mysteryCourseRescue && typeof state.mysteryCourseRescue === "object") ? state.mysteryCourseRescue : {};
 
@@ -311,7 +311,7 @@
    les demandes par code et la sémantique des classements. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-beta.210.0";
+  const VERSION = "1.0.0-beta.213.0";
   const API_TIMEOUT_MS = 8000;
   const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
 
@@ -587,7 +587,7 @@
 (function histodailyBeta181Progression(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.210.0";
+  const VERSION = "1.0.0-beta.213.0";
   const SYNTHESIS_SIZE = 10;
   const SYNTHESIS_PASS = 8;
   const SYNTHESIS_XP = 100;
@@ -1670,7 +1670,7 @@
 (function histodailyBeta182Interface(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.210.0";
+  const VERSION = "1.0.0-beta.213.0";
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -1933,7 +1933,7 @@
 (function histodailyBeta183Audit(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.210.0";
+  const VERSION = "1.0.0-beta.213.0";
   const FOLD_KEY = "histodaily_ui_profile_fold_beta183";
   const PLAN_KEY = "histodaily_ui_plan_expanded_beta183";
   const appRoot = document.getElementById("app");
@@ -2380,7 +2380,7 @@
 (function histodailyBeta187Concept(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.210.0";
+  const VERSION = "1.0.0-beta.213.0";
   const ROOT_ID = "hd187-layer";
   const SEARCH_LIMIT = 24;
   const appRoot = document.getElementById("app");
@@ -2481,6 +2481,37 @@
     catch { return null; }
   }
 
+  function expeditionDayKey(){
+    try { return typeof localDayKey === "function" ? localDayKey() : dateKeyFor(new Date()); }
+    catch { return dateKeyFor(new Date()); }
+  }
+
+  function recallCompletedToday(){
+    const preferences = state.expeditionPreferences && typeof state.expeditionPreferences === "object" ? state.expeditionPreferences : {};
+    return Boolean(preferences.recallByDay?.[expeditionDayKey()]);
+  }
+
+  function markRecallCompleted(){
+    if (recallCompletedToday()) return false;
+    const key = expeditionDayKey();
+    const preferences = state.expeditionPreferences && typeof state.expeditionPreferences === "object" ? state.expeditionPreferences : {};
+    const recallByDay = preferences.recallByDay && typeof preferences.recallByDay === "object" ? { ...preferences.recallByDay } : {};
+    recallByDay[key] = { at: Date.now(), xp: 10 };
+    const keep = Object.keys(recallByDay).sort().slice(-31);
+    state.expeditionPreferences = { ...preferences, version: VERSION, recallByDay: Object.fromEntries(keep.map(day => [day, recallByDay[day]])) };
+    state.xp = Number(state.xp || 0) + 10;
+
+    // Le dernier geste compte aussi comme consolidation dans le rythme hebdomadaire.
+    const dailyLogs = state.dailyLearningLog && typeof state.dailyLearningLog === "object" ? { ...state.dailyLearningLog } : {};
+    const log = dailyLogs[key] && typeof dailyLogs[key] === "object" ? { ...dailyLogs[key] } : {};
+    log.syntheses = [...new Set([...(Array.isArray(log.syntheses) ? log.syntheses : []), `expedition-recall-${key}`])];
+    dailyLogs[key] = log;
+    state.dailyLearningLog = dailyLogs;
+    markExpeditionFinished();
+    try { if (typeof saveState === "function") saveState(); } catch {}
+    return true;
+  }
+
   function relatedFor(lesson, limit = 3){
     if (!lesson) return [];
     const index = searchIndex();
@@ -2534,10 +2565,15 @@
     const lesson = primary || fallback;
     const connection = dailyConnectionFor(lesson);
     const daily = dailyStatus();
+    const loggedCourses = new Set((daily?.log?.courses || []).map(value => String(value)));
     const mysteryDone = Boolean(mystery?.id && mysterySolved(mystery.id));
-    const lessonDoneNow = Boolean(lesson?.id && lessonDone(lesson.id));
-    const connectionDone = Boolean(connection?.id && lessonDone(connection.id));
-    const recallDone = Boolean(daily?.practiceDone);
+    // L'expédition est un parcours du jour, pas un reflet des validations historiques.
+    // Une étape ne devient visible comme accomplie que si la précédente l'est déjà.
+    const lessonDoneToday = Boolean(lesson?.id && loggedCourses.has(String(lesson.id)));
+    const connectionDoneToday = Boolean(connection?.id && loggedCourses.has(String(connection.id)));
+    const lessonDoneNow = Boolean(mysteryDone && lessonDoneToday);
+    const connectionDone = Boolean(lessonDoneNow && connectionDoneToday);
+    const recallDone = Boolean(connectionDone && recallCompletedToday());
     const done = [mysteryDone, lessonDoneNow, connectionDone, recallDone].filter(Boolean).length;
     return { mystery, lesson, connection, daily, mysteryDone, lessonDoneNow, connectionDone, recallDone, done };
   }
@@ -2573,15 +2609,27 @@
     return clip(mystery.prompt || mystery.intro || mystery.explanation || "Observe les indices et retrouve le fil commun.", 190);
   }
 
+  const EXPEDITION_STAGE_MINUTES = Object.freeze({ mystery: 3, lesson: 3, connection: 2, recall: 1, done: 0 });
+
+  function expeditionRemainingMinutes(info){
+    if (!info || info.done >= 4) return 0;
+    let total = 0;
+    if (!info.mysteryDone) total += EXPEDITION_STAGE_MINUTES.mystery;
+    if (!info.lessonDoneNow) total += EXPEDITION_STAGE_MINUTES.lesson;
+    if (!info.connectionDone) total += EXPEDITION_STAGE_MINUTES.connection;
+    if (!info.recallDone) total += EXPEDITION_STAGE_MINUTES.recall;
+    return Math.max(1, total);
+  }
+
   function expeditionNext(info){
     const mysteryTitle = info.mystery ? (typeof mysteryDisplayTitle === "function" ? mysteryDisplayTitle(info.mystery) : info.mystery.title) : "Mystère du jour";
     const lessonTitle = info.lesson?.title || "Cours associé";
     const connectionTitle = info.connection?.title || "Connexion à découvrir";
-    if (!info.mysteryDone) return { key: "mystery", action: "mystery", kicker: "Étape 1 · Enquête", title: "Ouvre le dossier", text: mysteryTitle, cta: "Lancer le mystère", shortCta: "Lancer", icon: "?" };
-    if (!info.lessonDoneNow) return { key: "lesson", action: info.lesson ? `lesson:${info.lesson.id}` : "catalog", kicker: "Étape 2 · Comprendre", title: "Passe derrière l’énigme", text: lessonTitle, cta: "Lire le cours", shortCta: "Lire", icon: "↗" };
-    if (!info.connectionDone) return { key: "connection", action: info.connection ? `lesson:${info.connection.id}` : "map", kicker: "Étape 3 · Relier", title: "Fais la connexion", text: connectionTitle, cta: "Explorer le lien", shortCta: "Relier", icon: "∞" };
-    if (!info.recallDone) return { key: "recall", action: "recall", kicker: "Étape 4 · Retenir", title: "Ancre l’idée", text: info.daily?.log?.planType === "review" ? "Une notion ancienne revient aujourd’hui." : "Un rappel rapide pour fixer ce que tu viens de voir.", cta: "Consolider", shortCta: "Réviser", icon: "↻" };
-    return { key: "done", action: "surprise", kicker: "Expédition terminée", title: "Mission accomplie", text: `Nouveau dossier dans ${typeof timeToNextDaily === "function" ? timeToNextDaily() : "quelques heures"}.`, cta: "Sujet surprise", shortCta: "Surprise", icon: "✓" };
+    if (!info.mysteryDone) return { key: "mystery", action: "mystery", kicker: "Étape 1 sur 4 · Enquête", title: "Lancer l’enquête", text: "Résous l’énigme avant de lire le cours.", cta: "Ouvrir le dossier", shortCta: "Ouvrir", icon: "?", minutes: EXPEDITION_STAGE_MINUTES.mystery };
+    if (!info.lessonDoneNow) return { key: "lesson", action: info.lesson ? `lesson:${info.lesson.id}` : "catalog", kicker: "Étape 2 sur 4 · Comprendre", title: "Lire le cours associé", text: lessonTitle, cta: "Lire le cours", shortCta: "Lire", icon: "↗", minutes: EXPEDITION_STAGE_MINUTES.lesson };
+    if (!info.connectionDone) return { key: "connection", action: info.connection ? `lesson:${info.connection.id}` : "map", kicker: "Étape 3 sur 4 · Relier", title: "Faire la connexion", text: connectionTitle, cta: "Explorer le lien", shortCta: "Relier", icon: "∞", minutes: EXPEDITION_STAGE_MINUTES.connection };
+    if (!info.recallDone) return { key: "recall", action: "recall", kicker: "Étape 4 sur 4 · Retenir", title: "Ancrer l’idée", text: info.daily?.log?.planType === "review" ? "Une notion ancienne revient pour consolider ta mémoire." : "Un rappel très court pour fixer ce que tu viens de voir.", cta: "Consolider", shortCta: "Réviser", icon: "↻", minutes: EXPEDITION_STAGE_MINUTES.recall };
+    return { key: "done", action: "surprise", kicker: "Expédition terminée", title: "Mission accomplie", text: `Nouveau dossier dans ${typeof timeToNextDaily === "function" ? timeToNextDaily() : "quelques heures"}.`, cta: "Sujet surprise", shortCta: "Surprise", icon: "✓", minutes: 0 };
   }
 
   function rewardData(info){
@@ -2594,6 +2642,90 @@
     let preview = { gems: 1, nextStreak: Math.max(1, Number(state.streak || 0) + 1), bonus: 0 };
     try { if (typeof dailyRewardPreview === "function") preview = dailyRewardPreview(); } catch {}
     return { earned: Boolean(info.mysteryDone), gems: Number(preview.gems || 1), streak: Number(preview.nextStreak || state.streak || 1), bonus: Number(preview.bonus || 0) };
+  }
+
+  function expeditionPerformance(info){
+    const solved = info?.mystery?.id ? (state.solvedMysteries?.[info.mystery.id] || {}) : {};
+    const hints = Math.max(0, Number(solved.hints || 0));
+    const tries = Math.max(0, Number(solved.tries || 0));
+    const score = Math.max(0, Number(solved.score || 0));
+    return {
+      hints,
+      tries,
+      score,
+      precision: Boolean(info?.mysteryDone && hints === 0),
+      firstTry: Boolean(info?.mysteryDone && tries <= 1)
+    };
+  }
+
+  function expeditionSessionForDay(){
+    const preferences = state.expeditionPreferences && typeof state.expeditionPreferences === "object" ? state.expeditionPreferences : {};
+    const sessions = preferences.sessionsByDay && typeof preferences.sessionsByDay === "object" ? preferences.sessionsByDay : {};
+    return sessions[expeditionDayKey()] || null;
+  }
+
+  function writeExpeditionSession(patch = {}){
+    const key = expeditionDayKey();
+    const preferences = state.expeditionPreferences && typeof state.expeditionPreferences === "object" ? state.expeditionPreferences : {};
+    const sessions = preferences.sessionsByDay && typeof preferences.sessionsByDay === "object" ? { ...preferences.sessionsByDay } : {};
+    sessions[key] = { ...(sessions[key] || {}), ...patch };
+    const keep = Object.keys(sessions).sort().slice(-31);
+    state.expeditionPreferences = { ...preferences, version: VERSION, sessionsByDay: Object.fromEntries(keep.map(day => [day, sessions[day]])) };
+    try { if (typeof saveState === "function") saveState(); } catch {}
+    return sessions[key];
+  }
+
+  function ensureExpeditionStarted(){
+    const current = expeditionSessionForDay();
+    if (current?.startedAt) return current;
+    return writeExpeditionSession({ startedAt: Date.now() });
+  }
+
+  function markExpeditionFinished(){
+    const current = expeditionSessionForDay();
+    return writeExpeditionSession({ startedAt: current?.startedAt || Date.now(), completedAt: Date.now() });
+  }
+
+  function expeditionElapsedMinutes(){
+    const session = expeditionSessionForDay();
+    if (!session?.startedAt) return 0;
+    const end = session.completedAt || Date.now();
+    return Math.max(1, Math.round((end - session.startedAt) / 60000));
+  }
+
+  function expeditionChallengeLabel(info){
+    const performance = expeditionPerformance(info);
+    if (!info?.mysteryDone) return { tone: "open", icon: "◎", text: "Défi : résoudre sans indice" };
+    if (performance.precision && performance.firstTry) return { tone: "success", icon: "✓", text: "Premier essai, zéro indice" };
+    if (performance.precision) return { tone: "success", icon: "✓", text: "Résolu sans indice" };
+    return { tone: "done", icon: "✓", text: `Dossier résolu · ${performance.hints} indice${performance.hints > 1 ? "s" : ""}` };
+  }
+
+  function stageToast(message, detail = ""){
+    document.querySelector(".hd213-stage-toast")?.remove();
+    const toast = document.createElement("div");
+    toast.className = "hd213-stage-toast";
+    toast.setAttribute("role", "status");
+    toast.innerHTML = `<span>${HD_ICONS.action("check")}</span><div><b>${esc(message)}</b>${detail ? `<small>${esc(detail)}</small>` : ""}</div>`;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add("show"));
+    window.setTimeout(() => { toast.classList.remove("show"); window.setTimeout(() => toast.remove(), 260); }, 2300);
+  }
+
+  function acknowledgeExpeditionProgress(info){
+    const key = expeditionDayKey();
+    const preferences = state.expeditionPreferences && typeof state.expeditionPreferences === "object" ? state.expeditionPreferences : {};
+    const seen = preferences.seenProgressByDay && typeof preferences.seenProgressByDay === "object" ? { ...preferences.seenProgressByDay } : {};
+    const previous = Number(seen[key]);
+    seen[key] = Number(info?.done || 0);
+    const keep = Object.keys(seen).sort().slice(-31);
+    state.expeditionPreferences = { ...preferences, version: VERSION, seenProgressByDay: Object.fromEntries(keep.map(day => [day, seen[day]])) };
+    try { if (typeof saveState === "function") saveState(); } catch {}
+    if (!Number.isFinite(previous) || info.done <= previous || info.done >= 4) return;
+    const labels = ["", "Enquête résolue", "Cours compris", "Connexion créée", "Expédition terminée"];
+    const next = expeditionNext(info);
+    stageToast(labels[info.done] || "Étape validée", info.done < 4 ? `Prochaine étape : ${next.title}` : "+10 XP");
+    try { navigator.vibrate?.([12, 35, 18]); } catch {}
   }
 
   function weekTrail(){
@@ -2629,36 +2761,90 @@
     </div>`;
   }
 
-  function stageMarkup({ number, icon, title, text, done, current, action, disabled = false }){
-    return `<button type="button" class="hd208-expedition-step ${done ? "done" : ""} ${current ? "current" : ""}" ${action ? `data-hd187-action="${esc(action)}"` : ""} ${disabled ? "disabled" : ""} aria-label="Étape ${number} : ${esc(title)}">
-      <span class="hd208-step-rail" aria-hidden="true"></span>
-      <span class="hd208-step-number">${done ? HD_ICONS.action("check") : icon || number}</span>
-      <span class="hd208-step-copy"><b>${esc(title)}</b><small>${esc(text)}</small></span>
-      <span class="hd208-step-state" aria-hidden="true">${done ? "Fait" : current ? "À toi" : number}</span>
+  function stageMarkup({ number, icon, title, text, done, current, action, disabled = false, minutes = 1 }){
+    const stateLabel = done ? "Fait" : current ? `${minutes} min` : "Verrouillé";
+    return `<button type="button" class="hd208-expedition-step hd212-route-step ${done ? "done" : ""} ${current ? "current" : ""} ${disabled ? "locked" : ""}" ${action && !disabled ? `data-hd187-action="${esc(action)}"` : ""} ${disabled ? 'disabled aria-disabled="true"' : ""} aria-label="Étape ${number} : ${esc(title)}${disabled ? ", verrouillée" : ""}">
+      <span class="hd212-step-node" aria-hidden="true">${done ? HD_ICONS.action("check") : disabled ? "·" : icon || number}</span>
+      <span class="hd212-step-title">${esc(title)}</span>
+      <span class="hd212-step-status">${esc(stateLabel)}</span>
+      ${current && text ? `<span class="sr-only">${esc(text)}</span>` : ""}
     </button>`;
   }
 
   function heroPulseMarkup(info){
-    const next = expeditionNext(info);
-    const remaining = Math.max(0, 4 - info.done);
     const reward = rewardData(info);
-    const pulseMeta = info.done === 4
-      ? `Série ${state.streak || 0} · ${state.gems || 0} gemmes · mission terminée`
-      : `Série ${state.streak || 0} · +${reward.gems} gemme${reward.gems > 1 ? "s" : ""} · ${remaining} étape${remaining > 1 ? "s" : ""}`;
-    return `<div class="hd210-home-pulse" style="--journey-progress:${pct(info.done, 4)}%">
-      <div class="hd210-home-pulse-copy"><span>${esc(todayLabel())} · dossier #${dossierNumber()}</span><strong>${esc(next.title)}</strong><small>${esc(pulseMeta)}</small></div>
-      <div class="hd210-home-pulse-dots" aria-label="${info.done} étapes sur 4 terminées">${[0,1,2,3].map(index => `<i class="${index < info.done ? "done" : index === info.done && info.done < 4 ? "current" : ""}"></i>`).join("")}</div>
-      <button type="button" data-hd187-action="${esc(next.action)}">${info.done === 4 ? "Explorer" : "Reprendre"}<b aria-hidden="true">→</b></button>
-    </div>`;
+    const remaining = expeditionRemainingMinutes(info);
+    const next = expeditionNext(info);
+    const stage = info.done >= 4 ? "4/4" : `${Math.min(4, info.done + 1)}/4`;
+    const summary = info.done >= 4
+      ? `Mission terminée · série ${state.streak || 0}`
+      : `${next.kicker.replace(/Étape\s+\d+\s+sur\s+4\s+·\s*/i, "")} · ${remaining} min`;
+    const headline = info.done >= 4 ? "Expédition terminée" : info.done > 0 ? "Reprendre ton parcours" : "Dossier du jour prêt";
+    return `<button type="button" class="hd212-daily-glance hd213-daily-glance" data-hd212-jump-expedition aria-label="Voir l’expédition du jour, étape ${stage} : ${esc(next.title)}">
+      <span class="hd212-glance-copy"><small>${esc(todayLabel())} · dossier #${dossierNumber()}</small><strong>${headline}</strong></span>
+      <span class="hd212-glance-meta"><b>${stage}</b><small>${esc(summary)}</small></span>
+      <span class="hd212-glance-progress" aria-hidden="true">${[0,1,2,3].map(index => `<i class="${index < info.done ? "done" : index === info.done && info.done < 4 ? "current" : ""}"></i>`).join("")}</span>
+      <span class="hd212-glance-arrow" aria-hidden="true">↓</span>
+    </button>`;
   }
 
   function enhanceHomeHero(shell){
     const hero = shell?.querySelector(".home-mode-hero");
-    if (!hero || hero.querySelector(".hd210-home-pulse")) return;
-    hero.classList.add("hd210-home-hero");
+    if (!hero || hero.querySelector(".hd212-daily-glance")) return;
+    hero.classList.add("hd212-home-hero");
     const copy = hero.querySelector(".premium-header-copy");
     if (copy) copy.insertAdjacentHTML("beforeend", heroPulseMarkup(expeditionData()));
     else hero.insertAdjacentHTML("beforeend", heroPulseMarkup(expeditionData()));
+  }
+
+  function completedJourneyMarkup(info, reward){
+    const performance = expeditionPerformance(info);
+    const elapsed = expeditionElapsedMinutes();
+    const answer = clip(info?.mystery?.answer || info?.mystery?.title || "Dossier résolu", 70);
+    return `<div class="hd213-complete-card">
+      <div class="hd213-complete-mark" aria-hidden="true">${HD_ICONS.action("check")}</div>
+      <div class="hd213-complete-copy"><small>Expédition bouclée</small><h3>${esc(answer)}</h3><p>${esc(info.lesson?.title || "Cours associé")} <span>→</span> ${esc(info.connection?.title || "Connexion explorée")}</p></div>
+      <div class="hd213-complete-stats"><span><b>${elapsed || 1}</b><small>min</small></span><span><b>${performance.score || "+10"}</b><small>${performance.score ? "score" : "XP"}</small></span><span><b>+${reward.gems}</b><small>gemme</small></span></div>
+      <div class="hd213-complete-actions"><button type="button" data-hd213-share-expedition>${HD_ICONS.action("spark")} Partager</button><button type="button" class="primary" data-hd187-action="surprise">Sujet bonus <b aria-hidden="true">→</b></button></div>
+    </div>`;
+  }
+
+  function expeditionStageLead(info, next){
+    if (info.done >= 4) return "Quatre gestes, deux cours reliés, une notion retenue.";
+    if (!info.mysteryDone) return "Commence par l’énigme : le cours reste volontairement caché.";
+    if (!info.lessonDoneNow) return `Sujet révélé : ${info.lesson?.title || "le cours associé"}.`;
+    if (!info.connectionDone) return `${info.lesson?.title || "Le premier cours"} mène maintenant vers ${info.connection?.title || "une nouvelle idée"}.`;
+    return "Une seule question suffit pour ancrer l’idée et fermer la boucle.";
+  }
+
+  function shareExpedition(){
+    const info = expeditionData();
+    const performance = expeditionPerformance(info);
+    const elapsed = expeditionElapsedMinutes();
+    const text = `HistoDaily · expédition du jour terminée en ${elapsed || 1} min${performance.score ? ` · ${performance.score} XP au mystère` : ""}. ${info.lesson?.title || "Un cours"} → ${info.connection?.title || "une connexion"}.`;
+    const url = window.HISTODAILY_CORE?.ui?.shareBaseUrl || window.location.href;
+    if (navigator.share) return navigator.share({ title: "Mon expédition HistoDaily", text, url }).catch(() => {});
+    if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(`${text} ${url}`).then(() => stageToast("Résultat copié", "Prêt à être partagé")).catch(() => stageToast("Expédition terminée", text));
+    stageToast("Expédition terminée", text);
+    return Promise.resolve();
+  }
+
+  function openCompletionCelebration(){
+    const info = expeditionData();
+    const reward = rewardData(info);
+    const performance = expeditionPerformance(info);
+    const elapsed = expeditionElapsedMinutes();
+    const overlay = layer("Expédition terminée", "Tu as résolu, compris, relié et retenu.", `<section class="hd213-celebration">
+      <div class="hd213-celebration-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><span>${HD_ICONS.action("trophy")}</span></div>
+      <small>${esc(todayLabel())} · dossier #${dossierNumber()}</small>
+      <h3>La boucle est fermée.</h3>
+      <p>Tu as relié <b>${esc(info.lesson?.title || "le cours du jour")}</b> à <b>${esc(info.connection?.title || "une nouvelle notion")}</b>.</p>
+      <div class="hd213-celebration-stats"><span><b>${elapsed || 1} min</b><small>durée</small></span><span><b>${performance.precision ? "0 indice" : `${performance.hints} indice${performance.hints > 1 ? "s" : ""}`}</b><small>enquête</small></span><span><b>+10 XP</b><small>mémoire</small></span><span><b>+${reward.gems}</b><small>gemme</small></span></div>
+      <div class="hd213-celebration-actions"><button type="button" data-hd213-share-expedition>Partager mon résultat</button><button type="button" class="primary" data-hd187-action="surprise">Continuer avec un bonus →</button><button type="button" class="ghost" data-hd187-close>Retour à l’accueil</button></div>
+    </section>`, "hd213-complete-layer");
+    bindShellActions(overlay);
+    try { navigator.vibrate?.([20, 45, 28, 45, 40]); } catch {}
+    return overlay;
   }
 
   function expeditionMarkup(){
@@ -2668,47 +2854,65 @@
     const connectionTitle = info.connection?.title || "Connexion à découvrir";
     const next = expeditionNext(info);
     const discipline = disciplineById(activeDisciplineId());
-    const stagePct = pct(info.done, 4);
-    return `<section class="card hd187-expedition-card hd208-expedition-card hd210-expedition-card ${info.done === 4 ? "is-complete" : ""}" data-hd210-stage="${esc(next.key)}" style="--discipline-accent:${esc(discipline.accent)};--journey-progress:${stagePct}%">
-      <div class="hd208-expedition-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="hd210-sweep" aria-hidden="true"></div>
-      <div class="hd187-expedition-head hd208-expedition-head hd210-expedition-head">
-        <div>
-          <span class="card-label"><span class="hd208-live-dot" aria-hidden="true"></span> Expédition · ${esc(todayLabel())}</span>
-          <h2>${info.done === 4 ? "Tu as bouclé la mission" : "Ton parcours du jour"}</h2>
-          <p>${info.done === 4 ? "Le dossier est résolu, compris, relié et consolidé." : "Une enquête, son explication, une connexion puis un rappel : quatre gestes courts qui construisent une vraie mémoire."}</p>
-        </div>
-        <strong aria-label="${info.done} étapes sur 4 terminées">${info.done}<small>/4</small></strong>
-      </div>
+    const completionPct = pct(info.done, 4);
+    const reward = rewardData(info);
+    const challenge = expeditionChallengeLabel(info);
+    const weekDays = weekTrail();
+    const weekDone = weekDays.filter(day => day.done).length;
+    const stageLabel = info.done === 4 ? "4/4" : `${Math.min(4, info.done + 1)}/4`;
+    const remaining = expeditionRemainingMinutes(info);
+    const stageLead = expeditionStageLead(info, next);
+    const actionDetail = next.key === "connection"
+      ? `${lessonTitle} → ${connectionTitle}`
+      : next.key === "lesson"
+        ? lessonTitle
+        : next.text;
+    const unlockHint = !info.mysteryDone
+      ? "Le sujet du cours apparaît après la résolution."
+      : !info.lessonDoneNow
+        ? "Valide le cours pour ouvrir la connexion."
+        : !info.connectionDone
+          ? "Le second cours transforme l’information en lien durable."
+          : !info.recallDone
+            ? "Une question éclair clôt l’expédition."
+            : "Reviens demain pour un nouveau dossier.";
 
-      <div class="hd210-mission-brief">
-        <div class="hd210-brief-top"><span>Dossier #${dossierNumber()}</span><em>${HD_ICONS.discipline(discipline)} ${esc(discipline.title)}</em></div>
-        <h3>${esc(mysteryTitle)}</h3>
+    return `<section tabindex="-1" class="card hd187-expedition-card hd208-expedition-card hd210-expedition-card hd211-expedition-card hd212-expedition-card hd213-expedition-card ${info.done === 4 ? "is-complete" : ""}" data-hd210-stage="${esc(next.key)}" style="--discipline-accent:${esc(discipline.accent)};--journey-progress:${completionPct}%;--hd212-progress:${completionPct * 3.6}deg">
+      <div class="hd208-expedition-orbit hd212-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <header class="hd212-expedition-head hd213-expedition-head">
+        <div><span class="card-label"><span class="hd208-live-dot" aria-hidden="true"></span> Expédition du jour</span><h2>${info.done === 4 ? "Mission accomplie" : next.title}</h2><p>${esc(stageLead)}</p></div>
+        <span class="hd212-progress-ring" aria-label="${completionPct}% terminé"><b>${stageLabel}</b><small>${info.done === 4 ? "fini" : "étape"}</small></span>
+      </header>
+
+      <div class="hd212-mission-brief hd213-mission-brief">
+        <div class="hd212-brief-meta"><span>${esc(todayLabel())} · dossier #${dossierNumber()}</span><em>${HD_ICONS.discipline(discipline)} ${esc(discipline.title)}</em></div>
+        <div class="hd213-title-row"><div><small>${info.mysteryDone ? "Dossier résolu" : "Briefing sans spoiler"}</small><h3>${esc(mysteryTitle)}</h3></div><span class="hd213-challenge ${challenge.tone}"><b>${challenge.icon}</b>${esc(challenge.text)}</span></div>
         <p>${esc(mysteryTeaserSafe(info.mystery))}</p>
+
+        ${info.done === 4 ? completedJourneyMarkup(info, reward) : `<button type="button" class="hd212-main-cta hd213-main-cta" data-hd187-action="${esc(next.action)}">
+          <span class="hd212-cta-icon" aria-hidden="true">${next.icon}</span>
+          <span class="hd212-cta-copy"><small>${esc(next.kicker)}</small><strong>${esc(next.title)}</strong><em>${esc(actionDetail)}</em></span>
+          <span class="hd212-cta-tail"><small>${next.minutes ? `${next.minutes} min` : "Bonus"}</small><b aria-hidden="true">→</b></span>
+        </button>`}
       </div>
 
-      <div class="hd208-next-stage hd210-next-stage ${next.key === "done" ? "complete" : ""}">
-        <div class="hd208-next-icon" aria-hidden="true">${next.icon}</div>
-        <div class="hd208-next-copy"><span>${esc(next.kicker)}</span><h3>${esc(next.title)}</h3><p>${esc(next.text)}</p></div>
-        <button type="button" data-hd187-action="${esc(next.action)}"><span class="hd210-cta-long">${esc(next.cta)}</span><span class="hd210-cta-short">${esc(next.shortCta || next.cta)}</span> <b aria-hidden="true">→</b></button>
-      </div>
-
-      <div class="hd210-route" aria-label="Parcours quotidien">
-        <div class="hd210-route-head"><span>Ton chemin</span><strong>${info.done === 4 ? "Complet" : `${stagePct}%`}</strong></div>
-        <div class="hd210-route-track" aria-hidden="true"><i></i><span></span></div>
-        <div class="hd187-expedition-steps hd208-expedition-steps hd210-expedition-steps">
-          ${stageMarkup({ number: 1, icon: "?", title: "Résoudre", text: mysteryTitle, done: info.mysteryDone, current: next.key === "mystery", action: "mystery", disabled: !info.mystery })}
-          ${stageMarkup({ number: 2, icon: "↗", title: "Comprendre", text: lessonTitle, done: info.lessonDoneNow, current: next.key === "lesson", action: info.lesson ? `lesson:${info.lesson.id}` : "catalog", disabled: !info.lesson })}
-          ${stageMarkup({ number: 3, icon: "∞", title: "Relier", text: connectionTitle, done: info.connectionDone, current: next.key === "connection", action: info.connection ? `lesson:${info.connection.id}` : "map", disabled: !info.connection })}
-          ${stageMarkup({ number: 4, icon: "↻", title: "Retenir", text: info.daily?.log?.planType === "review" ? "Une notion ancienne à consolider" : "Un rappel ou un second cours", done: info.recallDone, current: next.key === "recall", action: "recall" })}
+      <div class="hd212-route hd213-route" aria-label="Parcours quotidien">
+        <div class="hd212-route-head"><span>Ton chemin</span><strong>${info.done}/4</strong></div>
+        <div class="hd212-route-line" aria-hidden="true"><i></i></div>
+        <div class="hd212-route-steps">
+          ${stageMarkup({ number: 1, icon: "?", title: "Résoudre", text: mysteryTitle, done: info.mysteryDone, current: next.key === "mystery", action: "mystery", disabled: !info.mystery, minutes: 3 })}
+          ${stageMarkup({ number: 2, icon: "↗", title: "Comprendre", text: lessonTitle, done: info.lessonDoneNow, current: next.key === "lesson", action: info.lesson ? `lesson:${info.lesson.id}` : "catalog", disabled: !info.lesson || !info.mysteryDone, minutes: 3 })}
+          ${stageMarkup({ number: 3, icon: "∞", title: "Relier", text: connectionTitle, done: info.connectionDone, current: next.key === "connection", action: info.connection ? `lesson:${info.connection.id}` : "map", disabled: !info.connection || !info.lessonDoneNow, minutes: 2 })}
+          ${stageMarkup({ number: 4, icon: "↻", title: "Retenir", text: info.daily?.log?.planType === "review" ? "Une notion ancienne à consolider" : "Un rappel rapide", done: info.recallDone, current: next.key === "recall", action: "recall", disabled: !info.connectionDone, minutes: 1 })}
         </div>
+        <p class="hd212-unlock-hint">${esc(unlockHint)}</p>
       </div>
 
-      <div class="hd210-expedition-bottom">${rewardMarkup(info)}${weekTrailMarkup()}</div>
-      <div class="hd187-expedition-footer hd208-expedition-footer hd210-expedition-footer">
-        <span>${info.done === 4 ? `Nouvelle expédition dans <b data-hd210-countdown>${typeof timeToNextDaily === "function" ? timeToNextDaily() : "quelques heures"}</b>.` : "Chaque jalon est cliquable. Reprends exactement où tu t’es arrêté."}</span>
-        <em>${info.done ? `${info.done} jalon${info.done > 1 ? "s" : ""} validé${info.done > 1 ? "s" : ""}` : "Prêt à partir"}</em>
-      </div>
+      ${info.done === 4 ? "" : `<footer class="hd212-momentum hd213-momentum ${reward.earned ? "earned" : ""}">
+        <div class="hd212-reward"><span aria-hidden="true">${reward.earned ? "✓" : "◆"}</span><div><small>${reward.earned ? "Récompense obtenue" : "À gagner aujourd’hui"}</small><strong>+${reward.gems} gemme${reward.gems > 1 ? "s" : ""}</strong><em>Série visée : ${reward.streak}</em></div></div>
+        <div class="hd212-week" aria-label="${weekDone} jours actifs sur les sept derniers jours"><div><small>Rythme</small><b>${weekDone}/7</b></div><span>${weekDays.map(day => `<i class="${day.done ? "done" : ""} ${day.today ? "today" : ""}" title="${esc(day.key)}"></i>`).join("")}</span></div>
+      </footer>`}
     </section>`;
   }
 
@@ -2752,11 +2956,10 @@
     const season = currentSeason();
     if (!season) return "";
     const progress = seasonProgress(season);
-    return `<section class="card hd187-season-card hd192-season-card">
-      <div class="hd192-season-banner">${HD_ART.season(season.icon || HD_ICONS.fromText(season.title, "spark"))}</div>
-      <div class="section-title-row"><div><span class="card-label">Saison éditoriale</span><h2>${HD_ICONS.action(season.icon || HD_ICONS.fromText(season.title, "spark"))} ${esc(season.title)}</h2><p>${esc(season.description)}</p></div><strong>${progress.progress}%</strong></div>
-      <div class="hd187-season-progress"><i style="width:${progress.progress}%"></i></div>
-      <div class="hd187-season-footer"><span>${progress.done}/${progress.total} cours · tous restent accessibles dans le catalogue</span><div><button type="button" class="ghost" data-hd187-open-seasons>Voir la saison</button><button type="button" data-hd187-season-next="${esc(progress.next?.id || "")}">${progress.done >= progress.total ? "Revoir" : "Continuer"}</button></div></div>
+    return `<section class="card hd187-season-card hd192-season-card hd212-season-card">
+      <span class="hd212-season-icon">${HD_ICONS.action(season.icon || HD_ICONS.fromText(season.title, "spark"))}</span>
+      <div class="hd212-season-copy"><small>Saison éditoriale</small><h2>${esc(season.title)}</h2><p>${esc(season.description)}</p><div><i><em style="width:${progress.progress}%"></em></i><span>${progress.done}/${progress.total}</span></div></div>
+      <button type="button" data-hd187-season-next="${esc(progress.next?.id || "")}">${progress.done >= progress.total ? "Revoir" : "Explorer"}<b aria-hidden="true">→</b></button>
     </section>`;
   }
 
@@ -2780,21 +2983,39 @@
     const shell = document.querySelector(".app-shell.tab-home");
     if (!shell || shell.dataset.hd187Enhanced === "1") return;
     shell.dataset.hd187Enhanced = "1";
+    shell.classList.add("hd212-home-shell");
     removeOldHomeBlocks(shell);
+    shell.querySelectorAll(".release-notes-card,.release-card,.beta182-update-card").forEach(node => node.remove());
     enhanceHomeHero(shell);
     const mysteryCard = shell.querySelector(".home-mystery-card") || shell.querySelector(".home-main-card");
     if (mysteryCard) {
       mysteryCard.insertAdjacentHTML("beforebegin", expeditionMarkup());
-      // Le mystère reste consultable dans l'expédition, donc sa carte séparée devient inutile.
       if (mysteryCard.classList.contains("home-mystery-card")) mysteryCard.remove();
     } else {
       shell.querySelector(".hero")?.insertAdjacentHTML("afterend", expeditionMarkup());
     }
-    const release = shell.querySelector(".release-notes-card,.release-card");
-    const anchor = release || shell.querySelector(".bottom-nav");
-    if (anchor) anchor.insertAdjacentHTML("beforebegin", `${seasonMarkup()}${freeExploreMarkup()}`);
-    else shell.insertAdjacentHTML("beforeend", `${seasonMarkup()}${freeExploreMarkup()}`);
+    const nextCard = shell.querySelector(".beta182-next-card");
+    const discovery = shell.querySelector(".beta182-discovery-card");
+    nextCard?.classList.add("hd212-next-card");
+    discovery?.classList.add("hd212-discovery-card");
+
+    // Évite de proposer exactement le même cours dans « À continuer » et « À découvrir ».
+    const nextButton = nextCard?.querySelector("[data-home-continue]");
+    if (nextButton) {
+      nextButton.textContent = "Ouvrir";
+      const nextId = String(nextButton.dataset.homeContinue || "");
+      const duplicate = Array.from(discovery?.querySelectorAll("[data-home-discovery]") || []).find(node => String(node.dataset.homeDiscovery || "") === nextId);
+      duplicate?.remove();
+    }
+    const discoveryItems = discovery?.querySelectorAll("[data-home-discovery]")?.length || 0;
+    const discoveryTitle = discovery?.querySelector(".section-title-row h2");
+    if (discoveryTitle && discoveryItems) discoveryTitle.textContent = discoveryItems === 1 ? "Une autre piste à explorer" : `${discoveryItems} autres pistes à explorer`;
+
+    const anchor = discovery || nextCard || shell.querySelector(".bottom-nav");
+    if (anchor) anchor.insertAdjacentHTML(anchor.matches(".bottom-nav") ? "beforebegin" : "afterend", seasonMarkup());
+    else shell.insertAdjacentHTML("beforeend", seasonMarkup());
     bindShellActions(shell);
+    window.setTimeout(() => acknowledgeExpeditionProgress(expeditionData()), 80);
   }
 
   function globalSearchBarMarkup(){
@@ -2969,8 +3190,72 @@
     overlay.querySelectorAll("[data-hd187-course]").forEach(button => button.addEventListener("click", () => openCourse(button.dataset.hd187Course, "season")));
   }
 
+  function recallQuestionFor(info){
+    if (!info?.lesson) return null;
+    let content = null;
+    try { content = typeof buildLessonContent === "function" ? buildLessonContent(info.lesson) : null; } catch {}
+    const quiz = safeArray(content?.quiz).filter(item => item?.q && item?.a);
+    if (!quiz.length) return null;
+    const seed = (() => { try { return typeof todayIndex === "function" ? todayIndex() : Math.floor(Date.now() / 86400000); } catch { return 0; } })();
+    const item = quiz[Math.abs(seed) % quiz.length];
+    const options = [...new Set([item.a, ...safeArray(item.choices)].filter(Boolean).map(String))];
+    const shift = options.length ? Math.abs(seed + String(info.lesson.id).length) % options.length : 0;
+    return { ...item, options: options.slice(shift).concat(options.slice(0, shift)) };
+  }
+
+  function openRecallChallenge(){
+    const info = expeditionData();
+    if (!info.connectionDone) return;
+    if (info.recallDone) {
+      closeLayer();
+      try { setState({ tab: "home" }, { renderImmediate: true, save: true }); } catch {}
+      return;
+    }
+    const question = recallQuestionFor(info);
+    if (!question) {
+      const overlay = layer("Dernier geste : retenir", "Rappelle-toi l’idée centrale sans rouvrir le cours.", `<section class="hd212-recall-card"><span class="hd212-recall-kicker">Rappel actif · sans pénalité</span><h3>Quelle idée principale veux-tu garder de ce parcours ?</h3><p>Prends quelques secondes pour la reformuler mentalement, puis valide lorsque tu l’as en tête.</p><button type="button" class="hd212-recall-validate">Je l’ai en tête · +10 XP</button></section>`, "hd212-recall-layer");
+      overlay.querySelector(".hd212-recall-validate")?.addEventListener("click", () => {
+        const fresh = markRecallCompleted();
+        closeLayer();
+        if (fresh && typeof showXPToast === "function") showXPToast(10, "Expédition terminée");
+        try { setState({ tab: "home" }, { renderImmediate: true, save: true }); } catch {}
+        window.setTimeout(openCompletionCelebration, 120);
+      });
+      return;
+    }
+
+    const overlay = layer("Dernier geste : retenir", "Une question, sans pénalité. Une bonne réponse boucle l’expédition.", `<section class="hd212-recall-card"><div class="hd212-recall-top"><span class="hd212-recall-kicker">Question éclair</span><em>${HD_ICONS.action("review")} 1 question</em></div><h3>${esc(question.q)}</h3><div class="hd212-recall-options">${question.options.map((option, index) => `<button type="button" data-hd212-recall-choice="${index}"><span>${String.fromCharCode(65 + index)}</span><b>${esc(option)}</b></button>`).join("")}</div><div class="hd212-recall-feedback" aria-live="polite"></div><div class="hd212-recall-actions"><button type="button" class="ghost" data-hd187-action="lesson:${esc(info.lesson.id)}">Revoir le cours</button><button type="button" class="hd212-recall-validate" hidden>Valider l’expédition · +10 XP</button></div></section>`, "hd212-recall-layer");
+    const feedback = overlay.querySelector(".hd212-recall-feedback");
+    const validate = overlay.querySelector(".hd212-recall-validate");
+    overlay.querySelectorAll("[data-hd212-recall-choice]").forEach(button => button.addEventListener("click", () => {
+      const choice = question.options[Number(button.dataset.hd212RecallChoice)] || "";
+      if (choice === String(question.a)) {
+        overlay.querySelectorAll("[data-hd212-recall-choice]").forEach(item => { item.disabled = true; item.classList.toggle("correct", item === button); });
+        button.classList.add("correct");
+        feedback.className = "hd212-recall-feedback success";
+        feedback.innerHTML = `<b>Exact.</b><span>${esc(question.why || question.a)}</span>`;
+        validate.hidden = false;
+        validate.focus();
+      } else {
+        button.classList.add("wrong");
+        button.disabled = true;
+        feedback.className = "hd212-recall-feedback retry";
+        feedback.innerHTML = `<b>Pas tout à fait.</b><span>Essaie encore : aucune pénalité.</span>`;
+      }
+    }));
+    validate?.addEventListener("click", () => {
+      const fresh = markRecallCompleted();
+      closeLayer();
+      if (fresh && typeof showXPToast === "function") showXPToast(10, "Expédition terminée");
+      try { setState({ tab: "home" }, { renderImmediate: true, save: true }); } catch {}
+        window.setTimeout(openCompletionCelebration, 120);
+    });
+    bindShellActions(overlay);
+  }
+
   function runAction(action){
     if (!action || action === "done") return;
+    if (action === "mystery" || action === "recall" || action.startsWith("lesson:")) ensureExpeditionStarted();
     if (action === "mystery") {
       const mystery = currentMysterySafe();
       if (mystery) setState({ tab: "mystery", currentMysteryId: mystery.id, currentMysteryDiscipline: mystery.discipline || activeDisciplineId() }, { renderImmediate: true });
@@ -2987,21 +3272,7 @@
       if (picked) return openCourse(picked.lesson.id, "daily-surprise");
       return openDiscipline(activeDisciplineId());
     }
-    if (action === "recall") {
-      try {
-        const debug = progressDebug();
-        const status = debug?.dailyPlanStatus?.();
-        const due = Object.values(state.reviewQueue || {}).some(entry => Number(entry?.dueAt || 0) <= Date.now());
-        if (due || status?.log?.planType === "review") {
-          if (typeof debug?.openReviewSession === "function") return debug.openReviewSession("");
-          setState({ tab: "learn", currentDiscipline: activeDisciplineId(), learnDrill: "chapters" });
-        } else {
-          const next = searchIndex().find(item => !lessonDone(item.lesson.id));
-          if (next) openCourse(next.lesson.id, "daily-recall-fallback");
-        }
-      } catch { openDiscipline(activeDisciplineId()); }
-      return;
-    }
+    if (action === "recall") return openRecallChallenge();
     if (action === "search") return openSearch();
     if (action === "map") return openKnowledgeMap();
     if (action === "catalog") return openDiscipline(activeDisciplineId());
@@ -3016,6 +3287,25 @@
         event.stopPropagation();
         try { navigator.vibrate?.(10); } catch {}
         runAction(button.dataset.hd187Action);
+      });
+    });
+    root.querySelectorAll("[data-hd213-share-expedition]").forEach(button => {
+      if (button.dataset.hd213Bound === "1") return;
+      button.dataset.hd213Bound = "1";
+      button.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); shareExpedition(); });
+    });
+    root.querySelectorAll("[data-hd212-jump-expedition]").forEach(button => {
+      if (button.dataset.hd212Bound === "1") return;
+      button.dataset.hd212Bound = "1";
+      button.addEventListener("click", () => {
+        const target = document.querySelector(".hd212-expedition-card");
+        if (!target) return;
+        const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+        target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+        target.classList.remove("hd213-focus-pulse");
+        requestAnimationFrame(() => target.classList.add("hd213-focus-pulse"));
+        window.setTimeout(() => target.classList.remove("hd213-focus-pulse"), 1150);
+        try { target.focus?.({ preventScroll: true }); } catch {}
       });
     });
     root.querySelectorAll("[data-hd187-open-search]").forEach(button => {
@@ -3093,6 +3383,8 @@
       version: VERSION,
       dailyExpedition: true,
       dailyJourneyV2: true,
+      dailyJourneyV3: true,
+      focusedHomeV2: true,
       freeCourseAccess: true,
       globalCourseSearch: true,
       knowledgeMap: true,
@@ -3104,7 +3396,11 @@
         seasonDefinitions,
         curiosityData,
         openSearch,
-        openKnowledgeMap
+        openKnowledgeMap,
+        openRecallChallenge,
+        openCompletionCelebration,
+        expeditionElapsedMinutes,
+        recallCompletedToday
       }
     };
   } catch {}
@@ -3123,7 +3419,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.0.0-beta.210.0";
+  const VERSION = "1.0.0-beta.213.0";
   const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
 
   const esc = value => {
