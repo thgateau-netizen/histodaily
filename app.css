@@ -5496,3 +5496,50 @@ body{
   .hd225-visual .discipline-astronomy .hd222-expedition-copy p{ font-size:.82rem; max-width:16.4ch; -webkit-line-clamp:4; }
   .hd225-visual .discipline-astronomy .hd222-expedition-art{ width:60%; }
 }
+
+/* =========================================================
+   HistoDaily beta 226 — astronomy framing fix
+   Reduce zoom and keep the black hole clear of the text block.
+   ========================================================= */
+.hd226-visual .discipline-astronomy .hd222-expedition-copy{
+  width: 47%;
+}
+.hd226-visual .discipline-astronomy .hd222-expedition-copy::after{
+  inset:-30px 8px -18px -28px;
+  background:linear-gradient(90deg, rgba(5,8,21,.98) 0%, rgba(5,8,21,.95) 56%, rgba(5,8,21,.68) 76%, rgba(5,8,21,.20) 90%, transparent 100%);
+}
+.hd226-visual .discipline-astronomy .hd222-expedition-copy h2{
+  max-width: 6.5ch;
+}
+.hd226-visual .discipline-astronomy .hd222-expedition-art{
+  width: 56%;
+  right: -2%;
+  top: 18px;
+  height: calc(100% - 22px);
+}
+.hd226-visual .hd225-astro-visual{
+  background-size: contain;
+  background-position: 68% 48%;
+  transform: scale(1.00);
+}
+.hd226-visual .hd225-astro-overlay{
+  background:
+    radial-gradient(circle at 72% 43%, rgba(145,113,255,.20) 0%, transparent 26%),
+    radial-gradient(circle at 81% 40%, rgba(255,188,118,.10) 0%, transparent 16%),
+    linear-gradient(90deg, rgba(6,10,24,.14) 0%, rgba(6,10,24,.06) 34%, transparent 50%),
+    linear-gradient(180deg, rgba(6,10,24,.00) 0%, rgba(6,10,24,.03) 68%, rgba(6,10,24,.18) 100%);
+}
+@media (max-width: 430px){
+  .hd226-visual .discipline-astronomy .hd222-expedition-copy{ width: 51%; }
+  .hd226-visual .discipline-astronomy .hd222-expedition-copy h2{ font-size: clamp(2.24rem,8.3vw,2.95rem); }
+  .hd226-visual .discipline-astronomy .hd222-expedition-copy p{ max-width: 16.8ch; }
+  .hd226-visual .discipline-astronomy .hd222-expedition-art{ width: 53%; right: -4%; top: 26px; height: calc(100% - 28px); }
+  .hd226-visual .hd225-astro-visual{ background-position: 72% 48%; transform: scale(.96); }
+}
+@media (max-width: 370px){
+  .hd226-visual .discipline-astronomy .hd222-expedition-copy{ width: 54%; }
+  .hd226-visual .discipline-astronomy .hd222-expedition-copy h2{ font-size: 1.95rem; }
+  .hd226-visual .discipline-astronomy .hd222-expedition-copy p{ max-width: 15.2ch; }
+  .hd226-visual .discipline-astronomy .hd222-expedition-art{ width: 50%; right: -5%; top: 30px; height: calc(100% - 34px); }
+  .hd226-visual .hd225-astro-visual{ background-position: 75% 48%; transform: scale(.92); }
+}
