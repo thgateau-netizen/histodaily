@@ -5105,3 +5105,339 @@
     window.setTimeout(() => { if (state?.tab === "home") render({ immediate: true }); }, 0);
   } catch {}
 })();
+
+/* ===== beta 219 · V2 visuelle claire et légère ===== */
+(function histodailyBeta219VisualV2(){
+  "use strict";
+
+  const VERSION = "1.0.0-beta.220.0";
+  const esc = value => String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+  function safeLessonById(id){
+    if (!id) return null;
+    try { return lessonById(id) || allLessons().find(item => String(item.id) === String(id)) || null; }
+    catch { return null; }
+  }
+
+  function safeLessonContent(lesson){
+    if (!lesson) return null;
+    try { return buildLessonContent(lesson); }
+    catch { return { title: lesson.title || "Cours", hook: "Comprendre l’idée essentielle et la retenir." }; }
+  }
+
+  function safeWorld(lesson){
+    try { return lessonWorld(lesson); }
+    catch { return {}; }
+  }
+
+  function safeLessonMeta(lesson){
+    if (!lesson) return "Cours";
+    const world = safeWorld(lesson);
+    const group = (() => {
+      try { return treeGroups(worldDisciplineId(world)).find(item => item.id === world.group); }
+      catch { return null; }
+    })();
+    return [group?.title, world?.title].filter(Boolean).map(value => String(value).replace(/^\d+\.\s*/, "")).join(" · ") || "Cours";
+  }
+
+  function currentDisciplineLessons(disciplineId){
+    try { return readyLessonsForDiscipline(disciplineId).filter(item => !lessonLockedByDailyMystery(item)); }
+    catch { return []; }
+  }
+
+  function homeResumeLesson(disciplineId, excluded = []){
+    const excludedSet = new Set(excluded.filter(Boolean).map(String));
+    let candidate = null;
+    try { candidate = disciplineId === "history" ? homeContinueLesson() : pickModeLesson(disciplineId); }
+    catch {}
+    if (candidate && excludedSet.has(String(candidate.id))) candidate = null;
+    if (!candidate) {
+      candidate = currentDisciplineLessons(disciplineId)
+        .find(item => !excludedSet.has(String(item.id)) && !lessonDone(item.id)) || null;
+    }
+    return candidate;
+  }
+
+  function homeDiscoveryLesson(disciplineId, excluded = []){
+    const excludedSet = new Set(excluded.filter(Boolean).map(String));
+    try {
+      const preferred = disciplineId === "history" ? homeDiscoveryLessons() : rotatedModeLessons(disciplineId, 4);
+      return preferred.find(item => !excludedSet.has(String(item.id)) && !lessonLockedByDailyMystery(item))
+        || currentDisciplineLessons(disciplineId).find(item => !excludedSet.has(String(item.id)))
+        || null;
+    } catch { return null; }
+  }
+
+  function dailyStage(mystery, lesson){
+    const solved = Boolean(mystery?.id && mysterySolved(mystery.id));
+    const courseDone = Boolean(lesson?.id && lessonDone(lesson.id));
+    const quizDone = Boolean(lesson?.id && lessonQuizPassed(lesson.id));
+    const content = safeLessonContent(lesson);
+    if (!mystery) {
+      return { index: 1, kind: "catalog", eyebrow: "Parcours libre", title: "Choisis ta prochaine exploration", text: "Le dossier quotidien n’est pas disponible, mais tous les cours restent ouverts.", button: "Explorer les cours", meta: "Accès libre" };
+    }
+    if (!solved) {
+      return {
+        index: 1,
+        kind: "mystery",
+        eyebrow: "Dossier à résoudre",
+        title: mysteryDisplayTitle(mystery),
+        text: short(mysteryTeaser(mystery), 150),
+        button: "Résoudre le mystère",
+        meta: `+${dailyRewardPreview().gems} gemme${dailyRewardPreview().gems > 1 ? "s" : ""} aujourd’hui`
+      };
+    }
+    if (lesson && !courseDone) {
+      return {
+        index: 2,
+        kind: "lesson",
+        view: "express",
+        eyebrow: "Comprendre la réponse",
+        title: content?.title || lesson.title,
+        text: "Le dossier est résolu. Le cours associé replace maintenant la réponse dans son contexte.",
+        button: "Lire le cours",
+        meta: "3 min environ"
+      };
+    }
+    if (lesson && !quizDone) {
+      return {
+        index: 3,
+        kind: "lesson",
+        view: "quiz",
+        eyebrow: "Relier les idées",
+        title: "Vérifie ce que tu as compris",
+        text: `Un quiz court pour consolider « ${content?.title || lesson.title} » sans repartir de zéro.`,
+        button: "Faire le quiz",
+        meta: "5 questions"
+      };
+    }
+    return {
+      index: 4,
+      kind: lesson ? "lesson" : "mystery",
+      view: "complete",
+      eyebrow: "Expédition terminée",
+      title: "Mission accomplie",
+      text: lesson ? `Le dossier et le cours « ${content?.title || lesson.title} » sont validés.` : "Le dossier du jour est validé.",
+      button: lesson ? "Revoir le cours" : "Revoir le dossier",
+      meta: `Nouveau dossier dans ${timeToNextDaily()}`
+    };
+  }
+
+  function disciplineTabsMarkup(activeId){
+    return `<nav class="hd219-disciplines" aria-label="Choisir une discipline">
+      ${DISCIPLINES.map(item => {
+        const active = item.id === activeId;
+        const stats = (() => { try { return disciplineProgress(item.id); } catch { return { progress: 0 }; } })();
+        const label = disciplineModeCopy(item.id).shortLabel || item.title;
+        return `<button type="button" class="hd219-discipline ${active ? "active" : ""}" data-home-discipline="${esc(item.id)}" style="--discipline-accent:${esc(item.accent)}" aria-pressed="${active}">
+          <span>${HD_ICONS.rawDiscipline ? HD_ICONS.rawDiscipline(item) : HD_ICONS.discipline(item)}</span>
+          <b>${esc(label)}</b>
+          <small>${stats.progress}%</small>
+        </button>`;
+      }).join("")}
+    </nav>`;
+  }
+
+  function expeditionTrackMarkup(index){
+    const labels = ["Résoudre", "Comprendre", "Relier", "Retenir"];
+    return `<div class="hd219-track" aria-label="Progression de l’expédition">
+      ${labels.map((label, position) => {
+        const step = position + 1;
+        const status = step < index ? "done" : step === index ? "current" : "locked";
+        return `<div class="${status}"><span>${step < index ? "✓" : step}</span><b>${label}</b></div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  function lessonIcon(lesson, discipline){
+    if (!lesson) return HD_ICONS.action("courses");
+    try { return HD_ICONS.lesson(lesson, safeWorld(lesson), disciplineForLessonObject(lesson)); }
+    catch { return HD_ICONS.discipline(discipline); }
+  }
+
+  function levelProgress(){
+    const xp = Number(state.xp || 0);
+    const base = Math.max(0, (level() - 1) * 250);
+    const next = Math.max(base + 250, level() * 250);
+    return Math.max(4, Math.min(100, Math.round(((xp - base) / Math.max(1, next - base)) * 100)));
+  }
+
+  renderHome = function beta219RenderHome(){
+    const disciplineId = activeDisciplineId();
+    const discipline = disciplineById(disciplineId);
+    const mode = disciplineModeCopy(disciplineId);
+    const mystery = dailyMystery();
+    const linkedLesson = safeLessonById(mystery?.lessonId);
+    const stage = dailyStage(mystery, linkedLesson);
+    const resume = homeResumeLesson(disciplineId, [stage.kind === "lesson" ? linkedLesson?.id : null]);
+    const discovery = homeDiscoveryLesson(disciplineId, [linkedLesson?.id, resume?.id]);
+    const resumeContent = safeLessonContent(resume);
+    const discoveryContent = safeLessonContent(discovery);
+    const lessons = currentDisciplineLessons(disciplineId);
+    const completed = lessons.filter(item => lessonDone(item.id)).length;
+    const total = lessons.length;
+    const progress = total ? Math.round((completed / total) * 100) : 0;
+    const pseudo = String(state.pseudo || "").trim();
+    const greeting = pseudo && !/^invité$/i.test(pseudo) ? `Bonjour ${pseudo}` : "Bonjour";
+
+    renderShell(`<div class="hd219-home" style="--discipline-accent:${esc(discipline.accent)}">
+      <header class="hd219-appbar">
+        <div><span>${esc(greeting)}</span><h1>Continue ton exploration</h1></div>
+        <div class="hd219-quick-stats"><b title="Série">🔥 ${state.streak || 0}</b><b title="Niveau">Niv. ${level()}</b></div>
+      </header>
+
+      <section class="hd219-domain-zone">
+        <div class="hd219-zone-title"><span>Ton univers</span><b>${esc(discipline.title)}</b></div>
+        ${disciplineTabsMarkup(disciplineId)}
+      </section>
+
+      <section class="hd219-expedition" aria-labelledby="hd219-expedition-title">
+        <div class="hd219-expedition-deco" aria-hidden="true"></div>
+        <header><span>Expédition du jour</span><b>${stage.index}/4</b></header>
+        <div class="hd219-expedition-main">
+          <div class="hd219-expedition-art" aria-hidden="true">${HD_ART.hero(discipline.id)}</div>
+          <div class="hd219-expedition-copy">
+            <small>${esc(stage.eyebrow)}</small>
+            <h2 id="hd219-expedition-title">${esc(stage.title)}</h2>
+            <p>${esc(stage.text)}</p>
+          </div>
+        </div>
+        <button type="button" class="hd219-primary" data-hd219-expedition><span>${esc(stage.button)}</span><b>→</b></button>
+        <div class="hd219-expedition-meta"><span>${esc(stage.meta)}</span><em>${esc(mode.shortLabel || discipline.title)}</em></div>
+        ${expeditionTrackMarkup(stage.index)}
+      </section>
+
+      <section class="hd219-progress-card">
+        <div class="hd219-progress-head"><div><span>Ta progression</span><h2>${esc(discipline.title)}</h2></div><b>${progress}%</b></div>
+        <div class="hd219-progress-bar"><i style="width:${Math.max(3, progress)}%"></i></div>
+        <div class="hd219-progress-foot"><span>${completed}/${total || 0} cours validés</span><button type="button" data-hd219-catalog>Voir le parcours</button></div>
+      </section>
+
+      <section class="hd219-home-cards">
+        <article class="hd219-learning-card hd219-resume" data-hd219-resume-card role="button" tabindex="0">
+          <div class="hd219-card-icon">${lessonIcon(resume, discipline)}</div>
+          <div class="hd219-card-copy"><small>À continuer</small><h3>${esc(resumeContent?.title || resume?.title || "Choisis ton prochain cours")}</h3><p>${esc(resume ? safeLessonMeta(resume) : "Tout le catalogue est accessible")}</p></div>
+          <button type="button" data-hd219-resume>${resume ? "Reprendre" : "Choisir"}</button>
+        </article>
+
+        <article class="hd219-learning-card hd219-discovery" data-hd219-discovery-card role="button" tabindex="0">
+          <div class="hd219-card-icon">${lessonIcon(discovery, discipline)}</div>
+          <div class="hd219-card-copy"><small>À découvrir</small><h3>${esc(discoveryContent?.title || discovery?.title || "Explore un nouveau chapitre")}</h3><p>${esc(discovery ? safeLessonMeta(discovery) : "Une suggestion liée à ton univers")}</p></div>
+          <button type="button" data-hd219-discovery>${discovery ? "Découvrir" : "Explorer"}</button>
+        </article>
+      </section>
+    </div>`);
+
+    const shell = document.querySelector(".app-shell.tab-home");
+    if (shell) {
+      shell.classList.add("hd219-home-shell");
+      shell.dataset.hd187Enhanced = "1";
+    }
+
+    document.querySelectorAll("[data-home-discipline]").forEach(button => button.addEventListener("click", () => switchHomeDiscipline(button.dataset.homeDiscipline)));
+
+    document.querySelector("[data-hd219-expedition]")?.addEventListener("click", () => {
+      if (stage.kind === "mystery") return setState({ tab: "mystery", currentMysteryId: mystery?.id || null, currentMysteryDiscipline: disciplineId, currentDiscipline: disciplineId });
+      if (stage.kind === "lesson" && linkedLesson) return openLessonFromHome(linkedLesson.id, stage.view || "express");
+      openModeLearn(disciplineId);
+    });
+
+    const openResume = () => resume ? openLessonFromHome(resume.id, "express") : openModeLearn(disciplineId);
+    document.querySelector("[data-hd219-resume]")?.addEventListener("click", event => { event.stopPropagation(); openResume(); });
+    document.querySelector("[data-hd219-resume-card]")?.addEventListener("click", openResume);
+    document.querySelector("[data-hd219-resume-card]")?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openResume(); } });
+
+    const openDiscovery = () => discovery ? openLessonFromHome(discovery.id, "express") : openModeLearn(disciplineId);
+    document.querySelector("[data-hd219-discovery]")?.addEventListener("click", event => { event.stopPropagation(); openDiscovery(); });
+    document.querySelector("[data-hd219-discovery-card]")?.addEventListener("click", openDiscovery);
+    document.querySelector("[data-hd219-discovery-card]")?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDiscovery(); } });
+    document.querySelectorAll("[data-hd219-catalog]").forEach(button => button.addEventListener("click", () => openModeLearn(disciplineId)));
+  };
+
+  function bindMasteryToggle(shell){
+    const card = shell.querySelector(".beta179-profile-mastery");
+    const list = card?.querySelector(".beta179-mastery-list");
+    if (!card || !list || card.querySelector("[data-hd219-mastery-toggle]")) return;
+    list.classList.add("hd219-collapsed");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "ghost hd219-mastery-toggle";
+    button.dataset.hd219MasteryToggle = "1";
+    button.textContent = "Voir tous les domaines";
+    button.addEventListener("click", () => {
+      const collapsed = list.classList.toggle("hd219-collapsed");
+      button.textContent = collapsed ? "Voir tous les domaines" : "Réduire";
+    });
+    card.appendChild(button);
+  }
+
+  function upgradeProfile(){
+    const shell = document.querySelector(".app-shell.tab-profile");
+    if (!shell) return;
+    shell.classList.add("hd219-profile-shell");
+
+    const topbar = shell.querySelector(":scope > .topbar");
+    if (topbar) {
+      const eyebrow = topbar.querySelector(".eyebrow");
+      const title = topbar.querySelector("h1");
+      if (eyebrow) eyebrow.textContent = "Espace joueur";
+      if (title) title.textContent = "Ton profil";
+    }
+
+    const profile = shell.querySelector(".public-profile-card");
+    const curiosity = shell.querySelector(".hd217-curiosity-card,.hd187-curiosity-card");
+    const weekly = shell.querySelector(".beta181-weekly-card");
+    const collections = shell.querySelector(".beta179-profile-collections");
+    const mastery = shell.querySelector(".beta179-profile-mastery");
+    const culture = shell.querySelector(".culture-profile-card");
+    const achievements = shell.querySelector(".achievement-grid");
+
+    if (profile) profile.classList.add("hd219-player-card");
+    if (curiosity) curiosity.classList.add("hd219-curiosity");
+    if (weekly) weekly.classList.add("hd219-weekly");
+    if (collections) collections.classList.add("hd219-collections");
+    if (mastery) mastery.classList.add("hd219-mastery");
+    if (culture) culture.classList.add("hd219-culture");
+    if (achievements) achievements.classList.add("hd219-achievements");
+
+    if (profile && curiosity && profile.nextElementSibling !== curiosity) profile.insertAdjacentElement("afterend", curiosity);
+    if (curiosity && collections && curiosity.nextElementSibling !== collections) curiosity.insertAdjacentElement("afterend", collections);
+    if (collections && weekly && collections.nextElementSibling !== weekly) collections.insertAdjacentElement("afterend", weekly);
+    if (weekly && mastery && weekly.nextElementSibling !== mastery) weekly.insertAdjacentElement("afterend", mastery);
+
+    const profileStats = profile?.querySelector(".public-stats-grid");
+    if (profile && profileStats && !profile.querySelector(".hd219-level-meter")) {
+      const meter = document.createElement("div");
+      meter.className = "hd219-level-meter";
+      meter.innerHTML = `<div><span>Niveau ${level()}</span><b>${state.xp || 0} XP</b></div><i><em style="width:${levelProgress()}%"></em></i>`;
+      profileStats.insertAdjacentElement("beforebegin", meter);
+    }
+
+    bindMasteryToggle(shell);
+  }
+
+  const previousRenderProfile = typeof renderProfile === "function" ? renderProfile : null;
+  if (previousRenderProfile) {
+    renderProfile = function beta219RenderProfile(){
+      const result = previousRenderProfile();
+      [0, 60, 180].forEach(delay => window.setTimeout(upgradeProfile, delay));
+      return result;
+    };
+  }
+
+  try {
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, visualV2: true, visualV2Home: true, visualV2Profile: true };
+  } catch {}
+
+  try {
+    window.setTimeout(() => {
+      if (state?.tab === "home") render({ immediate: true });
+      else if (state?.tab === "profile") upgradeProfile();
+    }, 0);
+  } catch {}
+})();

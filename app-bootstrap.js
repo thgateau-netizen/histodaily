@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.218.0",
-  assetsVersion: "1.0.0-beta.218.0",
+  version: "1.0.0-beta.220.0",
+  assetsVersion: "1.0.0-beta.220.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 218",
+    versionLabel: "beta 220",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "L’accueil a été réellement reconstruit autour d’une seule mission quotidienne, sans empilement de cartes.",
-      "La reprise du parcours et la découverte sont désormais deux lignes compactes, avec des textes lisibles.",
-      "Le profil de curiosité et les collections conservent la refonte de lisibilité de la beta 217."
+      "Visual V3 : accueil reconstruit comme une vraie scène d’expédition, avec une hiérarchie beaucoup plus forte.",
+      "Les disciplines restent visibles et pilotent immédiatement l’univers, le mystère et les suggestions.",
+      "Le profil devient un espace joueur : constellation de curiosité, trophées horizontaux et maîtrise visuelle."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
@@ -93,7 +93,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.218.0",
+  version: "1.0.0-beta.220.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;
