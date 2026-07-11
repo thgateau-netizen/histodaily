@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.222.0";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.224.0";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -33,6 +33,7 @@ const DISCIPLINES = [
   { id: "art", title: "Art", emoji: "🎨", accent: "#fb7185", description: "Histoire de l’art, œuvres, artistes et mouvements." },
   { id: "cinema", title: "Cinéma", emoji: "🎬", accent: "#8b5cf6", description: "Histoire du cinéma, films, réalisateurs et courants." },
   { id: "science-inventions", title: "Sciences & inventions", emoji: "🧪", accent: "#56d6ff", description: "Histoire des sciences, découvertes et inventions." },
+  { id: "astronomy", title: "Astronomie", emoji: "🪐", accent: "#8b5cf6", description: "Univers, étoiles, galaxies, trous noirs et exploration spatiale." },
   { id: "economy", title: "Économie", emoji: "📈", accent: "#10b981", description: "Marchés, crises, monnaies et grandes notions." },
   { id: "geography", title: "Géographie", emoji: "🗺️", accent: "#84cc16", description: "Pays, milieux, villes, frontières et cartes." },
   { id: "music", title: "Musique", emoji: "🎼", accent: "#fb7185", description: "Histoire de la musique, styles, compositeurs et révolutions sonores." }

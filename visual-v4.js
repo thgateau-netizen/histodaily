@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.222.0";
+  const VERSION = "1.0.0-beta.224.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }
@@ -12,10 +12,10 @@
   const safe = (fn, fallback = null) => { try { const value = fn(); return value ?? fallback; } catch { return fallback; } };
   let profileMountGeneration = 0;
 
-  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual");
+  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual");
 
   function disciplineLabel(discipline){
-    const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", economy:"Économie", geography:"Géographie", music:"Musique" };
+    const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", astronomy:"Astronomie", economy:"Économie", geography:"Géographie", music:"Musique" };
     return labels[discipline?.id] || discipline?.title || "Explorer";
   }
 
@@ -89,11 +89,25 @@
     if (disciplineId !== "astronomy") return stage;
     return {
       ...stage,
-      eyebrow: stage?.eyebrow || "Dossier du jour",
+      type: "catalog",
+      view: "express",
+      index: 1,
+      eyebrow: "Dossier du jour",
       title: "Trou noir à identifier",
-      text: "Au cœur de l’Univers, les trous noirs avalent la lumière. Leur horizon des événements emprisonne tout, tandis que la gravité déforme l’espace-temps autour d’eux.",
-      action: stage?.action || "Ouvrir l’expédition",
-      meta: stage?.meta || "Exploration spatiale"
+      text: "Sa gravité déforme l’espace-temps et fixe une frontière au-delà de laquelle aucune lumière ne ressort. Comprendre le trou noir, c’est relier masse, effondrement stellaire et horizon des événements.",
+      action: "Explorer l’astronomie",
+      meta: "6 notions clés"
+    };
+  }
+
+  function astronomyJourneyData(resume, discovery){
+    return {
+      total: 6,
+      resumeTitle: resume ? lessonTitle(resume) : "Regarder loin, voir le passé",
+      resumeMeta: resume ? lessonMeta(resume) : "Lumière, distance et temps cosmique",
+      discoveryTitle: discovery ? lessonTitle(discovery) : "Étoiles, galaxies et trous noirs",
+      discoveryMeta: discovery ? lessonMeta(discovery) : "Exploration spatiale",
+      progressLabel: "0% exploré"
     };
   }
 
@@ -114,7 +128,20 @@
 
   function heroArtwork(disciplineId, title = ""){
     if (disciplineId === "astronomy") {
-      return '<div class="hd223-blackhole" role="img" aria-label="Trou noir stylisé"></div>';
+      return `<div class="hd224-astro-hero" role="img" aria-label="Illustration d’un trou noir stylisé">
+        <div class="hd224-astro-nebula"></div>
+        <div class="hd224-astro-ring hd224-astro-ring-a"></div>
+        <div class="hd224-astro-ring hd224-astro-ring-b"></div>
+        <div class="hd224-astro-ring hd224-astro-ring-c"></div>
+        <div class="hd224-astro-blackhole">
+          <div class="hd224-astro-core"></div>
+          <div class="hd224-astro-accretion"></div>
+          <div class="hd224-astro-glow"></div>
+          <div class="hd224-astro-lensing"></div>
+        </div>
+        <div class="hd224-astro-stars"></div>
+        <div class="hd224-astro-stars hd224-astro-stars-secondary"></div>
+      </div>`;
     }
     const uid = `hd222-${String(disciplineId || "world").replace(/[^a-z0-9-]/gi, "")}`;
     const commonStart = `<svg class="hd222-hero-svg" viewBox="0 0 420 320" role="img" aria-label="Illustration ${esc(disciplineLabel(disciplineById(disciplineId)))}" xmlns="http://www.w3.org/2000/svg">
@@ -255,6 +282,9 @@
     const unfinished = lessons.filter(lesson => !safe(() => lessonDone(lesson.id), false) && String(lesson.id) !== String(linkedLesson?.id || ""));
     const resume = unfinished[0] || lessons[0] || null;
     const discovery = unfinished.find(lesson => String(lesson.id) !== String(resume?.id || "")) || lessons[1] || resume;
+    const astroData = disciplineId === "astronomy" ? astronomyJourneyData(resume, discovery) : null;
+    const progressTotal = astroData ? Math.max(astroData.total, lessons.length || 0) : (lessons.length || 0);
+    const progressPercentText = astroData ? astroData.progressLabel : `${progress}% exploré`;
     const pseudo = String(state.pseudo || "").trim();
     const greeting = pseudo && !/^invité$/i.test(pseudo) ? `Salut ${pseudo}` : "Bonjour";
     const art = heroArtwork(disciplineId, stageView.title);
@@ -291,21 +321,21 @@
       </section>
 
       <section class="hd220-progress-strip hd222-progress-strip">
-        <div class="hd222-progress-title"><span>${heroIcon}</span><b>Parcours ${esc(disciplineLabel(discipline))}</b><em>${completed}/${lessons.length || 0}</em></div>
+        <div class="hd222-progress-title"><span>${heroIcon}</span><b>Parcours ${esc(disciplineLabel(discipline))}</b><em>${completed}/${progressTotal}</em></div>
         <i><em style="width:${clamp(progress, 0, 100)}%"></em></i>
         <button type="button" data-hd220-catalog>Voir la carte</button>
       </section>
 
       <section class="hd220-next hd222-next">
-        <div class="hd220-section-cap hd222-section-cap"><span>Prochaines escales</span><b>${progress}% exploré</b></div>
+        <div class="hd220-section-cap hd222-section-cap"><span>Prochaines escales</span><b>${progressPercentText}</b></div>
         <div class="hd220-next-rail hd222-next-grid">
           <article class="hd220-next-card primary" data-hd220-open-lesson="${esc(resume?.id || "")}" role="button" tabindex="0">
             <div class="hd220-next-icon">${resume ? safe(() => HD_ICONS.lesson(resume, lessonWorld(resume), discipline), heroIcon) : heroIcon}</div>
-            <div><small>À continuer</small><h3>${esc(lessonTitle(resume))}</h3><p>${esc(lessonMeta(resume))}</p></div><span aria-hidden="true">→</span>
+            <div><small>À continuer</small><h3>${esc(astroData ? astroData.resumeTitle : lessonTitle(resume))}</h3><p>${esc(astroData ? astroData.resumeMeta : lessonMeta(resume))}</p></div><span aria-hidden="true">→</span>
           </article>
           <article class="hd220-next-card" data-hd220-open-lesson="${esc(discovery?.id || "")}" role="button" tabindex="0">
             <div class="hd220-next-icon">${discovery ? safe(() => HD_ICONS.lesson(discovery, lessonWorld(discovery), discipline), heroIcon) : heroIcon}</div>
-            <div><small>À découvrir</small><h3>${esc(lessonTitle(discovery))}</h3><p>${esc(lessonMeta(discovery))}</p></div><span aria-hidden="true">→</span>
+            <div><small>À découvrir</small><h3>${esc(astroData ? astroData.discoveryTitle : lessonTitle(discovery))}</h3><p>${esc(astroData ? astroData.discoveryMeta : lessonMeta(discovery))}</p></div><span aria-hidden="true">→</span>
           </article>
         </div>
       </section>
@@ -336,10 +366,10 @@
     shell?.querySelectorAll("[data-hd220-profile]").forEach(button => button.addEventListener("click", () => setState({ tab:"profile" })));
     shell?.querySelector("[data-hd220-catalog]")?.addEventListener("click", () => openCatalog(disciplineId));
     shell?.querySelector("[data-hd220-expedition]")?.addEventListener("click", () => {
-      if (stage.type === "mystery") return setState({ tab:"mystery", currentMysteryId:mystery?.id || null, currentMysteryDiscipline:disciplineId, currentDiscipline:disciplineId });
-      if (stage.type === "lesson" && linkedLesson) return openLesson(linkedLesson, stage.view || "express");
-      if (stage.type === "catalog") return openCatalog(disciplineId);
-      if (linkedLesson) return openLesson(linkedLesson, stage.view || "complete");
+      if (stageView.type === "mystery") return setState({ tab:"mystery", currentMysteryId:mystery?.id || null, currentMysteryDiscipline:disciplineId, currentDiscipline:disciplineId });
+      if (stageView.type === "lesson" && linkedLesson) return openLesson(linkedLesson, stageView.view || "express");
+      if (stageView.type === "catalog") return openCatalog(disciplineId);
+      if (linkedLesson) return openLesson(linkedLesson, stageView.view || "complete");
       return setState({ tab:"mystery" });
     });
     shell?.querySelectorAll("[data-hd220-open-lesson]").forEach(card => {

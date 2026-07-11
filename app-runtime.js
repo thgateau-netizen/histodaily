@@ -5110,7 +5110,7 @@
 (function histodailyBeta219VisualV2(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.222.0";
+  const VERSION = "1.0.0-beta.224.0";
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")

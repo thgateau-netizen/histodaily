@@ -5198,3 +5198,202 @@ body{
   .hd223-visual .discipline-astronomy .hd222-expedition-copy p{font-size:.8rem;max-width:16ch}
   .hd223-visual .discipline-astronomy .hd222-expedition-art{width:58%;opacity:.96}
 }
+
+/* =========================================================
+   HistoDaily beta 224 — astronomy pilot hero
+   First real discipline-level integration, no pasted image.
+   ========================================================= */
+.hd224-visual .discipline-astronomy .hd222-expedition{
+  position:relative;
+  border-color:rgba(132,103,255,.42);
+  background:
+    radial-gradient(circle at 74% 34%, rgba(133,103,255,.22) 0%, rgba(133,103,255,.10) 16%, transparent 33%),
+    radial-gradient(circle at 78% 42%, rgba(255,178,120,.14) 0%, transparent 26%),
+    radial-gradient(circle at 88% 72%, rgba(54,90,255,.14) 0%, transparent 26%),
+    linear-gradient(135deg, #101437 0%, #0a1030 42%, #060a1e 100%);
+  box-shadow:0 30px 90px rgba(0,0,0,.40), 0 0 55px rgba(108,86,255,.16), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hd224-visual .discipline-astronomy .hd220-expedition-top > span{
+  color:#c8b7ff;
+  border-color:rgba(151,126,255,.42);
+  background:rgba(115,93,224,.12);
+}
+.hd224-visual .discipline-astronomy .hd220-expedition-top > b{
+  color:#eef1ff;
+}
+.hd224-visual .discipline-astronomy .hd222-expedition-body{
+  min-height:338px;
+}
+.hd224-visual .discipline-astronomy .hd222-expedition-copy{
+  width:47%;
+  padding-top:8px;
+  z-index:3;
+}
+.hd224-visual .discipline-astronomy .hd220-expedition-symbol{
+  border-color:rgba(155,125,255,.3);
+  background:linear-gradient(180deg,rgba(123,95,246,.18),rgba(123,95,246,.08));
+  box-shadow:0 12px 30px rgba(65,56,160,.22), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.hd224-visual .discipline-astronomy .hd222-expedition-copy::after{
+  inset:-28px -10px -18px -26px;
+  background:radial-gradient(ellipse at 14% 38%, rgba(6,8,22,.98) 0%, rgba(6,9,24,.92) 44%, rgba(8,12,26,.56) 70%, transparent 90%);
+}
+.hd224-visual .discipline-astronomy .hd222-expedition-copy h2{
+  max-width:7ch;
+  font-size:clamp(2.72rem, 9.4vw, 3.85rem);
+  line-height:.9;
+  letter-spacing:-.04em;
+  text-wrap:balance;
+}
+.hd224-visual .discipline-astronomy .hd222-expedition-copy p{
+  max-width:20ch;
+  color:#cdd5f0;
+  font-size:.95rem;
+  line-height:1.55;
+  -webkit-line-clamp:5;
+}
+.hd224-visual .discipline-astronomy .hd222-expedition-art{
+  width:60%;
+  right:0;
+  top:12px;
+  height:calc(100% - 12px);
+  opacity:1;
+}
+.hd224-visual .discipline-astronomy .hd222-expedition-art::before,
+.hd224-visual .discipline-astronomy .hd222-expedition-art::after{content:none;}
+.hd224-visual .hd224-astro-hero{
+  position:relative;
+  width:100%;
+  height:100%;
+  border-radius:34px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 78% 46%, rgba(255,255,255,.18) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 88% 18%, rgba(255,255,255,.28) 0 1.2px, transparent 1.2px 100%),
+    radial-gradient(circle at 70% 72%, rgba(255,255,255,.16) 0 1px, transparent 1px 100%);
+}
+.hd224-visual .hd224-astro-nebula{
+  position:absolute;
+  inset:10% 3% 3% 8%;
+  border-radius:40px;
+  background:
+    radial-gradient(circle at 70% 44%, rgba(140,115,255,.14), transparent 34%),
+    radial-gradient(circle at 81% 34%, rgba(255,188,129,.16), transparent 24%),
+    radial-gradient(circle at 82% 66%, rgba(77,110,255,.12), transparent 22%);
+  filter:blur(18px);
+}
+.hd224-visual .hd224-astro-blackhole{
+  position:absolute;
+  top:19%;
+  right:2%;
+  width:86%;
+  aspect-ratio:1/1;
+  display:grid;
+  place-items:center;
+}
+.hd224-visual .hd224-astro-core{
+  position:absolute;
+  width:36%;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, #020308 0 52%, #090d1a 60%, #0f1730 68%, rgba(11,19,40,.1) 76%, transparent 82%);
+  box-shadow:0 0 80px rgba(16,10,48,.95), inset 0 0 18px rgba(255,255,255,.03);
+  z-index:4;
+}
+.hd224-visual .hd224-astro-accretion{
+  position:absolute;
+  width:76%;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  background:
+    conic-gradient(from 190deg, rgba(0,0,0,0) 0deg, rgba(255,169,112,.92) 30deg, rgba(255,243,205,.95) 58deg, rgba(255,145,97,.86) 86deg, rgba(124,96,255,.48) 135deg, rgba(0,0,0,0) 210deg, rgba(255,173,118,.85) 262deg, rgba(255,243,217,.92) 288deg, rgba(255,144,98,.78) 312deg, rgba(0,0,0,0) 360deg);
+  filter:blur(1px) saturate(1.08);
+  mask:radial-gradient(circle, transparent 0 29%, #000 34% 50%, transparent 56% 100%);
+  opacity:.98;
+  transform:rotate(-14deg) scaleX(1.3) scaleY(.58);
+  z-index:3;
+}
+.hd224-visual .hd224-astro-glow{
+  position:absolute;
+  width:88%;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(126,98,255,.24) 0%, rgba(126,98,255,.16) 14%, rgba(126,98,255,.05) 30%, transparent 58%);
+  filter:blur(14px);
+  z-index:1;
+}
+.hd224-visual .hd224-astro-lensing{
+  position:absolute;
+  width:98%;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 40%, rgba(255,255,255,.16) 41%, transparent 43%),
+    radial-gradient(circle at 50% 50%, transparent 0 26%, rgba(132,109,255,.28) 28%, transparent 31%);
+  opacity:.46;
+  transform:scaleY(.72);
+  z-index:2;
+}
+.hd224-visual .hd224-astro-ring{
+  position:absolute;
+  border:1px solid rgba(152,137,255,.16);
+  border-radius:50%;
+  filter:drop-shadow(0 0 10px rgba(112,102,255,.08));
+}
+.hd224-visual .hd224-astro-ring-a{width:78%;height:40%;right:3%;top:17%;transform:rotate(18deg)}
+.hd224-visual .hd224-astro-ring-b{width:66%;height:31%;right:8%;top:42%;transform:rotate(-14deg)}
+.hd224-visual .hd224-astro-ring-c{width:44%;height:22%;right:18%;top:56%;transform:rotate(7deg);opacity:.58}
+.hd224-visual .hd224-astro-stars,
+.hd224-visual .hd224-astro-stars-secondary{
+  position:absolute;
+  inset:0;
+  opacity:.88;
+  background-repeat:no-repeat;
+}
+.hd224-visual .hd224-astro-stars{
+  background-image:
+    radial-gradient(circle at 58% 16%, rgba(255,255,255,.9) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 64% 28%, rgba(255,255,255,.8) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 84% 14%, rgba(255,255,255,.72) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 78% 78%, rgba(255,255,255,.72) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 92% 63%, rgba(255,255,255,.8) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 69% 58%, rgba(255,255,255,.85) 0 1px, transparent 1.2px);
+}
+.hd224-visual .hd224-astro-stars-secondary{
+  background-image:
+    linear-gradient(transparent, transparent),
+    radial-gradient(circle at 72% 10%, rgba(255,205,150,.85) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 88% 38%, rgba(155,142,255,.95) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 58% 50%, rgba(151,242,255,.7) 0 1px, transparent 1.3px),
+    radial-gradient(circle at 76% 88%, rgba(160,140,255,.7) 0 1px, transparent 1.3px);
+  opacity:.65;
+}
+.hd224-visual .discipline-astronomy .hd222-expedition-action>button{
+  background:linear-gradient(105deg,#9a77ff 0%, #6c62ff 44%, #556dff 100%)!important;
+  box-shadow:0 18px 42px rgba(88,87,255,.24), inset 0 1px 0 rgba(255,255,255,.24);
+}
+.hd224-visual .discipline-astronomy .hd222-progress-title>em,
+.hd224-visual .discipline-astronomy .hd220-section-cap b{
+  color:#b598ff;
+}
+.hd224-visual .discipline-astronomy .hd222-progress-strip{
+  background:linear-gradient(145deg,rgba(120,100,255,.08),rgba(255,255,255,.02));
+  border-color:rgba(133,103,255,.18);
+}
+.hd224-visual .discipline-astronomy .hd222-next-grid .hd220-next-card{
+  background:linear-gradient(145deg,rgba(124,96,255,.06),rgba(255,255,255,.02));
+  border-color:rgba(133,103,255,.15);
+}
+@media(max-width:430px){
+  .hd224-visual .discipline-astronomy .hd222-expedition-copy{width:54%}
+  .hd224-visual .discipline-astronomy .hd222-expedition-copy h2{font-size:clamp(2.28rem,8.7vw,3rem)}
+  .hd224-visual .discipline-astronomy .hd222-expedition-copy p{font-size:.87rem;max-width:18ch}
+  .hd224-visual .discipline-astronomy .hd222-expedition-art{width:58%;top:20px;height:calc(100% - 20px)}
+  .hd224-visual .hd224-astro-blackhole{width:92%;top:22%;right:-3%}
+}
+@media(max-width:370px){
+  .hd224-visual .discipline-astronomy .hd222-expedition-copy{width:60%}
+  .hd224-visual .discipline-astronomy .hd222-expedition-copy h2{font-size:2rem}
+  .hd224-visual .discipline-astronomy .hd222-expedition-copy p{-webkit-line-clamp:4;font-size:.81rem;max-width:16.5ch}
+  .hd224-visual .discipline-astronomy .hd222-expedition-art{width:56%;opacity:.96}
+}
