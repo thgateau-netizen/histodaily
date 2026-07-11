@@ -4904,3 +4904,204 @@
     if (state?.tab === "lesson" && VIKING_IDS.includes(String(state.currentLessonId || ""))) render({ immediate: true });
   } catch {}
 })();
+
+/* =========================================================
+   Beta 218 — vraie refonte de l’accueil
+   Une seule mission centrale, une reprise compacte et une découverte.
+   Les anciens empilements (snapshot, grande saison, recommandations multiples,
+   notes de version) ne sont plus rendus sur l’accueil.
+   ========================================================= */
+(function beta218HomeRefactor(){
+  const VERSION = "1.0.0-beta.218.0";
+
+  function esc(value){
+    try { return escapeHtml(String(value ?? "")); }
+    catch { return String(value ?? "").replace(/[&<>\"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[char]); }
+  }
+  function linkedLessonFor(mystery){
+    if (!mystery?.lessonId) return null;
+    try { return curatedLessonById(mystery.lessonId) || allLessons().find(item => item.id === mystery.lessonId) || null; }
+    catch { return null; }
+  }
+  function safeContent(lesson){
+    if (!lesson) return null;
+    try { return buildLessonContent(lesson); }
+    catch { return { title: lesson.title || "Cours associé", hook: "Comprendre le sujet et retenir l’idée essentielle." }; }
+  }
+  function stageData(mystery, lesson){
+    const solved = Boolean(mystery && mysterySolved(mystery.id));
+    const courseDone = Boolean(lesson && lessonDone(lesson.id));
+    const quizDone = Boolean(lesson && lessonQuizPassed(lesson.id));
+    const content = safeContent(lesson);
+    const solvedMeta = mystery ? (state.solvedMysteries?.[mystery.id] || {}) : {};
+
+    if (!mystery) {
+      return { stage: 1, kind: "catalog", title: "Choisis un parcours", subtitle: "Le dossier quotidien n’est pas disponible. Tous les cours restent accessibles.", button: "Voir les cours", meta: "Accès libre" };
+    }
+    if (!solved) {
+      return {
+        stage: 1,
+        kind: "mystery",
+        title: mysteryDisplayTitle(mystery),
+        subtitle: short(mysteryTeaser(mystery), 126),
+        button: "Résoudre le mystère",
+        meta: `+${dailyRewardPreview().gems} gemme${dailyRewardPreview().gems > 1 ? "s" : ""} aujourd’hui`
+      };
+    }
+    if (lesson && !courseDone) {
+      return {
+        stage: 2,
+        kind: "lesson",
+        view: "express",
+        title: content?.title || lesson.title,
+        subtitle: "Le mystère est résolu. Lis maintenant le cours associé pour comprendre pourquoi la réponse était juste.",
+        button: "Lire le cours",
+        meta: `${Number(solvedMeta.score || 0)} XP · mystère résolu`
+      };
+    }
+    if (lesson && !quizDone) {
+      return {
+        stage: 3,
+        kind: "lesson",
+        view: "quiz",
+        title: "Relier les idées",
+        subtitle: `Vérifie que tu as compris « ${content?.title || lesson.title} » avec le quiz du cours.`,
+        button: "Faire le quiz",
+        meta: "Étape de validation"
+      };
+    }
+    return {
+      stage: 4,
+      kind: lesson ? "lesson" : "mystery",
+      view: "complete",
+      title: "Expédition terminée",
+      subtitle: lesson ? `Le dossier et le cours « ${content?.title || lesson.title} » sont terminés.` : "Le dossier du jour est terminé.",
+      button: lesson ? "Revoir le cours" : "Revoir le dossier",
+      meta: `Nouveau dossier dans ${timeToNextDaily()}`
+    };
+  }
+  function routeMarkup(stage){
+    const steps = ["Résoudre", "Comprendre", "Relier", "Retenir"];
+    return `<ol class="hd218-route" aria-label="Progression de l’expédition">${steps.map((label, index) => {
+      const number = index + 1;
+      const status = number < stage ? "done" : (number === stage ? "current" : "locked");
+      return `<li class="${status}"><span>${number < stage ? "✓" : number}</span><b>${label}</b></li>`;
+    }).join("")}</ol>`;
+  }
+  function resumeLesson(disciplineId, excludedIds = []){
+    const excluded = new Set(excludedIds.filter(Boolean));
+    let lesson = null;
+    try { lesson = disciplineId === "history" ? homeContinueLesson() : pickModeLesson(disciplineId); } catch {}
+    if (lesson && excluded.has(lesson.id)) lesson = null;
+    if (!lesson) {
+      try { lesson = readyLessonsForDiscipline(disciplineId).find(item => !excluded.has(item.id) && !lessonDone(item.id) && !lessonLockedByDailyMystery(item)) || null; }
+      catch {}
+    }
+    return lesson;
+  }
+  function discoveryLesson(disciplineId, excludedIds = []){
+    const excluded = new Set(excludedIds.filter(Boolean));
+    try {
+      const suggestions = disciplineId === "history" ? homeDiscoveryLessons() : rotatedModeLessons(disciplineId, 3);
+      return suggestions.find(item => !excluded.has(item.id))
+        || readyLessonsForDiscipline(disciplineId).find(item => !excluded.has(item.id) && !lessonLockedByDailyMystery(item))
+        || null;
+    } catch { return null; }
+  }
+  function lessonMeta(lesson){
+    if (!lesson) return "";
+    try {
+      const world = lessonWorld(lesson);
+      return `${lessonEpochLabel(world)} · ${world.title || "Parcours"}`;
+    } catch { return "Cours"; }
+  }
+  function openMystery(mystery, disciplineId){
+    if (!mystery) return;
+    setState({ tab: "mystery", currentMysteryId: mystery.id, currentMysteryDiscipline: disciplineId, currentDiscipline: disciplineId });
+  }
+
+  renderHome = function beta218RenderHome(){
+    const disciplineId = activeDisciplineId();
+    const discipline = disciplineById(disciplineId);
+    const mystery = dailyMystery();
+    const linkedLesson = linkedLessonFor(mystery);
+    const stage = stageData(mystery, linkedLesson);
+    const resume = resumeLesson(disciplineId, [stage.kind === "lesson" ? linkedLesson?.id : null]);
+    const discovery = discoveryLesson(disciplineId, [linkedLesson?.id, resume?.id]);
+    const resumeContent = safeContent(resume);
+    const discoveryContent = safeContent(discovery);
+    const disciplineLessons = (() => { try { return readyLessonsForDiscipline(disciplineId); } catch { return []; } })();
+    const completed = disciplineLessons.filter(item => lessonDone(item.id)).length;
+    const total = disciplineLessons.length;
+    const progress = total ? Math.round((completed / total) * 100) : 0;
+
+    renderShell(`<div class="hd218-home" style="--discipline-accent:${esc(discipline.accent)}">
+      <header class="hd218-home-head">
+        <div><span>HistoDaily</span><h1>Ton parcours</h1></div>
+        <div class="hd218-head-stats" aria-label="Statistiques"><b title="Série">🔥 ${state.streak || 0}</b><b title="Gemmes">◆ ${state.gems || 0}</b><b title="Niveau">Niv. ${level()}</b></div>
+      </header>
+
+      ${modeSwitcherMarkup()}
+
+      <section class="hd218-expedition">
+        <header><span class="hd218-label">Expédition du jour</span><strong>${stage.stage}/4</strong></header>
+        <div class="hd218-expedition-copy">
+          <small>${stage.stage === 1 ? "Dossier à résoudre" : stage.stage === 4 ? "Terminé aujourd’hui" : `Étape ${stage.stage} · ${["", "Résoudre", "Comprendre", "Relier", "Retenir"][stage.stage]}`}</small>
+          <h2>${esc(stage.title)}</h2>
+          <p>${esc(stage.subtitle)}</p>
+        </div>
+        <div class="hd218-expedition-action"><button type="button" data-hd218-expedition>${esc(stage.button)} <span>→</span></button><em>${esc(stage.meta)}</em></div>
+        ${routeMarkup(stage.stage)}
+      </section>
+
+      <section class="hd218-section">
+        <header><div><span>À continuer</span><h2>Reprendre sans chercher</h2></div><b>${progress}%</b></header>
+        ${resume ? `<article class="hd218-compact-card" data-hd218-resume-card tabindex="0" role="button">
+          <div class="hd218-card-icon">${HD_ICONS.lesson(resume, lessonWorld(resume), disciplineForLessonObject(resume))}</div>
+          <div><small>${esc(lessonMeta(resume))}</small><h3>${esc(resumeContent?.title || resume.title)}</h3><span>${completed}/${total} cours validés</span></div>
+          <button type="button" data-hd218-resume>Ouvrir</button>
+        </article>` : `<article class="hd218-compact-card hd218-empty-card"><div class="hd218-card-icon">${HD_ICONS.action("check")}</div><div><small>Parcours à jour</small><h3>Choisis librement le prochain cours</h3><span>${completed}/${total} cours validés</span></div><button type="button" data-hd218-catalog>Voir</button></article>`}
+      </section>
+
+      <section class="hd218-section hd218-discovery">
+        <header><div><span>À découvrir</span><h2>Une seule suggestion, pas une liste</h2></div><button type="button" class="ghost" data-hd218-catalog>Tout voir</button></header>
+        ${discovery ? `<article class="hd218-compact-card" data-hd218-discovery-card tabindex="0" role="button">
+          <div class="hd218-card-icon">${HD_ICONS.lesson(discovery, lessonWorld(discovery), disciplineForLessonObject(discovery))}</div>
+          <div><small>${esc(lessonMeta(discovery))}</small><h3>${esc(discoveryContent?.title || discovery.title)}</h3><span>Express · cours complet · quiz</span></div>
+          <button type="button" data-hd218-discovery>Découvrir</button>
+        </article>` : `<article class="hd218-compact-card hd218-empty-card"><div class="hd218-card-icon">${HD_ICONS.action("courses")}</div><div><small>Catalogue</small><h3>Explore les chapitres disponibles</h3><span>Choisis une époque ou un thème</span></div><button type="button" data-hd218-catalog>Ouvrir</button></article>`}
+      </section>
+    </div>`);
+
+    const homeShell = document.querySelector(".app-shell.tab-home");
+    if (homeShell) {
+      homeShell.classList.add("hd218-home-shell");
+      homeShell.dataset.hd187Enhanced = "1";
+    }
+    document.querySelectorAll("[data-home-discipline]").forEach(button => button.addEventListener("click", () => switchHomeDiscipline(button.dataset.homeDiscipline)));
+
+    document.querySelector("[data-hd218-expedition]")?.addEventListener("click", () => {
+      if (stage.kind === "mystery") return openMystery(mystery, disciplineId);
+      if (stage.kind === "lesson" && linkedLesson) return openLessonFromHome(linkedLesson.id, stage.view || "express");
+      openModeLearn(disciplineId);
+    });
+
+    const openResume = () => resume ? openLessonFromHome(resume.id, "express") : openModeLearn(disciplineId);
+    document.querySelector("[data-hd218-resume]")?.addEventListener("click", event => { event.stopPropagation(); openResume(); });
+    document.querySelector("[data-hd218-resume-card]")?.addEventListener("click", openResume);
+    document.querySelector("[data-hd218-resume-card]")?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openResume(); } });
+
+    const openDiscovery = () => discovery ? openLessonFromHome(discovery.id, "express") : openModeLearn(disciplineId);
+    document.querySelector("[data-hd218-discovery]")?.addEventListener("click", event => { event.stopPropagation(); openDiscovery(); });
+    document.querySelector("[data-hd218-discovery-card]")?.addEventListener("click", openDiscovery);
+    document.querySelector("[data-hd218-discovery-card]")?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDiscovery(); } });
+    document.querySelectorAll("[data-hd218-catalog]").forEach(button => button.addEventListener("click", () => openModeLearn(disciplineId)));
+  };
+
+  try {
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, homeRefactor218: true };
+  } catch {}
+  try {
+    window.setTimeout(() => { if (state?.tab === "home") render({ immediate: true }); }, 0);
+  } catch {}
+})();
