@@ -5397,3 +5397,102 @@ body{
   .hd224-visual .discipline-astronomy .hd222-expedition-copy p{-webkit-line-clamp:4;font-size:.81rem;max-width:16.5ch}
   .hd224-visual .discipline-astronomy .hd222-expedition-art{width:56%;opacity:.96}
 }
+
+/* =========================================================
+   HistoDaily beta 225 — astronomy black hole visual upgrade
+   Uses an integrated art asset cropped from the approved mockup,
+   blended into the hero instead of a plain pasted photo feel.
+   ========================================================= */
+.hd225-visual .discipline-astronomy .hd222-expedition{
+  background:
+    radial-gradient(circle at 79% 34%, rgba(149,118,255,.24) 0%, rgba(149,118,255,.08) 16%, transparent 34%),
+    radial-gradient(circle at 82% 38%, rgba(255,190,128,.10) 0%, transparent 21%),
+    linear-gradient(135deg,#0f1232 0%,#08102b 46%,#05091a 100%);
+}
+.hd225-visual .discipline-astronomy .hd222-expedition-body{ min-height: 340px; }
+.hd225-visual .discipline-astronomy .hd222-expedition-copy{ width:45%; z-index:4; }
+.hd225-visual .discipline-astronomy .hd222-expedition-copy::after{
+  inset:-30px 0 -18px -28px;
+  background:linear-gradient(90deg, rgba(5,8,21,.98) 0%, rgba(5,8,21,.94) 52%, rgba(5,8,21,.60) 73%, rgba(5,8,21,.14) 88%, transparent 100%);
+}
+.hd225-visual .discipline-astronomy .hd222-expedition-copy h2{
+  max-width:6.8ch;
+  font-size:clamp(2.86rem,9.5vw,4rem);
+  line-height:.9;
+  text-wrap:balance;
+}
+.hd225-visual .discipline-astronomy .hd222-expedition-copy p{
+  max-width:18.8ch;
+  color:#cfd5ef;
+}
+.hd225-visual .discipline-astronomy .hd222-expedition-art{
+  width:64%;
+  right:-1.5%;
+  top:8px;
+  height:calc(100% - 8px);
+  opacity:1;
+  overflow:hidden;
+}
+.hd225-visual .discipline-astronomy .hd222-expedition-art::before,
+.hd225-visual .discipline-astronomy .hd222-expedition-art::after{ content:none; }
+.hd225-visual .hd225-astro-hero{
+  position:relative;
+  width:100%;
+  height:100%;
+  border-radius:34px;
+  overflow:hidden;
+}
+.hd225-visual .hd225-astro-visual,
+.hd225-visual .hd225-astro-overlay,
+.hd225-visual .hd225-astro-dust{
+  position:absolute;
+  inset:0;
+}
+.hd225-visual .hd225-astro-visual{
+  background-image:url('./hero-astronomy-art-v2.png');
+  background-repeat:no-repeat;
+  background-size:cover;
+  background-position:54% 48%;
+  transform:scale(1.10);
+  filter:saturate(1.12) contrast(1.06) brightness(1.02) drop-shadow(0 24px 48px rgba(0,0,0,.30));
+}
+.hd225-visual .hd225-astro-overlay{
+  background:
+    radial-gradient(circle at 68% 43%, rgba(145,113,255,.22) 0%, transparent 28%),
+    radial-gradient(circle at 79% 40%, rgba(255,188,118,.12) 0%, transparent 18%),
+    linear-gradient(90deg, rgba(6,10,24,.10) 0%, rgba(6,10,24,.02) 32%, transparent 46%),
+    linear-gradient(180deg, rgba(6,10,24,.00) 0%, rgba(6,10,24,.03) 68%, rgba(6,10,24,.20) 100%);
+  mix-blend-mode:screen;
+  opacity:.95;
+}
+.hd225-visual .hd225-astro-dust{
+  background:
+    radial-gradient(circle at 61% 15%, rgba(255,255,255,.9) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 82% 18%, rgba(255,202,150,.9) 0 1.3px, transparent 1.8px),
+    radial-gradient(circle at 73% 61%, rgba(255,255,255,.7) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 88% 73%, rgba(162,143,255,.75) 0 1.2px, transparent 1.7px),
+    radial-gradient(circle at 58% 33%, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 92% 45%, rgba(255,255,255,.7) 0 1px, transparent 1.5px);
+  opacity:.8;
+}
+.hd225-visual .discipline-astronomy .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#9d79ff 0%, #786dff 52%, #6478ff 100%)!important;
+  box-shadow:0 18px 44px rgba(102,84,255,.26), inset 0 1px 0 rgba(255,255,255,.24);
+}
+.hd225-visual .discipline-astronomy .hd222-progress-strip,
+.hd225-visual .discipline-astronomy .hd222-next-grid .hd220-next-card{
+  border-color:rgba(143,112,255,.18);
+}
+@media (max-width: 430px){
+  .hd225-visual .discipline-astronomy .hd222-expedition-copy{ width:50%; }
+  .hd225-visual .discipline-astronomy .hd222-expedition-copy h2{ font-size:clamp(2.36rem,8.9vw,3.2rem); }
+  .hd225-visual .discipline-astronomy .hd222-expedition-copy p{ max-width:17.6ch; font-size:.88rem; }
+  .hd225-visual .discipline-astronomy .hd222-expedition-art{ width:63%; right:-4%; top:12px; height:calc(100% - 12px); }
+  .hd225-visual .hd225-astro-visual{ background-position:56% 48%; transform:scale(1.12); }
+}
+@media (max-width: 370px){
+  .hd225-visual .discipline-astronomy .hd222-expedition-copy{ width:54%; }
+  .hd225-visual .discipline-astronomy .hd222-expedition-copy h2{ font-size:2.08rem; }
+  .hd225-visual .discipline-astronomy .hd222-expedition-copy p{ font-size:.82rem; max-width:16.4ch; -webkit-line-clamp:4; }
+  .hd225-visual .discipline-astronomy .hd222-expedition-art{ width:60%; }
+}

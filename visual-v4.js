@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.224.0";
+  const VERSION = "1.0.0-beta.225.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }
@@ -12,7 +12,7 @@
   const safe = (fn, fallback = null) => { try { const value = fn(); return value ?? fallback; } catch { return fallback; } };
   let profileMountGeneration = 0;
 
-  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual");
+  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual", "hd225-visual");
 
   function disciplineLabel(discipline){
     const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", astronomy:"Astronomie", economy:"Économie", geography:"Géographie", music:"Musique" };
@@ -128,19 +128,10 @@
 
   function heroArtwork(disciplineId, title = ""){
     if (disciplineId === "astronomy") {
-      return `<div class="hd224-astro-hero" role="img" aria-label="Illustration d’un trou noir stylisé">
-        <div class="hd224-astro-nebula"></div>
-        <div class="hd224-astro-ring hd224-astro-ring-a"></div>
-        <div class="hd224-astro-ring hd224-astro-ring-b"></div>
-        <div class="hd224-astro-ring hd224-astro-ring-c"></div>
-        <div class="hd224-astro-blackhole">
-          <div class="hd224-astro-core"></div>
-          <div class="hd224-astro-accretion"></div>
-          <div class="hd224-astro-glow"></div>
-          <div class="hd224-astro-lensing"></div>
-        </div>
-        <div class="hd224-astro-stars"></div>
-        <div class="hd224-astro-stars hd224-astro-stars-secondary"></div>
+      return `<div class="hd225-astro-hero" role="img" aria-label="Illustration d’un trou noir stylisé">
+        <div class="hd225-astro-visual"></div>
+        <div class="hd225-astro-overlay"></div>
+        <div class="hd225-astro-dust"></div>
       </div>`;
     }
     const uid = `hd222-${String(disciplineId || "world").replace(/[^a-z0-9-]/gi, "")}`;
