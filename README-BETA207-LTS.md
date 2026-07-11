@@ -50,3 +50,15 @@ Le dossier peut être déployé tel quel sur Vercel. Après mise en ligne, ouvri
 - Bandeau d’accueil mobile repassé sur une seule colonne, sans chevauchement de l’illustration.
 - Navigation basse réduite pour libérer la zone utile et respecter la safe area iOS.
 - Mise en cache PWA renouvelée (`histodaily-beta207-lts-v2`) et ressources repérées `1.0.0-beta.207.1`.
+
+## Correctif mobile 207.2
+- Réserve de défilement augmentée sous les pages pour que la navigation flottante ne masque plus les derniers boutons et cartes.
+- Rail des disciplines mieux terminé sur mobile, avec marge droite et défilement horizontal sans barre visible.
+- Cache PWA renouvelé (`histodaily-beta207-lts-v3`) et ressources repérées `1.0.0-beta.207.2`.
+
+
+## Accueil vivant 208.0
+
+- Expédition du jour restructurée autour de la prochaine action, avec parcours en quatre étapes, progression animée et informations de durée.
+- Accueil rendu plus vivant par des animations CSS légères, respectant `prefers-reduced-motion`.
+- Cache PWA renouvelé (`histodaily-beta208-v1`) et ressources repérées `1.0.0-beta.208.0`.

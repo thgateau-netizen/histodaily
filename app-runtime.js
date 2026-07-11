@@ -2521,9 +2521,11 @@
   }
 
   function stageMarkup({ number, icon, title, text, done, current, action, disabled = false }){
-    return `<button type="button" class="hd187-expedition-step ${done ? "done" : ""} ${current ? "current" : ""}" ${action ? `data-hd187-action="${esc(action)}"` : ""} ${disabled ? "disabled" : ""}>
-      <span class="hd187-step-number">${done ? HD_ICONS.action("check") : icon || number}</span>
-      <span><b>${esc(title)}</b><small>${esc(text)}</small></span>
+    return `<button type="button" class="hd208-expedition-step ${done ? "done" : ""} ${current ? "current" : ""}" ${action ? `data-hd187-action="${esc(action)}"` : ""} ${disabled ? "disabled" : ""} aria-label="Étape ${number} : ${esc(title)}">
+      <span class="hd208-step-rail" aria-hidden="true"></span>
+      <span class="hd208-step-number">${done ? HD_ICONS.action("check") : icon || number}</span>
+      <span class="hd208-step-copy"><b>${esc(title)}</b><small>${esc(text)}</small></span>
+      <span class="hd208-step-state" aria-hidden="true">${done ? "Fait" : current ? "À toi" : number}</span>
     </button>`;
   }
 
@@ -2533,21 +2535,44 @@
     const lessonTitle = info.lesson?.title || "Cours associé";
     const connectionTitle = info.connection?.title || "Connexion à découvrir";
     const next = !info.mysteryDone ? "mystery" : !info.lessonDoneNow ? "lesson" : !info.connectionDone ? "connection" : !info.recallDone ? "recall" : "done";
-    return `<section class="card hd187-expedition-card" style="--discipline-accent:${esc(disciplineById(activeDisciplineId()).accent)}">
-      <div class="hd187-expedition-head">
-        <div><span class="card-label">Expédition du jour</span><h2>Résous, comprends, relie, retiens</h2><p>Une session guidée de quelques minutes. Tu peux quitter ce parcours à tout moment et ouvrir librement n’importe quel cours.</p></div>
-        <strong>${info.done}/4</strong>
+    const nextMeta = {
+      mystery: { kicker: "Étape 1", title: "Ouvre l’enquête", text: mysteryTitle, cta: "Lancer le mystère", icon: "?" },
+      lesson: { kicker: "Étape 2", title: "Passe derrière l’énigme", text: lessonTitle, cta: "Lire le cours", icon: "↗" },
+      connection: { kicker: "Étape 3", title: "Fais le lien", text: connectionTitle, cta: "Explorer la connexion", icon: "∞" },
+      recall: { kicker: "Étape 4", title: "Ancre l’idée", text: info.daily?.log?.planType === "review" ? "Une notion ancienne revient aujourd’hui." : "Un rappel rapide pour ne pas oublier.", cta: "Consolider", icon: "↻" },
+      done: { kicker: "Expédition terminée", title: "Mission accomplie", text: "Tu as relié les quatre étapes du jour.", cta: "Terminé", icon: "✓" }
+    }[next];
+    const action = next === "done" ? "done" : next;
+    return `<section class="card hd187-expedition-card hd208-expedition-card" style="--discipline-accent:${esc(disciplineById(activeDisciplineId()).accent)}">
+      <div class="hd208-expedition-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="hd187-expedition-head hd208-expedition-head">
+        <div>
+          <span class="card-label"><span class="hd208-live-dot" aria-hidden="true"></span> Expédition du jour</span>
+          <h2>Ta mission avance en 4 temps</h2>
+          <p>Une énigme, un cours, une connexion, puis un rappel. Quelques minutes pour vraiment retenir.</p>
+        </div>
+        <strong aria-label="${info.done} étapes sur 4 terminées">${info.done}<small>/4</small></strong>
       </div>
-      <div class="hd187-expedition-meter"><i style="width:${pct(info.done, 4)}%"></i></div>
-      <div class="hd187-expedition-steps">
+
+      <div class="hd208-next-stage">
+        <div class="hd208-next-icon" aria-hidden="true">${nextMeta.icon}</div>
+        <div class="hd208-next-copy"><span>${nextMeta.kicker}</span><h3>${esc(nextMeta.title)}</h3><p>${esc(nextMeta.text)}</p></div>
+        <button type="button" data-hd187-action="${action}" ${next === "done" ? "disabled" : ""}>${esc(nextMeta.cta)} <b aria-hidden="true">→</b></button>
+      </div>
+
+      <div class="hd208-expedition-meta" aria-label="Informations sur l’expédition">
+        <span>◷ 6–10 min</span><span>◆ 4 étapes</span><span>↗ progression quotidienne</span>
+      </div>
+      <div class="hd187-expedition-meter hd208-expedition-meter"><i style="width:${pct(info.done, 4)}%"></i><span style="left:${pct(info.done, 4)}%"></span></div>
+      <div class="hd187-expedition-steps hd208-expedition-steps">
         ${stageMarkup({ number: 1, icon: "?", title: "Résoudre", text: mysteryTitle, done: info.mysteryDone, current: next === "mystery", action: "mystery", disabled: !info.mystery })}
         ${stageMarkup({ number: 2, icon: "↗", title: "Comprendre", text: lessonTitle, done: info.lessonDoneNow, current: next === "lesson", action: info.lesson ? `lesson:${info.lesson.id}` : "catalog", disabled: !info.lesson })}
         ${stageMarkup({ number: 3, icon: "∞", title: "Relier", text: connectionTitle, done: info.connectionDone, current: next === "connection", action: info.connection ? `lesson:${info.connection.id}` : "map", disabled: !info.connection })}
         ${stageMarkup({ number: 4, icon: "↻", title: "Retenir", text: info.daily?.log?.planType === "review" ? "Une notion ancienne à consolider" : "Un rappel ou un second cours", done: info.recallDone, current: next === "recall", action: "recall" })}
       </div>
-      <div class="hd187-expedition-footer">
-        <span>${next === "done" ? "Expédition terminée pour aujourd’hui." : "Le parcours est conseillé, jamais obligatoire."}</span>
-        <button type="button" data-hd187-action="${next}">${next === "mystery" ? "Commencer" : next === "lesson" ? "Voir le cours" : next === "connection" ? "Faire la connexion" : next === "recall" ? "Consolider" : "Terminé"}</button>
+      <div class="hd187-expedition-footer hd208-expedition-footer">
+        <span>${next === "done" ? "Reviens demain pour une nouvelle expédition." : "Chaque étape déverrouille naturellement la suivante."}</span>
+        <em>${info.done ? `${info.done} étape${info.done > 1 ? "s" : ""} validée${info.done > 1 ? "s" : ""}` : "Prêt à partir"}</em>
       </div>
     </section>`;
   }
