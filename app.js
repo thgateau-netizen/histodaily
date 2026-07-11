@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.178";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.207";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -369,22 +369,13 @@ function queueSaveState(delay = 180) {
   try { window.clearTimeout(saveStateTimer); } catch {}
   saveStateTimer = window.setTimeout(() => { saveStateTimer = null; saveState(); }, delay);
 }
-function patchNeedsPersistentSave(patch = {}) {
-  const keys = Object.keys(patch || {});
-  if (!keys.length) return false;
-  return keys.some(key => !NAVIGATION_ONLY_STATE_KEYS.has(key));
-}
-function setState(patch, options = {}) {
-  if (!patch || typeof patch !== "object") return;
-  state = { ...state, ...patch };
-  if (options.save !== false && patchNeedsPersistentSave(patch)) queueSaveState();
-  render();
-}
+/* LTS: fonction morte supprimée (patchNeedsPersistentSave). */
+/* LTS: ancienne implémentation de setState supprimée (377-382). */
 function escapeHtml(value = "") { return String(value).replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;","\"":"&quot;"}[c])); }
 function normalize(value = "") { return String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
 function percent(done, total) { return total ? Math.round((done / total) * 100) : 0; }
 function level() { return Math.floor(state.xp / 250) + 1; }
-function levelProgress() { return Math.round(((state.xp % 250) / 250) * 100); }
+/* LTS: fonction morte supprimée (levelProgress). */
 let lessonIndexCache = null;
 function lessonIndex() {
   const signature = Object.entries(data.lessons).reduce((sum, [, lessons]) => sum + (Array.isArray(lessons) ? lessons.length : 0), 0);
@@ -406,7 +397,7 @@ function allLessons() { return lessonIndex().all; }
 function lessonById(id) { return lessonIndex().byId.get(id) || null; }
 function lessonsFor(worldId) { return data.lessons[worldId] || []; }
 function lessonDone(id) { return Boolean(state.completedLessons[id]); }
-function activeWorld() { return data.worlds.find(w => w.id === state.currentWorld) || data.worlds[0] || {}; }
+/* LTS: ancienne implémentation de activeWorld supprimée (409-409). */
 function mysterySolved(id) { return Boolean(state.solvedMysteries[id]); }
 function short(text, n = 110) { return String(text || "").length > n ? String(text).slice(0, n - 1) + "…" : String(text || ""); }
 function mysteryDisplayTitle(mystery) {
@@ -455,10 +446,7 @@ function timeToNextDaily() {
   return `${hours} h ${String(minutes).padStart(2, "0")}`;
 }
 function todayClaim() { return state.dailyClaims?.[localDayKey()] || null; }
-function dailySolvedToday() {
-  const mystery = dailyMystery();
-  return Boolean(mystery && mysterySolved(mystery.id));
-}
+/* LTS: fonction morte supprimée (dailySolvedToday). */
 function dailyRewardPreview() {
   const nextStreak = state.lastDailySolvedKey === localDayKey() ? state.streak : (dayDiff(state.lastDailySolvedKey, localDayKey()) === 1 ? (state.streak || 0) + 1 : 1);
   const bonus = nextStreak > 0 && nextStreak % 7 === 0 ? 3 : 0;
@@ -486,27 +474,14 @@ function todayIndex() {
   const d = new Date();
   return Math.abs(Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY_MS)));
 }
-function publicMysteries() {
-  const curatedIds = new Set(curatedLessons().map(lesson => lesson.id));
-  const linked = (data.mysteries || []).filter(mystery => mystery?.lessonId && curatedIds.has(mystery.lessonId));
-  return linked.length ? linked : (data.mysteries || []);
-}
-function mysteryForDayOffset(offset = 0) {
-  const pool = publicMysteries();
-  if (!pool.length) return null;
-  const index = ((todayIndex() - offset) % pool.length + pool.length) % pool.length;
-  return pool[index];
-}
-function dailyMystery() { return mysteryForDayOffset(0); }
-function isTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); }
+/* LTS: ancienne implémentation de publicMysteries supprimée (489-493). */
+/* LTS: ancienne implémentation de mysteryForDayOffset supprimée (494-499). */
+/* LTS: ancienne implémentation de dailyMystery supprimée (500-500). */
+/* LTS: ancienne implémentation de isTodayMystery supprimée (501-501). */
 function isUnlockedMystery(id) { return Boolean(state.unlockedMysteries?.[id]); }
 function isAccessibleMystery(id) { return Boolean(isTodayMystery(id) || mysterySolved(id) || isUnlockedMystery(id)); }
-function currentMystery() {
-  const pool = publicMysteries();
-  const selected = pool.find(m => m.id === state.currentMysteryId);
-  return selected && isAccessibleMystery(selected.id) ? selected : dailyMystery();
-}
-function mysteryById(id) { return publicMysteries().find(m => m.id === id); }
+/* LTS: ancienne implémentation de currentMystery supprimée (504-508). */
+/* LTS: ancienne implémentation de mysteryById supprimée (509-509). */
 function archiveEntries() {
   const seen = new Set();
   const entries = [];
@@ -519,9 +494,7 @@ function archiveEntries() {
   return entries;
 }
 function archiveUnlockedCount() { return Object.keys(state.unlockedMysteries || {}).length; }
-function archiveSolvedCount() {
-  return archiveEntries().filter(entry => mysterySolved(entry.mystery.id)).length;
-}
+/* LTS: fonction morte supprimée (archiveSolvedCount). */
 function unlockPastMystery(id) {
   const mystery = mysteryById(id);
   if (!mystery) return;
@@ -541,14 +514,7 @@ function unlockPastMystery(id) {
   saveState();
   render();
 }
-function mysteryStats() {
-  const solved = Object.keys(state.solvedMysteries || {}).length;
-  const total = publicMysteries().length || 0;
-  const expertSolved = data.mysteries.filter(m => m.difficulty === "expert" && mysterySolved(m.id)).length;
-  const expertTotal = data.mysteries.filter(m => m.difficulty === "expert").length;
-  const avgScore = solved ? Math.round(Object.values(state.solvedMysteries).reduce((sum, item) => sum + (item.score || 0), 0) / solved) : 0;
-  return { solved, total, expertSolved, expertTotal, avgScore };
-}
+/* LTS: ancienne implémentation de mysteryStats supprimée (544-551). */
 function canShowNextHint(mysteryId) {
   const mystery = mysteryById(mysteryId);
   return (state.seenHints[mysteryId] || 0) < Math.min(3, (mystery?.clues || []).length);
@@ -610,17 +576,9 @@ function completeLesson(id) {
 }
 
 
-function readingMode() {
-  return state.readingMode === "complete" ? "complete" : "express";
-}
-function readingModeLabel() {
-  return readingMode() === "complete" ? "mode approfondi" : "mode rapide";
-}
-function readingModeHint() {
-  return readingMode() === "complete"
-    ? "Tu préfères le complet, mais chaque cours te demande maintenant explicitement Express / Complet / Quiz."
-    : "Les cours s’ouvrent en Express : pas de pavé imposé, Complet et Quiz sont des choix séparés.";
-}
+/* LTS: fonction morte supprimée (readingMode). */
+/* LTS: fonction morte supprimée (readingModeLabel). */
+/* LTS: fonction morte supprimée (readingModeHint). */
 function setReadingMode(mode) {
   if (!["express", "complete"].includes(mode)) return;
   setState({ readingMode: mode, lessonView: mode === "complete" ? "complete" : "express" });
@@ -861,54 +819,10 @@ function homeContinueMarkup() {
     <div class="home-card-footer"><span>${escapeHtml(detail)}</span><button type="button" data-home-continue="${escapeHtml(lesson.id)}" data-home-continue-view="${escapeHtml(view)}">${escapeHtml(action)}</button></div>
   </section>`;
 }
-function dailyChecklistMarkup() {
-  const mystery = dailyMystery();
-  const lesson = dailyLesson();
-  const mysteryDone = Boolean(mystery && mysterySolved(mystery.id));
-  const lessonDoneToday = Boolean(lesson && lessonDone(lesson.id));
-  const quizLabel = lessonDoneToday ? "cours validé" : (lesson ? "quiz à réussir" : "cours lié absent");
-  const items = [
-    { ok: mysteryDone, label: mysteryDone ? "Mystère résolu" : "Résoudre le mystère", sub: mysteryDone ? "Rituel validé" : "2 minutes, score maximum sans indice" },
-    { ok: lessonDoneToday, label: lessonDoneToday ? "Cours validé" : "Lire l’express", sub: lesson ? "intro courte avant le complet" : "Cours indépendant absent" },
-    { ok: lessonDoneToday, label: quizLabel, sub: lessonDoneToday ? "+XP et progression" : "obligatoire pour valider le cours" }
-  ];
-  return `<section class="card daily-checklist-card soft-panel"><div class="section-title-row"><div><span class="card-label">Aujourd’hui</span><h2>Un mystère, un express court, puis un vrai quiz pour valider.</h2></div><small>${readingModeLabel()}</small></div><div class="daily-checklist">${items.map(item => `<div class="${item.ok ? "done" : ""}"><b>${item.ok ? "✓" : "•"}</b><span>${escapeHtml(item.label)}<small>${escapeHtml(item.sub)}</small></span></div>`).join("")}</div></section>`;
-}
+/* LTS: fonction morte supprimée (dailyChecklistMarkup). */
 
-function nextActionMarkup() {
-  const mystery = dailyMystery();
-  const lesson = dailyLesson();
-  const mysteryDone = Boolean(mystery && mysterySolved(mystery.id));
-  const lessonDoneToday = Boolean(lesson && lessonDone(lesson.id));
-  let title = "Joue sans indice d’abord";
-  let text = "Le meilleur score vient d’une réponse précise, sans aide automatique. Les indices restent un choix volontaire.";
-  let action = "Lancer le dossier";
-  let attr = "data-next-mystery";
-  if (mysteryDone && lesson && !lessonDoneToday) {
-    title = "Continue avec le cours du jour";
-    text = "Commence par l’express, puis passe au cours complet et au quiz si tu veux valider la leçon.";
-    action = "Ouvrir le cours";
-    attr = `data-next-lesson="${escapeHtml(lesson.id)}"`;
-  } else if (mysteryDone) {
-    title = "Rituel terminé";
-    text = `Tu as fait le cœur du jeu. Nouveau dossier dans ${timeToNextDaily()} ; les archives restent un rattrapage, pas un mode infini.`;
-    action = "Voir les archives";
-    attr = "data-next-archives";
-  }
-  return `<section class="card next-action-card"><div><span class="card-label">À faire maintenant</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></div><button ${attr}>${escapeHtml(action)}</button></section>`;
-}
-function dailyRoadmapMarkup() {
-  const todaySolved = dailySolvedToday();
-  const rows = [0, 1, 2, 3].map(offset => {
-    const mystery = mysteryForDayOffset(-offset);
-    if (!mystery) return "";
-    const label = offset === 0 ? "Aujourd’hui" : offset === 1 ? "Hier" : offset === 2 ? "Avant-hier" : `J-${offset}`;
-    const stateLabel = offset === 0 ? (todaySolved ? "validé" : "à jouer") : (mysterySolved(mystery.id) ? "résolu" : "manqué");
-    const reward = offset === 0 ? `${dailyRewardPreview().gems} gemme${dailyRewardPreview().gems > 1 ? "s" : ""}` : "archive";
-    return `<div class="roadmap-day ${offset === 0 ? "today" : "past"}"><b>${escapeHtml(label)}</b><span>${difficultyStars(mystery.difficulty)} ${difficultyLabel(mystery.difficulty)}</span><small>${escapeHtml(stateLabel)} · ${escapeHtml(reward)}</small></div>`;
-  }).join("");
-  return `<section class="card daily-roadmap-card soft-panel"><div class="section-title-row"><div><span class="card-label">Rythme quotidien</span><h2>Les derniers dossiers disponibles.</h2></div><small>prochain dans ${timeToNextDaily()}</small></div><div class="roadmap-grid">${rows}</div></section>`;
-}
+/* LTS: fonction morte supprimée (nextActionMarkup). */
+/* LTS: fonction morte supprimée (dailyRoadmapMarkup). */
 
 function recentDailyCalendarMarkup({ compact = false } = {}) {
   const today = startOfLocalDay();
@@ -940,19 +854,9 @@ function weeklyScoreMarkup() {
   const rows = weeklyScoreDetails();
   return `<section class="card weekly-detail-card"><div class="section-title-row"><div><span class="card-label">Contrôle score</span><h2>Détail de ta semaine</h2></div><small>${scoreForScope("week")} XP</small></div><div class="week-score-strip">${rows.map(row => `<div class="${row.played ? "played" : ""}"><b>${escapeHtml(row.label)}</b><span>${row.score}</span></div>`).join("")}</div></section>`;
 }
-function lessonQualityLabel(lesson) {
-  return isCuratedLesson(lesson) ? "point d’entrée" : "à explorer";
-}
-function nextReadyLesson() {
-  const ready = readyLessons();
-  return ready.find(lesson => !lessonDone(lesson.id)) || ready[0] || null;
-}
-function readySpotlightMarkup() {
-  const lesson = nextReadyLesson();
-  if (!lesson) return "";
-  const world = lessonWorld(lesson);
-  return `<section class="card ready-spotlight-card soft-panel"><div><span class="card-label">Cours recommandé</span><h2>${escapeHtml(lesson.title)}</h2><p>${escapeHtml(world.title || "Parcours")} · ${lessonQualityLabel(lesson)} · bon point d’entrée.</p></div><button data-ready-spotlight="${escapeHtml(lesson.id)}">Ouvrir</button></section>`;
-}
+/* LTS: fonction morte supprimée (lessonQualityLabel). */
+/* LTS: fonction morte supprimée (nextReadyLesson). */
+/* LTS: fonction morte supprimée (readySpotlightMarkup). */
 function archiveBacklogCount() {
   return archiveEntries().filter(entry => isUnlockedMystery(entry.mystery.id) && !mysterySolved(entry.mystery.id)).length;
 }
@@ -962,42 +866,9 @@ function archiveBacklogMarkup() {
   return `<section class="card archive-backlog-card"><div><span class="card-label">Archive ouverte</span><h2>${backlog} dossier${backlog > 1 ? "s" : ""} à finir</h2><p>Tu as déjà payé les gemmes : autant le résoudre quand tu as deux minutes.</p></div><button data-scroll-archives>Voir</button></section>`;
 }
 
-function sessionCoachMarkup() {
-  if (state.dismissedCoachVersion === APP_VERSION || typeof HISTODAILY_ONBOARDING.sessionTip !== "function") return "";
-  const lesson = dailyLesson();
-  const tip = HISTODAILY_ONBOARDING.sessionTip({
-    state,
-    data,
-    readyIds: Object.keys(READY_LESSON_PACKS || {}),
-    counts: {
-      todayDone: dailySolvedToday(),
-      linkedLessonDone: Boolean(lesson && lessonDone(lesson.id)),
-      archiveBacklog: archiveBacklogCount()
-    }
-  });
-  if (!tip) return "";
-  return `<section class="card coach-card soft-panel"><div><span class="card-label">${escapeHtml(tip.label || "Conseil")}</span><h2>${escapeHtml(tip.title || "Que faire maintenant ?")}</h2><p>${escapeHtml(tip.text || "")}</p></div><div class="coach-actions"><button data-coach-action="${escapeHtml(tip.action || "mystery")}">${escapeHtml(tip.cta || "Continuer")}</button><button class="ghost" data-dismiss-coach>Masquer</button></div></section>`;
-}
-function handleCoachAction(action) {
-  const mystery = dailyMystery();
-  const lesson = dailyLesson();
-  const backlog = archiveEntries().find(entry => isUnlockedMystery(entry.mystery.id) && !mysterySolved(entry.mystery.id));
-  if (action === "daily-lesson" && lesson) return setState({ tab: "lesson", currentLessonId: lesson.id, lessonFocus: "express", lessonView: "express" });
-  if (action === "ready") {
-    const ready = nextReadyLesson();
-    if (ready) return setState({ tab: "lesson", currentLessonId: ready.id, lessonFocus: "express", lessonView: "express" });
-  }
-  if (action === "archive" && backlog) return setState({ tab: "mystery", currentMysteryId: backlog.mystery.id, archiveFeedback: "" });
-  if (action === "home") return setState({ tab: "home" });
-  return setState({ tab: "mystery", currentMysteryId: mystery?.id || null });
-}
-function readyProgressMarkup() {
-  const ready = readyLessons();
-  if (!ready.length) return "";
-  const done = ready.filter(lesson => lessonDone(lesson.id)).length;
-  const ratio = percent(done, ready.length);
-  return `<section class="card ready-progress-card soft-panel"><div class="section-title-row"><div><span class="card-label">Parcours</span><h2>${done}/${ready.length} cours validés</h2></div><small>${ratio}%</small></div><p>Les parcours recommandés ici sont les plus solides : lecture claire, détails utiles, quiz cohérent.</p><div class="progress"><i style="width:${ratio}%"></i></div><button class="ghost wide" data-open-ready-list>Voir les cours</button></section>`;
-}
+/* LTS: fonction morte supprimée (sessionCoachMarkup). */
+/* LTS: fonction morte supprimée (handleCoachAction). */
+/* LTS: fonction morte supprimée (readyProgressMarkup). */
 function learnFilter() {
   const allowed = ["all", "ready", "linked", "todo"];
   if (state.learnFilter === ("pre" + "mium")) return "ready";
@@ -1054,22 +925,7 @@ function learnFilterMarkup(all, shown) {
   return `<section class="card learn-filter-card"><div><span class="card-label">Parcours</span><h2>${shown.length} cours disponible${shown.length > 1 ? "s" : ""}</h2><p>Choisis un parcours clair : chaque cours proposé ici peut être lu puis validé par son quiz.</p></div><form class="learn-search" data-learn-search-form><input name="learnSearch" value="${escapeHtml(search)}" placeholder="Chercher : Égypte, droit, feu, révolution…" aria-label="Rechercher un cours"/><button>Rechercher</button>${search ? `<button type="button" class="ghost" data-clear-learn-search>Effacer</button>` : ""}</form>${search ? `<p class="learn-search-note">Recherche active : <b>${escapeHtml(search)}</b></p>` : ""}<div class="learn-filter-actions">${item("all", "Tous")}${item("linked", "Mystères")}${item("todo", "À faire")}</div></section>`;
 }
 
-function stateHealthReport() {
-  const solved = Object.keys(state.solvedMysteries || {}).length;
-  const ready = readyLessonCount();
-  let lastOk = "jamais";
-  try {
-    const stamp = Number(localStorage.getItem(`${STORAGE_KEY}_last_ok`) || 0);
-    if (stamp) lastOk = new Date(stamp).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
-  } catch {}
-  return {
-    solved,
-    ready,
-    backup: true,
-    lastOk,
-    status: publicMysteries().length && allLessons().length ? "OK" : "contenu à compléter"
-  };
-}
+/* LTS: fonction morte supprimée (stateHealthReport). */
 
 function revealHint(mysteryId) {
   const mystery = data.mysteries.find(m => m.id === mysteryId);
@@ -1225,21 +1081,10 @@ function homeVersionPillMarkup() {
   const versionLabel = HISTODAILY_CORE.ui?.versionLabel || APP_VERSION;
   return `<span class="version-pill">${escapeHtml(versionLabel)}</span>`;
 }
-function performanceMode() { return state.performanceMode === "balanced" ? "balanced" : "light"; }
-function applyPerformanceMode() {
-  if (typeof document === "undefined") return;
-  const mode = performanceMode();
-  document.body.classList.toggle("performance-light", mode === "light");
-  document.body.dataset.performanceMode = mode;
-}
-function setPerformanceMode(mode) {
-  setState({ performanceMode: mode === "balanced" ? "balanced" : "light" });
-}
-function performanceSettingsMarkup() {
-  const mode = performanceMode();
-  const label = mode === "light" ? "Mode fluide" : "Animations visuelles";
-  return `<section class="card performance-card"><div><span class="card-label">Performance mobile</span><h2>${escapeHtml(label)}</h2><p>${mode === "light" ? "Navigation rapide et animations légères pour garder l’app fluide." : "Animations plus visibles. À garder si ton téléphone reste fluide."}</p></div><div class="performance-actions"><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">Fluide</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">Visuel</button></div></section>`;
-}
+/* LTS: ancienne implémentation de performanceMode supprimée (1228-1228). */
+/* LTS: ancienne implémentation de applyPerformanceMode supprimée (1229-1234). */
+/* LTS: ancienne implémentation de setPerformanceMode supprimée (1235-1237). */
+/* LTS: ancienne implémentation de performanceSettingsMarkup supprimée (1238-1242). */
 async function installApp() {
   if (!installPromptEvent) {
     setState({ installFeedback: platformInstallHint() });
@@ -1255,9 +1100,7 @@ async function installApp() {
     setState({ installFeedback: platformInstallHint() });
   }
 }
-function isTextControl(element) {
-  return Boolean(element && element.closest && element.closest("input, textarea, select, [contenteditable='true']"));
-}
+/* LTS: fonction morte supprimée (isTextControl). */
 function activateTextControls(root = document) {
   root.querySelectorAll("input, textarea, select").forEach(control => {
     control.classList.add("text-entry-safe");
@@ -1269,156 +1112,18 @@ function activateTextControls(root = document) {
   });
 }
 
-function renderShell(content) {
-  applyPerformanceMode();
-  const immersiveLesson = state.tab === "lesson";
-  const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav">
-        ${navButton("home", "home", "Accueil")}
-        ${navButton("learn", "courses", "Cours")}
-        ${navButton("mystery", "mystery", "Mystère")}
-        ${navButton("rank", "ranking", "Classement")}
-        ${navButton("profile", "profile", "Profil")}
-      </nav>`;
-  app.innerHTML = `
-    <main class="app-shell tab-${state.tab} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
-      ${systemStatusMarkup()}
-      ${content}
-      ${navMarkup}
-    </main>`;
-  app.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
-    const tab = btn.dataset.tab;
-    if (!tab || tab === state.tab) return;
-    const patch = { tab };
-    if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
-    setState(patch, { save: false });
-  }));
-  activateTextControls(app);
-}
+/* LTS: ancienne implémentation de renderShell supprimée (1272-1296). */
 function navButton(tab, icon, label) { return `<button data-tab="${tab}" class="nav-item ${state.tab === tab ? "active" : ""}"><span>${HD_ICONS.action(icon)}</span><small>${label}</small></button>`; }
 
-function renderHome() {
-  const mystery = dailyMystery();
-  const reward = dailyRewardPreview();
-  const discoveries = homeDiscoveryLessons();
-  const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
-  const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} gemme${reward.gems > 1 ? "s" : ""} si tu résous aujourd’hui`;
-  renderShell(`
-    <header class="hero compact home-clean-hero">
-      <div>
-        <p class="eyebrow">HistoDaily</p>
-        <h1>Un mystère par jour, puis le cours qui va avec.</h1>
-        <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
-      </div>
-    </header>
+/* LTS: ancienne implémentation de renderHome supprimée (1299-1364). */
 
-    ${mystery ? `<section class="card home-main-card home-mystery-card" data-home-mystery role="button" tabindex="0">
-      <div class="section-title-row">
-        <div><span class="card-label">${HD_ICONS.action("mystery")} Mystère du jour</span><h2>${escapeHtml(mysteryDisplayTitle(mystery))}</h2></div>
-        <small>${solvedToday ? "résolu" : difficultyStars(mystery.difficulty)}</small>
-      </div>
-      <p>${escapeHtml(short(mysteryTeaser(mystery), 190))}</p>
-      <div class="home-card-footer"><span>${escapeHtml(nextLabel)}</span><button>${solvedToday ? "Revoir" : "Jouer"}</button></div>
-    </section>` : `<section class="card home-main-card"><h2>Aucun mystère chargé</h2><p>La donnée mystère est vide ou inaccessible.</p></section>`}
-
-    ${homeContinueMarkup()}
-
-    ${homeDiscoveryMarkup(discoveries)}
-
-    ${releaseNotesMarkup({ home: true })}
-
-    <section class="home-secondary-actions">
-      <button class="ghost" data-go-learn>Explorer les cours</button>
-      <button class="ghost" data-home-rank>Classement</button>
-      <button class="ghost" data-home-profile>Profil</button>
-    </section>`);
-
-  const openMystery = () => { const did = typeof disciplineId !== "undefined" ? disciplineId : activeDisciplineId(); return mystery && setState({ tab: "mystery", currentMysteryId: mystery.id, currentMysteryDiscipline: did, currentDiscipline: did }); };
-  const mysteryCard = $(`[data-home-mystery]`);
-  mysteryCard?.addEventListener("click", openMystery);
-  mysteryCard?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openMystery(); } });
-  document.querySelectorAll("[data-home-mystery-button]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); openMystery(); }));
-  document.querySelectorAll("[data-home-continue]").forEach(btn => btn.addEventListener("click", event => {
-    event.preventDefault();
-    event.stopPropagation();
-    openLessonFromHome(btn.dataset.homeContinue, btn.dataset.homeContinueView || "express");
-  }));
-  document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("click", event => {
-    event.stopPropagation();
-    openDiscoveredLesson(card.dataset.homeDiscovery);
-  }));
-  document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("keydown", event => {
-    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDiscoveredLesson(card.dataset.homeDiscovery); }
-  }));
-  document.querySelectorAll("[data-home-discovery-open]").forEach(btn => btn.addEventListener("click", event => {
-    event.stopPropagation();
-    openDiscoveredLesson(btn.dataset.homeDiscoveryOpen);
-  }));
-  $(`[data-refresh-discovery]`)?.addEventListener("click", event => {
-    event.preventDefault();
-    setState({ discoverOffset: (Number(state.discoverOffset) || 0) + 1 });
-  });
-  document.querySelectorAll("[data-go-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn" })));
-  $(`[data-home-rank]`)?.addEventListener("click", () => setState({ tab: "rank" }));
-  $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
-  $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
-}
-
-function renderLearn() {
-  const worlds = visibleWorlds(20);
-  let world = activeWorld();
-  if (!worlds.some(w => w.id === world.id)) world = worlds[0] || world;
-  const lessons = curatedLessonsFor(world.id);
-  const shownLessons = filterLessons(lessons);
-  const curatedInWorld = lessons.filter(isCuratedLesson);
-  renderShell(`
-    <header class="topbar"><button data-back-home>←</button><div><p class="eyebrow">Parcours</p><h1>${escapeHtml(world.title || "Histoire")}</h1></div></header>
-    <section class="chips">${worlds.map(w => `<button data-world="${w.id}" class="chip ${w.id === world.id ? "active" : ""}">${HD_ICONS.world(w, disciplineForWorldObject(w))} ${escapeHtml(w.title)}</button>`).join("")}</section>
-    ${learnFilterMarkup(lessons, shownLessons)}
-    ${curatedInWorld.length ? `<section class="card ready-strip"><div><span class="card-label">À commencer ici</span><h2>${curatedInWorld.length} cours à découvrir</h2><p>Une sélection pour entrer dans le chapitre sans se perdre.</p></div><div class="ready-mini-list">${curatedInWorld.slice(0,3).map(lesson => `<button data-ready-lesson="${lesson.id}">${HD_ICONS.lesson(lesson, world, disciplineForWorldObject(world))} ${escapeHtml(lesson.title)}</button>`).join("")}</div></section>` : ""}
-    <section class="lesson-list">
-      ${shownLessons.map((lesson, index) => lessonCard(lesson, index)).join("") || `<div class="card empty-filter-card"><h2>Aucun cours trouvé.</h2><p>${learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Essaie un autre chapitre ou reviens au parcours principal."}</p><button data-learn-filter="all">Voir tous les cours disponibles</button></div>`}
-    </section>`);
-  $("[data-back-home]")?.addEventListener("click", () => setState({ tab: "home" }));
-  document.querySelectorAll("[data-world]").forEach(btn => btn.addEventListener("click", () => setState({ currentWorld: btn.dataset.world })));
-  document.querySelectorAll("[data-learn-filter]").forEach(btn => btn.addEventListener("click", () => setState({ learnFilter: btn.dataset.learnFilter })));
-  $(`[data-learn-search-form]`)?.addEventListener("submit", event => {
-    event.preventDefault();
-    const input = event.currentTarget.querySelector("input[name='learnSearch']");
-    setState({ learnSearch: String(input?.value || "").trim() });
-  });
-  $(`[data-clear-learn-search]`)?.addEventListener("click", () => setState({ learnSearch: "" }));
-  document.querySelectorAll("[data-ready-lesson]").forEach(btn => btn.addEventListener("click", () => beta118OpenLessonById(btn.dataset.readyLesson, { source: "ready-lesson" })));
-  document.querySelectorAll("[data-lesson]").forEach(btn => btn.addEventListener("click", () => beta118OpenLessonById(btn.dataset.lesson, { source: "lesson-list" })));
-  document.querySelectorAll("[data-locked-lesson]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() })));
-}
-function lessonCard(lesson, index) {
-  const world = lessonWorld(lesson);
-  const discipline = disciplineForLessonObject(lesson);
-  const done = lessonDone(lesson.id);
-  const mystery = relatedMysteryForLesson(lesson.id);
-  const ready = Boolean(READY_LESSON_PACKS[lesson.id]);
-  const locked = lessonLockedByDailyMystery(lesson);
-  if (locked) {
-    return `<article class="card lesson-card locked" data-locked-lesson="${escapeHtml(lesson.id)}">
-      <span class="lesson-index">${HD_ICONS.action("lock")}</span>
-      <div><h2>Cours verrouillé anti-spoil</h2><p>Ce cours explique le mystère du jour. Résous le dossier pour l’ouvrir.</p><small>Commence par le mystère, puis ouvre le cours.</small></div>
-      <strong>bloqué</strong>
-    </article>`;
-  }
-  return `<article class="card lesson-card ${done ? "done" : ""}" data-lesson="${escapeHtml(lesson.id)}">
-    <span class="lesson-index">${done ? "✓" : index + 1}</span>
-    <div><h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(lesson.title)}</h2><p>${escapeHtml(lesson.period || lesson.location || "Leçon courte")}</p><small>${mystery ? "Mystère lié · " : ""}Express · Complet · Quiz</small></div>
-    <strong>${done ? "fait" : `${lesson.xp || 55} XP`}</strong>
-  </article>`;
-}
+/* LTS: ancienne implémentation de renderLearn supprimée (1366-1393). */
+/* LTS: fonction morte supprimée (lessonCard). */
 
 function lessonWorldId(lessonId) {
   return lessonIndex().worldByLessonId.get(lessonId) || state.currentWorld;
 }
-function lessonWorld(lesson) {
-  const id = lessonWorldId(lesson.id);
-  return allDisciplineWorlds().find(world => world.id === id) || activeWorld() || {};
-}
+/* LTS: ancienne implémentation de lessonWorld supprimée (1418-1421). */
 function disciplineForWorldObject(world = {}) {
   try { return disciplineById(worldDisciplineId(world)); }
   catch { return disciplineById(state.currentDiscipline || "history"); }
@@ -1434,13 +1139,8 @@ function relatedLessonForMystery(mystery) {
   if (!mystery?.lessonId) return null;
   return allLessons().find(lesson => lesson.id === mystery.lessonId) || null;
 }
-function sentenceList(items) {
-  const clean = items.filter(Boolean).map(item => String(item).trim()).filter(Boolean);
-  if (!clean.length) return "les repères du chapitre";
-  if (clean.length === 1) return clean[0];
-  return `${clean.slice(0, -1).join(", ")} et ${clean.at(-1)}`;
-}
-function normalizeDetailText(text) { return String(text || "").replace(/\s+/g, " ").trim(); }
+/* LTS: fonction morte supprimée (sentenceList). */
+/* LTS: fonction morte supprimée (normalizeDetailText). */
 function safeLower(text) { return String(text || "").toLocaleLowerCase("fr-FR"); }
 const PUBLISHED_LESSON_IDS = new Set([
   "prehistory-hominids",
@@ -1495,9 +1195,7 @@ function qualityWordCount(text = "") {
   return String(text || "").split(/\s+/).filter(Boolean).length;
 }
 
-function contentBlockWordCount(blocks = []) {
-  return blocks.map(block => `${block?.title || ""} ${block?.text || block || ""}`).join(" ").split(/\s+/).filter(Boolean).length;
-}
+/* LTS: fonction morte supprimée (contentBlockWordCount). */
 
 function extendExpressForPublished(pack = {}, lesson = {}, world = {}, profile = {}) {
   // Un cours publié doit rester publié uniquement si son express est assez solide dans les données sources.
@@ -1546,13 +1244,8 @@ function curatedLessonsFor(worldId) {
 function curatedLessonById(id) {
   return curatedLessons().find(lesson => lesson.id === id) || null;
 }
-function curatedWorlds() {
-  return data.worlds.filter(world => curatedLessonsFor(world.id).length > 0);
-}
-function visibleWorlds(limit = 20) {
-  const worlds = curatedWorlds();
-  return (worlds.length ? worlds : data.worlds).slice(0, limit);
-}
+/* LTS: ancienne implémentation de curatedWorlds supprimée (1549-1551). */
+/* LTS: ancienne implémentation de visibleWorlds supprimée (1552-1555). */
 
 function significantTokens(text = "") {
   const stop = new Set(["les","des","une","un","le","la","du","de","d","l","et","ou","en","au","aux","dans","sur","par","pour","avec","sans","vers","apres","avant","entre","monde","guerre","revolution","empire","royaume","ville","civilisation","histoire"]);
@@ -1591,12 +1284,7 @@ function lessonLockMarkup(lesson) {
   return `<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">Anti-spoil</p><h1>${HD_ICONS.action("lock")} Cours verrouillé</h1></div></header>
     <section class="card locked-course-card"><span class="card-label">Mystère du jour d’abord</span><h2>Ce cours contient la réponse ou son explication.</h2><p>Pour garder le jeu intéressant, il ne s’ouvre qu’après résolution du mystère du jour. Tu peux tenter le dossier maintenant ou choisir un autre cours dans le parcours.</p><div class="after-actions"><button data-open-daily-mystery>Résoudre le mystère</button><button class="ghost" data-back-learn>Autre cours</button></div></section>`;
 }
-function mysteryPromptKernel(mystery = {}) {
-  const prompt = maskMysteryAnswer(mystery.prompt || mystery.explanation || mystery.caseTitle || "", mystery);
-  const chunks = prompt.split(/[.!?]/).map(s => s.trim()).filter(Boolean);
-  const best = chunks.find(chunk => chunk.length > 70) || chunks[0] || prompt;
-  return short(best, 210);
-}
+/* LTS: fonction morte supprimée (mysteryPromptKernel). */
 
 const MYSTERY_SIGNAL_STOPWORDS = new Set([
   "alors", "apres", "avant", "autour", "autres", "avec", "avoir", "cette", "comme", "dans", "depuis", "donc", "dont", "entre", "etre", "leurs", "mais", "moins", "monde", "nom", "peut", "plus", "pour", "quand", "sans", "sont", "sous", "tout", "tres", "vers", "dossier", "historique", "precis", "precise", "reponse", "attend", "attendue", "cherche", "identifier", "bonne", "exact", "exacte", "guerre", "objet", "seulement", "plusieurs", "forme", "donne", "cadre", "niveau", "niveaux", "change", "changent", "acteurs", "traces", "consequences", "periode", "espace", "question", "theme", "grand", "grande", "retrouve", "retrouver", "plusieurs", "niveaux", "occupation", "zones", "suggere", "suggerent", "indique", "indiquent", "suppose", "supposent", "pourtant", "surtout", "domine", "controle", "transforme", "forme", "donner", "devient", "devenir", "continue", "possible", "capable", "capables", "cadre", "pouvoir", "politique", "raconte", "racontent", "cherche", "croiser", "mots", "compter", "siecle", "civil", "civils", "puis", "peuple", "nécessaire", "necessaire"
@@ -7328,29 +7016,11 @@ const EDITORIAL_NOTE_SIGNAL_PATTERNS = [
   /site|source|trace|objet|inscription|traité|code|assemblée|fleuve|temple|palais|monnaie|tombe|écriture|tablette|relief|archive|texte|récit|route|port|bataille|roi|reine|citoyen|esclave|souveraineté|constitution|concile|saga|rune|linéaire|limon|tribut|dirham|thing/i
 ];
 
-function editorialNoteIsConcrete(block = {}, lesson = {}, content = {}) {
-  const title = String(block.title || "").trim();
-  const text = String(block.text || block || "").trim();
-  if (!title || !text || qualityWordCount(text) < 7) return false;
-  const combined = `${title} ${text}`;
-  if (EDITORIAL_NOTE_BLOCKED_PATTERNS.some(pattern => pattern.test(combined))) return false;
-  if (/^(mot utile|méthode|methode|erreur fréquente|erreur frequente|bon réflexe|bon reflexe|question utile)$/i.test(title)) return false;
-  if (EDITORIAL_NOTE_SIGNAL_PATTERNS.some(pattern => pattern.test(combined))) return true;
-  const titleTokens = normalize(lesson.title || "").split(" ").filter(token => token.length >= 5);
-  const haystack = normalize(combined);
-  return titleTokens.some(token => haystack.includes(token));
-}
+/* LTS: fonction morte supprimée (editorialNoteIsConcrete). */
 
-function editorialNoteBlocks(content = {}, lesson = {}) {
-  const raw = Array.isArray(content.deeper) ? content.deeper : [];
-  return raw.filter(block => editorialNoteIsConcrete(block, lesson, content)).slice(0, 3);
-}
+/* LTS: fonction morte supprimée (editorialNoteBlocks). */
 
-function editorialNotesMarkup(content = {}, lesson = {}) {
-  const notes = editorialNoteBlocks(content, lesson);
-  if (!notes.length) return "";
-  return `<section class="further-list notable-list"><h2>À noter</h2>${notes.map(block => `<details class="further"><summary>${escapeHtml(block.title)}</summary><p>${escapeHtml(block.text)}</p></details>`).join("")}</section>`;
-}
+/* LTS: fonction morte supprimée (editorialNotesMarkup). */
 
 function readyLessonPack(lesson, world, mystery, profile, context) {
   const rawPack = READY_LESSON_PACKS[lesson.id];
@@ -7368,11 +7038,9 @@ function readyLessonPack(lesson, world, mystery, profile, context) {
     editorialStatus: pack.editorialStatus || "published"
   };
 }
-function readyLessonCount() { return curatedLessons().length; }
+/* LTS: fonction morte supprimée (readyLessonCount). */
 function readyLessons() { return curatedLessons(); }
-function detectTopicProfile() {
-  return null;
-}
+/* LTS: fonction morte supprimée (detectTopicProfile). */
 
 function buildLessonContent(lesson) {
   const world = lessonWorld(lesson);
@@ -7385,12 +7053,7 @@ function buildLessonContent(lesson) {
   return { title, period, place, world, mystery, unavailable: true, express: [], complete: [], deeper: [], quiz: [] };
 }
 
-function scrollLessonPart(focus) {
-  const target = document.querySelector(`[data-focus-target="${focus}"]`);
-  if (!target) return;
-  if (target.tagName.toLowerCase() === "details") target.open = true;
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
-}
+/* LTS: fonction morte supprimée (scrollLessonPart). */
 function renderCourseUnavailable(lesson = {}) {
   const world = lessonWorld(lesson);
   renderShell(`<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(world.title || "Parcours")}</p><h1>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(lesson.title || "Cours")}</h1></div></header>
@@ -7469,21 +7132,7 @@ function bindLessonDisclosureControls() {
     }
   });
 }
-function lessonMemoMarkup(lesson, content, takeaways, quizItems) {
-  const mystery = content.mystery || relatedMysteryForLesson(lesson.id);
-  const control = quizItems[0] || {};
-  const proof = takeaways.find(item => /trace|preuve|indice/i.test(item.label || "")) || takeaways[1] || takeaways[0];
-  const trap = takeaways.find(item => /erreur|pi[eè]ge|nuance/i.test(item.label || "")) || takeaways[2] || takeaways[0];
-  return `<section class="lesson-memo-card" aria-label="Fiche mémo">
-    <div class="section-title-row"><h2>${HD_ICONS.action("review")} Fiche mémo</h2><small>à relire avant le quiz</small></div>
-    <div class="memo-grid">
-      <div><b>Idée à maîtriser</b><span>${escapeHtml(proof?.text || proof || "Appuie ta réponse sur un élément du cours.")}</span></div>
-      <div><b>Nuance importante</b><span>${escapeHtml(trap?.text || trap || "Garde une réponse située et précise.")}</span></div>
-    </div>
-    <details class="memo-question"><summary>Question de contrôle</summary><p>${escapeHtml(control.q || "Quelle idée faut-il retenir ?")}</p><p>Retrouve la réponse dans le cours puis vérifie-toi avec le quiz final.</p></details>
-    ${mystery && isAccessibleMystery(mystery.id) ? `<button class="ghost wide" data-open-linked-mystery="${escapeHtml(mystery.id)}">Revoir le mystère lié</button>` : ""}
-  </section>`;
-}
+/* LTS: fonction morte supprimée (lessonMemoMarkup). */
 
 function lessonView() {
   return ["express", "complete", "quiz"].includes(state.lessonView) ? state.lessonView : "express";
@@ -8002,7 +7651,7 @@ function solvedCountForScope(scope = "daily") {
     return at >= start && at < end;
   }).length;
 }
-function leaderboardSeed(scope = "daily") { return []; }
+/* LTS: fonction morte supprimée (leaderboardSeed). */
 function remoteLeaderboardRows(scope = state.rankScope || "daily") {
   const bucket = state.serverLeaderboards?.[scope];
   if (!Array.isArray(bucket) || !bucket.length) return [];
@@ -8159,9 +7808,7 @@ async function fetchServerFriends({ force = false } = {}) {
   }
 }
 function ensureServerFriends() { fetchServerFriends().catch(() => {}); }
-function userRank(scope = "daily") {
-  return leaderboardRows(scope).find(row => row.me)?.rank || 999;
-}
+/* LTS: fonction morte supprimée (userRank). */
 function renderRank() {
   const scope = state.rankScope || "daily";
   ensureServerLeaderboard(scope);
@@ -8218,7 +7865,7 @@ function difficultyLabel(difficulty = "moyen") {
   if (difficulty === "expert") return "expert";
   return "corsé";
 }
-function unlockedAchievements() { return Object.values(state.achievements).filter(Boolean).length; }
+/* LTS: fonction morte supprimée (unlockedAchievements). */
 
 
 const DEMO_PLAYERS = [];
@@ -8250,11 +7897,7 @@ function myBadges() {
   if (!badges.length) badges.push("Débutant");
   return badges.slice(0, 3);
 }
-function stableHash(value = "") {
-  let h = 0;
-  String(value).split("").forEach(ch => { h = ((h << 5) - h + ch.charCodeAt(0)) | 0; });
-  return Math.abs(h);
-}
+/* LTS: fonction morte supprimée (stableHash). */
 function friendCodeFromRawInput(raw = "") {
   let value = String(raw || "").trim();
   if (!value) return "";
@@ -8458,42 +8101,10 @@ function currentPseudo() {
   const pseudo = sanitizePseudo(fromInput || state.pseudo || "");
   return pseudo && !/^invité$/i.test(pseudo) ? pseudo : "Invité";
 }
-function pseudoInputValue(event) {
-  const target = event?.target || event?.currentTarget || null;
-  const form = target?.closest?.("form") || document.querySelector("[data-pseudo-form]");
-  const input = document.querySelector("[data-pseudo-input]") || form?.querySelector("input[name='pseudo']") || target;
-  return input?.value || "";
-}
-function savePseudoValue(rawValue, { source = "normal" } = {}) {
-  const pseudo = sanitizePseudo(rawValue);
-  if (pseudo.length < 3) {
-    const input = document.querySelector("[data-pseudo-input]");
-    input?.focus?.();
-    setState({ profileFeedback: "Choisis un pseudo d’au moins 3 caractères." });
-    return false;
-  }
-  const nextState = mergeState(defaultState, { ...state, pseudo, profileFeedback: `Pseudo enregistré : ${pseudo}` });
-  state = nextState;
-  state.serverLeaderboards = {};
-  state.serverLeaderboardStatus = {};
-  saveState();
-  syncMyProfileToServer({ source }).then(() => {
-    fetchServerFriends({ force: true }).catch(() => {});
-    ["daily", "week", "year", "friends"].forEach(scope => fetchServerLeaderboard(scope, { force: true }).catch(() => {}));
-  }).catch(() => {});
-  render();
-  return true;
-}
-function updatePseudo(event) {
-  event?.preventDefault?.();
-  event?.stopPropagation?.();
-  return savePseudoValue(pseudoInputValue(event), { source: "form" });
-}
-function promptPseudoEdit() {
-  const value = window.prompt("Ton pseudo HistoDaily", state.pseudo || "");
-  if (value === null) return;
-  savePseudoValue(value, { source: "prompt" });
-}
+/* LTS: ancienne implémentation de pseudoInputValue supprimée (8461-8466). */
+/* LTS: ancienne implémentation de savePseudoValue supprimée (8467-8486). */
+/* LTS: ancienne implémentation de updatePseudo supprimée (8487-8491). */
+/* LTS: ancienne implémentation de promptPseudoEdit supprimée (8492-8496). */
 async function syncMyProfileToServer({ source = "profile" } = {}) {
   if (!isOnline) return;
   try {
@@ -8772,9 +8383,7 @@ function settingsInnerMarkup(markup, extraClass = "") {
 function profileSettingsMarkup() {
   return `<section class="card profile-settings-card"><div class="section-title-row"><div><span class="card-label">Réglages</span><h2>Préférences et contrôle</h2><p>Choisis ton mode d’affichage et retrouve ton rythme de jeu.</p></div></div>${settingsInnerMarkup(performanceSettingsMarkup(), "performance-card")}${settingsInnerMarkup(recentDailyCalendarMarkup({ compact: true }), "calendar-card")}</section>`;
 }
-function inviteToolsMarkup() {
-  return `<section class="card invite-card"><div><span class="card-label">Code ami</span><h2>Ton profil partageable</h2><p>Pas de chat. Ce code sert seulement à t’ajouter en ami et voir ton profil dans les classements.</p></div><div class="friend-code"><strong>${escapeHtml(friendCode())}</strong><button data-share-invite>Partager</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
-}
+/* LTS: fonction morte supprimée (inviteToolsMarkup). */
 function renderProfile() {
   ensureServerFriends();
   const friends = friendProfiles();
@@ -9025,32 +8634,9 @@ function ringSlicePath(index, total, innerRadius, outerRadius, gapDeg = 1.2) {
   return `M ${outerStart.x.toFixed(2)} ${outerStart.y.toFixed(2)} A ${outerRadius} ${outerRadius} 0 ${large} 1 ${outerEnd.x.toFixed(2)} ${outerEnd.y.toFixed(2)} L ${innerEnd.x.toFixed(2)} ${innerEnd.y.toFixed(2)} A ${innerRadius} ${innerRadius} 0 ${large} 0 ${innerStart.x.toFixed(2)} ${innerStart.y.toFixed(2)} Z`;
 }
 
-function disciplineWheelGlyph(discipline) {
-  const map = { history: 'HI', art: 'AR', cinema: 'CI', 'science-inventions': 'SC', economy: 'EC', geography: 'GE', music: 'MU', astronomy: 'AS' };
-  return map[discipline?.id] || String(discipline?.title || '?').slice(0, 2).toUpperCase();
-}
+/* LTS: ancienne implémentation de disciplineWheelGlyph supprimée (9028-9031). */
 
-function disciplineWheelMarkup() {
-  const total = DISCIPLINES.length;
-  const allStats = DISCIPLINES.map(discipline => ({ discipline, stats: disciplineProgress(discipline.id) }));
-  const average = Math.round(allStats.reduce((sum, item) => sum + item.stats.progress, 0) / Math.max(1, allStats.length));
-  const slices = allStats.map(({ discipline, stats }, index) => {
-    const mid = (index + 0.5) * 360 / total;
-    const percentLabel = polarPoint(50, 50, 37, mid);
-    const glyphLabel = polarPoint(50, 50, 27, mid);
-    const fillOuter = 22 + (26 * stats.progress / 100);
-    const fill = stats.progress > 0.5 ? `<path class="wheel-fill" d="${ringSlicePath(index, total, 22, fillOuter, 1.7)}" fill="${escapeHtml(discipline.accent)}"></path>` : "";
-    return `<g class="wheel-segment" style="--discipline-accent:${escapeHtml(discipline.accent)}"><path class="wheel-back" d="${ringSlicePath(index, total, 22, 48, 1.7)}" fill="${escapeHtml(discipline.accent)}"></path>${fill}<text class="wheel-emoji" x="${glyphLabel.x.toFixed(1)}" y="${glyphLabel.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${disciplineWheelGlyph(discipline)}</text><text class="wheel-percent" x="${percentLabel.x.toFixed(1)}" y="${percentLabel.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${stats.progress}%</text></g>`;
-  }).join("");
-  const legend = allStats.map(({ discipline, stats }) => {
-    const meta = stats.ready ? `${stats.done}/${stats.total} cours` : `${stats.chapters || 0} chapitres`; 
-    return `<div class="discipline-progress-row" style="--discipline-accent:${escapeHtml(discipline.accent)}"><span>${HD_ICONS.discipline(discipline)}</span><strong>${escapeHtml(discipline.title)}</strong><em>${escapeHtml(meta)}</em><b>${stats.progress}%</b></div>`;
-  }).join("");
-  return `<section class="card trivial-profile-card culture-profile-card">
-    <div class="section-title-row"><div><span class="card-label">Profil culturel</span><h2>Ton camembert de progression</h2><p>Chaque domaine garde sa tranche. Les cours validés remplissent progressivement la couleur, sans mélanger les disciplines.</p></div><small>${average}% moyen</small></div>
-    <div class="trivial-profile-layout"><div class="trivial-wheel-wrap"><svg class="trivial-wheel culture-wheel" viewBox="0 0 100 100" role="img" aria-label="Progression par discipline"><circle class="wheel-halo" cx="50" cy="50" r="49"></circle>${slices}<circle class="wheel-core" cx="50" cy="50" r="17"></circle><text class="trivial-center" x="50" y="47" text-anchor="middle" dominant-baseline="middle">Culture</text><text class="wheel-average" x="50" y="56" text-anchor="middle" dominant-baseline="middle">${average}%</text></svg></div><div class="discipline-progress-list">${legend}</div></div>
-  </section>`;
-}
+/* LTS: ancienne implémentation de disciplineWheelMarkup supprimée (9033-9053). */
 function renderLearn() {
   const disciplineId = activeDisciplineId();
   const discipline = disciplineById(disciplineId);
@@ -11551,9 +11137,7 @@ Object.assign(READY_LESSON_PACKS, {
 });
 
 
-function publicMysteryIds() {
-  return new Set(publicMysteries().map(mystery => mystery.id));
-}
+/* LTS: ancienne implémentation de publicMysteryIds supprimée (11554-11556). */
 function keepAllowedKeys(record = {}, allowed = new Set()) {
   const next = {};
   Object.entries(record || {}).forEach(([key, value]) => {
@@ -11581,17 +11165,7 @@ function cleanDailyRecords(record = {}, allowedMysteries = new Set()) {
   });
   return next;
 }
-function visibleStateGuardReport() {
-  const curatedIds = new Set(curatedLessons().map(lesson => lesson.id));
-  const mysteryIds = publicMysteryIds();
-  const completedVisible = Object.keys(state.completedLessons || {}).filter(id => curatedIds.has(id)).length;
-  const completedHidden = Object.keys(state.completedLessons || {}).filter(id => !curatedIds.has(id)).length;
-  const solvedVisible = Object.keys(state.solvedMysteries || {}).filter(id => mysteryIds.has(id)).length;
-  const solvedHidden = Object.keys(state.solvedMysteries || {}).filter(id => !mysteryIds.has(id)).length;
-  const currentLessonHidden = Boolean(state.currentLessonId && !curatedIds.has(state.currentLessonId));
-  const currentMysteryHidden = Boolean(state.currentMysteryId && !mysteryIds.has(state.currentMysteryId));
-  return { curated: curatedIds.size, completedVisible, completedHidden, solvedVisible, solvedHidden, currentLessonHidden, currentMysteryHidden };
-}
+/* LTS: fonction morte supprimée (visibleStateGuardReport). */
 function applyVisibleStateGuard({ save = true } = {}) {
   const curatedIds = new Set(curatedLessons().map(lesson => lesson.id));
   const mysteryIds = publicMysteryIds();
@@ -12218,19 +11792,7 @@ function modeSnapshotMarkup(disciplineId = activeDisciplineId()) {
     <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${groups.length}</b><span>grands chapitres</span></div><div><b>${readyText}</b><span>${readyLessons.length ? "contenu" : "structure"}</span></div></div>
   </section>`;
 }
-function modeContinueMarkup(disciplineId = activeDisciplineId()) {
-  if (disciplineId === "history") return homeContinueMarkup();
-  const { discipline, groups, worlds } = disciplineHomeStats(disciplineId);
-  const first = worlds[0] || null;
-  const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
-  return `<section class="card home-main-card home-continue-card mode-continue-card hd192-editorial-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="hd192-editorial-side">${HD_ART.discipline(discipline.id)}</div>
-    <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${first ? `${HD_ICONS.world(first, discipline)} ${escapeHtml(first.title)}` : "Parcours"}</h2></div><small>${groups.length} chapitres</small></div>
-    <p>${escapeHtml(first?.subtitle || group?.description || discipline.description)} ${first?.planned ? "Explore les chapitres disponibles dans cette discipline." : ""}</p>
-    <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
-    <div class="home-card-footer"><span>${escapeHtml(group?.title || "Grand chapitre")}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les chapitres</button></div>
-  </section>`;
-}
+/* LTS: ancienne implémentation de modeContinueMarkup supprimée (12221-12233). */
 function modeRecommendationItems(disciplineId = activeDisciplineId()) {
   const worlds = treeAvailableWorlds(disciplineId).slice();
   if (!worlds.length) return [];
@@ -12251,31 +11813,7 @@ function modeRecommendationItems(disciplineId = activeDisciplineId()) {
   }
   return selected.slice(0, 3);
 }
-function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
-  if (disciplineId === "history") return homeDiscoveryMarkup(homeDiscoveryLessons());
-  const discipline = disciplineById(disciplineId);
-  const mode = disciplineModeCopy(discipline.id);
-  const groups = treeGroups(discipline.id);
-  const items = modeRecommendationItems(discipline.id);
-  return `<section class="card home-main-card home-discovery-card mode-recommend-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-    <div class="section-title-row"><div><span class="card-label">${escapeHtml(mode.shortLabel)} · cours recommandés</span><h2>${escapeHtml(mode.discoveryTitle)}</h2></div><small>${items.length} pistes</small></div>
-    <p>${escapeHtml(mode.discoveryIntro)}</p>
-    <div class="home-discovery-grid">
-      ${items.map((world, index) => {
-        const group = groups.find(item => item.id === world.group) || {};
-        return `<article class="home-discovery-item mode-world-item hd195-world-card" data-mode-world="${escapeHtml(world.id)}" tabindex="0" role="button">
-          <div class="hd195-world-hero">${HD_ART.discipline(discipline.id)}</div>
-          <span class="home-discovery-kicker">${escapeHtml(String(group.title || "Chapitre").replace(/^\d+\.\s*/, ""))} · piste ${index + 1}</span>
-          <h3>${HD_ICONS.world(world, discipline)} ${escapeHtml(world.title)}</h3>
-          <p>${escapeHtml(world.subtitle || group.description || discipline.description)}</p>
-          <small>${escapeHtml(world.timeframe || group.range || "parcours")}</small>
-          <button type="button" data-open-mode-world="${escapeHtml(world.id)}">Ouvrir</button>
-        </article>`;
-      }).join("")}
-    </div>
-    <div class="home-card-footer"><span>Les cartes affichées sont prêtes à ouvrir.</span><button class="ghost" type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir tout le parcours</button></div>
-  </section>`;
-}
+/* LTS: ancienne implémentation de modeRecommendationsMarkup supprimée (12254-12278). */
 function renderHome() {
   const disciplineId = activeDisciplineId();
   const discipline = disciplineById(disciplineId);
@@ -12285,14 +11823,14 @@ function renderHome() {
   const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
   const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} gemme${reward.gems > 1 ? "s" : ""} si tu résous aujourd’hui`;
   renderShell(`
-    <header class="hero compact home-clean-hero home-mode-hero hd201-premium-header" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="hd201-header-copy">
+    <header class="hero compact home-clean-hero home-mode-hero premium-header" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="premium-header-copy">
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
-        <p class="hd201-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours clair, beau et progressif pour apprendre sans surcharge.")}</p>
+        <p class="premium-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours clair, beau et progressif pour apprendre sans surcharge.")}</p>
         <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
-      ${beta201HeaderVisual(discipline.id, "HD")}
+      ${premiumHeaderVisual(discipline.id)}
     </header>
 
     ${modeSwitcherMarkup()}
@@ -12359,10 +11897,7 @@ function renderHome() {
 }
 
 
-function disciplineWheelGlyph(discipline) {
-  const map = { history: 'HI', art: 'AR', cinema: 'CI', 'science-inventions': 'SC', economy: 'EC', geography: 'GE', music: 'MU', astronomy: 'AS' };
-  return map[discipline?.id] || String(discipline?.title || '?').slice(0, 2).toUpperCase();
-}
+/* LTS: fonction morte supprimée (disciplineWheelGlyph). */
 
 function disciplineWheelMarkup() {
   const total = DISCIPLINES.length;
@@ -12422,32 +11957,7 @@ function applyDisciplineTheme(disciplineId = activeDisciplineId()) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute("content", theme.bg3);
 }
-function renderShell(content) {
-  applyPerformanceMode();
-  applyDisciplineTheme();
-  const immersiveLesson = state.tab === "lesson";
-  const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav">
-        ${navButton("home", "home", "Accueil")}
-        ${navButton("learn", "courses", "Cours")}
-        ${navButton("mystery", "mystery", "Mystère")}
-        ${navButton("rank", "ranking", "Classement")}
-        ${navButton("profile", "profile", "Profil")}
-      </nav>`;
-  app.innerHTML = `
-    <main class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
-      ${systemStatusMarkup()}
-      ${content}
-      ${navMarkup}
-    </main>`;
-  app.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click", () => {
-    const tab = btn.dataset.tab;
-    if (!tab || tab === state.tab) return;
-    const patch = { tab };
-    if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
-    setState(patch, { save: false });
-  }));
-  activateTextControls(app);
-}
+/* LTS: ancienne implémentation de renderShell supprimée (12425-12450). */
 const BETA107_LESSONS = {
   "art-read-image": [
     {
@@ -16280,14 +15790,7 @@ function beta113ConsumeMotionClass() {
   beta113PendingScreenMotion = false;
   return "motion-enter";
 }
-function setState(patch, options = {}) {
-  if (!patch || typeof patch !== "object") return;
-  const previous = state;
-  state = { ...state, ...patch };
-  beta113MarkMotion(previous, state, patch);
-  if (options.save !== false && patchNeedsPersistentSave(patch)) queueSaveState();
-  render();
-}
+/* LTS: ancienne implémentation de setState supprimée (16283-16290). */
 function renderShell(content) {
   applyPerformanceMode();
   applyDisciplineTheme();
@@ -16512,18 +16015,7 @@ function promptPseudoEdit() {
   savePseudoValue(value, { source: "prompt" });
 }
 
-function beta114HandlePseudoAction(event) {
-  const saveButton = event.target?.closest?.("[data-save-pseudo]");
-  const promptButton = event.target?.closest?.("[data-pseudo-prompt]");
-  if (!saveButton && !promptButton) return;
-  const now = Date.now();
-  if (now - beta114PseudoLock < 220) return;
-  beta114PseudoLock = now;
-  event.preventDefault();
-  event.stopPropagation();
-  if (saveButton) updatePseudo(event);
-  else promptPseudoEdit();
-}
+/* LTS: fonction morte supprimée (beta114HandlePseudoAction). */
 
 window.addEventListener("error", event => {
   if (!event?.error) return;
@@ -16557,7 +16049,7 @@ try { beta114NormalizeState(); } catch {}
    - diagnostic simple dans le profil
    - réparation douce sans perdre la progression lisible
    ========================================================= */
-const BETA115_VERSION = "1.0.0-beta.121";
+const BETA115_VERSION = "1.0.0-beta.207";
 const BETA115_SESSION_KEY = `${STORAGE_KEY}_session_health`;
 const BETA115_ALLOWED_LESSON_VIEWS = new Set(["express", "complete", "quiz"]);
 const BETA115_ALLOWED_PERFORMANCE = new Set(["smart", "static", "balanced", "light"]);
@@ -16764,7 +16256,7 @@ try {
    - actualiser le mystère du jour pour tester plusieurs dossiers
    - une fois un chapitre ouvert : liste des cours + retour, plus de grosse liste de chapitres
    ========================================================= */
-const BETA117_VERSION = "1.0.0-beta.121";
+const BETA117_VERSION = "1.0.0-beta.207";
 try { NAVIGATION_ONLY_STATE_KEYS.add("learnDrill"); } catch {}
 
 function beta117PlainObject(value) {
@@ -16817,10 +16309,10 @@ function beta117MysteryToolMarkup(disciplineId = activeDisciplineId()) {
   return `<button type="button" class="ghost beta-mystery-refresh" data-beta-refresh-mystery title="Outil de bêta : changer le mystère affiché aujourd’hui">↻ Autre mystère</button>${tested ? `<small class="beta-mystery-count">test ${tested + 1}/${pool.length}</small>` : ""}`;
 }
 
-function beta201HeaderVisual(disciplineId = activeDisciplineId(), badge = "HD") {
+function premiumHeaderVisual(disciplineId = activeDisciplineId()) {
   const discipline = disciplineById(disciplineId || "history");
   const art = (window.HD_ART && typeof HD_ART.hero === "function") ? HD_ART.hero(discipline.id) : "";
-  return `<div class="hd201-header-side" aria-hidden="true"><div class="hd201-header-art">${art}</div><div class="hd201-header-badge">${escapeHtml(String(badge || "HD").slice(0, 3))}</div></div>`;
+  return `<div class="premium-header-side" aria-hidden="true"><div class="premium-header-orbit"></div><div class="premium-header-art">${art}</div></div>`;
 }
 
 function beta117GroupLessonItems(groupId, disciplineId = activeDisciplineId()) {
@@ -16851,7 +16343,7 @@ function beta117PlannedWorldsMarkup(worlds) {
 }
 function beta117RenderLearnChapters(disciplineId, discipline, groups) {
   renderShell(`
-    <header class="topbar tree-topbar hd201-premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="hd201-back" data-back-home>←</button><div class="hd201-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle hd201-header-subtitle">Choisis un grand chapitre. Ensuite, la page se concentre sur les cours.</p></div>${beta201HeaderVisual(discipline.id, "HD")}</header>
+    <header class="topbar tree-topbar premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="premium-back" data-back-home>←</button><div class="premium-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle premium-header-subtitle">Choisis un grand chapitre. Ensuite, la page se concentre sur les cours.</p></div>${premiumHeaderVisual(discipline.id)}</header>
     ${disciplineSelectorMarkup(disciplineId)}
     <section class="tree-section beta117-chapter-list"><div class="section-title-row"><div><span class="card-label">Grands chapitres</span><h2>Choisis le chapitre</h2></div><small>${groups.length} chapitres</small></div><div class="tree-grid periods-grid">${groups.map(item => treeGroupCard(item, item.id === treeActiveGroupId(disciplineId), disciplineId)).join("")}</div></section>
   `);
@@ -16873,7 +16365,7 @@ function beta117RenderLearnCourses(disciplineId, discipline, groupId, group) {
   const shownItems = beta117FilteredLessonItems(items);
   const plannedWorlds = worlds.filter(world => treeLessonsForWorld(world.id).length === 0);
   renderShell(`
-    <header class="topbar tree-topbar beta117-course-topbar hd201-premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="hd201-back" data-back-chapters>←</button><div class="hd201-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(chapterDisplayTitle(group.title, "Chapitre"))}</h1><p class="tree-subtitle hd201-header-subtitle">Liste des cours du chapitre. Le reste du parcours est masqué pour garder la page légère.</p></div>${beta201HeaderVisual(discipline.id, "HD")}</header>
+    <header class="topbar tree-topbar beta117-course-topbar premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="premium-back" data-back-chapters>←</button><div class="premium-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(chapterDisplayTitle(group.title, "Chapitre"))}</h1><p class="tree-subtitle premium-header-subtitle">Liste des cours du chapitre. Le reste du parcours est masqué pour garder la page légère.</p></div>${premiumHeaderVisual(discipline.id)}</header>
     ${beta117ChapterHero(group, discipline, groupId, disciplineId)}
     ${learnFilterMarkup(items.map(item => item.lesson), shownItems.map(item => item.lesson))}
     <section class="tree-section beta117-course-list"><div class="section-title-row"><div><span class="card-label">Cours du chapitre</span><h2>${shownItems.length}/${items.length} cours visible${shownItems.length > 1 ? "s" : ""}</h2></div><button type="button" class="ghost beta117-back-inline" data-back-chapters>← Chapitres</button></div><div class="tree-lesson-list">${shownItems.map((item, index) => treeLessonCard(item.lesson, index, item.world)).join("") || `<div class="card empty-filter-card"><h2>${items.length ? "Aucun cours trouvé." : "À venir."}</h2><p>${items.length ? (learnSearchQuery() ? "Essaie un mot plus large ou efface la recherche." : "Aucun cours ne correspond au filtre actuel.") : "Ce chapitre sera ouvert quand ses cours seront prêts."}</p>${items.length ? `<button data-learn-filter="all">Voir tous les cours du chapitre</button>` : ""}</div>`}</div></section>
@@ -16914,7 +16406,7 @@ renderLearn = function beta117RenderLearn() {
   const discipline = disciplineById(disciplineId);
   const groups = treeGroups(disciplineId);
   if (!groups.length) {
-    renderShell(`<header class="topbar tree-topbar hd201-premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="hd201-back" data-back-home>←</button><div class="hd201-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle hd201-header-subtitle">Les premiers cours de cette discipline arrivent progressivement.</p></div>${beta201HeaderVisual(discipline.id, "HD")}</header>${disciplineSelectorMarkup(disciplineId)}${disciplineEmptyMarkup(discipline)}`);
+    renderShell(`<header class="topbar tree-topbar premium-topbar" style="--discipline-accent:${escapeHtml(discipline.accent)}"><button class="premium-back" data-back-home>←</button><div class="premium-header-copy"><p class="eyebrow">Cours · ${escapeHtml(discipline.title)}</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle premium-header-subtitle">Les premiers cours de cette discipline arrivent progressivement.</p></div>${premiumHeaderVisual(discipline.id)}</header>${disciplineSelectorMarkup(disciplineId)}${disciplineEmptyMarkup(discipline)}`);
     $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
     document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
     return;
@@ -16935,14 +16427,14 @@ renderHome = function beta117RenderHome() {
   const solvedToday = Boolean(mystery && mysterySolved(mystery.id));
   const nextLabel = solvedToday ? `Nouveau dossier dans ${timeToNextDaily()}` : `+${reward.gems} gemme${reward.gems > 1 ? "s" : ""} si tu résous aujourd’hui`;
   renderShell(`
-    <header class="hero compact home-clean-hero home-mode-hero hd201-premium-header" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="hd201-header-copy">
+    <header class="hero compact home-clean-hero home-mode-hero premium-header" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+      <div class="premium-header-copy">
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
-        <p class="hd201-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours clair, beau et progressif pour apprendre sans surcharge.")}</p>
+        <p class="premium-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours clair, beau et progressif pour apprendre sans surcharge.")}</p>
         <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
-      ${beta201HeaderVisual(discipline.id, "HD")}
+      ${premiumHeaderVisual(discipline.id)}
     </header>
     ${modeSwitcherMarkup()}
     ${modeSnapshotMarkup(disciplineId)}
@@ -17010,7 +16502,7 @@ try { beta114NormalizeState(); } catch {}
    Objectif : les chapitres et cours doivent toujours répondre,
    même si un ancien listener, un rendu différé ou un tap mobile part de travers.
    ========================================================= */
-const BETA118_VERSION = "1.0.0-beta.121";
+const BETA118_VERSION = "1.0.0-beta.207";
 
 function beta118LessonById(id) {
   const lessonId = String(id || "").trim();
@@ -17078,9 +16570,7 @@ function beta118OpenGroupById(groupId, disciplineId = activeDisciplineId()) {
   }, { renderImmediate: true });
   return true;
 }
-function beta118BackToChapters() {
-  setState({ tab: "learn", learnDrill: "chapters", learnSearch: "", learnFilter: "all" }, { renderImmediate: true, save: false });
-}
+/* LTS: fonction morte supprimée (beta118BackToChapters). */
 function beta118NormalizeLearnState() {
   try {
     if (state.tab !== "learn") return;
@@ -17111,64 +16601,8 @@ renderLearn = function beta118RenderLearn() {
   return beta118PreviousRenderLearn();
 };
 
-function beta118LearnDelegatedClick(event) {
-  const target = event.target;
-  if (!target?.closest) return;
-  const lessonOpen = target.closest("[data-lesson-open]");
-  if (lessonOpen) {
-    event.preventDefault();
-    event.stopPropagation();
-    beta118OpenLessonById(lessonOpen.dataset.lessonOpen, { source: "open-button" });
-    return;
-  }
-  const lessonCard = target.closest("[data-lesson]");
-  if (lessonCard && state.tab === "learn") {
-    event.preventDefault();
-    event.stopPropagation();
-    beta118OpenLessonById(lessonCard.dataset.lesson, { source: "lesson-card" });
-    return;
-  }
-  const lockedOpen = target.closest("[data-locked-lesson-open]");
-  if (lockedOpen) {
-    event.preventDefault();
-    event.stopPropagation();
-    const mystery = dailyMystery();
-    setState({ tab: "mystery", currentMysteryId: mystery?.id || null, currentMysteryDiscipline: activeDisciplineId(), currentDiscipline: activeDisciplineId() }, { renderImmediate: true });
-    return;
-  }
-  const lockedCard = target.closest("[data-locked-lesson]");
-  if (lockedCard && state.tab === "learn") {
-    event.preventDefault();
-    event.stopPropagation();
-    const mystery = dailyMystery();
-    setState({ tab: "mystery", currentMysteryId: mystery?.id || null, currentMysteryDiscipline: activeDisciplineId(), currentDiscipline: activeDisciplineId() }, { renderImmediate: true });
-    return;
-  }
-  const groupCard = target.closest("[data-tree-group]");
-  if (groupCard && state.tab === "learn") {
-    event.preventDefault();
-    event.stopPropagation();
-    beta118OpenGroupById(groupCard.dataset.treeGroup, activeDisciplineId());
-    return;
-  }
-  const backChapters = target.closest("[data-back-chapters]");
-  if (backChapters && state.tab === "learn") {
-    event.preventDefault();
-    event.stopPropagation();
-    beta118BackToChapters();
-  }
-}
-function beta118LearnDelegatedKeydown(event) {
-  if (event.key !== "Enter" && event.key !== " ") return;
-  const target = event.target;
-  if (!target?.closest) return;
-  const interactive = target.closest("input,textarea,select,button,a");
-  if (interactive && !target.closest("[data-lesson],[data-tree-group],[data-locked-lesson]")) return;
-  const actionable = target.closest("[data-lesson],[data-tree-group],[data-locked-lesson]");
-  if (!actionable || state.tab !== "learn") return;
-  event.preventDefault();
-  actionable.click();
-}
+/* LTS: fonction morte supprimée (beta118LearnDelegatedClick). */
+/* LTS: fonction morte supprimée (beta118LearnDelegatedKeydown). */
 
 const beta118PreviousNormalizeState = beta114NormalizeState;
 beta114NormalizeState = function beta118NormalizeState() {
@@ -17197,7 +16631,7 @@ try { beta114NormalizeState(); } catch {}
    - conservation entre versions même si l'état principal est nettoyé
    - rafraîchissement social au retour en ligne, au focus et sur le classement
    ========================================================= */
-const BETA124_VERSION = "1.0.0-beta.156";
+const BETA124_VERSION = "1.0.0-beta.207";
 const BETA124_IDENTITY_KEY = "histodaily_social_identity_v1";
 const BETA124_PSEUDO_KEYS = ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"];
 const BETA124_USER_ID_KEYS = ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`];
@@ -17368,14 +16802,7 @@ function beta124ScheduleRankRefresh(scope = state.rankScope || "daily") {
 }
 
 const beta124PreviousRenderRank = renderRank;
-renderRank = function beta124RenderRank() {
-  const scope = state.rankScope || "daily";
-  fetchServerLeaderboard(scope, { force: false }).catch(() => {});
-  if (scope === "friends") fetchServerFriends({ force: false }).catch(() => {});
-  const out = beta124PreviousRenderRank();
-  beta124ScheduleRankRefresh(scope);
-  return out;
-};
+/* LTS: surcharge historique de renderRank supprimée. */
 
 const beta124PreviousLeaderboardIntroText = leaderboardIntroText;
 leaderboardIntroText = function beta124LeaderboardIntroText(scope = "daily") {
@@ -17397,16 +16824,7 @@ socialBackendMarkup = function beta124SocialBackendMarkup() {
   return html.replace("</section>", `${addition}</section>`);
 };
 
-function beta124HandleRefreshClick(event) {
-  const button = event.target?.closest?.("[data-refresh-social]");
-  if (!button) return;
-  event.preventDefault();
-  event.stopPropagation();
-  state.serverFriendsStatus = { ...(state.serverFriendsStatus || {}), loading: true, message: "Actualisation…" };
-  state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [state.rankScope || "daily"]: { ...(state.serverLeaderboardStatus?.[state.rankScope || "daily"] || {}), loading: true } };
-  render({ immediate: true });
-  beta124RefreshSocialData({ force: true, reason: "button" }).catch(() => {});
-}
+/* LTS: fonction morte supprimée (beta124HandleRefreshClick). */
 
 
 try {
@@ -17430,7 +16848,7 @@ window.HistoDailyBeta124 = {
    - envoyer une demande au lieu d'ajouter directement
    - accepter / refuser les demandes reçues
    ========================================================= */
-const BETA125_VERSION = "1.0.0-beta.156";
+const BETA125_VERSION = "1.0.0-beta.207";
 const BETA125_REQUEST_REFRESH_MS = 30000;
 let beta125RequestFetchInFlight = false;
 let beta125LastRequestFetch = 0;
@@ -17656,11 +17074,7 @@ function beta125InjectRequestsCard() {
   if (anchor && !document.querySelector(".beta125-requests-card")) anchor.insertAdjacentHTML("afterend", html);
 }
 const beta125PreviousRenderRank = renderRank;
-renderRank = function beta125RenderRank() {
-  const out = beta125PreviousRenderRank();
-  beta125InjectRequestsCard();
-  return out;
-};
+/* LTS: surcharge historique de renderRank supprimée. */
 const beta125PreviousRenderProfile = renderProfile;
 renderProfile = function beta125RenderProfile() {
   const out = beta125PreviousRenderProfile();
@@ -17711,7 +17125,7 @@ try {
    - dédoublonnage robuste des demandes locales et reçues
    - profil joueur rafraîchi depuis le serveur quand on l'ouvre
    ========================================================= */
-const BETA126_VERSION = "1.0.0-beta.156";
+const BETA126_VERSION = "1.0.0-beta.207";
 const BETA126_PROFILE_REFRESH_MS = 45000;
 let beta126ProfileFetchInFlight = new Set();
 
@@ -17857,7 +17271,7 @@ try {
    - état social visible dans le classement
    - conservation des demandes locales si le serveur n'est pas prêt
    ========================================================= */
-const BETA127_VERSION = "1.0.0-beta.156";
+const BETA127_VERSION = "1.0.0-beta.207";
 const BETA127_OUTBOX_KEY = "histodaily_social_request_outbox_v1";
 let beta128FlushInFlight = false;
 
@@ -17963,11 +17377,7 @@ function beta128DecorateLeaderboardRows() {
 }
 
 const beta128PreviousRenderRank = renderRank;
-renderRank = function beta128RenderRank() {
-  const out = beta128PreviousRenderRank();
-  beta128DecorateLeaderboardRows();
-  return out;
-};
+/* LTS: surcharge historique de renderRank supprimée. */
 
 const beta128PreviousRequestCardMarkup = typeof beta125RequestCardMarkup === "function" ? beta125RequestCardMarkup : null;
 if (beta128PreviousRequestCardMarkup) {
@@ -18202,7 +17612,7 @@ beta128PostFriendRequest = async function beta128PostFriendRequestPreserveLocal(
 
 
 /* Beta128 — renforcement global : scores hors ligne, état de synchro, sauvegarde sociale indépendante. */
-const BETA128_HARDENING_VERSION = "1.0.0-beta.156";
+const BETA128_HARDENING_VERSION = "1.0.0-beta.207";
 const BETA128_SCORE_OUTBOX_KEY = `${STORAGE_KEY}_score_outbox_v1`;
 const BETA128_IDENTITY_KEY = `${STORAGE_KEY}_social_identity_v2`;
 let beta128ScoreFlushInFlight = false;
@@ -18502,7 +17912,7 @@ try {
    - les retries réseau de score ne modifient plus le nombre d'essais du joueur.
    - boutons de synchronisation protégés contre les doubles écouteurs après renders rapides.
 */
-const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.156";
+const BETA129_BUG_SWEEP_VERSION = "1.0.0-beta.207";
 let beta129InviteProcessing = false;
 
 function beta129PlayerFromInvite(invite = {}) {
@@ -18623,801 +18033,19 @@ try {
 } catch {}
 
 
-/* =========================================================
-   Beta 130 — nettoyage produit
-   Objectif : garder les sécurités internes, mais retirer les
-   affichages de bêta, les panneaux trop bavards et les outils
-   de test visibles avant un essai réel sur mobile.
-   ========================================================= */
-const BETA130_PRODUCT_CLEAN_VERSION = "1.0.0-beta.156";
+/* LTS: couche historique supprimée — Beta 130 — nettoyage produit. */
 
-function beta130HasPendingSocialWork() {
-  try {
-    const requests = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [] };
-    const reqOutbox = typeof beta128Outbox === "function" ? beta128Outbox() : [];
-    return Boolean((requests.incoming || []).length || (requests.outgoing || []).length || reqOutbox.length);
-  } catch { return false; }
-}
-function beta130HasPendingScores() {
-  try { return typeof beta128PendingScoreCount === "function" && beta128PendingScoreCount() > 0; }
-  catch { return false; }
-}
+/* LTS: couche historique supprimée — Beta 131 — correctif navigation mobile. */
 
-// Plus de changelog ni de pastille de version sur l'accueil normal.
-releaseNotesMarkup = function beta130ReleaseNotesMarkup() { return ""; };
-homeVersionPillMarkup = function beta130HomeVersionPillMarkup() { return ""; };
+/* LTS: couche historique supprimée — Beta 133 — safe mode classement / navigation. */
 
-// Le bouton “Autre mystère” était utile en bêta, mais pas en usage réel.
-if (typeof beta117MysteryToolMarkup === "function") {
-  beta117MysteryToolMarkup = function beta130MysteryToolMarkup() { return ""; };
-}
+/* LTS: couche historique supprimée — Beta 133 — correctif sélecteur de disciplines. */
 
-// Le panneau multi ne doit pas prendre de place quand tout va bien.
-const beta130PreviousSocialBackendMarkup = socialBackendMarkup;
-socialBackendMarkup = function beta130SocialBackendMarkup() {
-  const mode = socialBackendMode();
-  const pending = beta130HasPendingSocialWork() || beta130HasPendingScores();
-  if (["server", "local"].includes(mode.status) && !pending) return "";
-  const friendCount = friendProfiles().length;
-  const title = mode.status === "offline" ? "Hors ligne" : mode.status === "pending" ? "Mise à jour" : mode.status === "warning" ? "Connexion instable" : "Synchronisation";
-  return `<section class="card social-backend compact ${escapeHtml(mode.status)}"><div><span class="card-label">Multi</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(mode.detail)}</p></div><div class="social-backend-actions"><strong>${friendCount} ami${friendCount > 1 ? "s" : ""}</strong><button type="button" class="ghost mini-button" data-refresh-social>Actualiser</button></div></section>`;
-};
+/* LTS: couche historique supprimée — Beta 134 — correctif tap profil depuis classement. */
 
-// L'invitation reste disponible, mais sans afficher un long lien brut qui alourdit le profil.
-socialInviteLinkMarkup = function beta130SocialInviteLinkMarkup() {
-  return `<section class="card invite-link-card compact"><div><span class="card-label">Invitation</span><h2>Lien ami</h2><p>Envoie un lien : l’autre joueur recevra une demande à valider.</p></div><div class="home-actions-row"><button type="button" data-copy-invite-link>Copier le lien</button><button type="button" class="ghost" data-share-invite>Partager le code</button></div>${state.inviteFeedback ? `<p>${escapeHtml(state.inviteFeedback)}</p>` : ""}</section>`;
-};
+/* LTS: couche historique supprimée — Beta 135 — nettoyage de copie utilisateur. */
 
-// Les réglages restent accessibles, mais on cache les outils avancés par défaut.
-performanceSettingsMarkup = function beta130PerformanceSettingsMarkup() {
-  const mode = performanceMode();
-  return `<section class="card performance-card compact"><div><span class="card-label">Affichage</span><h2>${mode === "static" ? "Mode statique" : "Mode fluide"}</h2><p>Le mode fluide convient à la plupart des téléphones.</p></div><div class="performance-actions"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">Fluide</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">Statique</button></div></section>`;
-};
-backupToolsMarkup = function beta130BackupToolsMarkup() {
-  return `<details class="card backup-card compact"><summary><span><b>Sauvegarde locale</b><em>Exporter / restaurer si besoin</em></span></summary><div class="backup-actions"><button data-export-save>Copier</button><button class="ghost" data-download-save>Télécharger</button><button class="ghost" data-import-save>Restaurer</button></div>${state.backupFeedback ? `<p>${escapeHtml(state.backupFeedback)}</p>` : ""}</details>`;
-};
-
-// Retire le diagnostic beta du profil normal, tout en gardant la réparation d'urgence dans le code.
-profileSettingsMarkup = function beta130ProfileSettingsMarkup() {
-  return `<section class="card profile-settings-card compact"><div class="section-title-row"><div><span class="card-label">Réglages</span><h2>Préférences</h2></div></div>${settingsInnerMarkup(performanceSettingsMarkup(), "performance-card")}${settingsInnerMarkup(recentDailyCalendarMarkup({ compact: true }), "calendar-card")}</section>`;
-};
-
-// Carte score/synchro plus discrète : elle n’apparaît que s’il y a vraiment quelque chose à dire.
-if (typeof beta128ScoreSyncMarkup === "function") {
-  beta128ScoreSyncMarkup = function beta130ScoreSyncMarkup() {
-    const outbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : [];
-    if (!outbox.length && isOnline) return "";
-    const latest = outbox[0] || {};
-    const label = !isOnline ? "Hors ligne" : "Score en attente";
-    const detail = !isOnline ? "Les réponses restent enregistrées et partiront au retour du réseau." : `${outbox.length} score${outbox.length > 1 ? "s" : ""} à envoyer. ${latest.lastMessage || "Renvoi automatique actif."}`;
-    return `<section class="card beta128-sync-card compact ${!isOnline ? "offline" : "pending"}"><div><span class="card-label">Sync</span><h2>${escapeHtml(label)}</h2><p>${escapeHtml(detail)}</p></div><div class="home-actions-row"><button type="button" data-flush-scores>Renvoyer</button></div></section>`;
-  };
-}
-
-// Évite d’exposer des objets de debug en usage normal.
-try {
-  delete window.HistoDailyDebug;
-  delete window.HistoDailyBeta117;
-  delete window.HistoDailyBeta125;
-  delete window.HistoDailyBeta126;
-  delete window.HistoDailyBeta128;
-  window.HistoDaily = { version: BETA130_PRODUCT_CLEAN_VERSION };
-} catch {}
-
-
-
-/* =========================================================
-   Beta 131 — correctif navigation mobile
-   Symptôme observé : sur téléphone, l'app peut rouvrir sur
-   Classement et laisser défiler la page sans accepter les taps
-   sur les onglets. On renforce donc la navigation par délégation
-   globale + couche CSS prioritaire + réparation du dernier onglet.
-   ========================================================= */
-const BETA131_NAV_FIX_VERSION = "1.0.0-beta.156";
-const BETA131_ALLOWED_TABS = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
-let beta131LastNavigationTap = 0;
-
-function beta131NavigateTo(tab) {
-  if (!BETA131_ALLOWED_TABS.has(tab)) return false;
-  if (tab === state.tab && tab !== "rank") return true;
-  const patch = { tab };
-  if (tab === "mystery") {
-    patch.currentMysteryId = dailyMystery()?.id || null;
-    patch.currentMysteryDiscipline = activeDisciplineId();
-  }
-  if (tab === "learn") {
-    patch.learnDrill = "chapters";
-    patch.currentLessonId = null;
-    patch.lessonFocus = null;
-    patch.lessonView = state.lessonView || "express";
-  }
-  if (tab === "home") {
-    patch.selectedProfileId = null;
-  }
-  setState(patch, { save: true });
-  return true;
-}
-
-function beta131NavigationHandler(event) {
-  const target = event.target;
-  const button = target && target.closest ? target.closest("[data-tab]") : null;
-  if (!button || !app || !app.contains(button)) return;
-  const tab = button.dataset.tab;
-  if (!tab) return;
-  const now = Date.now();
-  if (now - beta131LastNavigationTap < 280) {
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    return;
-  }
-  beta131LastNavigationTap = now;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-  beta131NavigateTo(tab);
-}
-
-function beta131InstallNavigationDelegation() {
-  if (window.__histodailyBeta131NavDelegation) return;
-  window.__histodailyBeta131NavDelegation = true;
-}
-
-function beta131RepairStartupTab() {
-  let changed = false;
-  if (Number(state.storageSchemaVersion || 0) < 2 && state.beta131NavFixVersion !== BETA131_NAV_FIX_VERSION) {
-    state.beta131NavFixVersion = BETA131_NAV_FIX_VERSION;
-    // Pour une app quotidienne, on évite de rouvrir sur un écran social lourd après mise à jour.
-    if (["rank", "publicProfile"].includes(state.tab)) {
-      state.tab = "home";
-      state.selectedProfileId = null;
-      changed = true;
-    }
-    if (!["daily", "week", "year", "friends"].includes(state.rankScope)) {
-      state.rankScope = "daily";
-      changed = true;
-    }
-    changed = true;
-  }
-  if (!BETA131_ALLOWED_TABS.has(state.tab)) {
-    state.tab = "home";
-    changed = true;
-  }
-  if (changed) queueSaveState(50);
-  return changed;
-}
-
-function beta131InstallNavLayerFix() {
-  if (document.getElementById("beta133-discipline-switch-fix-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta133-discipline-switch-fix-style";
-  style.textContent = `
-    .bottom-nav{
-      z-index:2147483000!important;
-      pointer-events:auto!important;
-      touch-action:manipulation!important;
-      transform:translate3d(-50%,0,0)!important;
-      -webkit-transform:translate3d(-50%,0,0)!important;
-      isolation:isolate!important;
-    }
-    .bottom-nav *, .nav-item{
-      pointer-events:auto!important;
-      touch-action:manipulation!important;
-    }
-    .tabs-clean button, [data-rank-scope], [data-home], [data-open-profile], [data-refresh-social]{
-      position:relative!important;
-      z-index:5!important;
-      pointer-events:auto!important;
-      touch-action:manipulation!important;
-    }
-    .tab-rank .bottom-nav{z-index:2147483000!important;}
-    .tab-rank .leaderboard-modern{position:relative;z-index:1;}
-  `;
-  void style;
-}
-
-const beta131PreviousRenderShell = renderShell;
-renderShell = function beta131RenderShell(content) {
-  const output = beta131PreviousRenderShell(content);
-  beta131InstallNavLayerFix();
-  return output;
-};
-
-// Correction d'un libellé introduit dans la passe nettoyage : les valeurs réelles sont light/balanced.
-performanceSettingsMarkup = function beta131PerformanceSettingsMarkup() {
-  const mode = performanceMode();
-  return `<section class="card performance-card compact"><div><span class="card-label">Affichage</span><h2>${mode === "light" ? "Mode fluide" : "Mode visuel"}</h2><p>Garde le mode fluide sauf si tu veux tester les animations.</p></div><div class="performance-actions"><button data-performance-mode="light" class="${mode === "light" ? "active" : ""}">Fluide</button><button data-performance-mode="balanced" class="${mode === "balanced" ? "active" : ""}">Visuel</button></div></section>`;
-};
-
-try {
-  beta131InstallNavLayerFix();
-  beta131RepairStartupTab();
-  window.HistoDaily = { version: BETA131_NAV_FIX_VERSION, navFix: true };
-} catch {}
-
-
-/* =========================================================
-   Beta 133 — safe mode classement / navigation
-   Le bug observé : /leaderboard/daily peut ramer ou être en erreur
-   et laisser l'app bloquée visuellement sur Classement. On rend la
-   navigation indépendante du classement, on timeout les fetchs et on
-   revient à l'accueil après mise à jour.
-   ========================================================= */
-const BETA132_SAFE_VERSION = "1.0.0-beta.156";
-let beta133RankFetchTimer = 0;
-let beta133CriticalTapAt = 0;
-
-function beta133AbortableFetch(url, options = {}, timeoutMs = 5500) {
-  if (typeof AbortController !== "function") return fetch(url, options);
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
-}
-
-function beta133NormalizeStartup() {
-  let changed = false;
-  if (Number(state.storageSchemaVersion || 0) < 2 && state.beta133SafeVersion !== BETA132_SAFE_VERSION) {
-    state.beta133SafeVersion = BETA132_SAFE_VERSION;
-    // Après un bug de classement, on force une reprise saine sur Accueil.
-    state.tab = "home";
-    state.rankScope = "daily";
-    state.selectedProfileId = null;
-    state.serverLeaderboardStatus = {};
-    changed = true;
-  }
-  if (!["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"].includes(state.tab)) {
-    state.tab = "home";
-    changed = true;
-  }
-  if (!["daily", "week", "year", "friends"].includes(state.rankScope)) {
-    state.rankScope = "daily";
-    changed = true;
-  }
-  if (changed) {
-    try { saveState(); } catch { queueSaveState(50); }
-  }
-}
-
-function beta133CriticalTap(event) {
-  const target = event.target;
-  if (!target || !target.closest) return;
-  const tabBtn = target.closest("[data-tab]");
-  const homeBtn = target.closest("[data-home]");
-  const scopeBtn = target.closest("[data-rank-scope]");
-  const profileBtn = target.closest("[data-open-profile]");
-  const refreshBtn = target.closest("[data-refresh-social]");
-  const critical = tabBtn || homeBtn || scopeBtn || profileBtn || refreshBtn;
-  if (!critical || !app || !app.contains(critical)) return;
-
-  const now = Date.now();
-  // iOS déclenche parfois touchend + pointerup + click. On bloque les doublons trop rapprochés,
-  // mais jamais le premier événement utile.
-  if (now - beta133CriticalTapAt < 180) {
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    return;
-  }
-  beta133CriticalTapAt = now;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-
-  if (tabBtn) {
-    const tab = tabBtn.dataset.tab;
-    if (!tab) return;
-    const patch = { tab };
-    if (tab === "mystery") patch.currentMysteryId = dailyMystery()?.id || null;
-    if (tab === "home") patch.selectedProfileId = null;
-    setState(patch, { save: true });
-    return;
-  }
-  if (homeBtn) return setState({ tab: "home", selectedProfileId: null }, { save: true });
-  if (scopeBtn) return setState({ tab: "rank", rankScope: scopeBtn.dataset.rankScope || "daily" }, { save: true });
-  if (profileBtn) return setState({ tab: "profile" }, { save: true });
-  if (refreshBtn) {
-    state.serverLeaderboardStatus = {};
-    queueSaveState(50);
-    beta133FetchLeaderboard(state.rankScope || "daily", { force: true }).catch(() => {});
-    if (typeof fetchServerFriends === "function") fetchServerFriends({ force: true }).catch(() => {});
-    if (typeof beta125FetchFriendRequests === "function") beta125FetchFriendRequests({ force: true }).catch(() => {});
-    return;
-  }
-}
-
-function beta133InstallGlobalCriticalNavigation() {
-  if (window.__histodailyBeta132CriticalNav) return;
-  window.__histodailyBeta132CriticalNav = true;
-}
-
-async function beta133FetchLeaderboard(scope = "daily", { force = false } = {}) {
-  if (!isOnline) return;
-  const now = Date.now();
-  const status = state.serverLeaderboardStatus?.[scope] || {};
-  if (!force && status.loadedAt && now - status.loadedAt < 45000) return;
-  if (leaderboardFetchInFlight.has(`beta133:${scope}`)) return;
-  leaderboardFetchInFlight.add(`beta133:${scope}`);
-  state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { ...status, loading: true, mode: "loading", note: "Chargement du classement…" } };
-  queueSaveState(100);
-  try {
-    const friends = Object.values(state.friends || {});
-    const friendCodes = friends.map(friend => friend.code || friend.id).filter(Boolean).join(",");
-    const friendIds = friends.map(friend => friend.playerId || friend.friend_player_id).filter(Boolean).join(",");
-    const url = `/api/v1/leaderboard/daily?scope=${encodeURIComponent(scope)}&periodKey=${encodeURIComponent(localDayKey())}&playerId=${encodeURIComponent(playerIdMe())}&friendCodes=${encodeURIComponent(friendCodes)}&friendIds=${encodeURIComponent(friendIds)}&_=${Date.now()}`;
-    const response = await beta133AbortableFetch(url, { cache: "no-store" }, 5500);
-    const json = await response.json().catch(() => ({}));
-    const mode = json?.mode || "unknown";
-    const rows = Array.isArray(json?.rows) ? json.rows : [];
-    if (response.ok && json?.ok !== false && mode !== "supabase-error" && mode !== "error") {
-      state.serverLeaderboards = { ...(state.serverLeaderboards || {}), [scope]: rows };
-      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode, note: json?.note || "" } };
-    } else {
-      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: "error", note: json?.note || "Classement en ligne indisponible. L'app reste utilisable." } };
-    }
-  } catch (error) {
-    state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: "timeout", note: "Classement trop lent : affichage local conservé." } };
-  } finally {
-    leaderboardFetchInFlight.delete(`beta133:${scope}`);
-    queueSaveState(100);
-    if (state.tab === "rank" && (state.rankScope || "daily") === scope) render({ immediate: true });
-  }
-}
-
-// On remplace le fetch de classement par une version timeout/fallback.
-fetchServerLeaderboard = beta133FetchLeaderboard;
-ensureServerLeaderboard = function beta133EnsureServerLeaderboard(scope = "daily") {
-  clearTimeout(beta133RankFetchTimer);
-  beta133RankFetchTimer = setTimeout(() => beta133FetchLeaderboard(scope).catch(() => {}), 80);
-};
-
-// On rend le rendu classement robuste même si une sous-carte plante.
-const beta133PreviousRenderRank = renderRank;
-renderRank = function beta133RenderRank() {
-  try {
-    return beta133PreviousRenderRank();
-  } catch (error) {
-    try {
-      renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Classements</p><h1>Classement</h1></div></header>
-        <section class="tabs-clean rank-tabs"><button data-rank-scope="daily" class="active">Aujourd’hui</button><button data-rank-scope="week">Semaine</button><button data-rank-scope="year">Année</button><button data-rank-scope="friends">Amis</button></section>
-        <section class="card"><span class="card-label">Mode sécurisé</span><h2>Classement indisponible</h2><p>Le classement en ligne a eu un souci, mais l’app n’est pas bloquée. Tu peux changer d’onglet ou revenir à l’accueil.</p><div class="home-actions-row"><button data-home>Accueil</button><button class="ghost" data-refresh-social>Réessayer</button></div></section>`);
-    } catch {}
-  }
-};
-
-function beta133InstallStyle() {
-  if (document.getElementById("beta133-safe-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta133-safe-style";
-  style.textContent = `
-    .bottom-nav{display:grid!important;z-index:2147483600!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important;}
-    .bottom-nav,.bottom-nav *,.nav-item,[data-tab],[data-home],[data-rank-scope],[data-open-profile],[data-refresh-social]{pointer-events:auto!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent;}
-    .tabs-clean{position:relative!important;z-index:2147480!important;pointer-events:auto!important;}
-    .tab-rank .app-shell{pointer-events:auto!important;}
-    .tab-rank .leaderboard-modern{min-height:70px;}
-    .tab-rank .social-backend.compact{position:relative;z-index:2;}
-  `;
-  void style;
-}
-
-try {
-  beta133NormalizeStartup();
-  beta133InstallStyle();
-  window.HistoDaily = { version: BETA132_SAFE_VERSION, safeLeaderboard: true };
-} catch {}
-
-
-/* =========================================================
-   Beta 133 — correctif sélecteur de disciplines
-   Symptôme observé : l'app fonctionne, mais les boutons Histoire,
-   Cinéma, Économie, etc. peuvent ne plus réagir sur mobile après les
-   renforcements de navigation beta131/beta132. On ajoute donc une
-   délégation dédiée aux sélecteurs de disciplines, sans toucher au
-   classement ni à Supabase.
-   ========================================================= */
-const BETA133_DISCIPLINE_VERSION = "1.0.0-beta.156";
-let beta133DisciplineTapAt = 0;
-
-function beta133ValidDisciplineId(id) {
-  return Boolean(id && typeof disciplineById === "function" && disciplineById(id));
-}
-
-function beta133SwitchDiscipline(id, { openLearn = false } = {}) {
-  if (!beta133ValidDisciplineId(id)) return false;
-  const discipline = disciplineById(id);
-  const firstWorld = firstWorldForDiscipline(discipline.id);
-  const nextMystery = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset(discipline.id, 0) : null;
-  const patch = {
-    currentDiscipline: discipline.id,
-    currentGroup: firstWorld?.group || treeGroups(discipline.id)[0]?.id || state.currentGroup,
-    currentWorld: firstWorld?.id || state.currentWorld,
-    currentMysteryId: nextMystery?.id || null,
-    currentMysteryDiscipline: discipline.id,
-    learnFilter: "all",
-    learnSearch: "",
-    learnDrill: "chapters",
-    currentLessonId: null,
-    lessonFocus: null,
-    discoverOffset: 0
-  };
-  if (openLearn) {
-    patch.tab = "learn";
-  } else {
-    patch.tab = "home";
-  }
-  setState(patch, { save: true });
-  return true;
-}
-
-function beta133HandleDisciplineTap(event) {
-  const target = event.target;
-  if (!target || !target.closest) return;
-
-  const homeDiscipline = target.closest("[data-home-discipline]");
-  const learnDiscipline = target.closest("[data-discipline]");
-  const button = homeDiscipline || learnDiscipline;
-  if (!button || !app || !app.contains(button)) return;
-
-  const id = homeDiscipline ? button.dataset.homeDiscipline : button.dataset.discipline;
-  if (!beta133ValidDisciplineId(id)) return;
-
-  const now = Date.now();
-  if (now - beta133DisciplineTapAt < 160) {
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    return;
-  }
-  beta133DisciplineTapAt = now;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-
-  // Depuis l'accueil, on reste sur l'accueil et on change le domaine affiché.
-  // Depuis Cours, on reste dans Cours et on rouvre les chapitres de la discipline.
-  beta133SwitchDiscipline(id, { openLearn: Boolean(learnDiscipline && !homeDiscipline) });
-}
-
-function beta133InstallDisciplineDelegation() {
-  if (window.__histodailyBeta133DisciplineDelegation) return;
-  window.__histodailyBeta133DisciplineDelegation = true;
-}
-
-function beta133InstallDisciplineStyle() {
-  if (document.getElementById("beta133-discipline-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta133-discipline-style";
-  style.textContent = `
-    .home-mode-switcher,
-    .home-mode-switcher *,
-    [data-home-discipline],
-    .discipline-picker,
-    .discipline-picker *,
-    [data-discipline]{
-      pointer-events:auto!important;
-      touch-action:manipulation!important;
-      -webkit-tap-highlight-color:transparent;
-    }
-    .home-mode-switcher,
-    .discipline-picker{
-      position:relative!important;
-      z-index:20!important;
-      isolation:isolate!important;
-    }
-    .mode-pill,
-    .discipline-card{
-      cursor:pointer!important;
-      user-select:none!important;
-      -webkit-user-select:none!important;
-    }
-  `;
-  void style;
-}
-
-// On remplace aussi les fonctions directes, pour que les anciens écouteurs
-// existants profitent du même chemin sécurisé.
-switchHomeDiscipline = function beta133SwitchHomeDiscipline(id) {
-  return beta133SwitchDiscipline(id, { openLearn: false });
-};
-
-selectDiscipline = function beta133SelectDiscipline(id) {
-  return beta133SwitchDiscipline(id, { openLearn: true });
-};
-
-try {
-  beta133InstallDisciplineDelegation();
-  beta133InstallDisciplineStyle();
-  state.beta133DisciplineVersion = BETA133_DISCIPLINE_VERSION;
-  queueSaveState(50);
-  window.HistoDaily = { version: BETA133_DISCIPLINE_VERSION, disciplineSwitchFix: true, safeLeaderboard: true };
-} catch {}
-
-
-/* =========================================================
-   Beta 134 — correctif tap profil depuis classement
-   Symptôme observé : le classement et les disciplines fonctionnent,
-   mais toucher un autre joueur n'ouvre pas toujours sa fiche sur mobile.
-   On ajoute une délégation globale sociale, indépendante du rendu, et
-   on rend la résolution de profil tolérante aux id string/number.
-   ========================================================= */
-const BETA134_PROFILE_TAP_VERSION = "1.0.0-beta.156";
-let beta134SocialTapAt = 0;
-
-function beta134SameToken(a, b) {
-  if (a === undefined || a === null || b === undefined || b === null) return false;
-  return String(a).trim() !== "" && String(a).trim() === String(b).trim();
-}
-
-function beta134SameCode(a, b) {
-  const ca = normalizeFriendCode(a || "");
-  const cb = normalizeFriendCode(b || "");
-  if (!ca || !cb) return false;
-  return ca === cb || friendCodeSuffix(ca) === friendCodeSuffix(cb);
-}
-
-function beta134PlayerMatchesId(player = {}, id = "") {
-  if (!player || !id) return false;
-  return beta134SameToken(player.id, id)
-    || beta134SameToken(player.playerId, id)
-    || beta134SameToken(player.player_id, id)
-    || beta134SameCode(player.code, id)
-    || beta134SameCode(player.friendCode, id)
-    || beta134SameCode(player.friend_code, id);
-}
-
-function beta134RemoteProfileFromAnyLeaderboard(id = "") {
-  const rows = Object.values(state.serverLeaderboards || {}).flatMap(bucket => Array.isArray(bucket) ? bucket : []);
-  for (const row of rows) {
-    const profile = remoteLeaderboardRowsForSingle(row);
-    if (beta134PlayerMatchesId(profile, id) || beta134PlayerMatchesId(row, id)) return profile;
-  }
-  return null;
-}
-
-const beta134PreviousProfileById = profileById;
-profileById = function beta134ProfileById(id) {
-  const key = String(id || "").trim();
-  if (!key) return myPlayerProfile();
-  const known = allKnownPlayers().find(player => beta134PlayerMatchesId(player, key));
-  if (known) return typeof beta125IncomingRequestForPlayer === "function" ? {
-    ...known,
-    requestIncoming: beta125IncomingRequestForPlayer(known) || null,
-    requestOutgoing: beta125OutgoingRequestForPlayer(known) || null
-  } : known;
-  const remote = beta134RemoteProfileFromAnyLeaderboard(key);
-  if (remote) return typeof beta125IncomingRequestForPlayer === "function" ? {
-    ...remote,
-    requestIncoming: beta125IncomingRequestForPlayer(remote) || null,
-    requestOutgoing: beta125OutgoingRequestForPlayer(remote) || null
-  } : remote;
-  return beta134PreviousProfileById ? beta134PreviousProfileById(id) : myPlayerProfile();
-};
-
-function beta134OpenPublicProfile(id = "") {
-  const key = String(id || "").trim();
-  if (!key) return false;
-  const player = profileById(key);
-  const selected = String(player?.id || player?.playerId || key);
-  setState({ tab: "publicProfile", selectedProfileId: selected }, { save: true });
-  if (typeof beta126FetchPublicProfile === "function") {
-    setTimeout(() => beta126FetchPublicProfile(profileById(selected), { force: false }).catch(() => {}), 0);
-  }
-  return true;
-}
-
-function beta134HandleSocialTap(event) {
-  const target = event.target;
-  if (!target || !target.closest) return;
-  const viewBtn = target.closest("[data-view-profile]");
-  const sendBtn = target.closest("[data-send-friend-request]");
-  const backBtn = target.closest("[data-back-social]");
-  const openRankBtn = target.closest("[data-open-rank]");
-  const relevant = viewBtn || sendBtn || backBtn || openRankBtn;
-  if (!relevant || !app || !app.contains(relevant)) return;
-
-  const now = Date.now();
-  if (now - beta134SocialTapAt < 180) {
-    event.preventDefault?.();
-    event.stopPropagation?.();
-    return;
-  }
-  beta134SocialTapAt = now;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-
-  if (viewBtn) {
-    beta134OpenPublicProfile(viewBtn.dataset.viewProfile || "");
-    return;
-  }
-  if (sendBtn) {
-    const player = profileById(sendBtn.dataset.sendFriendRequest || state.selectedProfileId || "");
-    if (typeof beta125SendFriendRequest === "function") beta125SendFriendRequest(player).catch(() => {});
-    return;
-  }
-  if (backBtn) {
-    setState({ tab: "rank" }, { save: true });
-    return;
-  }
-  if (openRankBtn) {
-    setState({ tab: "rank", rankScope: openRankBtn.dataset.openRank || "daily" }, { save: true });
-  }
-}
-
-function beta134InstallSocialDelegation() {
-  if (window.__histodailyBeta134SocialDelegation) return;
-  window.__histodailyBeta134SocialDelegation = true;
-}
-
-function beta134DecorateClickableLeaderboard() {
-  try {
-    document.querySelectorAll(".leaderboard-modern .rank-row[data-view-profile]").forEach(row => {
-      row.setAttribute("type", "button");
-      row.setAttribute("role", "button");
-      row.setAttribute("aria-label", `Ouvrir le profil de ${row.querySelector("strong")?.textContent || "ce joueur"}`);
-      row.classList.add("profile-clickable");
-    });
-  } catch {}
-}
-
-const beta134PreviousRenderRank = renderRank;
-renderRank = function beta134RenderRank() {
-  const out = beta134PreviousRenderRank();
-  beta134DecorateClickableLeaderboard();
-  return out;
-};
-
-const beta134PreviousViewProfile = viewProfile;
-viewProfile = function beta134ViewProfile(id) {
-  return beta134OpenPublicProfile(id) || (beta134PreviousViewProfile ? beta134PreviousViewProfile(id) : null);
-};
-
-function beta134InstallProfileTapStyle() {
-  if (document.getElementById("beta134-profile-tap-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta134-profile-tap-style";
-  style.textContent = `
-    .leaderboard-modern,
-    .leaderboard-modern *,
-    .rank-row,
-    .rank-row *,
-    [data-view-profile],
-    [data-send-friend-request],
-    [data-back-social],
-    [data-open-rank]{
-      pointer-events:auto!important;
-      touch-action:manipulation!important;
-      -webkit-tap-highlight-color:transparent;
-    }
-    .leaderboard-modern .rank-row.profile-clickable,
-    .leaderboard-modern .rank-row[data-view-profile]{
-      cursor:pointer!important;
-      position:relative!important;
-      z-index:25!important;
-      user-select:none!important;
-      -webkit-user-select:none!important;
-    }
-    .public-profile-card,
-    .beta125-profile-actions,
-    .profile-score-card{
-      position:relative!important;
-      z-index:10!important;
-    }
-  `;
-  void style;
-}
-
-try {
-  beta134InstallSocialDelegation();
-  beta134InstallProfileTapStyle();
-  state.beta134ProfileTapVersion = BETA134_PROFILE_TAP_VERSION;
-  queueSaveState(50);
-  window.HistoDaily = { version: BETA134_PROFILE_TAP_VERSION, disciplineSwitchFix: true, safeLeaderboard: true, profileTapFix: true };
-  if (state.tab === "rank") beta134DecorateClickableLeaderboard();
-} catch {}
-
-
-/* =========================================================
-   Beta 135 — nettoyage de copie utilisateur
-   Patch note visible, vocabulaire moins interne, accueil plus clair.
-   ========================================================= */
-const BETA135_COPY_CLEAN_VERSION = "1.0.0-beta.156";
-
-releaseNotesMarkup = function beta135ReleaseNotesMarkup({ home = false } = {}) {
-  const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
-  if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
-  return `<section class="card release-card soft-panel ${home ? "home-release-card" : ""}">
-    <div class="section-title-row"><div><span class="card-label">Nouveautés</span><h2>Mise à jour HistoDaily</h2></div><small>Dernière mise à jour</small></div>
-    <p>Ce qui change dans l’app :</p>
-    <ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul>
-    <div class="home-card-footer"><span>Bon jeu.</span><button class="ghost" data-dismiss-release>OK</button></div>
-  </section>`;
-};
-homeVersionPillMarkup = function beta135HomeVersionPillMarkup() { return ""; };
-
-// Copie plus propre pour les réglages et le profil.
-performanceSettingsMarkup = function beta135PerformanceSettingsMarkup() {
-  const mode = performanceMode();
-  return `<section class="card performance-card compact"><div><span class="card-label">Affichage</span><h2>${mode === "static" ? "Mode statique" : "Mode fluide"}</h2><p>Le mode fluide convient à la plupart des téléphones.</p></div><div class="performance-actions"><button data-performance-mode="smart" class="${mode === "smart" ? "active" : ""}">Fluide</button><button data-performance-mode="static" class="${mode === "static" ? "active" : ""}">Statique</button></div></section>`;
-};
-profileSettingsMarkup = function beta135ProfileSettingsMarkup() {
-  return `<section class="card profile-settings-card compact"><div class="section-title-row"><div><span class="card-label">Réglages</span><h2>Préférences</h2><p>Affichage, rythme de jeu et sauvegarde restent accessibles depuis ton profil.</p></div></div>${settingsInnerMarkup(performanceSettingsMarkup(), "performance-card")}${settingsInnerMarkup(recentDailyCalendarMarkup({ compact: true }), "calendar-card")}</section>`;
-};
-try {
-  window.HistoDaily = { version: BETA135_COPY_CLEAN_VERSION, profileTapFix: true, copyClean: true };
-  if (Number(state.storageSchemaVersion || 0) < 2 && state.beta135CopyCleanVersion !== BETA135_COPY_CLEAN_VERSION) {
-    state.beta135CopyCleanVersion = BETA135_COPY_CLEAN_VERSION;
-    saveState();
-  }
-} catch {}
-
-
-/* =========================================================
-   Beta 136 — correctif tap Indice
-   Symptôme observé : sur mobile, demander un indice l'enregistre,
-   puis le même tap peut être repris par la navigation après le rendu.
-   On consomme donc l'événement Indice avant tout changement d'écran.
-   ========================================================= */
-const BETA136_HINT_TAP_VERSION = "1.0.0-beta.156";
-let beta136HintTapAt = 0;
-let beta136LastHintMysteryId = "";
-
-function beta136CurrentHintMysteryId() {
-  const btn = document.querySelector("[data-hint]");
-  const current = currentMystery?.();
-  return current?.id || btn?.dataset?.mysteryId || state.currentMysteryId || dailyMystery?.()?.id || "";
-}
-
-function beta136ConsumeEvent(event) {
-  try { event.preventDefault?.(); } catch {}
-  try { event.stopPropagation?.(); } catch {}
-  try { event.stopImmediatePropagation?.(); } catch {}
-}
-
-function beta136HandleMysteryAction(event) {
-  const target = event.target;
-  if (!target || !target.closest) return;
-  const hintBtn = target.closest("[data-hint],[data-mystery-action='hint']");
-  if (!hintBtn || !app || !app.contains(hintBtn)) return;
-  beta136ConsumeEvent(event);
-
-  const now = Date.now();
-  const mysteryId = beta136CurrentHintMysteryId();
-  // iOS/Android peuvent envoyer touchend + pointerup + click. Un seul indice par tap.
-  if (mysteryId && beta136LastHintMysteryId === mysteryId && now - beta136HintTapAt < 450) return;
-  beta136HintTapAt = now;
-  beta136LastHintMysteryId = mysteryId;
-  if (mysteryId) revealHint(mysteryId);
-}
-
-function beta136InstallHintTapFix() {
-  if (window.__histodailyBeta136HintTapFix) return;
-  window.__histodailyBeta136HintTapFix = true;
-}
-
-function beta136InstallMysteryActionStyle() {
-  if (document.getElementById("beta136-hint-tap-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta136-hint-tap-style";
-  style.textContent = `
-    .mystery-card .guess,
-    .mystery-card [data-guess],
-    .mystery-card [data-guess-submit],
-    .mystery-card [data-hint],
-    .mystery-card .mystery-action-button{
-      position:relative!important;
-      z-index:2147482!important;
-      pointer-events:auto!important;
-      touch-action:manipulation!important;
-      -webkit-tap-highlight-color:transparent;
-    }
-    .mystery-card{
-      isolation:isolate!important;
-    }
-  `;
-  void style;
-}
-
-try {
-  beta136InstallHintTapFix();
-  beta136InstallMysteryActionStyle();
-  state.beta136HintTapVersion = BETA136_HINT_TAP_VERSION;
-  queueSaveState(50);
-  window.HistoDaily = { version: BETA136_HINT_TAP_VERSION, hintTapFix: true, disciplineSwitchFix: true, safeLeaderboard: true, profileTapFix: true };
-} catch {}
-
+/* LTS: couche historique supprimée — Beta 136 — correctif tap Indice. */
 
 /* =========================================================
    Beta 137 — correctif swipe du sélecteur de disciplines
@@ -19425,7 +18053,7 @@ try {
    Histoire / Cinéma / Économie / etc. déclenche parfois le mode touché.
    On distingue maintenant un vrai tap d'un swipe/scroll horizontal.
    ========================================================= */
-const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.156";
+const BETA137_MODE_SCROLL_VERSION = "1.0.0-beta.207";
 const beta139ModeSwipe = {
   active: false,
   tracking: false,
@@ -19437,74 +18065,19 @@ const beta139ModeSwipe = {
   lastTarget: null
 };
 
-function beta139ModeSwitcherForTarget(target) {
-  return target && target.closest ? target.closest(".home-mode-switcher") : null;
-}
+/* LTS: fonction morte supprimée (beta139ModeSwitcherForTarget). */
 
-function beta139IsModeSwitchTarget(target) {
-  return Boolean(target && target.closest && target.closest("[data-home-discipline]"));
-}
+/* LTS: fonction morte supprimée (beta139IsModeSwitchTarget). */
 
-function beta139TouchPoint(event) {
-  const t = event?.changedTouches?.[0] || event?.touches?.[0] || event;
-  return { x: Number(t?.clientX || 0), y: Number(t?.clientY || 0) };
-}
+/* LTS: fonction morte supprimée (beta139TouchPoint). */
 
-function beta139StartModeGesture(event) {
-  const target = event.target;
-  const switcher = beta139ModeSwitcherForTarget(target);
-  if (!switcher || !beta139IsModeSwitchTarget(target)) return;
-  const point = beta139TouchPoint(event);
-  beta139ModeSwipe.active = true;
-  beta139ModeSwipe.tracking = true;
-  beta139ModeSwipe.moved = false;
-  beta139ModeSwipe.startX = point.x;
-  beta139ModeSwipe.startY = point.y;
-  beta139ModeSwipe.startScrollLeft = Number(switcher.scrollLeft || 0);
-  beta139ModeSwipe.lastTarget = target.closest("[data-home-discipline]");
-}
+/* LTS: fonction morte supprimée (beta139StartModeGesture). */
 
-function beta139MoveModeGesture(event) {
-  if (!beta139ModeSwipe.tracking) return;
-  const target = event.target;
-  const switcher = beta139ModeSwitcherForTarget(target) || beta139ModeSwitcherForTarget(beta139ModeSwipe.lastTarget);
-  const point = beta139TouchPoint(event);
-  const dx = Math.abs(point.x - beta139ModeSwipe.startX);
-  const dy = Math.abs(point.y - beta139ModeSwipe.startY);
-  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta139ModeSwipe.startScrollLeft) : 0;
-  // Un petit tremblement reste un tap. Un vrai déplacement horizontal devient un scroll.
-  if ((dx > 10 && dx > dy * 0.75) || scrollDelta > 4) {
-    beta139ModeSwipe.moved = true;
-    beta139ModeSwipe.suppressUntil = Date.now() + 520;
-  }
-}
+/* LTS: fonction morte supprimée (beta139MoveModeGesture). */
 
-function beta139EndModeGesture(event) {
-  const target = event.target;
-  const switcher = beta139ModeSwitcherForTarget(target) || beta139ModeSwitcherForTarget(beta139ModeSwipe.lastTarget);
-  if (!switcher && !beta139ModeSwipe.active) return;
-  const point = beta139TouchPoint(event);
-  const dx = Math.abs(point.x - beta139ModeSwipe.startX);
-  const dy = Math.abs(point.y - beta139ModeSwipe.startY);
-  const scrollDelta = switcher ? Math.abs(Number(switcher.scrollLeft || 0) - beta139ModeSwipe.startScrollLeft) : 0;
-  const isSwipe = beta139ModeSwipe.moved || (dx > 10 && dx > dy * 0.75) || scrollDelta > 4;
-  beta139ModeSwipe.tracking = false;
-  beta139ModeSwipe.active = false;
-  if (!isSwipe) return;
-  beta139ModeSwipe.suppressUntil = Date.now() + 520;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-  event.stopImmediatePropagation?.();
-}
+/* LTS: fonction morte supprimée (beta139EndModeGesture). */
 
-function beta139BlockGhostModeClick(event) {
-  const target = event.target;
-  if (!beta139IsModeSwitchTarget(target)) return;
-  if (Date.now() > beta139ModeSwipe.suppressUntil) return;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-  event.stopImmediatePropagation?.();
-}
+/* LTS: fonction morte supprimée (beta139BlockGhostModeClick). */
 
 function beta139InstallModeSwipeGuard() {
   if (window.__histodailyBeta138ModeSwipeGuard) return;
@@ -19512,27 +18085,7 @@ function beta139InstallModeSwipeGuard() {
   // Window capture passe avant les délégations document ajoutées dans les patchs précédents.
 }
 
-function beta139InstallModeSwipeStyle() {
-  if (document.getElementById("beta139-mode-scroll-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta139-mode-scroll-style";
-  style.textContent = `
-    .home-mode-switcher{
-      overflow-x:auto!important;
-      -webkit-overflow-scrolling:touch!important;
-      touch-action:pan-x!important;
-      overscroll-behavior-x:contain;
-      scroll-behavior:smooth;
-    }
-    .home-mode-switcher [data-home-discipline],
-    .home-mode-switcher .mode-pill{
-      touch-action:pan-x!important;
-      user-select:none!important;
-      -webkit-user-select:none!important;
-    }
-  `;
-  void style;
-}
+function beta139InstallModeSwipeStyle() { /* CSS consolidé dans app.css */ }
 
 try {
   beta139InstallModeSwipeGuard();
@@ -19551,7 +18104,7 @@ try {
    des chapitres sans cours jouables. On filtre maintenant les actions
    principales sur les contenus réellement disponibles.
    ========================================================= */
-const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.156";
+const BETA139_DISCIPLINE_CONTENT_VERSION = "1.0.0-beta.207";
 
 function beta139RealWorldsForDiscipline(disciplineId = activeDisciplineId()) {
   const id = disciplineById(disciplineId || "history").id;
@@ -19777,16 +18330,7 @@ renderLearn = function beta139RenderLearn() {
   return beta139PreviousRenderLearn ? beta139PreviousRenderLearn() : null;
 };
 
-function beta139InstallDisciplineContentStyle() {
-  if (document.getElementById("beta139-discipline-content-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta139-discipline-content-style";
-  style.textContent = `
-    .mode-world-item[data-mode-world]{cursor:pointer;}
-    .discipline-empty-card .after-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
-  `;
-  void style;
-}
+function beta139InstallDisciplineContentStyle() { /* CSS consolidé dans app.css */ }
 
 try {
   beta139InstallDisciplineContentStyle();
@@ -19802,7 +18346,7 @@ try {
    - requestId serveur conservé quand disponible
    - nettoyage local immédiat + récupération après ancien flux direct
    ========================================================= */
-const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.156";
+const BETA140_CANCEL_REQUEST_VERSION = "1.0.0-beta.207";
 let beta140LastCancelTapAt = 0;
 
 function beta140ParseTargetKey(key = "") {
@@ -19943,10 +18487,7 @@ function beta140HandleCancelTap(event) {
 }
 
 try {
-  const style = document.createElement("style");
-  style.id = "beta140-cancel-request-style";
-  style.textContent = `.beta140-cancel-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.beta140-cancel-card .danger-action{touch-action:manipulation;}`;
-  if (!document.getElementById(style.id)) void style;
+  
   state.beta140CancelRequestVersion = BETA140_CANCEL_REQUEST_VERSION;
   queueSaveState(50);
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA140_CANCEL_REQUEST_VERSION, friendRequestCancelFix: true };
@@ -19959,7 +18500,7 @@ try {
    - le bouton Actualiser remplace la liste locale par l'état Supabase
    - l'annulation nettoie demandes + ancien hd_friends puis force le rechargement
    ========================================================= */
-const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.156";
+const BETA141_SOCIAL_RESET_VERSION = "1.0.0-beta.207";
 let beta141RefreshInFlight = false;
 let beta141LastRefreshTapAt = 0;
 
@@ -20133,7 +18674,7 @@ try {
    - diagnostic discret pour comprendre les états online
    - refresh social = vérité serveur + files locales
    ========================================================= */
-const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.156";
+const BETA142_ONLINE_HARDENING_VERSION = "1.0.0-beta.207";
 let beta142RepairInFlight = false;
 let beta142LastRepairTapAt = 0;
 
@@ -20358,10 +18899,7 @@ function beta142HandleRepairTap(event) {
   beta142RepairOnlineSync({ silent: false }).catch(() => {});
 }
 try {
-  const style = document.createElement("style");
-  style.id = "beta142-online-hardening-style";
-  style.textContent = `.beta142-online-tools{margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}.beta142-diagnostic{margin-top:10px}.beta142-diagnostic summary{cursor:pointer;color:var(--muted);font-weight:800}.beta142-diagnostic-grid{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:10px;font-size:.88rem}.beta142-diagnostic-grid span{color:var(--muted)}.beta142-diagnostic-grid strong{font-weight:800;overflow-wrap:anywhere}`;
-  if (!document.getElementById(style.id)) void style;
+  
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA142_ONLINE_HARDENING_VERSION, onlineHardening: true };
   state.beta142OnlineHardeningVersion = BETA142_ONLINE_HARDENING_VERSION;
   queueSaveState(50);
@@ -20370,7 +18908,7 @@ try {
 
 
 /* Beta 143 — online stability polish */
-const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.156";
+const BETA143_ONLINE_STABILITY_VERSION = "1.0.0-beta.207";
 function beta143IdentityWarningMarkup() {
   const identity = state.onlineDiagnostic?.identity || {};
   const matches = Number(identity.possibleCodeMatches || 0);
@@ -20403,7 +18941,7 @@ try {
 
 
 /* Beta 144 — online consistency preflight */
-const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.156";
+const BETA144_ONLINE_CONSISTENCY_VERSION = "1.0.0-beta.207";
 function beta145OnlinePreflightSnapshot() {
   const req = typeof beta125FriendRequestsState === "function" ? beta125FriendRequestsState() : { incoming: [], outgoing: [] };
   const scoreOutbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : [];
@@ -20434,7 +18972,7 @@ try {
    - diagnostic de réparation plus clair
    - aucune nouvelle interaction obligatoire
    ========================================================= */
-const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.156";
+const BETA145_ONLINE_AUDIT_VERSION = "1.0.0-beta.207";
 function beta145FriendStableKey(friend = {}, fallback = "") {
   const code = normalizeFriendCode(friend.code || friend.friendCode || friend.friend_code || fallback || "");
   const suffix = typeof friendCodeSuffix === "function" ? friendCodeSuffix(code) : code;
@@ -20516,10 +19054,7 @@ if (beta145PreviousOnlineDiagnosticMarkup) {
 }
 try {
   beta145ApplyLocalOnlineCleanup();
-  const style = document.createElement("style");
-  style.id = "beta145-online-audit-style";
-  style.textContent = `.beta145-audit-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta145-audit-line span{color:var(--muted)}.beta145-audit-line strong{font-weight:800}`;
-  if (!document.getElementById(style.id)) void style;
+  
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA145_ONLINE_AUDIT_VERSION, onlineAudit: true, localSocialCleanup: true };
   state.beta145OnlineAuditVersion = BETA145_ONLINE_AUDIT_VERSION;
   queueSaveState(50);
@@ -20532,7 +19067,7 @@ try {
    - supprime les demandes locales vers soi-même
    - rend le diagnostic plus exploitable sans nouvel écran
    ========================================================= */
-const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.156";
+const BETA146_ONLINE_RESILIENCE_VERSION = "1.0.0-beta.207";
 function beta146IsSelfTarget(target = {}) {
   const targetId = String(target.targetPlayerId || target.playerId || target.player_id || target.otherPlayerId || target.id || "");
   const targetCode = normalizeFriendCode(target.targetFriendCode || target.friendCode || target.friend_code || target.otherFriendCode || target.code || "");
@@ -20642,10 +19177,7 @@ if (beta146PreviousOnlineDiagnosticMarkup) {
 }
 try {
   beta146LocalOnlineSanityCleanup();
-  const style = document.createElement("style");
-  style.id = "beta146-online-resilience-style";
-  style.textContent = `.beta146-consistency-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta146-consistency-line span{color:var(--muted)}.beta146-consistency-line strong{font-weight:800}`;
-  if (!document.getElementById(style.id)) void style;
+  
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA146_ONLINE_RESILIENCE_VERSION, onlineResilience: true, localOutboxIdentityRewrite: true };
   state.beta146OnlineResilienceVersion = BETA146_ONLINE_RESILIENCE_VERSION;
   queueSaveState(50);
@@ -20658,54 +19190,11 @@ try {
    - évite les réparations en boucle et conserve un diagnostic discret
    - ne crée pas de nouvelle fonctionnalité visible
    ========================================================= */
-const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.156";
+const BETA147_RELEASE_HARDENING_VERSION = "1.0.0-beta.207";
 let beta147SilentRepairInFlight = false;
-function beta147SilentRepairKey() {
-  const day = typeof localDayKey === "function" ? localDayKey() : String(new Date().toISOString().slice(0, 10));
-  const code = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
-  return `${BETA147_RELEASE_HARDENING_VERSION}:${day}:${code}`;
-}
-function beta147ShouldRunSilentRepair({ force = false } = {}) {
-  if (beta147SilentRepairInFlight) return false;
-  if (!force && !isOnline) return false;
-  if (typeof beta142RepairOnlineSync !== "function") return false;
-  const lastAt = Number(state.beta147SilentRepairAt || 0);
-  if (!force && lastAt && Date.now() - lastAt < 10 * 60 * 1000) return false;
-  const key = beta147SilentRepairKey();
-  if (!force && state.beta147SilentRepairKey === key) return false;
-  return true;
-}
-async function beta147RunSilentRepair({ force = false, source = "auto" } = {}) {
-  if (!beta147ShouldRunSilentRepair({ force })) return false;
-  beta147SilentRepairInFlight = true;
-  const key = beta147SilentRepairKey();
-  state.beta147SilentRepairKey = key;
-  state.beta147SilentRepairStartedAt = Date.now();
-  try {
-    await beta142RepairOnlineSync({ silent: true });
-    state.beta147SilentRepairAt = Date.now();
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      silentRepairAt: Date.now(),
-      silentRepairSource: source,
-      releaseHardening: true
-    };
-    queueSaveState(120);
-    return true;
-  } catch (error) {
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      silentRepairAt: Date.now(),
-      silentRepairSource: source,
-      silentRepairError: error?.message || "silent-repair-failed",
-      releaseHardening: true
-    };
-    queueSaveState(120);
-    return false;
-  } finally {
-    beta147SilentRepairInFlight = false;
-  }
-}
+/* LTS: fonction morte supprimée (beta147SilentRepairKey). */
+/* LTS: fonction morte supprimée (beta147ShouldRunSilentRepair). */
+/* LTS: fonction morte supprimée (beta147RunSilentRepair). */
 const beta147PreviousApplyServerSocialSnapshot = typeof beta142ApplyServerSocialSnapshot === "function" ? beta142ApplyServerSocialSnapshot : null;
 if (beta147PreviousApplyServerSocialSnapshot) {
   beta142ApplyServerSocialSnapshot = function beta147ApplyServerSocialSnapshot(json = {}) {
@@ -20729,1089 +19218,33 @@ if (beta147PreviousOnlineDiagnosticMarkup) {
     return html.replace("</details>", `${extra}</details>`);
   };
 }
-function beta147ScheduleSilentRepair(source = "startup") {
-  const delay = source === "startup" ? 2400 : 500;
-  window.setTimeout(() => beta147RunSilentRepair({ source }).catch(() => {}), delay);
-}
+/* LTS: fonction morte supprimée (beta147ScheduleSilentRepair). */
 try {
   // La réparation silencieuse automatique a été retirée : elle reste disponible manuellement.
-  const style = document.createElement("style");
-  style.id = "beta147-release-hardening-style";
-  style.textContent = `.beta147-release-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta147-release-line span{color:var(--muted)}.beta147-release-line strong{font-weight:800}`;
-  if (!document.getElementById(style.id)) void style;
+  
   window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA147_RELEASE_HARDENING_VERSION, releaseHardening: true, silentOnlineRepair: false };
   state.beta147ReleaseHardeningVersion = BETA147_RELEASE_HARDENING_VERSION;
   queueSaveState(80);
 } catch {}
 
 
-/* =========================================================
-   Beta 148 — preflight clean + diagnostic utilisateur
-   - nettoyage local non destructif au démarrage
-   - diagnostic profil moins "bêta"
-   - bouton de pré-vérification online sans modification des données
-   ========================================================= */
-const BETA148_PREFLIGHT_CLEAN_VERSION = "1.0.0-beta.156";
-function beta148PlainObject(value) {
-  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
-}
-function beta148ValidDisciplineId(id) {
-  try { return DISCIPLINES.some(item => item.id === id); } catch { return id === "history"; }
-}
-function beta148SafeTimestamp(value) {
-  const n = Number(value || 0);
-  return Number.isFinite(n) && n > 0 ? n : 0;
-}
-function beta148DedupArray(list = [], keyFn = item => item?.id || item?.key || JSON.stringify(item)) {
-  const seen = new Set();
-  const output = [];
-  (Array.isArray(list) ? list : []).forEach(item => {
-    if (!item || typeof item !== "object") return;
-    const key = String(keyFn(item) || "").trim();
-    if (!key || seen.has(key)) return;
-    seen.add(key);
-    output.push(item);
-  });
-  return output;
-}
-function beta148LocalPreflightCleanup() {
-  try {
-    let changed = false;
-    const allowedTabs = typeof BETA114_ALLOWED_TABS !== "undefined" ? BETA114_ALLOWED_TABS : new Set(["home", "learn", "mystery", "ranking", "profile"]);
-    if (!allowedTabs.has(state.tab)) { state.tab = "home"; changed = true; }
-    if (!beta148ValidDisciplineId(state.currentDiscipline)) { state.currentDiscipline = "history"; changed = true; }
-    if (!beta148ValidDisciplineId(state.currentMysteryDiscipline)) { state.currentMysteryDiscipline = state.currentDiscipline || "history"; changed = true; }
-    state.serverLeaderboardStatus = beta148PlainObject(state.serverLeaderboardStatus);
-    state.serverFriendsStatus = beta148PlainObject(state.serverFriendsStatus);
-    state.lastScoreSubmit = beta148PlainObject(state.lastScoreSubmit);
-    state.onlineDiagnostic = beta148PlainObject(state.onlineDiagnostic);
-    if (typeof cleanStoredFriendsMap === "function") {
-      const before = Object.keys(beta148PlainObject(state.friends)).length;
-      state.friends = cleanStoredFriendsMap(state.friends || {});
-      if (Object.keys(state.friends || {}).length !== before) changed = true;
-    }
-    if (typeof beta125FriendRequestsState === "function" && typeof beta125SetFriendRequests === "function") {
-      const req = beta125FriendRequestsState();
-      const keyReq = row => row?.requestId || row?.id || `${row?.direction || ""}:${row?.status || "pending"}:${row?.requesterPlayerId || row?.requester_friend_code || ""}:${row?.targetPlayerId || row?.target_friend_code || row?.friendCode || ""}`;
-      const cleaned = {
-        ...req,
-        incoming: beta148DedupArray(req.incoming, keyReq),
-        outgoing: beta148DedupArray(req.outgoing, keyReq),
-        history: beta148DedupArray(req.history, keyReq).slice(0, 40)
-      };
-      if (JSON.stringify(cleaned) !== JSON.stringify(req)) { beta125SetFriendRequests(cleaned); changed = true; }
-    }
-    if (typeof beta128ReadScoreOutbox === "function" && typeof beta128SaveScoreOutbox === "function") {
-      const outbox = beta128ReadScoreOutbox();
-      const cleaned = beta148DedupArray(outbox, item => `${item.mysteryId || item.id || ""}:${item.periodKey || item.dayKey || ""}:${item.scope || "daily"}`).slice(0, 20);
-      if (cleaned.length !== outbox.length) { beta128SaveScoreOutbox(cleaned); changed = true; }
-    }
-    if (typeof beta128Outbox === "function" && typeof beta128SaveOutbox === "function") {
-      const outbox = beta128Outbox();
-      const cleaned = beta148DedupArray(outbox, item => typeof beta128TargetKey === "function" ? beta128TargetKey(item) : (item.key || item.friendCode || item.targetFriendCode || item.targetPlayerId || "")).slice(0, 30);
-      if (cleaned.length !== outbox.length) { beta128SaveOutbox(cleaned); changed = true; }
-    }
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      localPreflightAt: Date.now(),
-      localPreflightChanged: changed,
-      appVersion: BETA148_PREFLIGHT_CLEAN_VERSION
-    };
-    state.beta148PreflightCleanVersion = BETA148_PREFLIGHT_CLEAN_VERSION;
-    queueSaveState(90);
-  } catch {}
-}
-async function beta148RunOnlinePreflight({ silent = false } = {}) {
-  if (!isOnline) {
-    state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), preflightAt: Date.now(), preflightOk: false, preflightMessage: "Hors ligne" };
-    if (!silent) setState({ profileFeedback: "Pré-vérification impossible hors ligne." }, { renderImmediate: true });
-    else queueSaveState(100);
-    return null;
-  }
-  const params = new URLSearchParams();
-  try {
-    params.set("playerId", playerIdMe());
-    params.set("friendCode", friendCode());
-  } catch {}
-  try {
-    const response = await fetch(`/api/v1/system/preflight?${params.toString()}&_=${Date.now()}`, { cache: "no-store" });
-    const json = await response.json().catch(() => ({}));
-    const ok = Boolean(response.ok && json?.ok !== false && json?.checks?.api);
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      preflightAt: Date.now(),
-      preflightOk: ok,
-      preflightMode: json.mode || "unknown",
-      preflightChecks: json.checks || null,
-      preflightWarnings: json.warnings || [],
-      preflightMessage: json.message || (ok ? "Pré-vérification OK" : "Pré-vérification incomplète")
-    };
-    if (!silent) setState({ profileFeedback: ok ? "Pré-vérification en ligne OK." : "Pré-vérification incomplète. Regarde l’état de la synchro." }, { renderImmediate: true });
-    else queueSaveState(100);
-    return json;
-  } catch (error) {
-    state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), preflightAt: Date.now(), preflightOk: false, preflightMessage: error?.message || "Pré-vérification indisponible" };
-    if (!silent) setState({ profileFeedback: "Pré-vérification indisponible pour le moment." }, { renderImmediate: true });
-    else queueSaveState(100);
-    return null;
-  }
-}
-// Remplace le vieux bloc "Assistance" par une assistance discrète et compréhensible.
-if (typeof beta115HealthMarkup === "function") {
-  beta115HealthMarkup = function beta148HealthMarkup() {
-    const health = typeof beta115ReadHealth === "function" ? beta115ReadHealth() : {};
-    const recovered = Number(health.blankScreenRecovered || 0);
-    const lastOk = health.lastHealthyRender ? new Date(health.lastHealthyRender).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "—";
-    const diag = state.onlineDiagnostic || {};
-    const preflight = diag.preflightAt ? (diag.preflightOk ? "OK" : "À vérifier") : "Non lancé";
-    return `<section class="card beta148-support-card"><details><summary><span><span class="card-label">Assistance</span><strong>Stabilité et synchro</strong></span><small>${escapeHtml(preflight)}</small></summary><p>Ces outils servent uniquement si l’app garde un ancien état, si un ami disparaît ou si le classement semble incohérent.</p><div class="public-stats-grid"><div><strong>${recovered}</strong><span>Relances écran</span></div><div><strong>${escapeHtml(lastOk)}</strong><span>Dernier rendu OK</span></div><div><strong>${isOnline ? "Oui" : "Non"}</strong><span>Réseau</span></div><div><strong>${escapeHtml(preflight)}</strong><span>Pré-vérification</span></div></div><div class="home-actions-row beta148-actions"><button type="button" class="ghost" data-beta148-preflight>Vérifier en ligne</button><button type="button" class="ghost" data-beta115-soft-repair>Réparer l’affichage</button></div>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</details></section>`;
-  };
-}
-const beta148PreviousOnlineDiagnosticMarkup = typeof beta142OnlineDiagnosticMarkup === "function" ? beta142OnlineDiagnosticMarkup : null;
-if (beta148PreviousOnlineDiagnosticMarkup) {
-  beta142OnlineDiagnosticMarkup = function beta148OnlineDiagnosticMarkup() {
-    const html = beta148PreviousOnlineDiagnosticMarkup();
-    const diag = state.onlineDiagnostic || {};
-    const text = diag.preflightAt ? `${diag.preflightOk ? "OK" : "À vérifier"} · ${escapeHtml(beta142Age(diag.preflightAt))}` : "non lancée";
-    const warnings = Array.isArray(diag.preflightWarnings) && diag.preflightWarnings.length ? `<p class="muted-note warning-note">${escapeHtml(diag.preflightWarnings.slice(0, 2).join(" · "))}</p>` : "";
-    const extra = `<div class="beta148-preflight-line"><span>Pré-vérification</span><strong>${text}</strong></div>${warnings}`;
-    return html.replace("</details>", `${extra}</details>`);
-  };
-}
-function beta148HandlePreflightTap(event) {
-  const btn = event.target?.closest?.("[data-beta148-preflight]");
-  if (!btn) return;
-  event.preventDefault();
-  event.stopPropagation();
-  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-  beta148RunOnlinePreflight({ silent: false }).catch(() => {});
-}
-try {
-  beta148LocalPreflightCleanup();
-  const style = document.createElement("style");
-  style.id = "beta148-preflight-clean-style";
-  style.textContent = `.beta148-support-card details{border:0}.beta148-support-card summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}.beta148-support-card summary::-webkit-details-marker{display:none}.beta148-support-card summary strong{display:block;font-size:1rem;margin-top:2px}.beta148-support-card summary small{color:var(--muted);font-size:.78rem}.beta148-preflight-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta148-preflight-line span{color:var(--muted)}.beta148-preflight-line strong{font-weight:800}.beta148-actions button{min-height:38px}`;
-  if (!document.getElementById(style.id)) void style;
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA148_PREFLIGHT_CLEAN_VERSION, preflightClean: true };
-} catch {}
+/* LTS: couche historique supprimée — Beta 148 — preflight clean + diagnostic utilisateur. */
 
-// Beta148 final polish: réintroduit l'assistance propre dans le profil après les nettoyages de copie.
-try {
-  if (typeof profileSettingsMarkup === "function" && typeof beta115HealthMarkup === "function" && !window.__HISTODAILY_BETA148_PROFILE_SUPPORT__) {
-    const beta148PreviousProfileSettingsMarkup = profileSettingsMarkup;
-    profileSettingsMarkup = function beta148ProfileSettingsMarkup() {
-      return `${beta148PreviousProfileSettingsMarkup()}${beta115HealthMarkup()}`;
-    };
-    window.__HISTODAILY_BETA148_PROFILE_SUPPORT__ = true;
-  }
-} catch {}
+/* LTS: couche historique supprimée — Beta 149 — regression guard côté appareil. */
 
+/* LTS: couche historique supprimée — Beta 150 — design boost performant. */
 
-/* =========================================================
-   Beta 149 — regression guard côté appareil
-   - contrôle local non destructif du contenu, des modes et des files de synchro
-   - diagnostic discret dans le profil
-   - pré-vérification serveur étendue avec /system/selftest
-   ========================================================= */
-const BETA149_REGRESSION_GUARD_VERSION = "1.0.0-beta.156";
-function beta149CountByDiscipline() {
-  const rows = [];
-  try {
-    DISCIPLINES.forEach(discipline => {
-      const id = discipline.id;
-      const lessons = typeof beta139ReadyLessonsForDiscipline === "function" ? beta139ReadyLessonsForDiscipline(id) : (typeof lessonsForDiscipline === "function" ? lessonsForDiscipline(id) : []);
-      const mysteries = typeof publicMysteries === "function" ? publicMysteries(id) : [];
-      rows.push({ id, title: discipline.title, lessons: Array.isArray(lessons) ? lessons.length : 0, mysteries: Array.isArray(mysteries) ? mysteries.length : 0 });
-    });
-  } catch {}
-  return rows;
-}
-function beta149LocalRegressionReport() {
-  const warnings = [];
-  let scoreOutbox = [];
-  let friendOutbox = [];
-  try { scoreOutbox = typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox() : []; } catch {}
-  try { friendOutbox = typeof beta128Outbox === "function" ? beta128Outbox() : []; } catch {}
-  const disciplines = beta149CountByDiscipline();
-  disciplines.forEach(row => {
-    if (row.id !== "history" && row.mysteries > 0 && row.lessons === 0) warnings.push(`${row.title}: mystères sans cours publiés`);
-  });
-  const tabOk = (typeof BETA114_ALLOWED_TABS !== "undefined" ? BETA114_ALLOWED_TABS : new Set(["home", "learn", "mystery", "rank", "profile", "publicProfile"])).has(state.tab);
-  if (!tabOk) warnings.push("Onglet local invalide corrigible");
-  const currentCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
-  const currentId = typeof playerIdMe === "function" ? playerIdMe() : "";
-  if (!currentCode) warnings.push("Code ami local absent");
-  if (!currentId) warnings.push("Identifiant joueur local absent");
-  return {
-    ok: warnings.length === 0,
-    checkedAt: Date.now(),
-    warnings: warnings.slice(0, 8),
-    disciplines,
-    scoreOutbox: Array.isArray(scoreOutbox) ? scoreOutbox.length : 0,
-    friendOutbox: Array.isArray(friendOutbox) ? friendOutbox.length : 0,
-    friendCount: Object.keys(state.friends || {}).length,
-    version: BETA149_REGRESSION_GUARD_VERSION
-  };
-}
-function beta149CleanImpossibleSocialLocalState() {
-  let changed = false;
-  try {
-    const myCode = normalizeFriendCode(friendCode());
-    if (state.friends && typeof state.friends === "object") {
-      Object.keys(state.friends).forEach(key => {
-        const code = normalizeFriendCode(state.friends[key]?.code || key);
-        if (!code || (myCode && code === myCode)) { delete state.friends[key]; changed = true; }
-      });
-    }
-    if (typeof beta125FriendRequestsState === "function" && typeof beta125SetFriendRequests === "function") {
-      const req = beta125FriendRequestsState();
-      const notSelf = item => normalizeFriendCode(item?.targetFriendCode || item?.otherFriendCode || item?.requesterFriendCode || "") !== myCode;
-      const cleaned = {
-        ...req,
-        incoming: (req.incoming || []).filter(notSelf),
-        outgoing: (req.outgoing || []).filter(notSelf),
-        history: (req.history || []).slice(0, 40)
-      };
-      if (JSON.stringify(cleaned) !== JSON.stringify(req)) { beta125SetFriendRequests(cleaned); changed = true; }
-    }
-  } catch {}
-  return changed;
-}
-async function beta149RunRegressionGuard({ silent = true } = {}) {
-  const cleaned = beta149CleanImpossibleSocialLocalState();
-  const local = beta149LocalRegressionReport();
-  state.onlineDiagnostic = {
-    ...(state.onlineDiagnostic || {}),
-    regressionGuardAt: Date.now(),
-    regressionGuardOk: local.ok,
-    regressionGuardWarnings: local.warnings,
-    localContentStats: local.disciplines,
-    localScoreOutbox: local.scoreOutbox,
-    localFriendOutbox: local.friendOutbox,
-    localFriendCount: local.friendCount,
-    localRegressionCleaned: cleaned,
-    regressionGuardVersion: BETA149_REGRESSION_GUARD_VERSION
-  };
-  if (!silent && !local.ok) state.profileFeedback = `Contrôle local : ${local.warnings[0] || "point à vérifier"}.`;
-  queueSaveState(120);
-  return local;
-}
-async function beta149RunServerSelftest({ silent = true } = {}) {
-  if (!isOnline) return null;
-  try {
-    const response = await fetch(`/api/v1/system/selftest?_=${Date.now()}`, { cache: "no-store" });
-    const json = await response.json().catch(() => ({}));
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      selftestAt: Date.now(),
-      selftestOk: Boolean(response.ok && json?.ok !== false),
-      selftestWarnings: json?.warnings || [],
-      selftestDurationMs: json?.durationMs || 0
-    };
-    if (!silent) state.profileFeedback = json?.ok ? "Contrôle en ligne OK." : (json?.warnings?.[0] || "Contrôle en ligne à vérifier.");
-    queueSaveState(120);
-    return json;
-  } catch (error) {
-    state.onlineDiagnostic = { ...(state.onlineDiagnostic || {}), selftestAt: Date.now(), selftestOk: false, selftestWarnings: [error?.message || "Selftest indisponible"] };
-    if (!silent) state.profileFeedback = "Contrôle en ligne indisponible.";
-    queueSaveState(120);
-    return null;
-  }
-}
-const beta149PreviousOnlineDiagnosticMarkup = typeof beta142OnlineDiagnosticMarkup === "function" ? beta142OnlineDiagnosticMarkup : null;
-if (beta149PreviousOnlineDiagnosticMarkup) {
-  beta142OnlineDiagnosticMarkup = function beta149OnlineDiagnosticMarkup() {
-    const html = beta149PreviousOnlineDiagnosticMarkup();
-    const diag = state.onlineDiagnostic || {};
-    const local = diag.regressionGuardAt ? (diag.regressionGuardOk ? "OK" : "À vérifier") : "non lancé";
-    const server = diag.selftestAt ? (diag.selftestOk ? "OK" : "À vérifier") : "non lancé";
-    const extra = `<div class="beta149-regression-line"><span>Contrôle local</span><strong>${escapeHtml(local)}</strong></div><div class="beta149-regression-line"><span>Contrôle serveur</span><strong>${escapeHtml(server)}</strong></div>`;
-    return html.replace("</details>", `${extra}</details>`);
-  };
-}
-function beta149HandleRegressionTap(event) {
-  const btn = event.target?.closest?.("[data-beta149-regression-check]");
-  if (!btn) return;
-  event.preventDefault();
-  event.stopPropagation();
-  beta149RunRegressionGuard({ silent: false }).then(() => beta149RunServerSelftest({ silent: false })).then(() => render({ immediate: true })).catch(() => {});
-}
-try {
-  const previousHealthMarkup = typeof beta115HealthMarkup === "function" ? beta115HealthMarkup : null;
-  if (previousHealthMarkup) {
-    beta115HealthMarkup = function beta149HealthMarkup() {
-      return previousHealthMarkup().replace("</details></section>", `<div class="home-actions-row beta149-actions"><button type="button" class="ghost" data-beta149-regression-check>Contrôler l’appareil</button></div></details></section>`);
-    };
-  }
-  // Le contrôle complet est manuel afin de ne pas scanner tout le contenu au démarrage.
-  const style = document.createElement("style");
-  style.id = "beta149-regression-guard-style";
-  style.textContent = `.beta149-regression-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta149-regression-line span{color:var(--muted)}.beta149-regression-line strong{font-weight:800}.beta149-actions{margin-top:10px}.beta149-actions button{min-height:38px}`;
-  if (!document.getElementById(style.id)) void style;
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA149_REGRESSION_GUARD_VERSION, regressionGuard: true };
-  state.beta149RegressionGuardVersion = BETA149_REGRESSION_GUARD_VERSION;
-  queueSaveState(100);
-} catch {}
+/* LTS: couche historique supprimée — Beta 151 — polish visuel et garde-fous performance. */
 
+/* LTS: couche historique supprimée — Beta 152 — polish produit et états vides. */
 
-/* =========================================================
-   Beta 150 — design boost performant
-   CSS-only polish: cartes, navigation, modes, mystère, classement.
-   ========================================================= */
-const BETA150_DESIGN_VERSION = "1.0.0-beta.156";
-try {
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA150_DESIGN_VERSION, designBoost: true, lightweightVisuals: true };
-} catch {}
+/* LTS: couche historique supprimée — Beta 153 — release candidate polish. */
 
+/* LTS: couche historique supprimée — Beta 154 — cache recovery + public readiness guard. */
 
-/* =========================================================
-   Beta 151 — polish visuel et garde-fous performance
-   ========================================================= */
-const BETA151_POLISH_PERF_VERSION = "1.0.0-beta.156";
-try {
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA151_POLISH_PERF_VERSION, designPolish: true, mobilePerfGuard: true };
-} catch {}
+/* LTS: couche historique supprimée — Beta 155 — final guard + identity last-known-good. */
 
-/* =========================================================
-   Beta 152 — polish produit et états vides
-   Objectif : rendre les écrans incomplets plus assumés côté utilisateur,
-   sans exposer le vocabulaire interne de build/contenu.
-   ========================================================= */
-const BETA152_PRODUCT_POLISH_VERSION = "1.0.0-beta.156";
-
-function beta152PlayableCourseCount(disciplineId = activeDisciplineId()) {
-  try {
-    const lessons = typeof beta139ReadyLessonsForDiscipline === "function" ? beta139ReadyLessonsForDiscipline(disciplineId) : lessonsForDiscipline(disciplineId);
-    return Array.isArray(lessons) ? lessons.length : 0;
-  } catch { return 0; }
-}
-function beta152MysteryCount(disciplineId = activeDisciplineId()) {
-  try {
-    const mysteries = publicMysteries(disciplineId);
-    return Array.isArray(mysteries) ? mysteries.length : 0;
-  } catch { return 0; }
-}
-function beta152ModeStateLine(disciplineId = activeDisciplineId()) {
-  const courses = beta152PlayableCourseCount(disciplineId);
-  const mysteries = beta152MysteryCount(disciplineId);
-  if (courses && mysteries) return `${courses} cours · ${mysteries} mystère${mysteries > 1 ? "s" : ""}`;
-  if (courses) return `${courses} cours disponibles`;
-  if (mysteries) return `${mysteries} mystère${mysteries > 1 ? "s" : ""} à jouer`;
-  return "Parcours en ouverture";
-}
-
-if (typeof modeSnapshotMarkup === "function") {
-  modeSnapshotMarkup = function beta152ModeSnapshotMarkup(disciplineId = activeDisciplineId()) {
-    const { discipline, progress, groups, readyLessons, mysteryCount } = disciplineHomeStats(disciplineId);
-    const mode = disciplineModeCopy(discipline.id);
-    const intro = readyLessons.length
-      ? (groups.slice(0, 3).map(group => String(group.title || "").replace(/^\d+\.\s*/, "")).filter(Boolean).join(" · ") || discipline.description)
-      : "Commence par le mystère du jour. Les cours de cette catégorie seront ajoutés progressivement.";
-    return `<section class="card home-mode-card beta152-mode-summary" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="home-mode-card-main"><span class="mode-badge">${HD_ICONS.discipline(discipline)} ${escapeHtml(mode.label)}</span><h2>${escapeHtml(mode.promise)}</h2><p>${escapeHtml(intro)}</p></div>
-      <div class="mode-stat-grid"><div><b>${progress.progress}%</b><span>progression</span></div><div><b>${readyLessons.length}</b><span>cours</span></div><div><b>${mysteryCount}</b><span>mystères</span></div></div>
-    </section>`;
-  };
-}
-
-if (typeof modeContinueMarkup === "function") {
-  const beta152PreviousModeContinueMarkup = modeContinueMarkup;
-  modeContinueMarkup = function beta152ModeContinueMarkup(disciplineId = activeDisciplineId()) {
-    const id = disciplineById(disciplineId || "history").id;
-    if (id === "history") return beta152PreviousModeContinueMarkup(disciplineId);
-    const { discipline, groups, worlds, readyLessons, mysteryCount } = disciplineHomeStats(id);
-    const first = worlds[0] || null;
-    const group = first ? (groups.find(item => item.id === first.group) || groups[0]) : groups[0];
-    if (!first || !readyLessons.length) {
-      return `<section class="card home-main-card home-continue-card mode-continue-card beta152-empty-mode-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-        <div class="section-title-row"><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Le mystère est prêt</h2></div><small>${mysteryCount} mystère${mysteryCount > 1 ? "s" : ""}</small></div>
-        <p>Cette catégorie commence par un défi quotidien. Les cours arriveront ensuite pour approfondir le sujet.</p>
-        <div class="home-card-footer"><span>${escapeHtml(beta152ModeStateLine(id))}</span><button type="button" data-open-daily-mystery>Jouer le mystère</button></div>
-      </section>`;
-    }
-    return `<section class="card home-main-card home-continue-card mode-continue-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
-      <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${HD_ICONS.world(first, discipline)} ${escapeHtml(first.title)}</h2></div><small>${readyLessons.length} cours</small></div>
-      <p>${escapeHtml(first.subtitle || group?.description || discipline.description)}</p>
-      <div class="mode-progress-line"><i style="width:${Math.max(4, disciplineProgress(discipline.id).progress)}%"></i></div>
-      <div class="home-card-footer"><span>${escapeHtml(beta152ModeStateLine(id))}</span><button type="button" data-open-mode-learn="${escapeHtml(discipline.id)}">Voir les cours</button></div>
-    </section>`;
-  };
-}
-
-if (typeof modeRecommendationsMarkup === "function") {
-  const beta152PreviousModeRecommendationsMarkup = modeRecommendationsMarkup;
-  modeRecommendationsMarkup = function beta152ModeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
-    const html = beta152PreviousModeRecommendationsMarkup(disciplineId);
-    if (!html) return "";
-    return String(html)
-      .replace("Seulement les cours disponibles sont affichés ici.", "Les cartes affichées sont prêtes à ouvrir.")
-      .replace(/cours recommandés/g, "à découvrir")
-      .replace(/piste\(s\)/g, "pistes");
-  };
-}
-
-if (typeof renderLearn === "function") {
-  const beta152PreviousRenderLearn = renderLearn;
-  renderLearn = function beta152RenderLearn() {
-    const disciplineId = activeDisciplineId();
-    const worlds = typeof beta139RealWorldsForDiscipline === "function" ? beta139RealWorldsForDiscipline(disciplineId) : treeAvailableWorlds(disciplineId);
-    if (!worlds.length) {
-      const discipline = disciplineById(disciplineId);
-      const mystery = dailyMystery();
-      renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>${escapeHtml(discipline.title)}</h1><p class="tree-subtitle">Cette catégorie commence par les mystères. Les cours suivront progressivement.</p></div></header>
-        ${disciplineSelectorMarkup(disciplineId)}
-        <section class="card discipline-empty-card beta152-discipline-empty" style="--discipline-accent:${escapeHtml(discipline.accent)}"><div class="discipline-empty-icon">${HD_ICONS.discipline(discipline)}</div><div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>Pas encore de cours dans ce mode</h2><p>Tu peux déjà jouer le mystère du jour. Les cours seront ajoutés quand le parcours sera assez solide.</p><div class="after-actions"><button data-open-daily-mystery>${mystery ? "Jouer le mystère" : "Retour"}</button><button class="ghost" data-back-home>Accueil</button></div></div></section>`);
-      $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
-      $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() }));
-      document.querySelectorAll("button[data-discipline]").forEach(btn => btn.addEventListener("click", () => selectDiscipline(btn.dataset.discipline)));
-      return;
-    }
-    return beta152PreviousRenderLearn();
-  };
-}
-
-if (typeof emptyRankMarkup === "function") {
-  emptyRankMarkup = function beta152EmptyRankMarkup(scope = "daily") {
-    if (scope === "friends") return `<div class="empty-rank beta152-empty-rank"><h2>Aucun score ami pour l’instant</h2><p>Ajoute un ami puis revenez après le mystère du jour pour comparer vos résultats.</p><button type="button" class="ghost mini-button" data-home-profile>Ajouter un ami</button></div>`;
-    if (scope === "week") return `<div class="empty-rank beta152-empty-rank"><h2>La semaine démarre</h2><p>Les scores apparaîtront quand des joueurs résoudront les mystères de la semaine.</p></div>`;
-    if (scope === "year") return `<div class="empty-rank beta152-empty-rank"><h2>Encore aucun score annuel</h2><p>Le classement annuel se remplit avec les scores réellement enregistrés.</p></div>`;
-    return `<div class="empty-rank beta152-empty-rank"><h2>Aucun score aujourd’hui</h2><p>Résous le mystère du jour pour lancer le classement.</p></div>`;
-  };
-}
-
-function beta152InstallProductPolishStyle() {
-  if (document.getElementById("beta152-product-polish-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta152-product-polish-style";
-  style.textContent = `
-    .beta152-empty-mode-card,.beta152-discipline-empty,.beta152-empty-rank{border-style:solid;border-color:color-mix(in srgb,var(--discipline-accent,#f6c453) 24%,rgba(255,255,255,.10));}
-    .beta152-empty-mode-card .home-card-footer span{color:color-mix(in srgb,var(--discipline-accent,#f6c453) 86%,white);font-weight:900;}
-    .beta152-discipline-empty{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:radial-gradient(circle at 0 0,color-mix(in srgb,var(--discipline-accent,#f6c453) 16%,transparent),transparent 42%),linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));}
-    .beta152-discipline-empty .discipline-empty-icon{font-size:2rem;display:grid;place-items:center;width:60px;height:60px;border-radius:22px;background:color-mix(in srgb,var(--discipline-accent,#f6c453) 16%,transparent);}
-    .empty-rank.beta152-empty-rank{padding:18px;text-align:center;background:rgba(255,255,255,.045);border-radius:22px;}
-    .empty-rank.beta152-empty-rank h2{margin:.15rem 0 .35rem;letter-spacing:-.03em;}
-    .empty-rank.beta152-empty-rank p{margin:0 auto 10px;max-width:34ch;}
-    .release-card ul{padding-left:1.05rem;margin:.55rem 0 .2rem;}
-    .release-card li{margin:.34rem 0;color:#d8e4f1;line-height:1.38;}
-    @media(max-width:430px){.beta152-discipline-empty{grid-template-columns:1fr}.beta152-discipline-empty .discipline-empty-icon{width:54px;height:54px}.beta152-discipline-empty .after-actions{display:grid;grid-template-columns:1fr;}}
-  `;
-  void style;
-}
-
-try {
-  beta152InstallProductPolishStyle();
-  state.beta152ProductPolishVersion = BETA152_PRODUCT_POLISH_VERSION;
-  queueSaveState(80);
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA152_PRODUCT_POLISH_VERSION, productPolish: true };
-} catch {}
-
-
-/* =========================================================
-   Beta 153 — release candidate polish
-   - garde-fous locaux avant test public
-   - actions globales simples pour boutons rendus dynamiquement
-   - diagnostic discret des erreurs client/cache
-   ========================================================= */
-const BETA153_RELEASE_CANDIDATE_VERSION = "1.0.0-beta.156";
-
-function beta153SafeShort(value, max = 90) {
-  const text = String(value || "").replace(/\s+/g, " ").trim();
-  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
-}
-
-function beta153ValidDisciplineId(id) {
-  try { return DISCIPLINES.some(item => item.id === id); } catch { return false; }
-}
-
-function beta153RepairReleaseCandidateState() {
-  let changed = false;
-  try {
-    const allowedTabs = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
-    if (!allowedTabs.has(state.tab)) { state.tab = "home"; changed = true; }
-    if (!beta153ValidDisciplineId(state.currentDiscipline)) { state.currentDiscipline = "history"; changed = true; }
-    if (state.currentMysteryDiscipline && !beta153ValidDisciplineId(state.currentMysteryDiscipline)) { state.currentMysteryDiscipline = activeDisciplineId(); changed = true; }
-    if (!["daily", "week", "year", "friends"].includes(state.rankScope)) { state.rankScope = "daily"; changed = true; }
-    if (state.tab === "lesson") {
-      const lessonExists = allLessons().some(lesson => String(lesson.id) === String(state.currentLessonId));
-      if (!lessonExists) { state.tab = "learn"; state.currentLessonId = null; changed = true; }
-    }
-    if (state.friends && typeof state.friends === "object") {
-      const ownCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
-      const ownId = typeof playerIdMe === "function" ? String(playerIdMe()) : "";
-      Object.keys(state.friends).forEach(key => {
-        const entry = state.friends[key] || {};
-        const code = normalizeFriendCode(entry.code || entry.friendCode || key);
-        const id = String(entry.playerId || entry.friend_player_id || entry.id || "");
-        if (!code || (ownCode && code === ownCode) || (ownId && id && id === ownId)) {
-          delete state.friends[key];
-          changed = true;
-        }
-      });
-    }
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      releaseCandidateCheckedAt: Date.now(),
-      releaseCandidateVersion: BETA153_RELEASE_CANDIDATE_VERSION,
-      releaseCandidateChanged: changed
-    };
-    if (changed) queueSaveState(80);
-  } catch {}
-  return changed;
-}
-
-function beta153RecordClientIssue(source, detail) {
-  try {
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      lastClientIssueAt: Date.now(),
-      lastClientIssueSource: beta153SafeShort(source, 40),
-      lastClientIssue: beta153SafeShort(detail, 120),
-      lastClientIssueVersion: BETA153_RELEASE_CANDIDATE_VERSION
-    };
-    queueSaveState(250);
-  } catch {}
-}
-
-
-async function beta153CheckServiceWorkerVersion() {
-  try {
-    if (!("serviceWorker" in navigator) || !navigator.serviceWorker.controller || typeof MessageChannel !== "function") return null;
-    const channel = new MessageChannel();
-    const result = await new Promise(resolve => {
-      const timer = setTimeout(() => resolve(null), 1200);
-      channel.port1.onmessage = event => { clearTimeout(timer); resolve(event.data || null); };
-      navigator.serviceWorker.controller.postMessage({ type: "HISTODAILY_VERSION" }, [channel.port2]);
-    });
-    if (result) {
-      state.onlineDiagnostic = {
-        ...(state.onlineDiagnostic || {}),
-        serviceWorkerCheckedAt: Date.now(),
-        serviceWorkerVersion: result.version || "inconnue",
-        serviceWorkerCache: result.cache || "—",
-        serviceWorkerMatchesApp: result.version === APP_VERSION
-      };
-      queueSaveState(200);
-    }
-    return result;
-  } catch { return null; }
-}
-
-if (typeof beta142OnlineDiagnosticMarkup === "function") {
-  const beta153PreviousOnlineDiagnosticMarkup = beta142OnlineDiagnosticMarkup;
-  beta142OnlineDiagnosticMarkup = function beta153OnlineDiagnosticMarkup() {
-    const html = beta153PreviousOnlineDiagnosticMarkup();
-    const diag = state.onlineDiagnostic || {};
-    const sw = diag.serviceWorkerVersion ? `${diag.serviceWorkerMatchesApp ? "OK" : "ancien cache"} · ${escapeHtml(diag.serviceWorkerVersion)}` : "non vérifié";
-    const issue = diag.lastClientIssue ? `<p class="muted-note warning-note">Dernier incident local : ${escapeHtml(diag.lastClientIssue)}</p>` : "";
-    const extra = `<div class="beta153-rc-line"><span>Version installée</span><strong>${escapeHtml(APP_VERSION)}</strong></div><div class="beta153-rc-line"><span>Cache PWA</span><strong>${sw}</strong></div>${issue}`;
-    return html.replace("</details>", `${extra}</details>`);
-  };
-}
-
-try {
-  beta153RepairReleaseCandidateState();
-  const style = document.createElement("style");
-  style.id = "beta153-release-candidate-style";
-  style.textContent = `.beta153-rc-line{display:grid;grid-template-columns:minmax(100px,.8fr) 1fr;gap:7px 10px;margin-top:7px;font-size:.88rem}.beta153-rc-line span{color:var(--muted)}.beta153-rc-line strong{font-weight:800}.warning-note{color:#fde68a}`;
-  if (!document.getElementById(style.id)) void style;
-  state.beta153ReleaseCandidateVersion = BETA153_RELEASE_CANDIDATE_VERSION;
-  queueSaveState(100);
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA153_RELEASE_CANDIDATE_VERSION, releaseCandidate: true };
-} catch (error) { beta153RecordClientIssue("beta153", error?.message || error); }
-
-/* =========================================================
-   Beta 154 — cache recovery + public readiness guard
-   - diagnostic de version navigateur/API/service worker
-   - bouton utilisateur pour recharger proprement sans perdre la progression
-   - nettoyage local plus strict mais non destructif
-   ========================================================= */
-const BETA154_CACHE_RECOVERY_VERSION = "1.0.0-beta.156";
-
-function beta154NowLabel(ts = Date.now()) {
-  try { return new Date(ts).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); } catch { return "—"; }
-}
-
-function beta154DedupeArrayBy(items = [], keyFn = item => item) {
-  const seen = new Set();
-  const out = [];
-  for (const item of Array.isArray(items) ? items : []) {
-    const key = String(keyFn(item) || "").trim();
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    out.push(item);
-  }
-  return out;
-}
-
-function beta154LocalReadinessCleanup() {
-  let changed = false;
-  try {
-    if (Array.isArray(state.beta128ScoreOutbox)) {
-      const before = state.beta128ScoreOutbox.length;
-      state.beta128ScoreOutbox = beta154DedupeArrayBy(state.beta128ScoreOutbox, item => `${item?.playerId || item?.player_id || ""}:${item?.mysteryId || item?.mystery_id || ""}:${item?.periodKey || item?.period_key || ""}:${item?.scope || "daily"}`);
-      changed = changed || before !== state.beta128ScoreOutbox.length;
-    }
-    if (Array.isArray(state.beta127OutgoingFriendRequests)) {
-      const own = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
-      const before = state.beta127OutgoingFriendRequests.length;
-      state.beta127OutgoingFriendRequests = beta154DedupeArrayBy(state.beta127OutgoingFriendRequests.filter(item => {
-        const code = normalizeFriendCode(item?.targetFriendCode || item?.friendCode || item?.code || "");
-        return code && (!own || code !== own);
-      }), item => normalizeFriendCode(item?.targetFriendCode || item?.friendCode || item?.code || ""));
-      changed = changed || before !== state.beta127OutgoingFriendRequests.length;
-    }
-    if (state.friends && typeof state.friends === "object") {
-      const ownCode = typeof friendCode === "function" ? normalizeFriendCode(friendCode()) : "";
-      const ownId = typeof playerIdMe === "function" ? String(playerIdMe()) : "";
-      const cleaned = {};
-      Object.entries(state.friends).forEach(([key, value]) => {
-        const code = normalizeFriendCode(value?.code || value?.friendCode || key);
-        const id = String(value?.playerId || value?.friend_player_id || value?.id || "");
-        if (!code || (ownCode && code === ownCode) || (ownId && id && id === ownId)) { changed = true; return; }
-        if (!cleaned[code]) cleaned[code] = { ...value, code };
-        else changed = true;
-      });
-      state.friends = cleaned;
-    }
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      localReadinessCheckedAt: Date.now(),
-      localReadinessChanged: changed,
-      localReadinessVersion: BETA154_CACHE_RECOVERY_VERSION
-    };
-    if (changed) queueSaveState(100);
-  } catch {}
-  return changed;
-}
-
-async function beta154FetchJson(path, timeoutMs = 3500) {
-  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
-  try {
-    const res = await fetch(path, { cache: "no-store", signal: controller?.signal });
-    const data = await res.json().catch(() => null);
-    return { ok: Boolean(res.ok && data?.ok !== false), status: res.status, data };
-  } catch (error) {
-    return { ok: false, status: 0, error: String(error?.message || error || "Erreur réseau") };
-  } finally {
-    if (timer) clearTimeout(timer);
-  }
-}
-
-async function beta154CheckAppReadiness() {
-  try {
-    const [health, selftest] = await Promise.all([
-      beta154FetchJson("/api/v1/health", 3500),
-      beta154FetchJson("/api/v1/system/selftest", 4500)
-    ]);
-    const apiVersion = health.data?.version || health.data?.deployment?.version || selftest.data?.version || "—";
-    const selftestOk = Boolean(selftest.data?.ok);
-    const healthOk = Boolean(health.ok);
-    const serviceWorkerVersion = state.onlineDiagnostic?.serviceWorkerVersion || "—";
-    const cacheMismatch = serviceWorkerVersion !== "—" && serviceWorkerVersion !== APP_VERSION;
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      beta154ReadinessCheckedAt: Date.now(),
-      beta154ReadinessVersion: BETA154_CACHE_RECOVERY_VERSION,
-      beta154HealthOk: healthOk,
-      beta154SelftestOk: selftestOk,
-      beta154ApiVersion: apiVersion,
-      beta154CacheMismatch: cacheMismatch,
-      beta154Warnings: [
-        ...(Array.isArray(health.data?.deployment?.selftestWarnings) ? health.data.deployment.selftestWarnings : []),
-        ...(Array.isArray(selftest.data?.warnings) ? selftest.data.warnings : [])
-      ].slice(0, 4)
-    };
-    queueSaveState(150);
-    return { health, selftest, cacheMismatch };
-  } catch { return null; }
-}
-
-async function beta154CleanReloadApp() {
-  try {
-    setState({ profileFeedback: "Rechargement propre de l’app…" }, { save: true, render: true });
-  } catch {}
-  try {
-    if (typeof caches !== "undefined") {
-      const keys = await caches.keys();
-      await Promise.all(keys.filter(key => /histodaily/i.test(key)).map(key => caches.delete(key)));
-    }
-  } catch {}
-  try {
-    if (navigator.serviceWorker?.getRegistrations) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(reg => reg.update().catch(() => null)));
-    }
-  } catch {}
-  const url = new URL(window.location.href);
-  url.searchParams.set("fresh", "156");
-  url.searchParams.set("t", String(Date.now()));
-  window.location.replace(url.toString());
-}
-
-function beta154ReadinessLineMarkup() {
-  const diag = state.onlineDiagnostic || {};
-  const checked = diag.beta154ReadinessCheckedAt ? beta154NowLabel(diag.beta154ReadinessCheckedAt) : "non vérifié";
-  const api = diag.beta154ApiVersion || "—";
-  const health = diag.beta154HealthOk ? "OK" : "à vérifier";
-  const self = diag.beta154SelftestOk ? "OK" : "à vérifier";
-  const cache = diag.beta154CacheMismatch ? "ancien cache" : "OK";
-  const warnings = Array.isArray(diag.beta154Warnings) && diag.beta154Warnings.length
-    ? `<p class="muted-note warning-note">À surveiller : ${diag.beta154Warnings.map(escapeHtml).join(" · ")}</p>`
-    : "";
-  return `<div class="beta154-readiness-grid"><div><span>Vérification</span><strong>${escapeHtml(checked)}</strong></div><div><span>API</span><strong>${escapeHtml(health)} · ${escapeHtml(api)}</strong></div><div><span>Auto-test</span><strong>${escapeHtml(self)}</strong></div><div><span>Cache</span><strong>${escapeHtml(cache)}</strong></div></div>${warnings}<div class="home-actions-row beta154-actions"><button type="button" class="ghost" data-beta154-check>Vérifier en ligne</button><button type="button" class="ghost" data-beta154-clean-reload>Recharger proprement l’app</button></div>`;
-}
-
-if (typeof beta142OnlineDiagnosticMarkup === "function") {
-  const beta154PreviousOnlineDiagnosticMarkup = beta142OnlineDiagnosticMarkup;
-  beta142OnlineDiagnosticMarkup = function beta154OnlineDiagnosticMarkup() {
-    const html = beta154PreviousOnlineDiagnosticMarkup();
-    return String(html).replace("</details>", `${beta154ReadinessLineMarkup()}</details>`);
-  };
-}
-
-function beta154GlobalAction(event) {
-  const target = event.target?.closest?.("[data-beta154-check],[data-beta154-clean-reload]");
-  if (!target || !document.body.contains(target)) return;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-  if (target.matches("[data-beta154-clean-reload]")) return beta154CleanReloadApp();
-  if (target.matches("[data-beta154-check]")) {
-    setState({ profileFeedback: "Vérification en cours…" }, { save: true, render: true });
-    beta154CheckAppReadiness().then(() => setState({ profileFeedback: "Vérification terminée." }, { save: true, render: true })).catch(() => setState({ profileFeedback: "Vérification impossible pour le moment." }, { save: true, render: true }));
-  }
-}
-
-function beta154InstallStyle() {
-  if (document.getElementById("beta154-cache-recovery-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta154-cache-recovery-style";
-  style.textContent = `
-    .beta154-readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
-    .beta154-readiness-grid div{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);border-radius:14px;padding:9px 10px}
-    .beta154-readiness-grid span{display:block;color:var(--muted);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
-    .beta154-readiness-grid strong{display:block;margin-top:2px;font-size:.88rem;line-height:1.2}
-    .beta154-actions{margin-top:10px;gap:8px;flex-wrap:wrap}.beta154-actions button{min-height:40px}
-    @media(max-width:430px){.beta154-readiness-grid{grid-template-columns:1fr}.beta154-actions{display:grid}.beta154-actions button{width:100%}}
-  `;
-  void style;
-}
-
-try {
-  beta154LocalReadinessCleanup();
-  beta154InstallStyle();
-  if (!window.__HISTODAILY_BETA154_ACTIONS__) {
-    window.__HISTODAILY_BETA154_ACTIONS__ = true;
-  }
-  state.beta154CacheRecoveryVersion = BETA154_CACHE_RECOVERY_VERSION;
-  queueSaveState(150);
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA154_CACHE_RECOVERY_VERSION, cacheRecovery: true, publicReadinessGuard: true };
-} catch (error) { try { beta153RecordClientIssue?.("beta154", error?.message || error); } catch {} }
-
-/* =========================================================
-   Beta 155 — final guard + identity last-known-good
-   - sauvegarde séparée de la dernière identité saine
-   - récupération douce si un ancien cache perd le code ami
-   - diagnostic stockage/cache plus lisible avant test élargi
-   ========================================================= */
-const BETA155_FINAL_GUARD_VERSION = "1.0.0-beta.156";
-const BETA155_IDENTITY_SNAPSHOT_KEY = `${STORAGE_KEY}_identity_last_good_v2`;
-
-function beta155SafeJsonRead(key) {
-  try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
-}
-function beta155SafeJsonWrite(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
-}
-function beta155MeasureLocalStorageFootprint() {
-  try {
-    let total = 0;
-    for (let i = 0; i < localStorage.length; i += 1) {
-      const key = localStorage.key(i) || "";
-      if (!/histodaily/i.test(key)) continue;
-      total += key.length + String(localStorage.getItem(key) || "").length;
-    }
-    return total;
-  } catch { return 0; }
-}
-function beta155StorageWritable() {
-  try {
-    const key = `${STORAGE_KEY}_write_probe`;
-    localStorage.setItem(key, String(Date.now()));
-    localStorage.removeItem(key);
-    return true;
-  } catch { return false; }
-}
-function beta155IdentitySnapshotPayload() {
-  let code = "";
-  let pid = "";
-  let localId = "";
-  try { code = normalizeFriendCode(friendCode()); } catch {}
-  try { pid = String(playerIdMe()); } catch {}
-  try { localId = String(localUserId()); } catch {}
-  if (!parseFriendCode(code) || !pid) return null;
-  return {
-    app: "HistoDaily",
-    version: BETA155_FINAL_GUARD_VERSION,
-    savedAt: Date.now(),
-    playerId: pid,
-    localUserId: localId,
-    friendCode: code,
-    pseudo: sanitizePseudo(currentPseudo?.() || state.pseudo || "Invité"),
-    level: typeof level === "function" ? level() : 1,
-    xp: Number(state.xp || 0),
-    solvedCount: Object.keys(state.solvedMysteries || {}).length,
-    source: "last-known-good"
-  };
-}
-function beta155SaveIdentitySnapshot() {
-  const payload = beta155IdentitySnapshotPayload();
-  if (!payload) return false;
-  const ok = beta155SafeJsonWrite(BETA155_IDENTITY_SNAPSHOT_KEY, payload);
-  if (ok) {
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      beta155IdentitySnapshotAt: payload.savedAt,
-      beta155StorageFootprint: beta155MeasureLocalStorageFootprint(),
-      beta155StorageWritable: beta155StorageWritable(),
-      beta155Version: BETA155_FINAL_GUARD_VERSION
-    };
-  }
-  return ok;
-}
-function beta155RecoverIdentityFromSnapshot() {
-  try {
-    const snap = beta155SafeJsonRead(BETA155_IDENTITY_SNAPSHOT_KEY);
-    if (!snap || !parseFriendCode(snap.friendCode || "")) return false;
-    let changed = false;
-    const currentCode = normalizeFriendCode(localStorage.getItem(`${STORAGE_KEY}_friend_code`) || "");
-    if (!parseFriendCode(currentCode)) {
-      localStorage.setItem(`${STORAGE_KEY}_friend_code`, normalizeFriendCode(snap.friendCode));
-      if (snap.localUserId) localStorage.setItem(`${STORAGE_KEY}_local_user_id`, String(snap.localUserId));
-      changed = true;
-    }
-    if ((!state.pseudo || state.pseudo === "Invité") && snap.pseudo && snap.pseudo !== "Invité") {
-      state.pseudo = sanitizePseudo(snap.pseudo);
-      changed = true;
-    }
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      beta155RecoveredIdentity: changed,
-      beta155RecoveredAt: changed ? Date.now() : (state.onlineDiagnostic || {}).beta155RecoveredAt,
-      beta155LastGoodFriendCode: normalizeFriendCode(snap.friendCode),
-      beta155LastGoodPlayerId: String(snap.playerId || ""),
-      beta155Version: BETA155_FINAL_GUARD_VERSION
-    };
-    if (changed) queueSaveState(100);
-    return changed;
-  } catch { return false; }
-}
-function beta155FinalGuardMarkup() {
-  const diag = state.onlineDiagnostic || {};
-  const writable = diag.beta155StorageWritable === false ? "à surveiller" : "OK";
-  const footprint = Number(diag.beta155StorageFootprint || beta155MeasureLocalStorageFootprint());
-  const footprintKo = footprint ? `${Math.round(footprint / 1024)} Ko` : "—";
-  const saved = diag.beta155IdentitySnapshotAt ? beta154NowLabel?.(diag.beta155IdentitySnapshotAt) || "OK" : "à créer";
-  const recovered = diag.beta155RecoveredIdentity ? `<p class="muted-note warning-note">Identité récupérée depuis la dernière sauvegarde saine.</p>` : "";
-  return `<div class="beta155-final-grid"><div><span>Identité saine</span><strong>${escapeHtml(saved)}</strong></div><div><span>Stockage</span><strong>${escapeHtml(writable)} · ${escapeHtml(footprintKo)}</strong></div></div>${recovered}<div class="home-actions-row beta155-actions"><button type="button" class="ghost" data-beta155-save-identity>Fixer mon identité</button></div>`;
-}
-if (typeof beta142OnlineDiagnosticMarkup === "function") {
-  const beta155PreviousOnlineDiagnosticMarkup = beta142OnlineDiagnosticMarkup;
-  beta142OnlineDiagnosticMarkup = function beta155OnlineDiagnosticMarkup() {
-    const html = beta155PreviousOnlineDiagnosticMarkup();
-    return String(html).replace("</details>", `${beta155FinalGuardMarkup()}</details>`);
-  };
-}
-function beta155GlobalAction(event) {
-  const target = event.target?.closest?.("[data-beta155-save-identity]");
-  if (!target || !document.body.contains(target)) return;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-  const ok = beta155SaveIdentitySnapshot();
-  setState({ profileFeedback: ok ? "Identité sauvegardée comme référence saine." : "Impossible de sauvegarder l’identité pour le moment." }, { save: true, render: true });
-}
-function beta155InstallStyle() {
-  if (document.getElementById("beta156-release-readiness-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta156-release-readiness-style";
-  style.textContent = `
-    .beta155-final-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
-    .beta155-final-grid div{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);border-radius:14px;padding:9px 10px}
-    .beta155-final-grid span{display:block;color:var(--muted);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
-    .beta155-final-grid strong{display:block;margin-top:2px;font-size:.88rem;line-height:1.2}.beta155-actions{margin-top:10px}.beta155-actions button{min-height:40px}
-    @media(max-width:430px){.beta155-final-grid{grid-template-columns:1fr}.beta155-actions{display:grid}.beta155-actions button{width:100%}}
-  `;
-  void style;
-}
-try {
-  beta155RecoverIdentityFromSnapshot();
-  beta155SaveIdentitySnapshot();
-  beta155InstallStyle();
-  if (!window.__HISTODAILY_BETA155_ACTIONS__) {
-    window.__HISTODAILY_BETA155_ACTIONS__ = true;
-    window.addEventListener("beforeunload", () => { try { beta155SaveIdentitySnapshot(); } catch {} });
-  }
-  state.beta155FinalGuardVersion = BETA155_FINAL_GUARD_VERSION;
-  queueSaveState(150);
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA155_FINAL_GUARD_VERSION, finalGuard: true, identityLastKnownGood: true };
-} catch (error) { try { beta153RecordClientIssue?.("beta155", error?.message || error); } catch {} }
-
-/* =========================================================
-   Beta 156 — release readiness guard
-   - contrôle final non destructif côté API
-   - nettoyage local léger avant test privé
-   - détection plus claire des vieux caches PWA
-   ========================================================= */
-const BETA156_RELEASE_READINESS_VERSION = "1.0.0-beta.165";
-
-function beta156UniqueBy(items, keyFn) {
-  const out = [];
-  const seen = new Set();
-  (Array.isArray(items) ? items : []).forEach(item => {
-    const key = String(keyFn(item) || "").trim().toLowerCase();
-    if (!key || seen.has(key)) return;
-    seen.add(key);
-    out.push(item);
-  });
-  return out;
-}
-
-function beta156ReleaseLocalCleanup() {
-  try {
-    const validTabs = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
-    const validDisciplines = new Set((DISCIPLINES || []).map(d => d.id));
-    const patch = {};
-    if (!validTabs.has(state.tab)) patch.tab = "home";
-    if (!validDisciplines.has(state.currentDiscipline)) patch.currentDiscipline = "history";
-    const lessons = allLessons?.() || [];
-    if (state.currentLessonId && !lessons.some(lesson => String(lesson.id) === String(state.currentLessonId))) {
-      patch.currentLessonId = null;
-      if ((patch.tab || state.tab) === "lesson") patch.tab = "learn";
-    }
-    const mysteryIds = new Set((data.mysteries || []).map(m => m.id));
-    if (state.currentMysteryId && !mysteryIds.has(state.currentMysteryId)) patch.currentMysteryId = dailyMystery?.()?.id || null;
-
-    const myCode = normalizeFriendCode(friendCode?.() || "");
-    const myId = String(playerIdMe?.() || "");
-    const friends = beta156UniqueBy(state.friends || [], friend => normalizeFriendCode(friend.friendCode || friend.code || friend.id || "") || String(friend.playerId || friend.friendPlayerId || ""))
-      .filter(friend => {
-        const code = normalizeFriendCode(friend.friendCode || friend.code || friend.id || "");
-        const pid = String(friend.playerId || friend.friendPlayerId || "");
-        return code !== myCode && pid !== myId;
-      });
-    if (Array.isArray(state.friends) && JSON.stringify(friends) !== JSON.stringify(state.friends || [])) patch.friends = friends;
-
-    const outgoing = beta156UniqueBy(state.friendRequestOutbox || [], req => normalizeFriendCode(req.targetFriendCode || req.friendCode || req.code || "") || String(req.targetPlayerId || ""))
-      .filter(req => normalizeFriendCode(req.targetFriendCode || req.friendCode || req.code || "") !== myCode && String(req.targetPlayerId || "") !== myId);
-    if (JSON.stringify(outgoing) !== JSON.stringify(state.friendRequestOutbox || [])) patch.friendRequestOutbox = outgoing;
-
-    const scores = beta156UniqueBy(state.scoreOutbox || [], score => `${score.mysteryId || ""}|${score.periodKey || ""}|${score.scope || "daily"}|${score.playerId || myId}`);
-    if (JSON.stringify(scores) !== JSON.stringify(state.scoreOutbox || [])) patch.scoreOutbox = scores;
-
-    if (Object.keys(patch).length) setState(patch, { save: true, render: false });
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      beta156LocalCleanupAt: Date.now(),
-      beta156CleanedFriends: friends.length,
-      beta156CleanedRequests: outgoing.length,
-      beta156CleanedScores: scores.length,
-      beta156Version: BETA156_RELEASE_READINESS_VERSION
-    };
-    queueSaveState?.(180);
-  } catch (error) { try { beta153RecordClientIssue?.("beta156-local-cleanup", error?.message || error); } catch {} }
-}
-
-async function beta156ReleaseCheck() {
-  const started = Date.now();
-  try {
-    const response = await fetch(`/api/v1/system/release-check?playerId=${encodeURIComponent(playerIdMe?.() || "")}&friendCode=${encodeURIComponent(friendCode?.() || "")}&_=${Date.now()}`, { cache: "no-store" });
-    const json = await response.json().catch(() => null);
-    const warnings = Array.isArray(json?.warnings) ? json.warnings : [];
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      beta156ReleaseCheckAt: Date.now(),
-      beta156ReleaseCheckOk: Boolean(json?.ok),
-      beta156ReleaseCheckScore: Number(json?.readinessScore || 0),
-      beta156ReleaseWarnings: warnings.slice(0, 6),
-      beta156ReleaseMode: json?.mode || "—",
-      beta156ReleaseDurationMs: Date.now() - started,
-      beta156Version: BETA156_RELEASE_READINESS_VERSION
-    };
-    queueSaveState?.(120);
-    return json;
-  } catch (error) {
-    state.onlineDiagnostic = {
-      ...(state.onlineDiagnostic || {}),
-      beta156ReleaseCheckAt: Date.now(),
-      beta156ReleaseCheckOk: false,
-      beta156ReleaseWarnings: ["Contrôle final indisponible pour le moment."],
-      beta156ReleaseDurationMs: Date.now() - started,
-      beta156Version: BETA156_RELEASE_READINESS_VERSION
-    };
-    queueSaveState?.(120);
-    throw error;
-  }
-}
-
-function beta156ReleaseReadinessMarkup() {
-  const diag = state.onlineDiagnostic || {};
-  const checked = diag.beta156ReleaseCheckAt ? (beta154NowLabel?.(diag.beta156ReleaseCheckAt) || "OK") : "non lancé";
-  const score = Number(diag.beta156ReleaseCheckScore || 0);
-  const status = diag.beta156ReleaseCheckOk ? "OK" : (diag.beta156ReleaseCheckAt ? "à vérifier" : "en attente");
-  const warnings = Array.isArray(diag.beta156ReleaseWarnings) && diag.beta156ReleaseWarnings.length
-    ? `<p class="muted-note warning-note">${diag.beta156ReleaseWarnings.map(escapeHtml).join(" · ")}</p>`
-    : "";
-  return `<div class="beta156-readiness-grid"><div><span>Contrôle final</span><strong>${escapeHtml(status)}</strong></div><div><span>Score</span><strong>${escapeHtml(score ? `${score}/100` : "—")}</strong></div><div><span>Dernier contrôle</span><strong>${escapeHtml(checked)}</strong></div><div><span>Mode</span><strong>${escapeHtml(diag.beta156ReleaseMode || "—")}</strong></div></div>${warnings}<div class="home-actions-row beta156-actions"><button type="button" class="ghost" data-beta156-release-check>Contrôle final</button></div>`;
-}
-
-if (typeof beta142OnlineDiagnosticMarkup === "function") {
-  const beta156PreviousOnlineDiagnosticMarkup = beta142OnlineDiagnosticMarkup;
-  beta142OnlineDiagnosticMarkup = function beta156OnlineDiagnosticMarkup() {
-    const html = beta156PreviousOnlineDiagnosticMarkup();
-    return String(html).replace("</details>", `${beta156ReleaseReadinessMarkup()}</details>`);
-  };
-}
-
-function beta156GlobalAction(event) {
-  const target = event.target?.closest?.("[data-beta156-release-check]");
-  if (!target || !document.body.contains(target)) return;
-  event.preventDefault?.();
-  event.stopPropagation?.();
-  if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-  setState({ profileFeedback: "Contrôle final en cours…" }, { save: true, render: true });
-  beta156ReleaseLocalCleanup();
-  beta156ReleaseCheck()
-    .then(json => setState({ profileFeedback: json?.ok ? "Contrôle final OK." : "Contrôle final terminé avec points à surveiller." }, { save: true, render: true }))
-    .catch(() => setState({ profileFeedback: "Contrôle final impossible pour le moment." }, { save: true, render: true }));
-}
-
-function beta156InstallStyle() {
-  if (document.getElementById("beta156-release-readiness-style")) return;
-  const style = document.createElement("style");
-  style.id = "beta156-release-readiness-style";
-  style.textContent = `
-    .beta156-readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
-    .beta156-readiness-grid div{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);border-radius:14px;padding:9px 10px}
-    .beta156-readiness-grid span{display:block;color:var(--muted);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
-    .beta156-readiness-grid strong{display:block;margin-top:2px;font-size:.88rem;line-height:1.2}.beta156-actions{margin-top:10px}.beta156-actions button{min-height:40px}
-    @media(max-width:430px){.beta156-readiness-grid{grid-template-columns:1fr}.beta156-actions{display:grid}.beta156-actions button{width:100%}}
-  `;
-  void style;
-}
-
-try {
-  beta156ReleaseLocalCleanup();
-  beta156InstallStyle();
-  if (!window.__HISTODAILY_BETA156_ACTIONS__) {
-    window.__HISTODAILY_BETA156_ACTIONS__ = true;
-  }
-  state.beta156ReleaseReadinessVersion = BETA156_RELEASE_READINESS_VERSION;
-  queueSaveState?.(150);
-  window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA156_RELEASE_READINESS_VERSION, releaseReadiness: true, privateBetaGuard: true };
-} catch (error) { try { beta153RecordClientIssue?.("beta156", error?.message || error); } catch {} }
-
+/* LTS: couche historique supprimée — Beta 156 — release readiness guard. */
 
 /* =========================================================
    BETA165 — stabilisation fonctionnelle générale
@@ -21819,7 +19252,7 @@ try {
    handlers globaux sobres et des rendus allégés pour le quiz.
    ========================================================= */
 (() => {
-  const BETA165_VERSION = "1.0.0-beta.165";
+  const BETA165_VERSION = "1.0.0-beta.207";
   const FRIEND_DRAFT_KEY = `${STORAGE_KEY}_friend_code_draft_beta165`;
   const PROFILE_KEY = `${STORAGE_KEY}_profile_beta165`;
   const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
@@ -21899,17 +19332,7 @@ try {
   const prevPayload = typeof scorePayloadForMystery === "function" ? scorePayloadForMystery : null;
   if (prevPayload) scorePayloadForMystery = function beta165ScorePayloadForMystery(id){ const p=prevPayload(id)||{}; const x=xpTotal(); return {...p,xp:x,totalXp:x,score:Math.max(Number(p.score||0),x),scoreMode:"total_xp"}; };
 
-  if (typeof renderRank === "function") renderRank = function beta165RenderRank(){
-    const scope = VALID_SCOPES.has(state.rankScope) ? state.rankScope : "daily"; state.rankScope=scope;
-    try { ensureServerLeaderboard?.(scope); } catch {} if (scope==="friends") { try { ensureServerFriends?.(); } catch {} }
-    const rows = leaderboardRows(scope); const me=rows.find(r=>r.me); const friends=scope==="friends"; const x=xpTotal();
-    renderShell(`<header class="topbar"><button type="button" data-home>←</button><div><p class="eyebrow">Classements</p><h1>${esc(typeof scopeLabel==="function"?scopeLabel(scope):"Classement")}</h1></div></header>
-      <section class="tabs-clean rank-tabs"><button type="button" data-rank-scope="daily" class="${scope==="daily"?"active":""}">Aujourd’hui</button><button type="button" data-rank-scope="week" class="${scope==="week"?"active":""}">Semaine</button><button type="button" data-rank-scope="year" class="${scope==="year"?"active":""}">Année</button><button type="button" data-rank-scope="friends" class="${scope==="friends"?"active":""}">Amis</button></section>
-      <section class="card social-rank-hero"><div><span class="card-label">Classement</span><h2>${friends?"Tes amis":"Classement général"}</h2><p>Score affiché = XP totale : cours + mystères.</p></div><button type="button" data-open-profile>${esc(state.pseudo||"Profil")}</button></section>${typeof socialBackendMarkup==="function"?socialBackendMarkup():""}
-      <section class="card rank-summary beta165-rank-summary"><div><span>Ton XP total</span><strong>${x} XP</strong></div><div><span>Cours validés</span><strong>${Object.keys(state.completedLessons||{}).length}</strong></div><div><span>Mystères</span><strong>${Object.keys(state.solvedMysteries||{}).length}</strong></div><div><span>Ta place</span><strong>#${me?.rank||"—"}</strong></div></section>
-      <section class="card leaderboard leaderboard-modern beta165-leaderboard">${rows.length?rows.map(r=>`<button type="button" class="rank-row ${r.me?"me":""}" data-view-profile="${esc(r.id||r.playerId||r.friendCode||"")}"><span>${r.rank}</span><strong>${esc(r.name||r.pseudo||"Joueur")}</strong><em>${Number(r.score||0)} XP</em></button>`).join(""):(typeof emptyRankMarkup==="function"?emptyRankMarkup(scope):"<div>Aucun score</div>")}</section><p class="rank-note muted-note">Les onglets restent utilisables, mais le score compare bien l’XP totale.</p>${friends?`${typeof addFriendMarkup==="function"?addFriendMarkup():""}${typeof friendListMarkup==="function"?friendListMarkup():""}`:""}`);
-    bindStableActions();
-  };
+  /* LTS: surcharge historique de renderRank supprimée. */
 
   if (typeof addFriendMarkup === "function") addFriendMarkup = function beta165AddFriendMarkup(){ const draft=str(state.friendCodeDraft || (()=>{try{return localStorage.getItem(FRIEND_DRAFT_KEY)||"";}catch{return "";}})()); return `<section class="card add-friend-card beta165-add-friend-card"><div><span class="card-label">Ajouter un ami</span><h2>Code ami</h2><p>Colle le code complet. Le champ reste saisissable et garde la valeur si l’écran se rafraîchit.</p></div><form data-add-friend class="friend-add-form beta165-friend-add-form" autocomplete="off"><input data-friend-code-input name="friendCode" type="text" value="${esc(draft)}" placeholder="PSEUDO-ABC123" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Code ami"/><button type="submit" data-add-friend-button>Ajouter</button></form><div class="friend-code"><strong>${esc(myCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback?`<p class="profile-feedback">${esc(state.friendFeedback)}</p>`:""}</section>`; };
   function parseFriend(raw){ try { return typeof parseFriendCode === "function" ? parseFriendCode(raw||"") : null; } catch { return null; } }
@@ -21933,7 +19356,7 @@ try {
   function bindStableActions(){ try{document.querySelectorAll("[data-rank-scope]").forEach(b=>b.onclick=()=>setSafe({tab:"rank",rankScope:b.dataset.rankScope||"daily"}))}catch{} try{document.querySelectorAll("[data-view-profile]").forEach(b=>b.onclick=()=>viewProfile?.(b.dataset.viewProfile))}catch{} try{document.querySelectorAll("[data-open-profile]").forEach(b=>b.onclick=()=>setSafe({tab:"profile"}))}catch{} try{document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>setSafe({tab:"home"}))}catch{} }
   const oldSave = typeof saveState === "function" ? saveState : null; if(oldSave) saveState=function beta165SaveState(){ repairSocial(); saveProfile("save"); return oldSave(); };
   const oldSet = typeof setState === "function" ? setState : null; if(oldSet) setState=function beta165SetState(patch={},options={}){ if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"rankScope")) patch={...patch,rankScope:VALID_SCOPES.has(patch.rankScope)?patch.rankScope:"daily"}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"friends")) patch={...patch,friends:normalizeFriends(patch.friends)}; if(patch&&typeof patch==="object"&&Object.prototype.hasOwnProperty.call(patch,"pseudo")) patch={...patch,pseudo:str(patch.pseudo).slice(0,18)||state.pseudo||"Invité"}; const r=oldSet(patch,options); try{if(repairSocial()) queueSaveState?.(120)}catch{} try{saveProfile("setState")}catch{} return r; };
-  try { repairSocial(); saveProfile("startup"); const style=document.createElement("style"); style.id="beta165-stabilisation-style"; style.textContent=`[data-friend-code-input]{pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important;min-height:52px!important;font-size:16px!important;text-transform:uppercase}.beta165-friend-add-form{display:grid;grid-template-columns:1fr auto;gap:10px}.beta165-friend-add-form button{min-height:52px}.rank-tabs [data-rank-scope]{pointer-events:auto!important;touch-action:manipulation!important;position:relative;z-index:3}.beta165-rank-summary{grid-template-columns:repeat(4,minmax(0,1fr))}.beta165-leaderboard .rank-row{touch-action:manipulation;pointer-events:auto}.beta165-quiz-runner{content-visibility:auto;contain-intrinsic-size:620px;overflow:clip}.beta165-quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 16px}.beta165-quiz-progress i{height:8px;border-radius:999px;background:rgba(255,255,255,.14)}.beta165-quiz-progress i.current{background:rgba(246,196,83,.82)}.beta165-quiz-progress i.ok{background:rgba(72,213,151,.85)}.beta165-quiz-progress i.ko{background:rgba(251,113,133,.82)}.beta165-single-question .quiz-choice{touch-action:manipulation;pointer-events:auto;min-height:54px}.beta165-quiz-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px}.beta165-quiz-footer button{min-height:48px}.beta165-score-panel{display:grid;gap:4px;border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055)}.beta165-score-panel.good{border-color:rgba(72,213,151,.45);background:rgba(72,213,151,.12)}.complete-course-panel,.leaderboard-modern,.friends-list-card{content-visibility:auto;contain-intrinsic-size:900px}.skip-link:not(:focus-visible){transform:translateY(-220%)!important;opacity:0!important;pointer-events:none!important}@media(max-width:520px){.beta165-rank-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.beta165-friend-add-form,.beta165-quiz-footer{grid-template-columns:1fr;display:grid}.beta165-friend-add-form button,.beta165-quiz-footer button{width:100%}}`; if(!document.getElementById(style.id)) void style; state.beta165StabilisationVersion=BETA165_VERSION; window.HistoDaily={...(window.HistoDaily||{}),version:BETA165_VERSION,beta165Stabilisation:true,quizFlow:true,leaderboardTotalXp:true}; queueSaveState?.(150); if(["rank","profile","lesson","mystery","publicProfile"].includes(state.tab)) renderSoon(); } catch(e){ try{console.warn("beta165",e)}catch{} }
+  try { repairSocial(); saveProfile("startup");  state.beta165StabilisationVersion=BETA165_VERSION; window.HistoDaily={...(window.HistoDaily||{}),version:BETA165_VERSION,beta165Stabilisation:true,quizFlow:true,leaderboardTotalXp:true}; queueSaveState?.(150); if(["rank","profile","lesson","mystery","publicProfile"].includes(state.tab)) renderSoon(); } catch(e){ try{console.warn("beta165",e)}catch{} }
 })();
 
 
@@ -21942,7 +19365,7 @@ try {
    Du coup beta125SendFriendRequest voyait déjà l'ami dans state.friends et annulait l'envoi.
    Ici l'ajout par code crée une vraie demande sortante, sans créer l'amitié locale. */
 (function beta166FriendRequestsFix(){
-  const BETA166_VERSION = "1.0.0-beta.166";
+  const BETA166_VERSION = "1.0.0-beta.207";
   const SENT_KEY = `${STORAGE_KEY || "histodaily_state"}_beta166_sent_friend_requests`;
   const DRAFT_KEY = `${STORAGE_KEY || "histodaily_state"}_friend_code_draft`;
   const str = v => String(v ?? "");
@@ -22138,163 +19561,12 @@ try {
 })();
 
 
-/* Beta167 — classement scroll-safe.
-   Correctif ciblé : dans le classement, la ligne entière ne doit plus ouvrir un profil.
-   Seul le petit bouton "Profil" ouvre la fiche. Les gestes de scroll sont ignorés.
-*/
-(function beta167LeaderboardScrollSafe(){
-  const BETA167_VERSION = "1.0.0-beta.167";
-  const esc = value => {
-    try { return typeof escapeHtml === "function" ? escapeHtml(String(value ?? "")) : String(value ?? "").replace(/[&<>\"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-    catch { return String(value ?? ""); }
-  };
-  const validScope = scope => ["daily", "week", "year", "friends"].includes(scope) ? scope : "daily";
-  const totalXpValue = () => {
-    try {
-      if (typeof totalXp === "function") return Number(totalXp() || 0);
-    } catch {}
-    try {
-      const row = typeof leaderboardRows === "function" ? leaderboardRows(state.rankScope || "daily").find(r => r && r.me) : null;
-      if (row) return Math.max(Number(row.score || 0), Number(row.xp || 0), Number(row.totalXp || 0));
-    } catch {}
-    return Number(state?.xp || 0);
-  };
-  const idForRow = row => String(row?.id || row?.playerId || row?.player_id || row?.friendCode || row?.friend_code || row?.code || "");
-  const titleForScope = scope => {
-    try { return typeof scopeLabel === "function" ? scopeLabel(scope) : "Classement"; }
-    catch { return "Classement"; }
-  };
-  const backend = () => { try { return typeof socialBackendMarkup === "function" ? socialBackendMarkup() : ""; } catch { return ""; } };
-  const empty = scope => { try { return typeof emptyRankMarkup === "function" ? emptyRankMarkup(scope) : "<div class='empty-rank'>Aucun score pour l’instant.</div>"; } catch { return "<div class='empty-rank'>Aucun score pour l’instant.</div>"; } };
-  const addFriend = () => { try { return typeof addFriendMarkup === "function" ? addFriendMarkup() : ""; } catch { return ""; } };
-  const friendList = () => { try { return typeof friendListMarkup === "function" ? friendListMarkup() : ""; } catch { return ""; } };
-  const rowsFor = scope => {
-    try { return typeof leaderboardRows === "function" ? (leaderboardRows(scope) || []) : []; }
-    catch { return []; }
-  };
-  const openProfile = id => {
-    const key = String(id || "").trim();
-    if (!key) return;
-    try {
-      if (typeof beta134OpenPublicProfile === "function") return beta134OpenPublicProfile(key);
-    } catch {}
-    try {
-      if (typeof viewProfile === "function") return viewProfile(key);
-    } catch {}
-    try { setState?.({ tab: "publicProfile", selectedProfileId: key }, { save: true }); } catch {}
-  };
-
-  function rankRowsMarkup(rows){
-    if (!rows.length) return "";
-    return rows.map(row => {
-      const id = idForRow(row);
-      const name = row?.name || row?.pseudo || "Joueur";
-      const score = Number(row?.score || row?.xp || row?.totalXp || 0);
-      const me = row?.me ? " me" : "";
-      const button = id ? `<button type="button" class="rank-profile-btn" data-view-profile="${esc(id)}" aria-label="Ouvrir le profil de ${esc(name)}">Profil</button>` : `<span class="rank-profile-spacer" aria-hidden="true"></span>`;
-      return `<div class="rank-row${me} beta167-rank-row" data-rank-row="1"><span>${Number(row?.rank || 0) || "—"}</span><strong>${esc(name)}</strong><em>${score} XP</em>${button}</div>`;
-    }).join("");
-  }
-
-  const previousRenderRank = typeof renderRank === "function" ? renderRank : null;
-  renderRank = function beta167RenderRank(){
-    const scope = validScope(state.rankScope || "daily");
-    state.rankScope = scope;
-    try { ensureServerLeaderboard?.(scope); } catch {}
-    if (scope === "friends") { try { ensureServerFriends?.(); } catch {} }
-    const rows = rowsFor(scope);
-    const me = rows.find(row => row && row.me);
-    const friends = scope === "friends";
-    const xp = totalXpValue();
-    try {
-      renderShell(`<header class="topbar"><button type="button" data-home>←</button><div><p class="eyebrow">Classements</p><h1>${esc(titleForScope(scope))}</h1></div></header>
-        <section class="tabs-clean rank-tabs">
-          <button type="button" data-rank-scope="daily" class="${scope === "daily" ? "active" : ""}">Aujourd’hui</button>
-          <button type="button" data-rank-scope="week" class="${scope === "week" ? "active" : ""}">Semaine</button>
-          <button type="button" data-rank-scope="year" class="${scope === "year" ? "active" : ""}">Année</button>
-          <button type="button" data-rank-scope="friends" class="${scope === "friends" ? "active" : ""}">Amis</button>
-        </section>
-        <section class="card social-rank-hero"><div><span class="card-label">Classement</span><h2>${friends ? "Tes amis" : "Classement général"}</h2><p>Score affiché = XP totale : cours + mystères.</p></div><button type="button" data-open-profile>${esc(state.pseudo || "Profil")}</button></section>
-        ${backend()}
-        <section class="card rank-summary beta165-rank-summary beta167-rank-summary"><div><span>Ton XP total</span><strong>${xp} XP</strong></div><div><span>Cours validés</span><strong>${Object.keys(state.completedLessons || {}).length}</strong></div><div><span>Mystères</span><strong>${Object.keys(state.solvedMysteries || {}).length}</strong></div><div><span>Ta place</span><strong>#${me?.rank || "—"}</strong></div></section>
-        <section class="card leaderboard leaderboard-modern beta165-leaderboard beta167-leaderboard">${rows.length ? rankRowsMarkup(rows) : empty(scope)}</section>
-        <p class="rank-note muted-note">Pour éviter les ouvertures accidentelles pendant le scroll, touche le bouton “Profil” à droite d’une ligne.</p>
-        ${friends ? `${addFriend()}${friendList()}` : ""}`);
-    } catch (error) {
-      if (previousRenderRank) return previousRenderRank();
-      throw error;
-    }
-    try { bindBeta167RankActions(); } catch {}
-  };
-
-  function bindBeta167RankActions(){
-    document.querySelectorAll("[data-rank-scope]").forEach(btn => {
-      btn.onclick = event => {
-        event?.preventDefault?.();
-        event?.stopPropagation?.();
-        try { setState({ tab: "rank", rankScope: validScope(btn.dataset.rankScope || "daily") }, { save: true }); } catch {}
-        try { window.scrollTo({ top: 0, behavior: "auto" }); } catch {}
-      };
-    });
-    document.querySelectorAll(".rank-profile-btn[data-view-profile]").forEach(btn => {
-      btn.onclick = event => {
-        event?.preventDefault?.();
-        event?.stopPropagation?.();
-        openProfile(btn.dataset.viewProfile || "");
-      };
-    });
-    document.querySelectorAll("[data-home]").forEach(btn => { btn.onclick = () => { try { setState({ tab: "home" }, { save: true }); } catch {} }; });
-    document.querySelectorAll("[data-open-profile]").forEach(btn => { btn.onclick = () => { try { setState({ tab: "profile" }, { save: true }); } catch {} }; });
-    document.querySelectorAll("[data-refresh-social]").forEach(btn => { btn.onclick = () => { try { fetchServerFriends?.({ force: true }).catch?.(()=>{}); } catch {} ["daily","week","year","friends"].forEach(s => { try { fetchServerLeaderboard?.(s, { force: true }).catch?.(()=>{}); } catch {} }); }; });
-    const form = document.querySelector("[data-add-friend]");
-    if (form) form.onsubmit = event => { try { addFriend?.(event); } catch {} };
-    const share = document.querySelector("[data-share-invite]");
-    if (share) share.onclick = event => { event?.preventDefault?.(); try { shareInviteCode?.(); } catch {} };
-  }
-
-  /* Neutralise l'ancien handler beta134, qui ouvrait un profil sur touchend même après un geste de scroll. */
-  try {
-    if (typeof beta134HandleSocialTap === "function") {
-      document.removeEventListener("touchend", beta134HandleSocialTap, true);
-      document.removeEventListener("pointerup", beta134HandleSocialTap, true);
-      document.removeEventListener("click", beta134HandleSocialTap, true);
-    }
-  } catch {}
-
-
-  function installStyle(){
-    if (document.getElementById("beta167-scroll-safe-style")) return;
-    const style = document.createElement("style");
-    style.id = "beta167-scroll-safe-style";
-    style.textContent = `
-      .beta167-leaderboard{display:grid;gap:10px;content-visibility:auto;contain-intrinsic-size:900px;}
-      .beta167-rank-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:12px 12px;background:rgba(255,255,255,.045);touch-action:pan-y;user-select:none;-webkit-user-select:none;}
-      .beta167-rank-row.me{border-color:rgba(246,196,83,.42);background:rgba(246,196,83,.10);}
-      .beta167-rank-row span{opacity:.72;font-weight:800;}
-      .beta167-rank-row strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-      .beta167-rank-row em{font-style:normal;opacity:.82;white-space:nowrap;}
-      .rank-profile-btn{min-height:38px;padding:8px 12px;border-radius:999px;touch-action:manipulation;position:relative;z-index:5;}
-      .rank-profile-spacer{width:58px;}
-      @media(max-width:520px){.beta167-rank-row{grid-template-columns:30px minmax(0,1fr) auto;grid-template-areas:"rank name button" "rank score button";gap:3px 8px;padding:12px 10px}.beta167-rank-row>span{grid-area:rank}.beta167-rank-row>strong{grid-area:name}.beta167-rank-row>em{grid-area:score;font-size:.86rem}.rank-profile-btn{grid-area:button;min-width:64px;padding:8px 10px}.rank-profile-spacer{grid-area:button;width:64px}}
-    `;
-    void style;
-  }
-
-  try {
-    installStyle();
-    state.beta167LeaderboardScrollSafeVersion = BETA167_VERSION;
-    window.HistoDaily = { ...(window.HistoDaily || {}), version: BETA167_VERSION, beta167LeaderboardScrollSafe: true };
-    try { queueSaveState?.(120); } catch {}
-  } catch (error) { try { console.warn("beta167 leaderboard scroll safe", error); } catch {} }
-})();
-
-
-
+/* LTS: ancien rendu de classement supprimé ; ranking-redesign fournit l’unique rendu actif. */
 
 /* Actions dynamiques centralisées : un seul écouteur global au lieu des correctifs concurrents. */
 function beta171GlobalActionRouter(event) {
   const target = event.target?.closest?.(
-    "[data-beta115-repaint],[data-beta115-go-home],[data-beta115-soft-repair],[data-beta115-static],[data-send-friend-request],[data-respond-friend-request],[data-cancel-friend-request],[data-refresh-social],[data-refresh-requests],[data-repair-social],[data-beta148-preflight],[data-beta149-regression-check],[data-beta154-check],[data-beta154-clean-reload],[data-beta155-save-identity],[data-beta156-release-check]"
+    "[data-beta115-repaint],[data-beta115-go-home],[data-beta115-soft-repair],[data-beta115-static],[data-send-friend-request],[data-respond-friend-request],[data-cancel-friend-request],[data-refresh-social],[data-refresh-requests],[data-repair-social]"
   );
   if (!target || !document.body.contains(target)) return;
   event.preventDefault?.();
@@ -22306,11 +19578,7 @@ function beta171GlobalActionRouter(event) {
   if (target.matches("[data-cancel-friend-request]")) return beta140HandleCancelTap(event);
   if (target.matches("[data-refresh-social],[data-refresh-requests]")) return beta141HandleRefreshTap(event);
   if (target.matches("[data-repair-social]")) return beta142HandleRepairTap(event);
-  if (target.matches("[data-beta148-preflight]")) return beta148HandlePreflightTap(event);
-  if (target.matches("[data-beta149-regression-check]")) return beta149HandleRegressionTap(event);
-  if (target.matches("[data-beta154-check],[data-beta154-clean-reload]")) return beta154GlobalAction(event);
-  if (target.matches("[data-beta155-save-identity]")) return beta155GlobalAction(event);
-  if (target.matches("[data-beta156-release-check]")) return beta156GlobalAction(event);
+  if (target.matches("[data-beta154-check]")) return beta154GlobalAction(event);
 }
 document.addEventListener("click", beta171GlobalActionRouter, true);
 
@@ -22330,7 +19598,6 @@ function beta171ScheduleConnectivityRefresh(reason = "visible", { force = false 
   beta171ConnectivityTimer = window.setTimeout(async () => {
     beta171LastConnectivityRun = Date.now();
     try { isOnline = navigator.onLine !== false; } catch {}
-    try { beta156ReleaseLocalCleanup?.(); } catch {}
     try { beta128FlushOutgoingRequests?.({ force }).catch?.(() => {}); } catch {}
     try { beta128FlushScoreOutbox?.({ force, reason }).catch?.(() => {}); } catch {}
     try {
@@ -22378,7 +19645,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 (function histodailyBeta172Bootstrap(){
-  const VERSION = "1.0.0-beta.181";
+  const VERSION = "1.0.0-beta.207";
   let booted = false;
   function boot(){
     if (booted) return;

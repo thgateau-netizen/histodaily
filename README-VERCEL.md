@@ -1,4 +1,4 @@
-# Déployer HistoDaily 1.0.0-beta.177 sur Vercel
+# Déployer HistoDaily 1.0.0-beta.207 sur Vercel
 
 1. Extraire entièrement le zip.
 2. Remplacer **tous** les fichiers de l’ancien déploiement, y compris le dossier `api` et le dossier `lib`.
@@ -13,7 +13,7 @@ Aucune nouvelle colonne n’est nécessaire si le schéma social fourni avec les
 
 ## Vérification rapide après déploiement
 
-- Ouvrir `/api/v1/health` : la réponse doit indiquer la version `1.0.0-beta.177`.
+- Ouvrir `/api/v1/health` : la réponse doit indiquer la version `1.0.0-beta.207`.
 - Créer ou synchroniser deux profils distincts.
 - Envoyer une demande avec le code ami du second profil, puis l’accepter depuis ce second profil.
 - Vérifier que chacun apparaît dans la liste de l’autre.

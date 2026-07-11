@@ -1,28 +1,14 @@
-const CACHE_NAME = "histodaily-beta200-mini-cartes-accueil-v1";
-const APP_VERSION = "1.0.0-beta.201";
+const CACHE_NAME = "histodaily-beta207-lts-v1";
+const APP_VERSION = "1.0.0-beta.207";
 const ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=1.0.0-beta.201",
-  "/concept-expedition.css?v=1.0.0-beta.201",
-  "/app-core.js?v=1.0.0-beta.201",
-  "/app-onboarding.js?v=1.0.0-beta.201",
-  "/app-icons.js?v=1.0.0-beta.201",
-  "/app-art.js?v=1.0.0-beta.201",
-  "/app.js?v=1.0.0-beta.201",
-  "/content-editorial.js?v=1.0.0-beta.201",
-  "/content-expansion.js?v=1.0.0-beta.201",
-  "/content-nonhistory.js?v=1.0.0-beta.201",
-  "/content-astronomy.js?v=1.0.0-beta.201",
-  "/mystery-rescue.js?v=1.0.0-beta.201",
-  "/social-runtime.js?v=1.0.0-beta.201",
-  "/progression-systems.js?v=1.0.0-beta.201",
-  "/interface-polish.js?v=1.0.0-beta.201",
-  "/experience-audit.js?v=1.0.0-beta.201",
-  "/visual-upgrade.js?v=1.0.0-beta.201",
-  "/concept-expedition.js?v=1.0.0-beta.201",
-  "/ranking-redesign.js?v=1.0.0-beta.201",
-  "/lessons-lite.js?v=1.0.0-beta.201",
+  "/app.css?v=1.0.0-beta.207",
+  "/lessons-lite.js?v=1.0.0-beta.207",
+  "/app-bootstrap.js?v=1.0.0-beta.207",
+  "/app.js?v=1.0.0-beta.207",
+  "/content-library.js?v=1.0.0-beta.207",
+  "/app-runtime.js?v=1.0.0-beta.207",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
@@ -90,7 +76,7 @@ self.addEventListener("fetch", event => {
 });
 
 
-// BETA149_VERSION_MESSAGE: permet à l'app de vérifier la version du service worker sans effet de bord.
+// Expose la version active du service worker sans effet de bord.
 self.addEventListener("message", event => {
   if (event.data && event.data.type === "HISTODAILY_VERSION") {
     event.source?.postMessage?.({ type: "HISTODAILY_VERSION", version: APP_VERSION, cache: CACHE_NAME });
