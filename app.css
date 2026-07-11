@@ -5543,3 +5543,63 @@ body{
   .hd226-visual .discipline-astronomy .hd222-expedition-art{ width: 50%; right: -5%; top: 30px; height: calc(100% - 34px); }
   .hd226-visual .hd225-astro-visual{ background-position: 75% 48%; transform: scale(.92); }
 }
+
+/* =========================================================
+   HistoDaily beta 227 — astronomy blend fix
+   Keep the better framing from beta 226, but fade the image into
+   the hero so the square edges disappear.
+   ========================================================= */
+.hd227-visual .discipline-astronomy .hd222-expedition-art{
+  width: 56%;
+  right: -2%;
+  top: 18px;
+  height: calc(100% - 22px);
+  overflow: hidden;
+}
+.hd227-visual .hd225-astro-hero{
+  isolation: isolate;
+}
+.hd227-visual .hd225-astro-visual{
+  background-size: contain;
+  background-position: 68% 48%;
+  transform: scale(1.00);
+  position: absolute;
+  inset: 0;
+  filter: saturate(1.10) contrast(1.05) brightness(1.01) drop-shadow(0 18px 38px rgba(0,0,0,.24));
+  -webkit-mask-image:
+    radial-gradient(ellipse 72% 66% at 63% 48%, #000 0 55%, rgba(0,0,0,.98) 64%, rgba(0,0,0,.86) 72%, rgba(0,0,0,.52) 82%, transparent 95%),
+    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.18) 8%, #000 18%, #000 86%, rgba(0,0,0,.38) 94%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.22) 10%, #000 18%, #000 86%, rgba(0,0,0,.40) 94%, transparent 100%);
+  -webkit-mask-composite: source-in, source-in;
+  mask-image:
+    radial-gradient(ellipse 72% 66% at 63% 48%, #000 0 55%, rgba(0,0,0,.98) 64%, rgba(0,0,0,.86) 72%, rgba(0,0,0,.52) 82%, transparent 95%),
+    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.18) 8%, #000 18%, #000 86%, rgba(0,0,0,.38) 94%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.22) 10%, #000 18%, #000 86%, rgba(0,0,0,.40) 94%, transparent 100%);
+  mask-composite: intersect;
+}
+.hd227-visual .hd225-astro-overlay{
+  background:
+    radial-gradient(circle at 71% 43%, rgba(145,113,255,.16) 0%, transparent 26%),
+    radial-gradient(circle at 82% 40%, rgba(255,188,118,.08) 0%, transparent 15%),
+    linear-gradient(90deg, rgba(6,10,24,.18) 0%, rgba(6,10,24,.08) 36%, transparent 52%),
+    linear-gradient(180deg, rgba(6,10,24,.00) 0%, rgba(6,10,24,.03) 68%, rgba(6,10,24,.14) 100%);
+  mix-blend-mode: screen;
+}
+.hd227-visual .hd225-astro-hero::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 54% 46% at 70% 50%, rgba(8,12,28,0) 0%, rgba(8,12,28,0) 60%, rgba(8,12,28,.18) 74%, rgba(8,12,28,.42) 86%, rgba(8,12,28,.82) 100%);
+  pointer-events: none;
+}
+@media (max-width: 430px){
+  .hd227-visual .discipline-astronomy .hd222-expedition-copy{ width: 51%; }
+  .hd227-visual .discipline-astronomy .hd222-expedition-art{ width: 53%; right: -4%; top: 26px; height: calc(100% - 28px); }
+  .hd227-visual .hd225-astro-visual{ background-position: 72% 48%; transform: scale(.96); }
+}
+@media (max-width: 370px){
+  .hd227-visual .discipline-astronomy .hd222-expedition-copy{ width: 54%; }
+  .hd227-visual .discipline-astronomy .hd222-expedition-art{ width: 50%; right: -5%; top: 30px; height: calc(100% - 34px); }
+  .hd227-visual .hd225-astro-visual{ background-position: 75% 48%; transform: scale(.92); }
+}
