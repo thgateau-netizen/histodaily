@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.227.0";
+  const VERSION = "1.0.0-beta.229.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }
@@ -12,7 +12,7 @@
   const safe = (fn, fallback = null) => { try { const value = fn(); return value ?? fallback; } catch { return fallback; } };
   let profileMountGeneration = 0;
 
-  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual", "hd225-visual", "hd226-visual", "hd227-visual");
+  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual", "hd225-visual", "hd226-visual", "hd227-visual", "hd228-visual", "hd229-visual");
 
   function disciplineLabel(discipline){
     const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", astronomy:"Astronomie", economy:"Économie", geography:"Géographie", music:"Musique" };
