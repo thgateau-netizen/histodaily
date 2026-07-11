@@ -43,3 +43,10 @@ Le frontend a été consolidé sans réécrire le modèle de données ni les rou
 ## Déploiement
 
 Le dossier peut être déployé tel quel sur Vercel. Après mise en ligne, ouvrir une fois l’application avec le réseau actif afin que le service worker installe le cache beta 207. Les détails de configuration restent dans `README-VERCEL.md` et `SUPABASE-SOCIAL-SCHEMA.sql`.
+
+## Correctif mobile 207.1
+
+- Correction de la grille implicite du bandeau d’accueil qui comprimait le texte dans une colonne étroite.
+- Bandeau d’accueil mobile repassé sur une seule colonne, sans chevauchement de l’illustration.
+- Navigation basse réduite pour libérer la zone utile et respecter la safe area iOS.
+- Mise en cache PWA renouvelée (`histodaily-beta207-lts-v2`) et ressources repérées `1.0.0-beta.207.1`.
