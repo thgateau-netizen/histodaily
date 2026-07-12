@@ -113,3 +113,240 @@ create unique index if not exists hd_friend_requests_pending_unique on public.hd
 -- La fiabilité a été renforcée côté client et API : écritures locales transactionnelles,
 -- files d'attente hors ligne, bornes calendaires locales et déduplication des scores.
 -- Les tables et index ci-dessus restent nécessaires pour les amis et classements multi-appareils.
+
+
+-- beta248 : aucune migration obligatoire.
+-- Les profils sont fusionnés de manière monotone côté API et les demandes croisées
+-- sont acceptées automatiquement sans créer deux relations concurrentes.
+
+-- beta249 : fonctions atomiques recommandées pour le multi-appareils.
+-- Elles sont additives et peuvent être relancées sans supprimer de données.
+
+create or replace function public.hd_merge_profile(
+  p_player_id text,
+  p_pseudo text,
+  p_friend_code text,
+  p_level integer,
+  p_xp integer,
+  p_solved_count integer,
+  p_streak integer,
+  p_allow_pseudo_change boolean default false
+)
+returns table (
+  player_id text,
+  pseudo text,
+  friend_code text,
+  level integer,
+  xp integer,
+  solved_count integer,
+  streak integer,
+  updated_at timestamptz
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.hd_profiles as hp (
+    player_id, pseudo, friend_code, level, xp, solved_count, streak, updated_at
+  ) values (
+    nullif(trim(p_player_id), ''),
+    coalesce(nullif(trim(p_pseudo), ''), 'Invité'),
+    nullif(upper(trim(p_friend_code)), ''),
+    greatest(1, coalesce(p_level, 1)),
+    greatest(0, coalesce(p_xp, 0)),
+    greatest(0, coalesce(p_solved_count, 0)),
+    greatest(0, coalesce(p_streak, 0)),
+    now()
+  )
+  on conflict (player_id) do update set
+    pseudo = case
+      when p_allow_pseudo_change and nullif(trim(excluded.pseudo), '') is not null then excluded.pseudo
+      when lower(coalesce(hp.pseudo, '')) in ('', 'invite', 'invité', 'joueur', 'local-player') then excluded.pseudo
+      else hp.pseudo
+    end,
+    friend_code = coalesce(nullif(hp.friend_code, ''), nullif(excluded.friend_code, '')),
+    level = greatest(hp.level, excluded.level),
+    xp = greatest(hp.xp, excluded.xp),
+    solved_count = greatest(hp.solved_count, excluded.solved_count),
+    streak = greatest(hp.streak, excluded.streak),
+    updated_at = now();
+
+  return query
+  select hp.player_id, hp.pseudo, hp.friend_code, hp.level, hp.xp,
+         hp.solved_count, hp.streak, hp.updated_at
+  from public.hd_profiles hp
+  where hp.player_id = nullif(trim(p_player_id), '')
+     or (nullif(upper(trim(p_friend_code)), '') is not null
+         and hp.friend_code = nullif(upper(trim(p_friend_code)), ''))
+  order by case when hp.player_id = nullif(trim(p_player_id), '') then 0 else 1 end
+  limit 1;
+end;
+$$;
+
+create or replace function public.hd_upsert_best_score(
+  p_player_id text,
+  p_pseudo text,
+  p_friend_code text,
+  p_mystery_id text,
+  p_period_key text,
+  p_score integer,
+  p_hints integer,
+  p_tries integer,
+  p_difficulty text,
+  p_level integer,
+  p_xp integer,
+  p_solved_count integer,
+  p_streak integer,
+  p_solved_at timestamptz
+)
+returns table (
+  player_id text,
+  pseudo text,
+  friend_code text,
+  mystery_id text,
+  period_key text,
+  scope text,
+  score integer,
+  hints integer,
+  tries integer,
+  difficulty text,
+  level integer,
+  xp integer,
+  solved_count integer,
+  streak integer,
+  solved_at timestamptz
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_cap integer := case lower(coalesce(p_difficulty, 'moyen'))
+    when 'facile' then 95
+    when 'difficile' then 150
+    when 'expert' then 180
+    else 120
+  end;
+  v_score integer := greatest(0, least(coalesce(p_score, 0), v_cap));
+begin
+  insert into public.hd_scores as hs (
+    player_id, pseudo, friend_code, mystery_id, period_key, scope,
+    score, hints, tries, difficulty, level, xp, solved_count, streak, solved_at
+  ) values (
+    trim(p_player_id), coalesce(nullif(trim(p_pseudo), ''), 'Joueur'),
+    nullif(upper(trim(p_friend_code)), ''), trim(p_mystery_id), trim(p_period_key), 'daily',
+    v_score, greatest(0, coalesce(p_hints, 0)), greatest(1, coalesce(p_tries, 1)),
+    coalesce(nullif(trim(p_difficulty), ''), 'moyen'), greatest(1, coalesce(p_level, 1)),
+    greatest(0, coalesce(p_xp, 0)), greatest(0, coalesce(p_solved_count, 0)),
+    greatest(0, coalesce(p_streak, 0)), coalesce(p_solved_at, now())
+  )
+  on conflict (player_id, mystery_id, period_key, scope) do update set
+    pseudo = case when excluded.score >= hs.score then excluded.pseudo else hs.pseudo end,
+    friend_code = coalesce(nullif(hs.friend_code, ''), excluded.friend_code),
+    score = greatest(case when hs.score > v_cap then 0 else hs.score end, excluded.score),
+    hints = case when excluded.score > hs.score or hs.score > v_cap then excluded.hints else hs.hints end,
+    tries = case when excluded.score > hs.score or hs.score > v_cap then excluded.tries else hs.tries end,
+    difficulty = case when excluded.score > hs.score or hs.score > v_cap then excluded.difficulty else hs.difficulty end,
+    level = greatest(hs.level, excluded.level),
+    xp = greatest(hs.xp, excluded.xp),
+    solved_count = greatest(hs.solved_count, excluded.solved_count),
+    streak = greatest(hs.streak, excluded.streak),
+    solved_at = case when excluded.score > hs.score or hs.score > v_cap then excluded.solved_at else hs.solved_at end;
+
+  return query
+  select hs.player_id, hs.pseudo, hs.friend_code, hs.mystery_id, hs.period_key,
+         hs.scope, hs.score, hs.hints, hs.tries, hs.difficulty, hs.level,
+         hs.xp, hs.solved_count, hs.streak, hs.solved_at
+  from public.hd_scores hs
+  where hs.player_id = trim(p_player_id)
+    and hs.mystery_id = trim(p_mystery_id)
+    and hs.period_key = trim(p_period_key)
+    and hs.scope = 'daily'
+  limit 1;
+end;
+$$;
+
+create or replace function public.hd_leaderboard_period(
+  p_scope text,
+  p_period_key text default null,
+  p_range_start timestamptz default null,
+  p_range_end timestamptz default null,
+  p_limit integer default 100
+)
+returns table (
+  player_id text,
+  pseudo text,
+  friend_code text,
+  score bigint,
+  level integer,
+  xp integer,
+  solved_count integer,
+  streak integer
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  with filtered as (
+    select s.*,
+           row_number() over (
+             partition by s.player_id, s.mystery_id, s.period_key, s.scope
+             order by s.score desc, s.solved_at asc
+           ) as dedupe_rank
+    from public.hd_scores s
+    where s.scope = 'daily'
+      and (
+        (lower(coalesce(p_scope, 'daily')) = 'daily' and s.period_key = p_period_key)
+        or
+        (lower(coalesce(p_scope, 'daily')) in ('week', 'year')
+          and s.solved_at >= coalesce(p_range_start, '-infinity'::timestamptz)
+          and s.solved_at < coalesce(p_range_end, 'infinity'::timestamptz))
+      )
+  ), aggregated as (
+    select f.player_id,
+           max(f.pseudo) as score_pseudo,
+           max(f.friend_code) as score_friend_code,
+           sum(
+             greatest(0, least(f.score,
+               case lower(coalesce(f.difficulty, 'moyen'))
+                 when 'facile' then 95
+                 when 'difficile' then 150
+                 when 'expert' then 180
+                 else 120
+               end
+             ))
+           )::bigint as total_score,
+           max(f.level) as score_level,
+           max(f.xp) as score_xp,
+           max(f.solved_count) as score_solved_count,
+           max(f.streak) as score_streak
+    from filtered f
+    where f.dedupe_rank = 1
+    group by f.player_id
+  )
+  select a.player_id,
+         coalesce(nullif(p.pseudo, ''), nullif(a.score_pseudo, ''), 'Joueur') as pseudo,
+         coalesce(nullif(p.friend_code, ''), nullif(a.score_friend_code, '')) as friend_code,
+         a.total_score as score,
+         greatest(coalesce(p.level, 1), coalesce(a.score_level, 1))::integer as level,
+         greatest(coalesce(p.xp, 0), coalesce(a.score_xp, 0))::integer as xp,
+         greatest(coalesce(p.solved_count, 0), coalesce(a.score_solved_count, 0))::integer as solved_count,
+         greatest(coalesce(p.streak, 0), coalesce(a.score_streak, 0))::integer as streak
+  from aggregated a
+  left join public.hd_profiles p on p.player_id = a.player_id
+  order by a.total_score desc, pseudo asc
+  limit greatest(1, least(coalesce(p_limit, 100), 500));
+$$;
+
+-- Accès réservé au serveur utilisant la service role. Aucun droit public supplémentaire.
+revoke all on function public.hd_merge_profile(text,text,text,integer,integer,integer,integer,boolean) from public;
+revoke all on function public.hd_upsert_best_score(text,text,text,text,text,integer,integer,integer,text,integer,integer,integer,integer,timestamptz) from public;
+revoke all on function public.hd_leaderboard_period(text,text,timestamptz,timestamptz,integer) from public;
+
+-- Le retrait des droits PUBLIC évite les appels directs anonymes, mais la route serveur
+-- Supabase utilise explicitement le rôle service_role : il doit conserver EXECUTE.
+grant execute on function public.hd_merge_profile(text,text,text,integer,integer,integer,integer,boolean) to service_role;
+grant execute on function public.hd_upsert_best_score(text,text,text,text,text,integer,integer,integer,text,integer,integer,integer,integer,timestamptz) to service_role;
+grant execute on function public.hd_leaderboard_period(text,text,timestamptz,timestamptz,integer) to service_role;
