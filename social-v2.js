@@ -1,11 +1,11 @@
 /* =========================================================
-   HistoDaily beta 254 — moteur social unique, chemins hérités neutralisés
+   HistoDaily beta 257 — moteur social unique, chemins hérités neutralisés
    Une seule couche client, Supabase comme seule vérité partagée.
    ========================================================= */
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-beta.255.0";
+  const VERSION = "1.0.0-beta.257.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const requestFlights = new Map();
@@ -456,47 +456,257 @@
     shell.querySelectorAll(":scope > .hd187-curiosity-card, :scope > .hd217-curiosity-card").forEach(node => node.remove());
   }
 
-  function profileSummaryMarkup() {
+  function profileInitials(value = pseudo()) {
+    const parts = String(value || "P").trim().split(/\s+/).filter(Boolean);
+    return (parts.slice(0, 2).map(part => part.charAt(0)).join("") || "P").toUpperCase();
+  }
+
+  function profileDisciplineRows() {
+    const disciplines = typeof DISCIPLINES !== "undefined" && Array.isArray(DISCIPLINES) ? DISCIPLINES : [];
+    return disciplines.map((discipline, index) => {
+      let stats = { progress: 0, done: 0, total: 0 };
+      try { if (typeof disciplineProgress === "function") stats = disciplineProgress(discipline.id) || stats; } catch {}
+      const progress = Math.max(0, Math.min(100, Number(stats.progress || 0)));
+      return {
+        discipline,
+        index,
+        progress,
+        done: Math.max(0, Number(stats.done || 0)),
+        total: Math.max(0, Number(stats.total || 0))
+      };
+    });
+  }
+
+  function profileDisciplineIcon(item) {
+    try { return typeof HD_ICONS !== "undefined" && HD_ICONS.discipline ? HD_ICONS.discipline(item.discipline) : esc(item.discipline.emoji || "✦"); }
+    catch { return esc(item.discipline.emoji || "✦"); }
+  }
+
+  function profileCuriosityModel() {
+    const rows = profileDisciplineRows();
+    const byId = new Map(rows.map(item => [item.discipline.id, item]));
+    let concept = {};
+    try { concept = window.HistoDaily?.conceptDebug?.curiosityData?.() || {}; } catch {}
+    const favorites = Array.isArray(concept.favorites)
+      ? concept.favorites.map(item => byId.get(item?.discipline?.id)).filter(Boolean)
+      : [];
+    const ranked = [...rows].sort((a, b) => b.progress - a.progress || b.done - a.done || a.index - b.index);
+    const selected = [];
+    [...favorites, ...ranked].forEach(item => {
+      if (item && !selected.some(existing => existing.discipline.id === item.discipline.id)) selected.push(item);
+    });
+    const fallback = { discipline: { id: "history", title: "Histoire", emoji: "🏛️", accent: "#f6c453" }, progress: 0, done: 0, total: 0, index: 0 };
+    const favorite = selected[0] || fallback;
+    const second = selected[1] || rows.find(item => item.discipline.id !== favorite.discipline.id) || favorite;
+    const third = selected[2] || rows.find(item => ![favorite.discipline.id, second.discipline.id].includes(item.discipline.id)) || second;
+    const unexplored = rows.find(item => item.progress === 0 && ![favorite.discipline.id, second.discipline.id, third.discipline.id].includes(item.discipline.id)) || rows.find(item => item.progress === 0) || third;
+    const average = rows.length ? Math.round(rows.reduce((sum, item) => sum + item.progress, 0) / rows.length) : 0;
+    return { rows, favorite, second, third, unexplored, average };
+  }
+
+  function profileCompletedLessons() {
+    try { return typeof curatedLessons === "function" ? curatedLessons().filter(lesson => lessonDone(lesson.id)).length : 0; }
+    catch { return 0; }
+  }
+
+  function profileUnlockedCollections() {
+    const values = Object.values(state.collectionUnlocks || {}).filter(Boolean).map((item, index) => ({
+      title: String(item.title || `Collection ${index + 1}`),
+      icon: item.icon || "✦",
+      at: Number(item.at || 0)
+    }));
+    return values.sort((a, b) => b.at - a.at);
+  }
+
+  function profileCollectionIcon(value) {
+    const raw = String(value || "");
+    if (raw.includes('class="hd-icon')) return raw;
+    return `<span class="hd257-medal-symbol">${esc(raw || "✦")}</span>`;
+  }
+
+  function profileAchievements() {
+    const source = state.achievements || {};
+    return [
+      { key: "firstLesson", label: "Premier cours", icon: "lesson", on: Boolean(source.firstLesson || profileCompletedLessons() > 0) },
+      { key: "firstMystery", label: "Premier mystère", icon: "mystery", on: Boolean(source.firstMystery || solvedTotal() > 0) },
+      { key: "streak3", label: "Série de 3 jours", icon: "spark", on: Boolean(source.streak3 || Number(state.streak || 0) >= 3) },
+      { key: "streak7", label: "Série de 7 jours", icon: "trophy", on: Boolean(source.streak7 || Number(state.streak || 0) >= 7) },
+      { key: "noHint", label: "Sans indice", icon: "check", on: Boolean(source.noHint) },
+      { key: "expertMystery", label: "Mystère expert", icon: "review", on: Boolean(source.expertMystery) }
+    ];
+  }
+
+  function profileActionIcon(name, fallback = "✦") {
+    try { return typeof HD_ICONS !== "undefined" && HD_ICONS.action ? HD_ICONS.action(name) : fallback; }
+    catch { return fallback; }
+  }
+
+  function profileActivityDays() {
+    const days = [];
+    const dayMs = 86_400_000;
+    let today = new Date();
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    for (let offset = 6; offset >= 0; offset -= 1) {
+      const date = new Date(today.getTime() - offset * dayMs);
+      let key = date.toISOString().slice(0, 10);
+      try { if (typeof localDayKey === "function") key = localDayKey(date.getTime()); } catch {}
+      const entry = state.dailyHistory?.[key] || state.dailyClaims?.[key] || null;
+      days.push({
+        key,
+        active: Boolean(entry),
+        score: Number(entry?.score || 0),
+        label: offset === 0 ? "Auj." : date.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")
+      });
+    }
+    return days;
+  }
+
+  function profileBestRank(s) {
+    const rows = [];
+    Object.values(s.leaderboards || {}).forEach(list => {
+      if (!Array.isArray(list)) return;
+      const me = list.find(item => item.me || String(item.playerId || item.id || "") === String(meId()));
+      if (me?.rank) rows.push(Number(me.rank));
+    });
+    return rows.length ? Math.min(...rows) : null;
+  }
+
+  function profileTitleFor(discipline) {
+    const labels = {
+      history: "Explorateur du temps",
+      art: "Œil de collectionneur",
+      cinema: "Cinéphile curieux",
+      "science-inventions": "Esprit scientifique",
+      economy: "Décrypteur du monde",
+      geography: "Voyageur des cartes",
+      music: "Oreille exploratrice",
+      astronomy: "Voyageur cosmique"
+    };
+    return labels[discipline?.id] || "Explorateur de savoirs";
+  }
+
+  function profileHeroMarkup(model) {
     const s = social();
     const profile = s.profile || identityPayload();
+    const xp = Math.max(Number(state.xp || 0), Number(profile.xp || 0));
+    const levelNumber = Math.max(1, Number(profile.level || levelValue()));
+    const levelBase = Math.max(0, (levelNumber - 1) * 250);
+    const levelPct = Math.max(3, Math.min(100, Math.round((xp - levelBase) / 250 * 100)));
     const solved = Math.max(solvedTotal(), Number(profile.solvedCount || profile.solved_count || 0));
     const streak = Math.max(Number(state.streak || 0), Number(profile.streak || 0));
-    return `<section class="card hdsv2-card hdsv2-profile-summary"><div class="hdsv2-profile-hero"><div class="hdsv2-profile-avatar">${esc(pseudo().charAt(0).toUpperCase() || "P")}</div><div><span class="card-label">Profil joueur</span><h2>${esc(pseudo())}</h2><p>Niveau ${Number(profile.level || levelValue())} · ${Number(profile.xp ?? state.xp ?? 0)} XP</p></div></div><div class="hdsv2-kpis"><div><b>${solved}</b><span>dossiers résolus</span></div><div><b>${streak}</b><span>jours de série</span></div><div><b>${s.friends.length}</b><span>amis</span></div></div></section>`;
+    const accent = model.favorite.discipline.accent || "#f6c453";
+    return `<section class="hd257-hero" style="--profile-accent:${esc(accent)};--level-progress:${levelPct * 3.6}deg">
+      <div class="hd257-hero-glow" aria-hidden="true"></div>
+      <div class="hd257-avatar"><div>${esc(profileInitials())}</div><span>Niv. ${levelNumber}</span></div>
+      <div class="hd257-hero-copy"><span>${esc(profileTitleFor(model.favorite.discipline))}</span><h2>${esc(pseudo())}</h2><p>${profileDisciplineIcon(model.favorite)} ${esc(model.favorite.discipline.title || "Culture générale")} est aujourd’hui ton univers le plus exploré.</p></div>
+      <div class="hd257-hero-numbers"><div><b>${xp}</b><small>XP</small></div><div><b>${streak}</b><small>jours de série</small></div><div><b>${solved}</b><small>dossiers</small></div></div>
+      <div class="hd257-level-line"><div><span>Niveau ${levelNumber}</span><b>${levelPct}% vers le suivant</b></div><i><em style="width:${levelPct}%"></em></i></div>
+    </section>`;
+  }
+
+  function profilePlanetMarkup(item, className, role) {
+    const accent = item.discipline.accent || "#f6c453";
+    return `<article class="hd257-planet ${className}" style="--planet-accent:${esc(accent)}">
+      <span>${profileDisciplineIcon(item)}</span><div><small>${esc(role)}</small><b>${esc(item.discipline.title || "Culture")}</b><em>${item.progress}% exploré</em></div>
+    </article>`;
+  }
+
+  function profileOrbitMarkup(model) {
+    return `<section class="hd257-orbit-card" style="--profile-accent:${esc(model.favorite.discipline.accent || "#f6c453")}">
+      <header class="hd257-section-head"><div><span>Carte de curiosité</span><h2>Ton système solaire</h2><p>Tes domaines les plus explorés prennent de la place autour de toi. La carte évolue avec tes cours validés.</p></div><button type="button" class="ghost" data-profile-map>Voir la carte</button></header>
+      <div class="hd257-orbit-stage" aria-label="Système de curiosité de ${esc(pseudo())}">
+        <div class="hd257-starfield" aria-hidden="true"></div>
+        <i class="hd257-orbit orbit-one" aria-hidden="true"></i><i class="hd257-orbit orbit-two" aria-hidden="true"></i><i class="hd257-orbit orbit-three" aria-hidden="true"></i>
+        <div class="hd257-sun"><strong>${esc(profileInitials())}</strong><span>Toi</span></div>
+        ${profilePlanetMarkup(model.favorite, "planet-favorite", "Affinité principale")}
+        ${profilePlanetMarkup(model.second, "planet-second", "Deuxième univers")}
+        ${profilePlanetMarkup(model.third, "planet-third", "Autre affinité")}
+        ${profilePlanetMarkup(model.unexplored, "planet-next", "À découvrir")}
+      </div>
+      <div class="hd257-affinity-strip">${[model.favorite, model.second, model.third].map((item, index) => `<button type="button" data-profile-discipline="${esc(item.discipline.id)}" style="--domain-accent:${esc(item.discipline.accent || "#f6c453")}"><span>${profileDisciplineIcon(item)}</span><div><small>${index === 0 ? "Domaine favori" : "Affinité"}</small><b>${esc(item.discipline.title)}</b></div><em>${item.done}/${item.total || 0}</em></button>`).join("")}</div>
+    </section>`;
+  }
+
+  function profileRhythmMarkup() {
+    const days = profileActivityDays();
+    const active = days.filter(day => day.active).length;
+    return `<article class="hd257-rhythm-card"><header><div><span>Rythme</span><h3>7 derniers jours</h3></div><b>${active}/7</b></header><div class="hd257-week-dots">${days.map(day => `<div class="${day.active ? "active" : ""}${day.label === "Auj." ? " today" : ""}"><span>${day.active ? "✓" : "·"}</span><small>${esc(day.label)}</small></div>`).join("")}</div><p>${active >= 5 ? "Très belle régularité cette semaine." : active >= 2 ? "La série prend forme : garde le rythme." : "Un petit passage quotidien suffit pour relancer la série."}</p></article>`;
+  }
+
+  function profileCommunityMarkup(s) {
+    const incoming = s.requests?.incoming?.length || 0;
+    const bestRank = profileBestRank(s);
+    const ready = s.phase === "ready";
+    return `<article class="hd257-community-card"><header><div><span>Communauté</span><h3>Ta place parmi les joueurs</h3></div><i class="${ready ? "online" : ""}" title="${esc(s.message || "État du multi")}"></i></header><div class="hd257-community-stats"><div><b>${s.friends.length}</b><small>amis</small></div><div><b>${incoming || "0"}</b><small>demandes</small></div><div><b>${bestRank ? `#${bestRank}` : "—"}</b><small>meilleur rang</small></div></div><div class="hd257-community-actions"><button type="button" data-profile-rank="daily">Classement</button><button type="button" class="ghost" data-profile-rank="friends">Entre amis</button></div>${incoming ? `<p class="hd257-community-alert">${incoming} demande${incoming > 1 ? "s" : ""} à traiter plus bas.</p>` : ""}</article>`;
+  }
+
+  function profileProgressMarkup(model) {
+    return `<section class="hd257-progress-card"><header class="hd257-section-head"><div><span>Progression</span><h2>Tes domaines</h2><p>Un aperçu concret des cours terminés dans chaque univers.</p></div><b>${model.average}%<small>moyenne</small></b></header><div class="hd257-progress-grid">${model.rows.map(item => `<button type="button" data-profile-discipline="${esc(item.discipline.id)}" style="--domain-accent:${esc(item.discipline.accent || "#f6c453")}"><span>${profileDisciplineIcon(item)}</span><div><strong>${esc(item.discipline.title)}</strong><small>${item.done}/${item.total || 0} cours</small><i><em style="width:${item.progress}%"></em></i></div><b>${item.progress}%</b></button>`).join("")}</div></section>`;
+  }
+
+  function profileCollectionsMarkup() {
+    const unlocked = profileUnlockedCollections();
+    const completed = profileCompletedLessons();
+    const cards = unlocked.slice(0, 5).map(item => ({ ...item, unlocked: true }));
+    const placeholders = [
+      { title: "Premier parcours", icon: profileActionIcon("lesson"), unlocked: completed >= 3 },
+      { title: "Explorateur régulier", icon: profileActionIcon("spark"), unlocked: Number(state.streak || 0) >= 7 },
+      { title: "Chasseur de mystères", icon: profileActionIcon("mystery"), unlocked: solvedTotal() >= 10 }
+    ];
+    placeholders.forEach(item => { if (cards.length < 6 && !cards.some(card => card.title === item.title)) cards.push(item); });
+    while (cards.length < 6) cards.push({ title: "À débloquer", icon: profileActionIcon("lock"), unlocked: false });
+    return `<section class="hd257-collections-card"><header class="hd257-section-head"><div><span>Collections</span><h2>Trophées d’exploration</h2><p>Les médailles gardent la trace des parcours que tu as vraiment terminés.</p></div><b>${unlocked.length}<small>débloquée${unlocked.length > 1 ? "s" : ""}</small></b></header><div class="hd257-medal-rail">${cards.map(card => `<article class="${card.unlocked ? "unlocked" : "locked"}"><div>${profileCollectionIcon(card.icon)}</div><span>${card.unlocked ? "Débloquée" : "Verrouillée"}</span><b>${esc(card.title)}</b></article>`).join("")}</div></section>`;
+  }
+
+  function profileAchievementsMarkup() {
+    const achievements = profileAchievements();
+    const count = achievements.filter(item => item.on).length;
+    return `<section class="hd257-achievements-card"><header class="hd257-section-head"><div><span>Succès</span><h2>Étapes marquantes</h2></div><b>${count}/${achievements.length}</b></header><div class="hd257-badge-grid">${achievements.map(item => `<article class="${item.on ? "on" : "off"}"><div>${profileActionIcon(item.icon)}</div><span>${esc(item.label)}</span></article>`).join("")}</div></section>`;
+  }
+
+  function profileIdentityMarkup(s) {
+    return `<section class="card hdsv2-card hdsv2-identity-card"><div><span class="card-label">Identité</span><h2>Pseudo et code ami</h2><p>Cette identité est commune au profil, aux amis et aux classements.</p></div><form data-social-pseudo><input type="text" name="pseudo" value="${esc(pseudo())}" maxlength="18" autocomplete="nickname"/><button type="submit">Enregistrer</button></form><div class="hdsv2-code-box"><span>${esc(meCode())}</span><button type="button" class="ghost" data-copy-social-code>Copier</button></div>${s.feedback ? `<p class="hdsv2-feedback">${esc(s.feedback)}</p>` : ""}</section>`;
+  }
+
+  function profileDetailsMarkup(s) {
+    const incoming = s.requests?.incoming?.length || 0;
+    return `<details class="hd257-fold hd257-community-fold"><summary><span>${profileActionIcon("users")}</span><div><b>Amis et demandes</b><small>${s.friends.length} ami${s.friends.length > 1 ? "s" : ""}${incoming ? ` · ${incoming} à traiter` : " · gérer la communauté"}</small></div><em>›</em></summary><div class="hd257-fold-body">${requestMarkup()}${friendsMarkup({ includeAdd: true })}</div></details>
+      <details class="hd257-fold"><summary><span>${profileActionIcon("settings")}</span><div><b>Compte et réglages</b><small>Pseudo, sauvegarde et préférences</small></div><em>›</em></summary><div class="hd257-fold-body">${profileIdentityMarkup(s)}${typeof backupToolsMarkup === "function" ? backupToolsMarkup() : ""}${typeof profileSettingsMarkup === "function" ? profileSettingsMarkup() : ""}</div></details>`;
   }
 
   renderProfile = function socialV2RenderProfile() {
     const s = social();
-    renderShell(`<div class="hdsv2-screen hdsv2-profile-screen">
-      <header class="hdsv2-topbar"><div><p class="eyebrow">Profil</p><h1>${esc(pseudo())}</h1></div><button type="button" class="ghost hdsv2-home-shortcut" data-home>Accueil</button></header>
-      ${profileSummaryMarkup()}
-      <section class="card hdsv2-card hdsv2-identity-card"><div><span class="card-label">Identité</span><h2>Ton pseudo et ton code ami</h2><p>Le serveur rattache les scores et les relations à cette identité exacte.</p></div><form data-social-pseudo><input type="text" name="pseudo" value="${esc(pseudo())}" maxlength="18" autocomplete="nickname"/><button type="submit">Enregistrer</button></form><div class="hdsv2-code-box"><span>${esc(meCode())}</span><button type="button" class="ghost" data-copy-social-code>Copier</button></div>${s.feedback ? `<p class="hdsv2-feedback">${esc(s.feedback)}</p>` : ""}</section>
-      <section class="card hdsv2-card hdsv2-sync-card"><div><span class="card-label">Synchronisation</span><h2>${s.phase === "ready" ? "Multi connecté" : s.phase === "loading" ? "Connexion…" : "Vérification nécessaire"}</h2><p>${esc(s.message || "Le classement et les amis viennent uniquement de Supabase.")}</p></div><button type="button" data-social-refresh>Actualiser</button></section>
-      ${requestMarkup()}
-      ${friendsMarkup({ includeAdd: true })}
-      <section class="card hdsv2-card hdsv2-rank-shortcuts"><div><span class="card-label">Classements</span><h2>Voir les résultats partagés</h2></div><div><button type="button" data-profile-rank="daily">Aujourd’hui</button><button type="button" class="ghost" data-profile-rank="friends">Entre amis</button></div></section>
-      ${typeof backupToolsMarkup === "function" ? backupToolsMarkup() : ""}
-      ${typeof profileSettingsMarkup === "function" ? profileSettingsMarkup() : ""}
+    const model = profileCuriosityModel();
+    renderShell(`<div class="hdsv2-screen hdsv2-profile-screen hd257-profile-root">
+      <header class="hd257-page-head"><div><p class="eyebrow">Espace joueur</p><h1>Ton profil</h1></div><button type="button" class="ghost" data-home>Accueil</button></header>
+      ${profileHeroMarkup(model)}
+      ${profileOrbitMarkup(model)}
+      <section class="hd257-dashboard">${profileRhythmMarkup()}${profileCommunityMarkup(s)}</section>
+      ${profileProgressMarkup(model)}
+      ${profileCollectionsMarkup()}
+      ${profileAchievementsMarkup()}
+      ${profileDetailsMarkup(s)}
     </div>`);
     sealSocialProfileShell();
     requestAnimationFrame(sealSocialProfileShell);
 
     document.querySelector("[data-home]")?.addEventListener("click", () => setState({ tab: "home" }));
+    document.querySelector("[data-profile-map]")?.addEventListener("click", () => {
+      const openMap = window.HistoDaily?.conceptDebug?.openKnowledgeMap;
+      if (typeof openMap === "function") openMap();
+      else setState({ tab: "learn", currentDiscipline: model.favorite.discipline.id }, { save: true });
+    });
+    document.querySelectorAll("[data-profile-discipline]").forEach(button => button.addEventListener("click", () => setState({ tab: "learn", currentDiscipline: button.dataset.profileDiscipline, learnDrill: "chapters" }, { save: true })));
     document.querySelector("[data-social-pseudo]")?.addEventListener("submit", async event => {
       event.preventDefault();
       const value = String(new FormData(event.currentTarget).get("pseudo") || "").trim();
       if (!value) return;
       try {
-        // Les wrappers historiques de sauvegarde déclenchaient chacun leur propre
-        // rafale de refresh. On les rend muets pendant ce tour, puis le moteur v2
-        // effectue une seule fusion canonique autorisant le changement de pseudo.
         legacyBridgeMutedUntil = now() + 750;
         if (typeof savePseudoValue === "function") savePseudoValue(value, { source: "social-v2" });
         else state.pseudo = value;
         social().feedback = "Enregistrement du pseudo…";
         renderNow();
-        // savePseudoValue réassigne l'objet state dans les couches historiques :
-        // on relit donc toujours social() après cet appel, sans conserver une
-        // référence devenue obsolète.
         if (bootstrapFlight) await bootstrapFlight.catch(() => null);
         const json = await bootstrap({ force: true, allowPseudoChange: true, quiet: true });
         const canonicalPseudo = String(json?.profile?.pseudo || "").trim();
@@ -512,12 +722,8 @@
       renderNow();
     });
     document.querySelector("[data-copy-social-code]")?.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(meCode());
-        s.feedback = "Code ami copié.";
-      } catch {
-        s.feedback = meCode();
-      }
+      try { await navigator.clipboard.writeText(meCode()); social().feedback = "Code ami copié."; }
+      catch { social().feedback = meCode(); }
       saveSoon();
       renderNow();
     });
