@@ -6205,78 +6205,219 @@ body{
   .hd245-audience-tabs button{min-height:40px;font-size:.82rem}
 }
 
+
 /* =========================================================
-   HistoDaily beta 250 — correctifs mobile, profil et classement
+   HistoDaily beta 250 — correctifs responsive classement, accueil et profil
    ========================================================= */
-html.hd250-mobile-fixes .hd242-rank-topbar{
+.hd250-rank-topbar{
   grid-template-columns:44px minmax(0,1fr) 44px!important;
+  align-items:center!important;
   gap:10px!important;
 }
-html.hd250-mobile-fixes .hd242-rank-topbar h1{
-  min-width:0!important;
-  margin:0!important;
-  font-size:clamp(1.55rem,7vw,2.1rem)!important;
-  line-height:1.04!important;
+.hd250-rank-topbar>div{min-width:0!important;overflow:hidden!important}
+.hd250-rank-topbar .eyebrow,
+.hd250-rank-topbar h1{
   white-space:nowrap!important;
-  word-break:normal!important;
+  word-break:keep-all!important;
   overflow-wrap:normal!important;
   hyphens:none!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
 }
-html.hd250-mobile-fixes .hd245-period-tabs button{
-  min-width:0!important;
-  padding:9px 6px!important;
-  font-size:clamp(.69rem,3.15vw,.88rem)!important;
-  line-height:1.08!important;
-  white-space:nowrap!important;
-  word-break:normal!important;
-  overflow-wrap:normal!important;
-  hyphens:none!important;
-}
-html.hd250-mobile-fixes .hd245-audience-tabs button{white-space:nowrap!important}
+.hd250-rank-topbar .eyebrow{margin:0 0 2px!important;font-size:.67rem!important;letter-spacing:.16em!important}
+.hd250-rank-topbar h1{margin:0!important;font-size:clamp(1.45rem,7vw,2.05rem)!important;line-height:1.02!important}
+.hd245-period-tabs button{min-width:0!important;white-space:nowrap!important;word-break:keep-all!important;font-size:clamp(.76rem,3.6vw,.95rem)!important;padding-inline:8px!important}
 
-html.hd250-mobile-fixes .hd219-disciplines{
+/* Le premier univers commence réellement à gauche. Les anciens pseudo-espaces
+   de centrage étaient responsables du bouton Histoire décalé. */
+.hd222-world-switcher{
+  scroll-padding-inline:0!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  justify-content:flex-start!important;
+}
+.hd222-world-switcher::before{display:none!important;content:none!important;flex:0 0 0!important}
+.hd222-world-switcher::after{content:""!important;flex:0 0 14px!important}
+.hd222-world{scroll-snap-align:start!important}
+.hd222-world:first-child{margin-left:0!important}
+
+.hd250-profile-shell{
+  width:min(100%,620px)!important;
+  padding:calc(10px + env(safe-area-inset-top)) 14px calc(132px + env(safe-area-inset-bottom))!important;
+  overflow-x:hidden!important;
+}
+.hd250-profile{display:grid;gap:14px;color:var(--text,#f6f8ff);min-width:0}
+.hd250-profile .hd250-profile-head{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:10px;margin:0 0 2px}
+.hd250-profile .hd250-profile-head>div{min-width:0}
+.hd250-profile .hd250-profile-head h1{margin:0;font-size:clamp(1.65rem,8vw,2.25rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd250-profile .hd250-profile-head .eyebrow{margin:0 0 2px}
+.hd250-profile .hd250-icon-btn{width:44px;height:44px;border-radius:14px;padding:0;display:grid;place-items:center}
+.hd250-profile-hero{padding:20px;border:1px solid rgba(255,255,255,.11);border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.025));box-shadow:0 18px 46px rgba(0,0,0,.22);display:grid;gap:17px;min-width:0}
+.hd250-profile-person{display:grid;grid-template-columns:64px minmax(0,1fr);align-items:center;gap:14px;min-width:0}
+.hd250-profile-avatar{width:64px;height:64px;border-radius:22px;display:grid;place-items:center;font-size:1.55rem;font-weight:900;color:#101722;background:linear-gradient(145deg,#ffe083,#ffad25);box-shadow:0 10px 26px rgba(255,183,41,.18)}
+.hd250-profile-person>div{min-width:0}.hd250-profile-person h2{margin:2px 0 4px;font-size:1.55rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hd250-profile-person p{margin:0;color:var(--muted);font-size:.9rem}
+.hd250-profile-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.hd250-profile-stats div{min-width:0;padding:11px 5px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(2,8,20,.3);text-align:center}.hd250-profile-stats b{display:block;font-size:1.04rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hd250-profile-stats span{display:block;margin-top:3px;color:var(--muted);font-size:.61rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.hd250-profile-card{padding:18px;border:1px solid rgba(255,255,255,.1);border-radius:23px;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.025));min-width:0}
+.hd250-profile-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.hd250-profile-card-head>div{min-width:0}.hd250-profile-card h2{margin:4px 0 5px;font-size:1.2rem}.hd250-profile-card p{margin:0;color:var(--muted);line-height:1.45}
+.hd250-social-count{flex:0 0 auto;min-width:52px;padding:9px 10px;border:1px solid rgba(91,208,255,.28);border-radius:14px;text-align:center;background:rgba(34,174,255,.09)}.hd250-social-count b{display:block;font-size:1.15rem}.hd250-social-count span{font-size:.62rem;color:var(--muted);font-weight:800;text-transform:uppercase}
+.hd250-profile-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}.hd250-profile-actions button{min-width:0;min-height:48px;padding:10px 8px;border-radius:15px;font-size:.9rem}
+.hd250-sync-strip{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:13px 14px;border:1px solid rgba(255,190,70,.25);border-radius:17px;background:rgba(255,171,35,.07)}.hd250-sync-strip.ok{border-color:rgba(80,220,160,.22);background:rgba(52,211,153,.05)}.hd250-sync-strip>div{min-width:0}.hd250-sync-strip b,.hd250-sync-strip span{display:block}.hd250-sync-strip span{margin-top:3px;color:var(--muted);font-size:.78rem;white-space:normal}.hd250-sync-strip button{min-height:42px;padding:8px 12px;border-radius:13px}
+.hd250-profile details{border:1px solid rgba(255,255,255,.1);border-radius:21px;background:rgba(255,255,255,.025);overflow:hidden}.hd250-profile details>summary{list-style:none;cursor:pointer;min-height:62px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:850}.hd250-profile details>summary::-webkit-details-marker{display:none}.hd250-profile details>summary::after{content:"＋";font-size:1.15rem;color:var(--muted)}.hd250-profile details[open]>summary::after{content:"−"}.hd250-details-body{display:grid;gap:10px;padding:0 10px 10px}
+.hd250-details-body>.card,.hd250-details-body>.settings-inner,.hd250-details-body>section{margin:0!important;border-radius:17px!important;box-shadow:none!important;background:rgba(255,255,255,.035)!important;border-color:rgba(255,255,255,.075)!important;padding:15px!important}.hd250-details-body .card h2{font-size:1.05rem!important}.hd250-details-body .card p{font-size:.84rem!important}.hd250-details-body .friend-code{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto}.hd250-details-body .friend-code strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hd250-details-body .friend-row{min-width:0}.hd250-details-body .friend-main{min-width:0}.hd250-details-body .friend-main span:last-child{min-width:0}.hd250-details-body .friend-main strong,.hd250-details-body .friend-main em{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.hd250-profile-shell>.system-status,.hd250-profile-shell>.beta115-status{display:none!important}
+.hd250-profile-shell .bottom-nav{z-index:80!important}
+@media(max-width:390px){
+  .hd250-profile-shell{padding-left:10px!important;padding-right:10px!important}
+  .hd250-profile-hero,.hd250-profile-card{padding:16px}
+  .hd250-profile-stats{gap:5px}.hd250-profile-stats div{padding:10px 2px}.hd250-profile-stats b{font-size:.94rem}.hd250-profile-stats span{font-size:.55rem}
+  .hd250-profile-actions{grid-template-columns:1fr}
+  .hd250-sync-strip{grid-template-columns:1fr}.hd250-sync-strip button{width:100%}
+}
+
+/* Ajustements finaux beta250 après contrôle sur viewport iPhone. */
+.app-shell.tab-profile .system-status,
+.app-shell.tab-profile .beta115-status{display:none!important}
+.app-shell.tab-rank{padding-bottom:calc(138px + env(safe-area-inset-bottom))!important}
+.hd250-profile-actions button:not(.ghost),
+.hd250-sync-strip button{
+  color:#111722!important;
+  background:linear-gradient(135deg,#ffd66a,#ffad22)!important;
+  border-color:rgba(255,214,106,.5)!important;
+}
+.hd250-profile-actions button.ghost{
+  color:var(--text,#f6f8ff)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025))!important;
+  border-color:rgba(255,255,255,.13)!important;
+}
+.hd250-profile details>summary small{color:var(--muted);font-size:.72rem;white-space:nowrap}
+.app-shell.tab-profile>.app-status-banner{display:none!important}
+.hd250-profile .hd250-icon-btn{
+  color:var(--text,#f6f8ff)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.035))!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+}
+
+/* =========================================================
+   HistoDaily beta 251 — corrections des causes réelles iPhone
+   ========================================================= */
+html.hd251-stable-ui .hd242-rank-topbar{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 48px!important;
+  align-items:center!important;
+  column-gap:12px!important;
+  min-width:0!important;
+}
+html.hd251-stable-ui .hd242-rank-topbar>button[data-home]{
+  display:none!important;
+  grid-column:auto!important;
+}
+html.hd251-stable-ui .hd242-rank-topbar>div{
+  grid-column:1!important;
+  grid-row:1!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+html.hd251-stable-ui .hd242-rank-topbar .hd242-profile-button{
+  grid-column:2!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  width:48px!important;
+  min-width:48px!important;
+  height:48px!important;
+  padding:0!important;
+}
+html.hd251-stable-ui .hd242-rank-topbar .eyebrow,
+html.hd251-stable-ui .hd242-rank-topbar h1{
+  display:block!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  word-break:keep-all!important;
+  overflow-wrap:normal!important;
+  hyphens:none!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+html.hd251-stable-ui .hd242-rank-topbar h1{
+  margin:1px 0 0!important;
+  font-size:clamp(1.55rem,7.2vw,2.15rem)!important;
+  line-height:1.04!important;
+}
+html.hd251-stable-ui .hd245-period-tabs{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+html.hd251-stable-ui .hd245-period-tabs button{
+  min-width:0!important;
+  width:100%!important;
+  white-space:nowrap!important;
+  word-break:keep-all!important;
+  overflow-wrap:normal!important;
+  hyphens:none!important;
+  font-size:clamp(.78rem,3.55vw,.96rem)!important;
+  padding-inline:5px!important;
+}
+
+/* Le rail commence sur Histoire. Seul l'espace final est conservé pour pouvoir
+   faire défiler les disciplines suivantes sans créer un décalage initial. */
+html.hd251-stable-ui .hd222-world-switcher{
   justify-content:flex-start!important;
   scroll-padding-left:0!important;
   padding-left:0!important;
   transform:none!important;
 }
-html.hd250-mobile-fixes .hd219-discipline:first-child{margin-left:0!important}
-html.hd250-mobile-fixes .hd219-discipline.active{scroll-margin-left:0!important}
+html.hd251-stable-ui .hd222-world-switcher::before{
+  display:none!important;
+  content:none!important;
+  flex:0 0 0!important;
+  width:0!important;
+}
+html.hd251-stable-ui .hd222-world-switcher::after{
+  display:block!important;
+  content:""!important;
+  flex:0 0 18px!important;
+}
+html.hd251-stable-ui .hd222-world:first-child{
+  margin-left:0!important;
+  scroll-margin-left:0!important;
+}
 
-html.hd250-mobile-fixes .app-shell.tab-profile,
-html.hd250-mobile-fixes .hd220-profile-shell{
-  width:min(100%,570px)!important;
-  padding:calc(12px + env(safe-area-inset-top)) 14px calc(118px + env(safe-area-inset-bottom))!important;
+html.hd251-stable-ui .app-shell.tab-profile,
+html.hd251-stable-ui .hd250-profile-shell{
+  max-width:100%!important;
   overflow-x:hidden!important;
 }
-html.hd250-mobile-fixes .app-shell.tab-profile .card{
+html.hd251-stable-ui .hd250-profile,
+html.hd251-stable-ui .hd250-profile>*{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+html.hd251-stable-ui .hd250-details-body .card,
+html.hd251-stable-ui .hd250-details-body section{
   min-width:0!important;
   max-width:100%!important;
   overflow:hidden!important;
 }
-html.hd250-mobile-fixes .app-shell.tab-profile .topbar h1,
-html.hd250-mobile-fixes .app-shell.tab-profile h2{
-  overflow-wrap:normal!important;
-  word-break:normal!important;
-  hyphens:none!important;
+html.hd251-stable-ui .hd250-details-body input,
+html.hd251-stable-ui .hd250-details-body button{
+  max-width:100%!important;
 }
-html.hd250-mobile-fixes .app-shell.tab-profile .home-actions-row{
+html.hd251-stable-ui .hd250-details-body .friend-add-form,
+html.hd251-stable-ui .hd250-details-body [data-pseudo-form]{
   display:grid!important;
-  grid-template-columns:1fr!important;
-  gap:9px!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:8px!important;
 }
-html.hd250-mobile-fixes .app-shell.tab-profile .home-actions-row>button{width:100%!important}
-html.hd250-mobile-fixes .app-shell.tab-profile .beta128-sync-card{
-  margin-top:0!important;
-  border-color:rgba(246,196,83,.2)!important;
-}
-html.hd250-mobile-fixes .app-shell.tab-profile .beta128-sync-card p{max-width:100%!important}
-html.hd250-mobile-fixes .app-shell.tab-profile .social-backend,
-html.hd250-mobile-fixes .app-shell.tab-profile .social-shortcuts,
-html.hd250-mobile-fixes .app-shell.tab-profile .beta128-sync-card{padding:18px!important}
+html.hd251-stable-ui .hd250-details-body input{min-width:0!important;width:100%!important}
 
 @media(max-width:390px){
-  html.hd250-mobile-fixes .hd242-rank-topbar h1{font-size:1.48rem!important}
-  html.hd250-mobile-fixes .hd245-period-tabs{gap:4px!important;padding:5px!important}
-  html.hd250-mobile-fixes .hd245-period-tabs button{padding-inline:3px!important;font-size:.69rem!important}
+  html.hd251-stable-ui .hd242-rank-topbar{grid-template-columns:minmax(0,1fr) 46px!important}
+  html.hd251-stable-ui .hd242-rank-topbar .hd242-profile-button{width:46px!important;min-width:46px!important;height:46px!important}
+  html.hd251-stable-ui .hd242-rank-topbar h1{font-size:1.55rem!important}
+  html.hd251-stable-ui .hd245-period-tabs button{font-size:.78rem!important;padding-inline:2px!important}
+  html.hd251-stable-ui .hd250-details-body .friend-add-form,
+  html.hd251-stable-ui .hd250-details-body [data-pseudo-form]{grid-template-columns:1fr!important}
+  html.hd251-stable-ui .hd250-details-body .friend-add-form button,
+  html.hd251-stable-ui .hd250-details-body [data-pseudo-form] button{width:100%!important}
 }
