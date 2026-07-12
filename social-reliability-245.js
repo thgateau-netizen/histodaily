@@ -127,7 +127,7 @@
   }
   function serverAuthoritative(context) {
     const status = serverStatus(context);
-    return Boolean(status.mode === "supabase" && status.authoritative === true && Array.isArray(state.serverLeaderboards?.[bucketKey(context)]));
+    return Boolean(String(status.mode || "").startsWith("supabase") && status.authoritative === true && Array.isArray(state.serverLeaderboards?.[bucketKey(context)]));
   }
   function normalizedServerRows(context) {
     const map = new Map();
@@ -260,7 +260,7 @@
         });
         const response = await fetch(`/api/v1/leaderboard/daily?${params.toString()}`, { cache: "no-store" });
         const json = await response.json().catch(() => ({}));
-        const success = response.ok && json?.ok !== false && json?.mode === "supabase" && json?.authoritative === true;
+        const success = response.ok && json?.ok !== false && String(json?.mode || "").startsWith("supabase") && json?.authoritative === true;
         if (!success) throw new Error(json?.note || json?.message || `HTTP ${response.status}`);
         try { if (json.canonicalPlayerId || json.canonicalFriendCode) beta142AdoptServerIdentity?.(json); } catch {}
         state.serverLeaderboards = { ...(state.serverLeaderboards || {}), [key]: Array.isArray(json.rows) ? json.rows : [] };
@@ -269,7 +269,7 @@
           [key]: {
             loading: false,
             loadedAt: Date.now(),
-            mode: "supabase",
+            mode: String(json.mode || "supabase"),
             authoritative: true,
             generatedAt: json.generatedAt || "",
             period: context.period,
@@ -335,7 +335,7 @@
     const status = serverStatus(context);
     if (typeof isOnline !== "undefined" && !isOnline) return "Hors ligne : dernier classement enregistré.";
     if (status.loading) return "Actualisation du classement partagé…";
-    if (status.mode === "supabase" && status.authoritative) {
+    if (String(status.mode || "").startsWith("supabase") && status.authoritative) {
       const seconds = Math.max(0, Math.round((Date.now() - Number(status.loadedAt || 0)) / 1000));
       return `Même résultat sur tous les appareils · ${seconds < 5 ? "actualisé à l’instant" : `actualisé il y a ${seconds} s`}`;
     }
