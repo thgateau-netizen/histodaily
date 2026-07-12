@@ -1,4 +1,4 @@
-# Audit beta 243 — amis et classement partagé
+# Audit beta 244 — amis et classement partagé
 
 ## Symptômes corrigés
 
@@ -38,7 +38,7 @@ Un test d'intégration API avec deux profils distincts, Théo et Manon, a valid�
 - classement Amis strictement identique depuis les deux identités ;
 - remplacement d'un ancien score trop élevé par le score exact.
 
-Résultat : `PASS beta243 API social + leaderboard integration`.
+Résultat : `PASS beta244 API social + leaderboard integration`.
 
 Les principaux fichiers JavaScript passent également le contrôle de syntaxe.
 
@@ -51,7 +51,7 @@ Aucune nouvelle table ni migration Supabase n'est requise par rapport à la beta
 - `hd_friends`
 - `hd_friend_requests`
 
-Après déploiement, les deux téléphones doivent utiliser la beta 243. L'ancienne application peut continuer à injecter ses valeurs locales tant qu'elle reste ouverte ou conservée par le cache PWA.
+Après déploiement, les deux téléphones doivent utiliser la beta 244. L'ancienne application peut continuer à injecter ses valeurs locales tant qu'elle reste ouverte ou conservée par le cache PWA.
 
 ## Limite de la vérification
 

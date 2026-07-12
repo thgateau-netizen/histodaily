@@ -21,6 +21,6 @@ Aucune nouvelle colonne n’est nécessaire si le schéma social fourni avec les
 
 Le mode solo, les cours, les quiz et les mystères restent utilisables lorsque Supabase est momentanément indisponible.
 
-## Beta 243 — classement et amis
+## Beta 244 — classement et amis
 
-Aucune migration Supabase supplémentaire n'est nécessaire. Après le déploiement, mettre à jour l'application sur les deux téléphones afin que les deux clients utilisent la vérité serveur de la beta 243.
+Aucune migration Supabase supplémentaire n'est nécessaire. Après le déploiement, mettre à jour l'application sur les deux téléphones afin que les deux clients utilisent la vérité serveur de la beta 244.

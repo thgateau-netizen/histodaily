@@ -1,8 +1,8 @@
-/* HistoDaily beta 243 — nettoyage éditorial et cohérence pédagogique. */
+/* HistoDaily beta 244 — nettoyage éditorial et cohérence pédagogique. */
 (function histodailyBeta241ContentCleanup(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.243.0";
+  const VERSION = "1.0.0-beta.245.0";
   const packs = typeof READY_LESSON_PACKS === "object" && READY_LESSON_PACKS ? READY_LESSON_PACKS : {};
 
   const clean = value => String(value || "").replace(/\s+/g, " ").trim();

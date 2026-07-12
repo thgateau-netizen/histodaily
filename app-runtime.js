@@ -5110,7 +5110,7 @@
 (function histodailyBeta219VisualV2(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.243.0";
+  const VERSION = "1.0.0-beta.245.0";
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -5477,10 +5477,10 @@
   isTodayMystery = function beta231IsTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); };
 })();
 
-/* ===== HistoDaily beta 243 — fiabilité, classement et amis ===== */
+/* ===== HistoDaily beta 244 — fiabilité, classement et amis ===== */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-beta.243.0";
+  const VERSION = "1.0.0-beta.245.0";
   const SOCIAL_SNAPSHOT_KEY = `${HISTODAILY_CORE?.storageKey || "histodaily_state"}_social_snapshot_v3`;
   const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
   const leaderboardInFlight = new Map();
@@ -5892,7 +5892,7 @@
   window.HD242 = { refreshSocial, rankRows, socialSnapshot, recoverSocialSnapshot, localWindow };
 })();
 
-/* beta 243 — profils amis avec les mêmes bornes locales que le classement */
+/* beta 244 — profils amis avec les mêmes bornes locales que le classement */
 (() => {
   "use strict";
   if (typeof beta126FetchPublicProfile !== "function") return;

@@ -1,7 +1,7 @@
-/* HistoDaily beta 243 — cohérence éditoriale et remise en ordre du contenu. */
+/* HistoDaily beta 244 — cohérence éditoriale et remise en ordre du contenu. */
 (function histodailyBeta239ContentCoherence(){
   "use strict";
-  const VERSION = "1.0.0-beta.243.0";
+  const VERSION = "1.0.0-beta.245.0";
   const packs = typeof READY_LESSON_PACKS === "object" && READY_LESSON_PACKS ? READY_LESSON_PACKS : {};
   const mysteries = Array.isArray(data?.mysteries) ? data.mysteries : [];
 

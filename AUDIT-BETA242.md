@@ -1,4 +1,4 @@
-# HistoDaily beta 243 — fiabilité, classement et amis
+# HistoDaily beta 244 — fiabilité, classement et amis
 
 ## Objectif
 

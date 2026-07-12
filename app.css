@@ -5929,7 +5929,7 @@ body{
 .hd220-route{grid-template-columns:repeat(3,minmax(0,1fr));}
 
 /* =========================================================
-   HistoDaily beta 243 — classement, amis et stabilité mobile
+   HistoDaily beta 244 — classement, amis et stabilité mobile
    ========================================================= */
 .hd242-reliability .tab-rank{
   min-height:100svh;
@@ -6152,4 +6152,55 @@ body{
   .hd242-rank-tabs button span{display:none}
   .hd242-rank-row{grid-template-columns:32px minmax(0,1fr) auto;padding:9px 8px}
   .hd242-position{width:31px;height:31px}
+}
+
+/* =========================================================
+   HistoDaily beta 245 — classement : période + audience séparées
+   ========================================================= */
+.hd245-period-tabs{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+.hd245-audience-tabs{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin:10px 0 14px;
+  padding:5px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  background:rgba(7,13,27,.72);
+  position:sticky;
+  top:calc(env(safe-area-inset-top,0px) + 72px);
+  z-index:16;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.hd245-audience-tabs button{
+  min-height:42px;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:rgba(231,239,255,.68);
+  font-weight:800;
+  font-size:.86rem;
+}
+.hd245-audience-tabs button.active{
+  color:#fff;
+  background:linear-gradient(135deg,rgba(113,91,255,.92),rgba(74,115,255,.88));
+  box-shadow:0 8px 24px rgba(55,74,190,.26);
+}
+.hd245-audience-tabs button span{
+  display:inline-grid;
+  place-items:center;
+  min-width:20px;
+  height:20px;
+  margin-left:4px;
+  padding:0 5px;
+  border-radius:999px;
+  background:rgba(255,255,255,.18);
+  font-size:.72rem;
+}
+@media(max-width:390px){
+  .hd245-audience-tabs{top:calc(env(safe-area-inset-top,0px) + 66px)}
+  .hd245-audience-tabs button{min-height:40px;font-size:.82rem}
 }
