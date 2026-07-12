@@ -1,4 +1,4 @@
-const CACHE_NAME = "histodaily-beta249-v1";
+const CACHE_NAME = "histodaily-beta250-v1";
 const APP_VERSION = "1.0.0-beta.250.0";
 const ASSETS = [
   "/",
@@ -24,6 +24,7 @@ const ASSETS = [
   "/social-reliability-246.js?v=1.0.0-beta.250.0",
   "/social-reliability-247.js?v=1.0.0-beta.250.0",
   "/social-reliability-249.js?v=1.0.0-beta.250.0",
+  "/sync-watchdog-250.js?v=1.0.0-beta.250.0",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
