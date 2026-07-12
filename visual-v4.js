@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.231.0";
+  const VERSION = "1.0.0-beta.242.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }
@@ -15,7 +15,7 @@
   document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual", "hd225-visual", "hd226-visual", "hd227-visual", "hd228-visual", "hd229-visual", "hd230-visual", "hd231-visual");
 
   function disciplineLabel(discipline){
-    const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", astronomy:"Astronomie", economy:"Économie", geography:"Géographie", music:"Musique" };
+    const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", astronomy:"Astronomie", economy:"Économie", geography:"Géographie", music:"Musique", literature:"Littérature" };
     return labels[discipline?.id] || discipline?.title || "Explorer";
   }
 
@@ -68,21 +68,21 @@
 
   function homeStage(mystery, lesson){
     const solved = Boolean(mystery?.id && safe(() => mysterySolved(mystery.id), false));
-    const courseDone = Boolean(lesson?.id && safe(() => lessonDone(lesson.id), false));
+    const courseDone = Boolean(lesson?.id && safe(() => lessonRead(lesson.id), false));
     const quizDone = Boolean(lesson?.id && safe(() => lessonQuizPassed(lesson.id), false));
     if (!mystery) return { index:1, type:"catalog", eyebrow:"Exploration libre", title:"Choisis une nouvelle destination", text:"Tous les parcours restent ouverts, même sans dossier quotidien.", action:"Explorer les cours", meta:"Accès libre" };
     if (!solved) return {
       index:1,
       type:"mystery",
-      eyebrow:"Dossier du jour",
+      eyebrow:"Problème du jour",
       title:safe(() => mysteryDisplayTitle(mystery), mystery.title || "Le mystère du jour"),
       text:safe(() => mysteryTeaser(mystery), mystery.teaser || mystery.prompt || "Observe les indices et trouve la réponse."),
       action:"Ouvrir l’expédition",
       meta:`+${safe(() => dailyRewardPreview().gems, 1)} gemme aujourd’hui`
     };
-    if (lesson && !courseDone) return { index:2, type:"lesson", view:"express", eyebrow:"Comprendre", title:lessonTitle(lesson), text:"Le dossier est résolu. Découvre maintenant pourquoi cette réponse a changé son époque.", action:"Lire le cours", meta:"3 min environ" };
-    if (lesson && !quizDone) return { index:3, type:"lesson", view:"quiz", eyebrow:"Relier", title:"Transforme l’idée en souvenir", text:`Cinq questions pour fixer l’essentiel de « ${lessonTitle(lesson)} » sans tout relire.`, action:"Lancer le quiz", meta:"5 questions" };
-    return { index:4, type:lesson ? "lesson" : "mystery", view:"complete", eyebrow:"Expédition terminée", title:"Mission accomplie", text:lesson ? `Le dossier et « ${lessonTitle(lesson)} » sont validés.` : "Le dossier du jour est validé.", action:lesson ? "Revoir le cours" : "Revoir le dossier", meta:`Nouveau dossier dans ${safe(() => timeToNextDaily(), "quelques heures")}` };
+    if (lesson && !courseDone) return { index:2, type:"lesson", view:"express", eyebrow:"Cours", title:lessonTitle(lesson), text:"Le problème est résolu. Passe au cours pour comprendre pourquoi cette réponse est juste.", action:"Lire le cours", meta:"Express ou complet" };
+    if (lesson && !quizDone) return { index:3, type:"lesson", view:"quiz", eyebrow:"Révision", title:"Vérifie que le raisonnement tient", text:`Cinq questions directement reliées au cours « ${lessonTitle(lesson)} ».`, action:"Commencer la révision", meta:"5 questions" };
+    return { index:4, type:lesson ? "lesson" : "mystery", view:"complete", eyebrow:"Parcours terminé", title:"Problème, cours et révision validés", text:lesson ? `Tu as résolu le problème puis validé « ${lessonTitle(lesson)} » par la révision.` : "Le problème du jour est résolu.", action:lesson ? "Revoir le cours" : "Revoir le problème", meta:`Nouveau problème dans ${safe(() => timeToNextDaily(), "quelques heures")}` };
   }
 
   function cleanDossierTitle(value){
@@ -229,6 +229,17 @@
           <path d="M277 73v130a34 34 0 1 1-22-32V97l94-24v106a34 34 0 1 1-22-32V91" stroke-width="9"/>
           <path d="M63 280c68-22 136-22 204 0" stroke-width="5" opacity=".42"/>`;
         break;
+      case "literature":
+        drawing = `
+          <path d="M82 86c54-18 100-8 140 25v145c-40-29-86-39-140-21Z" stroke-width="8"/>
+          <path d="M362 86c-54-18-100-8-140 25v145c40-29 86-39 140-21Z" stroke-width="8"/>
+          <path d="M222 111v145" stroke-width="6" opacity=".72"/>
+          <path d="M105 126c31-8 61-3 91 14M105 156c31-8 61-3 91 14M105 186c31-8 61-3 91 14" stroke-width="5" opacity=".55"/>
+          <path d="M338 126c-31-8-61-3-91 14M338 156c-31-8-61-3-91 14" stroke-width="5" opacity=".55"/>
+          <path d="M305 46c-37 16-58 47-63 92 30-9 57-28 76-59 8-13 4-26-13-33Z" stroke-width="7"/>
+          <path d="M248 137c16-27 36-48 61-64" stroke-width="6"/>
+          <path d="M75 273c92-24 190-24 294 0" stroke-width="5" opacity=".42"/>`;
+        break;
       case "history":
       default: {
         const nautical = /navire|bateau|viking|drakkar|mer|frontière/i.test(String(title));
@@ -250,7 +261,7 @@
   }
 
   function expeditionRoute(index){
-    const labels = ["Résoudre", "Comprendre", "Relier", "Retenir"];
+    const labels = ["Problème", "Cours", "Révision"];
     return `<div class="hd220-route" aria-label="Parcours du jour">
       ${labels.map((label, i) => {
         const step = i + 1;

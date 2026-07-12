@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.231.0",
-  assetsVersion: "1.0.0-beta.231.0",
+  version: "1.0.0-beta.242.0",
+  assetsVersion: "1.0.0-beta.242.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,33 +19,79 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 231",
+    versionLabel: "beta 242",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Debug & nettoyage : suppression des superpositions résiduelles du profil et stabilisation du montage visuel.",
-      "Navigation et zones horizontales allégées pour réduire le coût graphique sur mobile.",
-      "Cache PWA rendu plus robuste : un fichier optionnel indisponible ne bloque plus toute la mise à jour."
+      "Sauvegarde renforcée : écriture transactionnelle, copie de secours et récupération de la progression.",
+      "Classement stabilisé : quatre vues fixes, scores calculés sur les bonnes périodes locales et doublons d’identité évités.",
+      "Amis fiabilisés : demandes à accepter, envois hors ligne conservés et synchronisation relancée automatiquement."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
   storage: {
     safeRead(primaryKey, backupKey) {
       try {
-        const keys = [primaryKey, backupKey, ...(window.HISTODAILY_CORE?.legacyStorageKeys || [])].filter(Boolean);
-        for (const key of keys) {
+        const keys = [
+          primaryKey,
+          `${primaryKey}_snapshot`,
+          backupKey,
+          `${primaryKey}_tmp`,
+          ...(window.HISTODAILY_CORE?.legacyStorageKeys || [])
+        ].filter(Boolean);
+        const candidates = [];
+        for (const key of [...new Set(keys)]) {
           const value = localStorage.getItem(key);
-          if (value) return value;
+          if (!value) continue;
+          try {
+            const parsed = JSON.parse(value);
+            if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) continue;
+            const revision = Number(parsed._hdRevision || 0);
+            const savedAt = Number(parsed._hdSavedAt || 0);
+            const richness = Object.keys(parsed.completedLessons || {}).length
+              + Object.keys(parsed.solvedMysteries || {}).length
+              + Object.keys(parsed.quizProgress || {}).length;
+            candidates.push({ key, value, revision, savedAt, richness, priority: key === primaryKey ? 4 : key.endsWith("_snapshot") ? 3 : key === backupKey ? 2 : 1 });
+          } catch {}
         }
+        candidates.sort((a, b) => b.revision - a.revision || b.savedAt - a.savedAt || b.richness - a.richness || b.priority - a.priority);
+        return candidates[0]?.value || null;
       } catch {}
       return null;
     },
     safeWrite(primaryKey, backupKey, value) {
       try {
-        localStorage.setItem(primaryKey, value);
-        localStorage.setItem(backupKey, value);
-        localStorage.setItem(`${primaryKey}_last_ok`, String(Date.now()));
+        const parsed = JSON.parse(value);
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return false;
+        const previousValues = [primaryKey, `${primaryKey}_snapshot`, backupKey]
+          .map(key => {
+            try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
+          })
+          .filter(item => item && typeof item === "object" && !Array.isArray(item));
+        const nextRevision = Math.max(0, ...previousValues.map(item => Number(item._hdRevision || 0))) + 1;
+        parsed._hdRevision = nextRevision;
+        parsed._hdSavedAt = Date.now();
+        const serialized = JSON.stringify(parsed);
+        const tempKey = `${primaryKey}_tmp`;
+        const snapshotKey = `${primaryKey}_snapshot`;
+        localStorage.setItem(tempKey, serialized);
+        JSON.parse(localStorage.getItem(tempKey) || "null");
+        const previousPrimary = localStorage.getItem(primaryKey);
+        if (previousPrimary) {
+          try { JSON.parse(previousPrimary); localStorage.setItem(backupKey, previousPrimary); } catch {}
+        }
+        localStorage.setItem(primaryKey, serialized);
+        localStorage.setItem(snapshotKey, serialized);
+        localStorage.removeItem(tempKey);
+        localStorage.setItem(`${primaryKey}_last_ok`, String(parsed._hdSavedAt));
         return true;
-      } catch { return false; }
+      } catch {
+        try {
+          localStorage.setItem(primaryKey, value);
+          localStorage.setItem(backupKey, value);
+          localStorage.setItem(`${primaryKey}_last_ok`, String(Date.now()));
+          return true;
+        } catch { return false; }
+      }
     }
   },
   date: {
@@ -93,7 +139,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.231.0",
+  version: "1.0.0-beta.242.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

@@ -5776,3 +5776,380 @@ body{
   animation:none!important;
   transform:translate3d(-50%,0,0)!important;
 }
+
+/* =========================================================
+   HistoDaily beta 238 — fil pédagogique cohérent
+   Problème → Cours → Révision
+   ========================================================= */
+.hd238-learning-path{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:0 0 14px;
+  padding:10px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  background:rgba(8,15,29,.72);
+}
+.hd238-learning-path>div{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 9px;
+  border-radius:16px;
+  color:rgba(219,229,242,.48);
+  background:rgba(255,255,255,.025);
+  border:1px solid transparent;
+}
+.hd238-learning-path span{
+  flex:0 0 28px;
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  font-size:.78rem;
+  font-weight:900;
+  background:rgba(255,255,255,.055);
+}
+.hd238-learning-path b{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:.82rem;
+  letter-spacing:.01em;
+}
+.hd238-learning-path .done{
+  color:rgba(212,235,225,.82);
+  background:rgba(44,182,125,.07);
+}
+.hd238-learning-path .done span{
+  color:#88e6bb;
+  background:rgba(44,182,125,.14);
+}
+.hd238-learning-path .current{
+  color:#fff;
+  border-color:color-mix(in srgb,var(--accent,#8b5cf6) 48%,transparent);
+  background:color-mix(in srgb,var(--accent,#8b5cf6) 12%,rgba(255,255,255,.025));
+  box-shadow:0 8px 24px color-mix(in srgb,var(--accent,#8b5cf6) 12%,transparent);
+}
+.hd238-learning-path .current span{
+  color:#fff;
+  background:color-mix(in srgb,var(--accent,#8b5cf6) 72%,#26314a);
+}
+.hd238-problem-card{
+  margin:0 0 16px;
+  padding:20px;
+  border-radius:24px;
+  border:1px solid color-mix(in srgb,var(--accent,#8b5cf6) 26%,rgba(255,255,255,.08));
+  background:
+    radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--accent,#8b5cf6) 12%,transparent),transparent 42%),
+    rgba(12,20,35,.82);
+}
+.hd238-problem-card h2{
+  margin:7px 0 9px;
+  font-size:clamp(1.2rem,4.8vw,1.55rem);
+  line-height:1.08;
+}
+.hd238-problem-card p{
+  margin:0;
+  color:rgba(229,235,244,.82);
+  font-size:.96rem;
+  line-height:1.58;
+}
+.hd238-problem-card p strong{
+  display:block;
+  margin-bottom:4px;
+  color:#fff;
+}
+.hd238-problem-card.solved{
+  border-color:rgba(67,211,145,.23);
+  background:
+    radial-gradient(circle at 100% 0%,rgba(67,211,145,.10),transparent 44%),
+    rgba(12,20,35,.82);
+}
+.hd238-course-landmarks{
+  margin:16px 0;
+  padding:18px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.025);
+}
+.hd238-course-landmarks h2{
+  margin:5px 0 0;
+  font-size:1.08rem;
+  line-height:1.25;
+}
+.hd238-course-landmarks ul{
+  display:grid;
+  gap:9px;
+  margin:15px 0 0;
+  padding:0;
+  list-style:none;
+}
+.hd238-course-landmarks li{
+  position:relative;
+  padding:12px 13px 12px 35px;
+  border-radius:16px;
+  color:rgba(235,239,246,.88);
+  font-size:.9rem;
+  line-height:1.46;
+  background:rgba(5,10,19,.48);
+  border:1px solid rgba(255,255,255,.045);
+}
+.hd238-course-landmarks li::before{
+  content:"";
+  position:absolute;
+  left:15px;
+  top:18px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--accent,#8b5cf6);
+  box-shadow:0 0 14px color-mix(in srgb,var(--accent,#8b5cf6) 52%,transparent);
+}
+.lesson-choice-panel .lesson-view-tabs button b{
+  font-size:.88rem;
+}
+.lesson-choice-panel .lesson-view-tabs button span{
+  opacity:.64;
+}
+@media (max-width:430px){
+  .hd238-learning-path{gap:6px;padding:8px}
+  .hd238-learning-path>div{gap:6px;padding:9px 7px}
+  .hd238-learning-path span{flex-basis:25px;width:25px;height:25px;border-radius:9px}
+  .hd238-learning-path b{font-size:.74rem}
+  .hd238-problem-card{padding:17px}
+  .hd238-course-landmarks{padding:16px}
+  .hd238-course-landmarks li{padding:11px 11px 11px 32px;font-size:.86rem}
+}
+
+/* Beta 238: le parcours d’accueil suit aussi Problème → Cours → Révision. */
+.hd220-route{grid-template-columns:repeat(3,minmax(0,1fr));}
+
+/* =========================================================
+   HistoDaily beta 242 — classement, amis et stabilité mobile
+   ========================================================= */
+.hd242-reliability .tab-rank{
+  min-height:100svh;
+  padding-bottom:calc(112px + env(safe-area-inset-bottom))!important;
+}
+.hd242-rank-topbar{
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr) 44px;
+  align-items:center;
+}
+.hd242-rank-topbar>div{min-width:0}
+.hd242-rank-topbar h1{font-size:clamp(1.8rem,8vw,2.35rem)}
+.hd242-profile-button{
+  width:44px!important;
+  height:44px!important;
+  border-radius:15px!important;
+  background:linear-gradient(145deg,#f6c453,#f59e0b)!important;
+  color:#1d1505!important;
+  font-weight:1000!important;
+}
+.hd242-rank-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+  margin:8px 0 12px;
+  padding:6px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  background:rgba(255,255,255,.045);
+  contain:layout paint;
+}
+.hd242-rank-tabs button{
+  position:relative;
+  min-width:0;
+  min-height:46px;
+  padding:8px 4px;
+  border-radius:16px;
+  background:transparent;
+  color:var(--muted);
+  font-size:.82rem;
+  font-weight:950;
+  white-space:nowrap;
+  transition:background-color .12s ease,color .12s ease;
+}
+.hd242-rank-tabs button.active{
+  background:linear-gradient(135deg,#f6c453,#f59e0b);
+  color:#1b1304;
+  box-shadow:0 10px 24px rgba(246,196,83,.18);
+}
+.hd242-rank-tabs button span{
+  display:inline-grid;
+  place-items:center;
+  min-width:18px;
+  height:18px;
+  margin-left:3px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#fb7185;
+  color:white;
+  font-size:.66rem;
+}
+.hd242-score-card{
+  overflow:hidden;
+  border-color:rgba(246,196,83,.28);
+  background:radial-gradient(circle at 100% 0,rgba(246,196,83,.16),transparent 42%),linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+}
+.hd242-score-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+}
+.hd242-score-head h2{margin:.1rem 0 .35rem;font-size:2rem}
+.hd242-score-head p{margin:0;max-width:34ch}
+.hd242-score-head>button{
+  flex:0 0 auto;
+  min-height:42px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);
+  font-weight:900;
+}
+.hd242-score-head>button:disabled{opacity:.55}
+.hd242-kpis{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin-top:15px;
+}
+.hd242-kpis:has(>div:nth-child(3)){grid-template-columns:repeat(3,minmax(0,1fr))}
+.hd242-kpis div{
+  min-width:0;
+  padding:12px;
+  border-radius:18px;
+  background:rgba(5,9,20,.26);
+  border:1px solid rgba(255,255,255,.08);
+}
+.hd242-kpis b{display:block;font-size:1.28rem;color:#fff}
+.hd242-kpis span{display:block;margin-top:3px;color:var(--muted);font-size:.72rem;font-weight:800;line-height:1.25}
+.hd242-sync-line{
+  display:block;
+  margin-top:12px;
+  color:#aebdd0;
+  font-size:.76rem;
+  font-weight:780;
+}
+.hd242-leaderboard{padding:14px}
+.hd242-rank-list{display:grid;gap:8px;margin-top:10px}
+.hd242-rank-row{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  min-height:66px;
+  padding:10px 12px;
+  border-radius:19px;
+  background:rgba(5,9,20,.28);
+  border:1px solid rgba(255,255,255,.08);
+}
+.hd242-rank-row.me{
+  border-color:rgba(246,196,83,.4);
+  background:linear-gradient(135deg,rgba(246,196,83,.14),rgba(255,255,255,.04));
+}
+.hd242-position{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:13px;
+  background:rgba(255,255,255,.07);
+  color:#f7d99d;
+  font-weight:1000;
+}
+.hd242-player{
+  min-width:0;
+  padding:0;
+  text-align:left;
+  background:transparent;
+}
+.hd242-player strong,
+.hd242-player small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd242-player strong{color:#fff;font-size:.97rem}
+.hd242-player small{margin-top:4px;color:var(--muted);font-size:.72rem;font-weight:760}
+.hd242-player:disabled{cursor:default;opacity:1}
+.hd242-rank-row>b{white-space:nowrap;color:#fff;font-size:.94rem}
+.hd242-empty{padding:22px 10px;text-align:center;color:var(--muted)}
+.hd242-empty strong{color:#fff}
+.hd242-empty p{margin:6px 0 0}
+.hd242-requests{display:grid;gap:9px}
+.hd242-request-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(72,213,151,.22);
+  background:rgba(72,213,151,.07);
+}
+.hd242-request-row.pending{
+  border-color:rgba(246,196,83,.22);
+  background:rgba(246,196,83,.07);
+}
+.hd242-request-row>div:first-child strong,
+.hd242-request-row>div:first-child span{display:block}
+.hd242-request-row>div:first-child span{margin-top:3px;color:var(--muted);font-size:.78rem}
+.hd242-request-row>div:last-child{display:flex;gap:7px}
+.hd242-request-row button{min-height:38px;padding:8px 11px;border-radius:13px;background:var(--accent);color:#1c1405;font-weight:900}
+.hd242-request-row button.ghost{background:rgba(255,255,255,.07);color:var(--text);border:1px solid rgba(255,255,255,.09)}
+.hd242-add-friend .friend-add-form{margin-top:14px}
+.hd242-add-friend .friend-code strong{overflow-wrap:anywhere}
+.hd242-friends-list .friend-row{min-height:62px}
+.hd242-friends-list .friend-main{min-width:0}
+
+/* La barre principale conserve exactement la même géométrie sur tous les onglets. */
+.hd242-reliability .bottom-nav.hd183-bottom-nav{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  width:min(calc(100% - 24px),566px)!important;
+  min-height:68px!important;
+  height:68px!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-auto-rows:1fr!important;
+  padding:7px 9px!important;
+  transform:translate3d(-50%,0,0)!important;
+  -webkit-transform:translate3d(-50%,0,0)!important;
+  transition:none!important;
+  animation:none!important;
+  contain:layout paint!important;
+}
+.hd242-reliability .bottom-nav.hd183-bottom-nav .nav-item{
+  min-width:0!important;
+  min-height:52px!important;
+  height:52px!important;
+  padding:5px 2px!important;
+  transform:none!important;
+  animation:none!important;
+}
+.hd242-reliability .bottom-nav.hd183-bottom-nav .nav-item span{line-height:1!important}
+.hd242-reliability .bottom-nav.hd183-bottom-nav .nav-item small{line-height:1.1!important;white-space:nowrap!important}
+
+@media(max-width:430px){
+  .hd242-rank-tabs{gap:5px;padding:5px}
+  .hd242-rank-tabs button{font-size:.75rem;min-height:44px}
+  .hd242-score-head{display:grid;grid-template-columns:1fr}
+  .hd242-score-head>button{width:100%}
+  .hd242-kpis:has(>div:nth-child(3)){grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hd242-kpis div{padding:10px 8px}
+  .hd242-kpis span{font-size:.66rem}
+  .hd242-request-row{grid-template-columns:1fr}
+  .hd242-request-row>div:last-child{display:grid;grid-template-columns:1fr 1fr}
+  .hd242-request-row>button{width:100%}
+  .hd242-reliability .bottom-nav.hd183-bottom-nav{width:calc(100% - 14px)!important}
+}
+@media(max-width:360px){
+  .hd242-rank-tabs button{font-size:.68rem;padding-left:2px;padding-right:2px}
+  .hd242-rank-tabs button span{display:none}
+  .hd242-rank-row{grid-template-columns:32px minmax(0,1fr) auto;padding:9px 8px}
+  .hd242-position{width:31px;height:31px}
+}

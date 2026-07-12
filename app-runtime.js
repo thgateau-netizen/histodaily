@@ -5110,7 +5110,7 @@
 (function histodailyBeta219VisualV2(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.231.0";
+  const VERSION = "1.0.0-beta.242.0";
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -5475,4 +5475,466 @@
   };
   dailyMystery = function beta231DailyMystery() { return mysteryForDayOffset(0); };
   isTodayMystery = function beta231IsTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); };
+})();
+
+/* ===== HistoDaily beta 242 — fiabilité, classement et amis ===== */
+(() => {
+  "use strict";
+  const VERSION = "1.0.0-beta.242.0";
+  const SOCIAL_SNAPSHOT_KEY = `${HISTODAILY_CORE?.storageKey || "histodaily_state"}_social_snapshot_v3`;
+  const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
+  const leaderboardInFlight = new Map();
+  let friendsInFlight = null;
+  let fullRefreshInFlight = null;
+
+  const esc = value => {
+    try { return escapeHtml(String(value ?? "")); }
+    catch { return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
+  };
+  const safeScope = value => VALID_SCOPES.has(value) ? value : "daily";
+  const code = value => {
+    try { return normalizeFriendCode(value || ""); }
+    catch { return String(value || "").trim().toUpperCase().replace(/\s+/g, "").replace(/[^A-Z0-9-]/g, ""); }
+  };
+  const identityKey = row => code(row?.friendCode || row?.friend_code || row?.code || "") || String(row?.playerId || row?.player_id || row?.id || "");
+  const isAcceptedFriend = row => {
+    const key = identityKey(row);
+    if (!key) return false;
+    return Object.values(state.friends || {}).some(friend => {
+      const friendKey = identityKey(friend);
+      if (friendKey && friendKey === key) return true;
+      const a = code(friend?.code || friend?.friendCode || "");
+      const b = code(row?.friendCode || row?.friend_code || row?.code || "");
+      return Boolean(a && b && friendCodeSuffix?.(a) === friendCodeSuffix?.(b));
+    });
+  };
+  function localWindow(scope = "daily") {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let start = new Date(today);
+    if (scope === "week") {
+      const day = start.getDay() || 7;
+      start.setDate(start.getDate() - day + 1);
+    } else if (scope === "year") {
+      start = new Date(now.getFullYear(), 0, 1);
+    }
+    const end = new Date(today);
+    end.setDate(end.getDate() + 1);
+    return { start: start.toISOString(), end: end.toISOString(), periodKey: localDayKey() };
+  }
+  async function requestJson(url, options = {}, timeoutMs = 9000) {
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+    try {
+      const response = await fetch(url, { cache: "no-store", ...options, signal: controller?.signal });
+      const json = await response.json().catch(() => ({}));
+      if (!response.ok || json?.ok === false || json?.mode === "supabase-error") {
+        const error = new Error(json?.message || json?.note || `HTTP ${response.status}`);
+        error.status = response.status;
+        error.payload = json;
+        throw error;
+      }
+      return json;
+    } catch (error) {
+      if (error?.name === "AbortError") throw new Error("Délai réseau dépassé");
+      throw error;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+
+  function socialSnapshot() {
+    return {
+      version: VERSION,
+      savedAt: Date.now(),
+      playerId: typeof playerIdMe === "function" ? playerIdMe() : "",
+      friendCode: typeof friendCode === "function" ? friendCode() : "",
+      pseudo: state.pseudo || "Invité",
+      friends: cleanStoredFriendsMap?.(state.friends || {}) || state.friends || {},
+      friendRequests: state.friendRequests || { incoming: [], outgoing: [], history: [] },
+      friendRequestOutbox: Array.isArray(state.friendRequestOutbox) ? state.friendRequestOutbox.slice(0, 40) : [],
+      lastScoreSubmit: state.lastScoreSubmit || {},
+      serverFriendsStatus: state.serverFriendsStatus || {},
+      serverFriendRequestsStatus: state.serverFriendRequestsStatus || {}
+    };
+  }
+  function writeSocialSnapshot() {
+    try { localStorage.setItem(SOCIAL_SNAPSHOT_KEY, JSON.stringify(socialSnapshot())); return true; }
+    catch { return false; }
+  }
+  function recoverSocialSnapshot() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(SOCIAL_SNAPSHOT_KEY) || "null");
+      if (!raw || typeof raw !== "object") return false;
+      let changed = false;
+      const recoveredFriends = cleanStoredFriendsMap?.(raw.friends || {}) || raw.friends || {};
+      if (Object.keys(recoveredFriends).length > Object.keys(state.friends || {}).length) {
+        state.friends = { ...(state.friends || {}), ...recoveredFriends };
+        changed = true;
+      }
+      const currentRequests = state.friendRequests || {};
+      const recoveredRequests = raw.friendRequests || {};
+      const count = value => Array.isArray(value) ? value.length : 0;
+      if (count(recoveredRequests.incoming) + count(recoveredRequests.outgoing) > count(currentRequests.incoming) + count(currentRequests.outgoing)) {
+        state.friendRequests = {
+          incoming: Array.isArray(recoveredRequests.incoming) ? recoveredRequests.incoming : [],
+          outgoing: Array.isArray(recoveredRequests.outgoing) ? recoveredRequests.outgoing : [],
+          history: Array.isArray(recoveredRequests.history) ? recoveredRequests.history : []
+        };
+        changed = true;
+      }
+      if ((!Array.isArray(state.friendRequestOutbox) || !state.friendRequestOutbox.length) && Array.isArray(raw.friendRequestOutbox) && raw.friendRequestOutbox.length) {
+        state.friendRequestOutbox = raw.friendRequestOutbox.slice(0, 40);
+        changed = true;
+      }
+      if (changed) queueSaveState?.(20);
+      return changed;
+    } catch { return false; }
+  }
+
+  const previousSaveState = typeof saveState === "function" ? saveState : null;
+  if (previousSaveState) {
+    saveState = function beta242SaveState() {
+      const result = previousSaveState();
+      writeSocialSnapshot();
+      return result;
+    };
+  }
+  recoverSocialSnapshot();
+  writeSocialSnapshot();
+
+  const previousSubmitScore = typeof submitScoreToServer === "function" ? submitScoreToServer : null;
+  submitScoreToServer = async function beta242SubmitScore(payload = {}) {
+    const stablePayload = {
+      ...payload,
+      playerId: playerIdMe(),
+      pseudo: currentPseudo(),
+      friendCode: friendCode(),
+      clientVersion: VERSION,
+      requestId: `${playerIdMe()}|${payload.mysteryId || "mystery"}|${payload.dayKey || localDayKey()}`
+    };
+    try {
+      return await requestJson("/api/v1/leaderboard/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-HistoDaily-Request": stablePayload.requestId },
+        body: JSON.stringify(stablePayload)
+      }, 10000);
+    } catch (error) {
+      if (previousSubmitScore && error?.status === 404) return previousSubmitScore(stablePayload);
+      throw error;
+    }
+  };
+
+  fetchServerLeaderboard = async function beta242FetchServerLeaderboard(scope = "daily", { force = false } = {}) {
+    scope = safeScope(scope);
+    const status = state.serverLeaderboardStatus?.[scope] || {};
+    if (!force && status.loadedAt && Date.now() - Number(status.loadedAt) < 30000) return state.serverLeaderboards?.[scope] || [];
+    if (leaderboardInFlight.has(scope)) return leaderboardInFlight.get(scope);
+    const task = (async () => {
+      state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { ...status, loading: true, startedAt: Date.now() } };
+      try {
+        const friends = Object.values(state.friends || {});
+        const friendCodes = friends.map(friend => friend.code || friend.friendCode || friend.id).filter(Boolean).join(",");
+        const friendIds = friends.map(friend => friend.playerId || friend.friend_player_id).filter(Boolean).join(",");
+        const range = localWindow(scope);
+        const params = new URLSearchParams({
+          scope,
+          periodKey: range.periodKey,
+          rangeStart: range.start,
+          rangeEnd: range.end,
+          playerId: playerIdMe(),
+          friendCodes,
+          friendIds,
+          _: String(Date.now())
+        });
+        const json = await requestJson(`/api/v1/leaderboard/daily?${params}`);
+        const rows = Array.isArray(json.rows) ? json.rows : [];
+        state.serverLeaderboards = { ...(state.serverLeaderboards || {}), [scope]: rows };
+        state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", note: json.note || "", error: "" } };
+        queueSaveState?.(80);
+        return rows;
+      } catch (error) {
+        const friendly = navigator.onLine === false ? "Hors ligne : dernières données conservées." : "Connexion au classement indisponible. Dernières données conservées.";
+        state.serverLeaderboardStatus = { ...(state.serverLeaderboardStatus || {}), [scope]: { loading: false, loadedAt: Date.now(), mode: navigator.onLine === false ? "offline" : "error", note: friendly, error: String(error?.message || "Erreur réseau").slice(0, 160) } };
+        queueSaveState?.(80);
+        return state.serverLeaderboards?.[scope] || [];
+      } finally {
+        leaderboardInFlight.delete(scope);
+        if (state.tab === "rank" && safeScope(state.rankScope) === scope) render?.({ immediate: true });
+      }
+    })();
+    leaderboardInFlight.set(scope, task);
+    return task;
+  };
+  ensureServerLeaderboard = function beta242EnsureServerLeaderboard(scope = "daily") { return fetchServerLeaderboard(scope).catch(() => []); };
+
+  const previousFetchServerFriends = typeof fetchServerFriends === "function" ? fetchServerFriends : null;
+  fetchServerFriends = async function beta242FetchServerFriends({ force = false } = {}) {
+    const status = state.serverFriendsStatus || {};
+    if (!force && status.loadedAt && Date.now() - Number(status.loadedAt) < 30000) return state.friends || {};
+    if (friendsInFlight) return friendsInFlight;
+    friendsInFlight = (async () => {
+      state.serverFriendsStatus = { ...status, loading: true, startedAt: Date.now() };
+      try {
+        const params = new URLSearchParams({ playerId: playerIdMe(), friendCode: friendCode(), _: String(Date.now()) });
+        const json = await requestJson(`/api/v1/friends/sync?${params}`);
+        mergeServerFriends?.(json.friends || []);
+        state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: json.mode || "unknown", message: json.message || "", error: "" };
+        if (typeof beta125FetchFriendRequests === "function") await beta125FetchFriendRequests({ force: true }).catch(() => {});
+        writeSocialSnapshot();
+        queueSaveState?.(80);
+        return state.friends || {};
+      } catch (error) {
+        if (previousFetchServerFriends && error?.status === 404) return previousFetchServerFriends({ force });
+        const friendly = navigator.onLine === false ? "Hors ligne : liste d’amis conservée." : "Connexion aux amis indisponible. Liste locale conservée.";
+        state.serverFriendsStatus = { loading: false, loadedAt: Date.now(), mode: navigator.onLine === false ? "offline" : "error", message: friendly, error: String(error?.message || "Erreur réseau").slice(0, 160) };
+        queueSaveState?.(80);
+        return state.friends || {};
+      } finally {
+        friendsInFlight = null;
+        if (["rank", "profile", "publicProfile"].includes(state.tab)) render?.({ immediate: true });
+      }
+    })();
+    return friendsInFlight;
+  };
+  ensureServerFriends = function beta242EnsureServerFriends() { return fetchServerFriends().catch(() => state.friends || {}); };
+
+  async function refreshSocial({ force = true, scope = safeScope(state.rankScope || "daily") } = {}) {
+    if (fullRefreshInFlight) return fullRefreshInFlight;
+    fullRefreshInFlight = (async () => {
+      try { await syncMyProfileToServer?.({ source: "beta242-refresh" }); } catch {}
+      try { await beta128FlushScoreOutbox?.({ force: true, reason: "beta242-refresh" }); } catch {}
+      try { await beta128FlushOutgoingRequests?.({ force: true }); } catch {}
+      await Promise.all([
+        fetchServerFriends({ force }).catch(() => null),
+        fetchServerLeaderboard(scope, { force }).catch(() => null)
+      ]);
+      if (scope === "friends") await fetchServerLeaderboard("friends", { force: true }).catch(() => null);
+      writeSocialSnapshot();
+    })().finally(() => { fullRefreshInFlight = null; });
+    return fullRefreshInFlight;
+  }
+
+  function requestState() {
+    try { return beta125FriendRequestsState?.() || { incoming: [], outgoing: [], history: [] }; }
+    catch { return { incoming: [], outgoing: [], history: [] }; }
+  }
+  function requestCount() { return requestState().incoming.length; }
+  function outboxCount() {
+    let scores = 0, requests = 0;
+    try { scores = beta128PendingScoreCount?.() || 0; } catch {}
+    try { requests = beta128Outbox?.().length || 0; } catch {}
+    return { scores, requests, total: scores + requests };
+  }
+  function friendRequestMarkup() {
+    const requests = requestState();
+    const incoming = requests.incoming || [];
+    const outgoing = requests.outgoing || [];
+    if (!incoming.length && !outgoing.length) return "";
+    const incomingHtml = incoming.map(req => `<div class="hd242-request-row"><div><strong>${esc(req.requesterPseudo || req.otherPseudo || "Joueur")}</strong><span>veut t’ajouter</span></div><div><button type="button" data-respond-friend-request="accept" data-request-player="${esc(req.requesterPlayerId || req.otherPlayerId || "")}" data-request-code="${esc(req.requesterFriendCode || req.otherFriendCode || "")}">Accepter</button><button type="button" class="ghost" data-respond-friend-request="decline" data-request-player="${esc(req.requesterPlayerId || req.otherPlayerId || "")}" data-request-code="${esc(req.requesterFriendCode || req.otherFriendCode || "")}">Refuser</button></div></div>`).join("");
+    const outgoingHtml = outgoing.map(req => `<div class="hd242-request-row pending"><div><strong>${esc(req.targetPseudo || req.otherPseudo || "Joueur")}</strong><span>demande en attente</span></div><button type="button" class="ghost" data-cancel-friend-request="${esc(req.requestId || req.id || req.targetFriendCode || req.otherFriendCode || "")}" data-request-id="${esc(req.requestId || (/^\d+$/.test(String(req.id || "")) ? req.id : ""))}" data-request-player="${esc(req.targetPlayerId || req.otherPlayerId || "")}" data-request-code="${esc(req.targetFriendCode || req.otherFriendCode || "")}" data-request-pseudo="${esc(req.targetPseudo || req.otherPseudo || "Joueur")}">Annuler</button></div>`).join("");
+    return `<section class="card hd242-requests"><div class="section-title-row"><div><span class="card-label">Demandes d’amis</span><h2>${incoming.length ? `${incoming.length} à valider` : `${outgoing.length} en attente`}</h2></div><button type="button" class="ghost mini-button" data-refresh-requests>Actualiser</button></div>${incomingHtml}${outgoingHtml}</section>`;
+  }
+
+  addFriendMarkup = function beta242AddFriendMarkup() {
+    const draft = esc(state.friendCodeDraft || "");
+    return `<section class="card hd242-add-friend"><div><span class="card-label">Ajouter quelqu’un</span><h2>Envoyer une demande d’ami</h2><p>Colle son code. Il devra accepter avant d’apparaître dans ton classement amis.</p></div><form data-add-friend class="friend-add-form beta165-friend-add-form"><input data-friend-code-input name="friendCode" value="${draft}" placeholder="PSEUDO-ABC123" autocapitalize="characters" autocomplete="off" spellcheck="false"/><button type="submit">Envoyer</button></form><div class="friend-code"><strong>${esc(friendCode())}</strong><button type="button" data-share-invite>Partager mon code</button></div>${state.friendFeedback ? `<p class="profile-feedback">${esc(state.friendFeedback)}</p>` : ""}</section>`;
+  };
+  friendListMarkup = function beta242FriendListMarkup({ compact = false } = {}) {
+    const friends = friendProfiles?.() || [];
+    if (!friends.length) return `<section class="card empty-friends-card"><span class="card-label">Amis acceptés</span><h2>Personne pour le moment</h2><p>Une demande acceptée apparaîtra ici et dans le classement entre amis.</p></section>`;
+    return `<section class="card friends-list-card hd242-friends-list"><div class="section-title-row"><div><span class="card-label">Amis acceptés</span><h2>${friends.length} ami${friends.length > 1 ? "s" : ""}</h2></div><small>profils réels</small></div>${friends.slice(0, compact ? 3 : 30).map(friend => `<div class="friend-row"><button type="button" class="friend-main" data-view-profile="${esc(friend.id)}"><span class="avatar tiny">${esc(friend.avatar)}</span><span><strong>${esc(friend.name)}</strong><em>${Number(friend.daily || 0)} pt aujourd’hui · niv. ${Number(friend.level || 1)}</em></span></button><button type="button" class="ghost mini-button" data-remove-friend="${esc(friend.id)}">Retirer</button></div>`).join("")}</section>`;
+  };
+
+  function localScore(scope = "daily") {
+    try { return Number(scoreForScope(scope === "friends" ? "daily" : scope) || 0); }
+    catch { return 0; }
+  }
+  function localSolved(scope = "daily") {
+    try { return Number(solvedCountForScope(scope === "friends" ? "daily" : scope) || 0); }
+    catch { return 0; }
+  }
+  function selfIdentity() { return { playerId: String(playerIdMe()), friendCode: code(friendCode()), name: state.pseudo || "Invité" }; }
+  function isSelf(row, self = selfIdentity()) {
+    const pid = String(row?.playerId || row?.player_id || row?.id || "");
+    const fcode = code(row?.friendCode || row?.friend_code || row?.code || "");
+    return Boolean((pid && self.playerId && pid === self.playerId) || (fcode && self.friendCode && fcode === self.friendCode));
+  }
+  function normalizedRemoteRows(scope) {
+    try { return remoteLeaderboardRows?.(scope) || []; }
+    catch { return []; }
+  }
+  function rankRows(scope = "daily") {
+    scope = safeScope(scope);
+    const self = selfIdentity();
+    const rows = [];
+    const map = new Map();
+    for (const raw of normalizedRemoteRows(scope)) {
+      if (!raw || isSelf(raw, self)) continue;
+      if (scope === "friends" && !isAcceptedFriend(raw)) continue;
+      const key = identityKey(raw);
+      if (!key) continue;
+      const row = { ...raw, id: raw.id || raw.playerId || raw.friendCode || key, playerId: raw.playerId || raw.player_id || "", friendCode: code(raw.friendCode || raw.friend_code || ""), name: raw.name || raw.pseudo || "Joueur", score: Math.max(0, Number(raw.score || 0)), me: false };
+      const previous = map.get(key);
+      if (!previous || row.score > previous.score) map.set(key, row);
+    }
+    if (scope === "friends") {
+      for (const friend of friendProfiles?.() || []) {
+        const key = identityKey(friend);
+        if (!key || map.has(key)) continue;
+        map.set(key, { ...friend, id: friend.id || key, playerId: friend.playerId || "", friendCode: code(friend.code || ""), name: friend.name || "Ami", score: Math.max(0, Number(friend.daily || 0)), me: false, acceptedFriend: true });
+      }
+    }
+    rows.push(...map.values());
+    rows.push({ id: self.playerId, playerId: self.playerId, friendCode: self.friendCode, name: self.name, score: localScore(scope), me: true });
+    rows.sort((a, b) => Number(b.score) - Number(a.score) || String(a.name).localeCompare(String(b.name), "fr"));
+    let lastScore = null, lastRank = 0;
+    return rows.filter(row => row.me || Number(row.score) > 0).slice(0, 100).map((row, index) => {
+      const score = Number(row.score || 0);
+      const rank = lastScore === score ? lastRank : index + 1;
+      lastScore = score; lastRank = rank;
+      return { ...row, rank };
+    });
+  }
+  leaderboardRows = function beta242LeaderboardRows(scope = state.rankScope || "daily") { return rankRows(scope); };
+
+  function periodLabel(scope) { return ({ daily: "Aujourd’hui", week: "Semaine", year: "Année", friends: "Amis" })[safeScope(scope)]; }
+  function scoreHelp(scope) {
+    if (scope === "week") return "Somme des scores obtenus depuis lundi.";
+    if (scope === "year") return "Somme des scores obtenus depuis le 1er janvier.";
+    if (scope === "friends") return "Score du jour, limité aux amis que vous avez acceptés.";
+    return "Score du jour : indices et essais supplémentaires réduisent le résultat.";
+  }
+  function syncLine(scope) {
+    const status = state.serverLeaderboardStatus?.[scope] || {};
+    const pending = outboxCount();
+    if (navigator.onLine === false) return `Hors ligne${pending.total ? ` · ${pending.total} envoi${pending.total > 1 ? "s" : ""} en attente` : ""}`;
+    if (status.loading) return "Actualisation en cours…";
+    if (status.mode === "error") return status.note || "Connexion instable : dernières données conservées.";
+    if (status.loadedAt) {
+      const seconds = Math.max(0, Math.round((Date.now() - Number(status.loadedAt)) / 1000));
+      return `Actualisé ${seconds < 5 ? "à l’instant" : `il y a ${seconds} s`}${pending.total ? ` · ${pending.total} en attente` : ""}`;
+    }
+    return pending.total ? `${pending.total} envoi${pending.total > 1 ? "s" : ""} en attente` : "Prêt à synchroniser";
+  }
+  function rowsMarkup(rows) {
+    if (!rows.length) return `<div class="hd242-empty"><strong>Aucun score reçu</strong><p>Le classement se remplira après la résolution du dossier du jour.</p></div>`;
+    return rows.map(row => `<div class="hd242-rank-row${row.me ? " me" : ""}"><span class="hd242-position">${row.rank}</span><button type="button" class="hd242-player" ${row.me ? "disabled" : `data-view-profile="${esc(row.id)}"`}><strong>${esc(row.name)}${row.me ? " · toi" : ""}</strong><small>${row.me ? "score local fiable" : row.acceptedFriend || isAcceptedFriend(row) ? "ami accepté" : "profil en ligne"}</small></button><b>${Number(row.score || 0)} pt</b></div>`).join("");
+  }
+  function bindRank() {
+    document.querySelectorAll("[data-rank-scope]").forEach(button => button.onclick = event => {
+      event.preventDefault();
+      const scope = safeScope(button.dataset.rankScope || "daily");
+      setState({ tab: "rank", rankScope: scope }, { save: true, renderImmediate: true });
+      refreshSocial({ force: false, scope }).catch(() => {});
+    });
+    document.querySelectorAll("[data-view-profile]").forEach(button => button.onclick = event => { event.preventDefault(); viewProfile?.(button.dataset.viewProfile || ""); });
+    document.querySelectorAll("[data-remove-friend]").forEach(button => button.onclick = event => { event.preventDefault(); event.stopPropagation(); removeFriend?.(button.dataset.removeFriend); });
+    document.querySelector("[data-add-friend]")?.addEventListener("submit", addFriend);
+    document.querySelector("[data-friend-code-input]")?.addEventListener("input", event => {
+      state.friendCodeDraft = event.currentTarget.value || "";
+      queueSaveState?.(250);
+    });
+    document.querySelector("[data-share-invite]")?.addEventListener("click", shareInviteCode);
+    document.querySelector("[data-copy-invite-link]")?.addEventListener("click", copyInviteLink);
+    document.querySelector("[data-home]")?.addEventListener("click", () => setState({ tab: "home" }, { save: true }));
+    document.querySelector("[data-open-profile]")?.addEventListener("click", () => setState({ tab: "profile" }, { save: true }));
+    document.querySelector("[data-refresh-ranking]")?.addEventListener("click", event => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      button.textContent = "Actualisation…";
+      refreshSocial({ force: true, scope: safeScope(state.rankScope) }).finally(() => render?.({ immediate: true }));
+    });
+  }
+
+  renderRank = function beta242RenderRank() {
+    const scope = safeScope(state.rankScope || "daily");
+    state.rankScope = scope;
+    const rows = rankRows(scope);
+    const me = rows.find(row => row.me);
+    const score = localScore(scope);
+    const solved = localSolved(scope);
+    const accepted = friendProfiles?.().length || 0;
+    const requests = requestCount();
+    renderShell(`<header class="topbar hd242-rank-topbar"><button type="button" data-home aria-label="Retour">←</button><div><p class="eyebrow">Classement</p><h1>${esc(periodLabel(scope))}</h1></div><button type="button" class="hd242-profile-button" data-open-profile>${esc((state.pseudo || "P").charAt(0).toUpperCase())}</button></header>
+      <nav class="hd242-rank-tabs" aria-label="Choisir un classement">
+        ${["daily","week","year","friends"].map(key => `<button type="button" data-rank-scope="${key}" class="${scope === key ? "active" : ""}" aria-current="${scope === key ? "page" : "false"}">${key === "friends" && requests ? `Amis <span>${requests}</span>` : esc(periodLabel(key))}</button>`).join("")}
+      </nav>
+      <section class="card hd242-score-card"><div class="hd242-score-head"><div><span class="card-label">Ton résultat</span><h2>${score} points</h2><p>${esc(scoreHelp(scope))}</p></div><button type="button" data-refresh-ranking>Actualiser</button></div><div class="hd242-kpis"><div><b>#${me?.rank || "—"}</b><span>ta place</span></div><div><b>${solved}</b><span>dossier${solved > 1 ? "s" : ""} compté${solved > 1 ? "s" : ""}</span></div>${scope === "friends" ? `<div><b>${accepted}</b><span>ami${accepted > 1 ? "s" : ""} accepté${accepted > 1 ? "s" : ""}</span></div>` : ""}</div><small class="hd242-sync-line">${esc(syncLine(scope))}</small></section>
+      ${scope === "friends" ? friendRequestMarkup() : ""}
+      <section class="card hd242-leaderboard"><div class="section-title-row"><div><span class="card-label">${scope === "friends" ? "Entre amis" : "Classement général"}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2></div></div><div class="hd242-rank-list">${rowsMarkup(rows)}</div></section>
+      ${scope === "friends" ? `${addFriendMarkup()}${friendListMarkup()}` : ""}`);
+    bindRank();
+    refreshSocial({ force: false, scope }).catch(() => {});
+  };
+
+  function flushDurableSocial(reason = "lifecycle") {
+    try { writeSocialSnapshot(); } catch {}
+    try { saveState?.(); } catch {}
+    if (navigator.onLine !== false) {
+      try { beta128FlushScoreOutbox?.({ force: reason === "online", reason }); } catch {}
+      try { beta128FlushOutgoingRequests?.({ force: reason === "online" }); } catch {}
+    }
+  }
+  window.addEventListener("online", () => { isOnline = true; flushDurableSocial("online"); refreshSocial({ force: true }).catch(() => {}); });
+  window.addEventListener("pagehide", () => flushDurableSocial("pagehide"));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushDurableSocial("hidden");
+    else if (["rank","profile","publicProfile"].includes(state.tab)) refreshSocial({ force: false }).catch(() => {});
+  });
+
+  try {
+    document.documentElement.classList.add("hd242-reliability");
+    state.beta242ReliabilityVersion = VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, storageTransactions: true, socialSnapshot: true, stableRanking: true, friendRequests: true };
+    queueSaveState?.(40);
+  } catch {}
+  window.HD242 = { refreshSocial, rankRows, socialSnapshot, recoverSocialSnapshot, localWindow };
+})();
+
+/* beta 242 — profils amis avec les mêmes bornes locales que le classement */
+(() => {
+  "use strict";
+  if (typeof beta126FetchPublicProfile !== "function") return;
+  const previous = beta126FetchPublicProfile;
+  beta126FetchPublicProfile = async function beta242FetchPublicProfile(player = {}, options = {}) {
+    const playerId = String(player.playerId || (String(player.id || "").startsWith("me-") ? "" : player.id || ""));
+    const fcode = typeof normalizeFriendCode === "function" ? normalizeFriendCode(player.friendCode || player.code || "") : String(player.friendCode || player.code || "");
+    if (navigator.onLine !== false && (playerId || fcode)) {
+      try {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const week = new Date(today);
+        const day = week.getDay() || 7;
+        week.setDate(week.getDate() - day + 1);
+        const year = new Date(now.getFullYear(), 0, 1);
+        const end = new Date(today); end.setDate(end.getDate() + 1);
+        const params = new URLSearchParams({
+          playerId,
+          friendCode: fcode,
+          viewerPlayerId: playerIdMe(),
+          viewerFriendCode: friendCode(),
+          dayKey: localDayKey(),
+          weekStart: week.toISOString(),
+          yearStart: year.toISOString(),
+          rangeEnd: end.toISOString(),
+          _: String(Date.now())
+        });
+        const controller = typeof AbortController === "function" ? new AbortController() : null;
+        const timer = controller ? setTimeout(() => controller.abort(), 9000) : null;
+        const response = await fetch(`/api/v1/friends/profile?${params}`, { cache: "no-store", signal: controller?.signal });
+        if (timer) clearTimeout(timer);
+        const json = await response.json().catch(() => ({}));
+        if (response.ok && json?.ok !== false && json.profile) {
+          const normalized = typeof beta126NormalizeRemoteProfile === "function" ? beta126NormalizeRemoteProfile(json.profile) : json.profile;
+          normalized.relationship = json.relationship || null;
+          if (typeof beta126ProfileCache === "function" && typeof beta126ProfileKey === "function") beta126ProfileCache()[beta126ProfileKey(normalized)] = normalized;
+          queueSaveState?.(80);
+          if (state.tab === "publicProfile") render?.({ immediate: true });
+          return normalized;
+        }
+      } catch {}
+    }
+    return previous(player, options);
+  };
 })();

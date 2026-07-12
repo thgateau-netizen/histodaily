@@ -108,3 +108,8 @@ create unique index if not exists hd_friend_requests_pending_unique on public.hd
 
 
 -- beta149 : aucune migration obligatoire. Auto-test non destructif via /api/v1/system/selftest.
+
+-- beta242 : aucune migration supplémentaire obligatoire.
+-- La fiabilité a été renforcée côté client et API : écritures locales transactionnelles,
+-- files d'attente hors ligne, bornes calendaires locales et déduplication des scores.
+-- Les tables et index ci-dessus restent nécessaires pour les amis et classements multi-appareils.

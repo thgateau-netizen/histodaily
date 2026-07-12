@@ -1,15 +1,24 @@
-const CACHE_NAME = "histodaily-beta231-v1";
-const APP_VERSION = "1.0.0-beta.231.0";
+const CACHE_NAME = "histodaily-beta242-v1";
+const APP_VERSION = "1.0.0-beta.242.0";
 const ASSETS = [
   "/",
   "/index.html",
-  "/app.css?v=1.0.0-beta.231.0",
-  "/lessons-lite.js?v=1.0.0-beta.231.0",
-  "/app-bootstrap.js?v=1.0.0-beta.231.0",
-  "/app.js?v=1.0.0-beta.231.0",
-  "/content-library.js?v=1.0.0-beta.231.0",
-  "/app-runtime.js?v=1.0.0-beta.231.0",
-  "/visual-v4.js?v=1.0.0-beta.231.0",
+  "/app.css?v=1.0.0-beta.242.0",
+  "/lessons-lite.js?v=1.0.0-beta.242.0",
+  "/app-bootstrap.js?v=1.0.0-beta.242.0",
+  "/app.js?v=1.0.0-beta.242.0",
+  "/content-library.js?v=1.0.0-beta.242.0",
+  "/content-literature.js?v=1.0.0-beta.242.0",
+  "/content-premium-233.js?v=1.0.0-beta.242.0",
+  "/content-premium-234.js?v=1.0.0-beta.242.0",
+  "/content-premium-235.js?v=1.0.0-beta.242.0",
+  "/content-premium-236.js?v=1.0.0-beta.242.0",
+  "/content-premium-237.js?v=1.0.0-beta.242.0",
+  "/content-coherence-239.js?v=1.0.0-beta.242.0",
+  "/content-humanize-240.js?v=1.0.0-beta.242.0",
+  "/content-cleanup-241.js?v=1.0.0-beta.242.0",
+  "/app-runtime.js?v=1.0.0-beta.242.0",
+  "/visual-v4.js?v=1.0.0-beta.242.0",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
@@ -50,18 +59,18 @@ self.addEventListener("fetch", event => {
   if (event.request.mode === "navigate") {
     event.respondWith((async () => {
       const cached = await caches.match("/index.html");
-      const update = fetch(event.request, { cache: "no-store" }).then(async fresh => {
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), 4500) : null;
+      try {
+        const fresh = await fetch(event.request, { cache: "no-store", signal: controller?.signal });
         if (fresh && fresh.ok) {
           const cache = await caches.open(CACHE_NAME);
           await cache.put("/index.html", fresh.clone());
+          return fresh;
         }
-        return fresh;
-      }).catch(() => null);
-      if (cached) {
-        event.waitUntil(update);
-        return cached;
-      }
-      return (await update) || Response.error();
+      } catch {}
+      finally { if (timer) clearTimeout(timer); }
+      return cached || Response.error();
     })());
     return;
   }
@@ -90,4 +99,5 @@ self.addEventListener("message", event => {
   if (event.data && event.data.type === "HISTODAILY_VERSION") {
     event.source?.postMessage?.({ type: "HISTODAILY_VERSION", version: APP_VERSION, cache: CACHE_NAME });
   }
+  if (event.data && event.data.type === "HISTODAILY_SKIP_WAITING") self.skipWaiting();
 });

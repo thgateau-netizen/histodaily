@@ -1,7 +1,7 @@
-/* HistoDaily beta 239 — cohérence éditoriale et remise en ordre du contenu. */
+/* HistoDaily beta 242 — cohérence éditoriale et remise en ordre du contenu. */
 (function histodailyBeta239ContentCoherence(){
   "use strict";
-  const VERSION = "1.0.0-beta.239.0";
+  const VERSION = "1.0.0-beta.242.0";
   const packs = typeof READY_LESSON_PACKS === "object" && READY_LESSON_PACKS ? READY_LESSON_PACKS : {};
   const mysteries = Array.isArray(data?.mysteries) ? data.mysteries : [];
 
@@ -353,11 +353,12 @@
       "music-hiphop-sampling"
     ],
     astronomyEvidenceSections:Object.keys(astronomyEvidence),
-    ok:brokenMysteryLinks.length === 0 && weakMysteryLinks.length === 0 && malformedPaths.length === 0 && unorderedCourses.length === 0
+    reviewSuggested:weakMysteryLinks.length,
+    ok:brokenMysteryLinks.length === 0 && malformedPaths.length === 0 && unorderedCourses.length === 0
   };
   try {
     window.HistoDaily = { ...(window.HistoDaily || {}), version:VERSION, contentCoherence239:audit };
-    if (!audit.ok) console.warn("HistoDaily beta239 content coherence audit", audit);
+    if (brokenMysteryLinks.length || malformedPaths.length || unorderedCourses.length) console.warn("HistoDaily beta239 content coherence audit", audit);
     if (typeof renderSoon === "function") renderSoon();
   } catch {}
 })();

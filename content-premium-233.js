@@ -1,7 +1,7 @@
 /* HistoDaily beta 235 — extension éditoriale premium multi-disciplines. */
 (function histodailyBeta233PremiumContent(){
   "use strict";
-  const VERSION = "1.0.0-beta.239.0";
+  const VERSION = "1.0.0-beta.242.0";
   const GROUPS = {
   "history": [
     {
@@ -463,7 +463,7 @@
           "La guerre de Trente Ans commence immédiatement."
         ],
         "why": "Le repère lance une crise, sans résumer toutes ses causes.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 1."
       },
       {
@@ -476,7 +476,7 @@
           "Elle rend les autorités incapables de censurer."
         ],
         "why": "Le média amplifie la circulation mais ne décide pas seul de la réception.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -489,7 +489,7 @@
           "Parce que les divergences portent seulement sur la langue des Bibles."
         ],
         "why": "Les ruptures sont institutionnelles et théologiques.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -502,7 +502,7 @@
           "Il place toutes les Églises sous l’autorité des princes."
         ],
         "why": "La réponse catholique combine clarification et réforme.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -515,7 +515,7 @@
           "Toutes les guerres opposent exactement les mêmes alliances."
         ],
         "why": "Les causes s’entrecroisent sans annuler la force des convictions.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -600,7 +600,7 @@
           "En 1789."
         ],
         "why": "Ce repère distingue la chronologie Qing des conquêtes ottomane et moghole.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 2."
       },
       {
@@ -613,7 +613,7 @@
           "Parce que toutes les provinces sont indépendantes."
         ],
         "why": "L’administration réelle varie selon les territoires.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -626,7 +626,7 @@
           "La fermeture totale aux cultures persanes."
         ],
         "why": "Akbar gouverne par coalition et adaptation.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -639,7 +639,7 @@
           "Ils sont une dynastie ottomane installée à Pékin."
         ],
         "why": "Leur pouvoir combine plusieurs traditions politiques.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -652,7 +652,7 @@
           "Montrer que le commerce mondial est alors inexistant."
         ],
         "why": "Comparer éclaire les différences sans construire un classement simpliste.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -737,7 +737,7 @@
           "Une communauté marronne indépendante."
         ],
         "why": "La plantation est un système social autant qu’une unité agricole.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -750,7 +750,7 @@
           "Il suppose que les plantations n’exportent rien."
         ],
         "why": "Le triangle est un schéma pédagogique, non la carte de tous les voyages.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -763,7 +763,7 @@
           "Seulement l’écriture de pétitions en Europe."
         ],
         "why": "L’action existe sous des formes ouvertes et quotidiennes.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -776,7 +776,7 @@
           "Les propriétaires y obtiennent l’indépendance pour maintenir l’esclavage."
         ],
         "why": "La révolution renverse simultanément ordre colonial et esclavagiste.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 3."
       },
       {
@@ -789,7 +789,7 @@
           "Parce que les plantations disparaissent toujours le jour de l’abolition."
         ],
         "why": "Un statut juridique change plus vite que les structures sociales.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -874,7 +874,7 @@
           "Le daguerréotype est une vidéo courte."
         ],
         "why": "La reproductibilité modifie les usages sociaux.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 1."
       },
       {
@@ -887,7 +887,7 @@
           "Parce que seule la couleur crée du sens."
         ],
         "why": "L’enregistrement lumineux reste un acte de choix.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 2."
       },
       {
@@ -900,7 +900,7 @@
           "En rendant chaque portrait anonyme."
         ],
         "why": "L’archive ne conserve pas seulement ; elle organise.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -913,7 +913,7 @@
           "Que l’image photographique n’a aucun lien avec le réel."
         ],
         "why": "La photographie est aussi un langage construit.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -926,7 +926,7 @@
           "Si le sujet regarde l’objectif."
         ],
         "why": "La provenance est centrale pour évaluer la confiance.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1011,7 +1011,7 @@
           "Parce qu’il est obligatoirement tourné en studio."
         ],
         "why": "La construction est inévitable, mais peut être rigoureuse.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1024,7 +1024,7 @@
           "Que tous les participants ont écrit le scénario."
         ],
         "why": "La reconstitution n’est pas une invention numérique.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 1."
       },
       {
@@ -1037,7 +1037,7 @@
           "Pour savoir si elle a été tournée en couleur."
         ],
         "why": "Une image hors contexte peut soutenir des récits opposés.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1050,7 +1050,7 @@
           "La rémunération rend toute question éthique inutile."
         ],
         "why": "La relation se poursuit au-delà du tournage.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1063,7 +1063,7 @@
           "Croire la voix off dès qu’elle semble assurée."
         ],
         "why": "L’analyse porte sur le dispositif autant que sur le sujet.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1148,7 +1148,7 @@
           "La vitesse de mutation des bactéries."
         ],
         "why": "Son raisonnement est statistique avant d’être moléculaire.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1161,7 +1161,7 @@
           "Ils sont composés uniquement de protéines."
         ],
         "why": "Comportement cellulaire et statistiques convergent.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1174,7 +1174,7 @@
           "Que chaque caractère dépend d’un seul gène."
         ],
         "why": "Plusieurs expériences consolident la même conclusion.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1187,7 +1187,7 @@
           "Elle transforme l’ADN en protéine sans intermédiaire."
         ],
         "why": "La structure suggère un mécanisme de réplication.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 3."
       },
       {
@@ -1200,7 +1200,7 @@
           "Parce que les chromosomes ne sont jamais hérités."
         ],
         "why": "Les caractères complexes résultent de réseaux et d’interactions.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1285,7 +1285,7 @@
           "La vitesse de la lumière."
         ],
         "why": "Son modèle compare les températures des sources.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1298,7 +1298,7 @@
           "La température ne peut jamais changer."
         ],
         "why": "Le bilan distingue transformation et disparition.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1311,7 +1311,7 @@
           "Il transforme uniquement le froid en matière."
         ],
         "why": "Le deuxième principe impose une contrepartie.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 3."
       },
       {
@@ -1324,7 +1324,7 @@
           "Parce qu’elle diminue toujours dans l’Univers."
         ],
         "why": "La notion est statistique et énergétique.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1337,7 +1337,7 @@
           "Parce que l’entropie ne s’applique pas à la chimie."
         ],
         "why": "Il faut étudier le système et ses échanges.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1422,7 +1422,7 @@
           "La distance où la gravité disparaît."
         ],
         "why": "L’horizon est une frontière causale.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1435,7 +1435,7 @@
           "Par l’arrêt de rotation d’une galaxie."
         ],
         "why": "La masse restante détermine l’issue compacte.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1448,7 +1448,7 @@
           "L’horizon réfléchit toutes les étoiles."
         ],
         "why": "La lumière vient de la matière extérieure.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1461,7 +1461,7 @@
           "En mesurant sa température avec une sonde posée dessus."
         ],
         "why": "Plusieurs observations indépendantes convergent.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1474,7 +1474,7 @@
           "Elle n’apparaît dans aucun modèle physique."
         ],
         "why": "Le modèle est robuste autour de l’horizon mais incomplet aux extrêmes.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1559,7 +1559,7 @@
           "Elle ne contient aucune étoile."
         ],
         "why": "La distance transforme l’interprétation de l’objet.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1572,7 +1572,7 @@
           "La couleur détermine à elle seule la forme."
         ],
         "why": "Les classifications ne sont pas une chronologie unique.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1585,7 +1585,7 @@
           "La disparition de la gravitation à grande distance."
         ],
         "why": "La dynamique révèle une masse invisible.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1598,7 +1598,7 @@
           "Une classification des planètes."
         ],
         "why": "Elle émerge de la croissance des fluctuations de densité.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1611,7 +1611,7 @@
           "Les galaxies sont des systèmes parfaitement fermés."
         ],
         "why": "Les rétroactions régulent la formation stellaire.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1696,7 +1696,7 @@
           "Une monnaie plus forte."
         ],
         "why": "La comparaison est relative aux alternatives.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1709,7 +1709,7 @@
           "Elles éliminent la question des travailleurs."
         ],
         "why": "Un modèle est un outil d’analyse, non un verdict complet.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1722,7 +1722,7 @@
           "Parce que seul le transport crée de la valeur."
         ],
         "why": "Les chaînes mondiales fragmentent la production.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1735,7 +1735,7 @@
           "Le travail change instantanément de secteur."
         ],
         "why": "La distribution et la durée des ajustements comptent.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1748,7 +1748,7 @@
           "Parce que les coûts ne comptent jamais."
         ],
         "why": "Sécurité et efficacité peuvent entrer en tension.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1833,7 +1833,7 @@
           "Il concerne uniquement le pétrole."
         ],
         "why": "Le volume et les interfaces portuaires expliquent son rôle.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 1."
       },
       {
@@ -1846,7 +1846,7 @@
           "Il ne transporte jamais d’énergie."
         ],
         "why": "La concentration transforme une perturbation locale en effet global.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1859,7 +1859,7 @@
           "La suppression de la haute mer."
         ],
         "why": "La ZEE n’est pas un territoire terrestre élargi.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1872,7 +1872,7 @@
           "Ils fonctionnent sans station terrestre."
         ],
         "why": "Les deux systèmes sont complémentaires, mais les volumes reposent surtout sur la fibre.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1885,7 +1885,7 @@
           "Le nombre de plages touristiques."
         ],
         "why": "La puissance est un système de réseaux et de compétences.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1970,7 +1970,7 @@
           "Il crée immédiatement le streaming."
         ],
         "why": "Le son devient un objet répétable.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 1."
       },
       {
@@ -1983,7 +1983,7 @@
           "Il interdit les instruments acoustiques."
         ],
         "why": "La captation modifie la technique d’interprétation.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1996,7 +1996,7 @@
           "Il ne fonctionne qu’avec des voix."
         ],
         "why": "Le studio devient un outil de composition.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -2009,7 +2009,7 @@
           "La musique enregistrée n’a jamais de durée limitée."
         ],
         "why": "Technique et forme interagissent sans déterminisme absolu.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -2022,7 +2022,7 @@
           "Il réduit les catalogues à quelques albums physiques."
         ],
         "why": "L’abondance ne garantit pas visibilité ni équité.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -2107,7 +2107,7 @@
           "Chaque représentation utilise des décors de cinéma."
         ],
         "why": "Le dispositif transforme le spectateur en partenaire.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -2120,7 +2120,7 @@
           "Une page laissée vide entre deux scènes."
         ],
         "why": "C’est une ressource rythmique majeure.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Express 2."
       },
       {
@@ -2133,7 +2133,7 @@
           "L’absence totale de rythme."
         ],
         "why": "Le changement doit être interprété dans la scène.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -2146,7 +2146,7 @@
           "Parce qu’il n’utilise jamais la première personne."
         ],
         "why": "L’accès à la pensée reste dramatique et ambigu.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -2159,7 +2159,7 @@
           "Parce que le Globe interdisait les répétitions."
         ],
         "why": "La transmission est une histoire de choix.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -2244,7 +2244,7 @@
           "D’un genre cinématographique hollywoodien."
         ],
         "why": "Le terme change de sens en circulant.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -2257,7 +2257,7 @@
           "Il supprime toute dimension politique."
         ],
         "why": "L’évidence narrative déplace les hiérarchies de savoir.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -2270,7 +2270,7 @@
           "L’auteur refuse toute chronologie."
         ],
         "why": "La répétition donne une forme à la mémoire historique.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -2283,7 +2283,7 @@
           "Garantir qu’une rumeur est toujours exacte."
         ],
         "why": "Le roman confronte des formes de mémoire.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -2296,7 +2296,7 @@
           "Elle désigne uniquement les récits sans politique."
         ],
         "why": "Une catégorie doit guider la lecture, non la remplacer.",
-        "trap": "Choisir une formule séduisante mais trop simple ou contredite par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],

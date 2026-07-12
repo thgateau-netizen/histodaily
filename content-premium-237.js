@@ -1,7 +1,7 @@
-/* HistoDaily beta 239 — grands thèmes structurants, extension premium. */
+/* HistoDaily beta 242 — grands thèmes structurants, extension premium. */
 (function histodailyBeta237PremiumContent(){
   "use strict";
-  const VERSION = "1.0.0-beta.239.0";
+  const VERSION = "1.0.0-beta.242.0";
   const GROUPS = {
   "literature": [
     {
@@ -400,7 +400,7 @@
           "Parce que l’ONU impose partout la même date d’indépendance."
         ],
         "why": "Plusieurs rapports de force se combinent.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -413,7 +413,7 @@
           "Le maintien direct du gouvernement britannique pendant trente ans."
         ],
         "why": "L’indépendance et la partition sont liées.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -426,7 +426,7 @@
           "Parce qu’elle commence après l’indépendance algérienne."
         ],
         "why": "Le conflit est aussi une crise intérieure française.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -439,7 +439,7 @@
           "L’adhésion de tous les participants à l’OTAN."
         ],
         "why": "Bandung rend visible un Sud politique pluriel.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -452,7 +452,7 @@
           "Parce que les sociétés indépendantes n’ont aucun acteur politique propre."
         ],
         "why": "Les héritages structurent les choix après l’indépendance.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -537,7 +537,7 @@
           "Parce que l’ONU impose une monnaie unique."
         ],
         "why": "La coopération commence par un secteur stratégique.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -550,7 +550,7 @@
           "L’euro mis immédiatement en circulation."
         ],
         "why": "Rome approfondit l’intégration économique.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -563,7 +563,7 @@
           "Parce que l’Union ne produit aucune règle obligatoire."
         ],
         "why": "Le pouvoir est institutionnellement partagé.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -576,7 +576,7 @@
           "Parce que seuls six États peuvent commercer entre eux."
         ],
         "why": "Les espaces d’intégration se superposent.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -589,7 +589,7 @@
           "Une alliance militaire identique à l’OTAN."
         ],
         "why": "L’Union est une forme politique originale.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -674,7 +674,7 @@
           "À transformer chaque poème en programme politique officiel."
         ],
         "why": "L’automatisme suspend provisoirement le contrôle.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -687,7 +687,7 @@
           "Le pop art américain."
         ],
         "why": "Le surréalisme reprend la révolte dadaïste en lui donnant une méthode.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -700,7 +700,7 @@
           "Parce qu’elle ne peut montrer que des paysages réels."
         ],
         "why": "Le médium joue sur la confiance accordée au réel photographique.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -713,7 +713,7 @@
           "Parce que le mouvement est limité à une seule exposition."
         ],
         "why": "La liberté artistique cohabite avec de fortes tensions internes.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -726,7 +726,7 @@
           "L’affirmation que toutes les œuvres étaient anonymes."
         ],
         "why": "Les créatrices transforment les thèmes du mouvement.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -811,7 +811,7 @@
           "Parce que les salles diffusaient uniquement des opéras."
         ],
         "why": "La séance sonore précède le son enregistré.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -824,7 +824,7 @@
           "Ils ne peuvent enregistrer que la musique."
         ],
         "why": "La technique impose d’abord une mise en scène plus rigide.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -837,7 +837,7 @@
           "Parce que les pellicules cessent d’exister."
         ],
         "why": "Le parlant suppose une infrastructure nouvelle.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -850,7 +850,7 @@
           "Parce que les acteurs doivent voyager avec chaque copie."
         ],
         "why": "La langue devient une contrainte industrielle.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -863,7 +863,7 @@
           "Il sert seulement à masquer les dialogues."
         ],
         "why": "Le son élargit l’espace narratif.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -948,7 +948,7 @@
           "La même position dans l’espace."
         ],
         "why": "L’invariance de c oblige à repenser espace et temps.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -961,7 +961,7 @@
           "Parce que la lumière voyage à des vitesses arbitraires."
         ],
         "why": "La simultanéité lointaine dépend du référentiel.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -974,7 +974,7 @@
           "Parce qu’elles se déplacent plus vite que la lumière."
         ],
         "why": "La dilatation du temps est mesurable.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -987,7 +987,7 @@
           "Que l’énergie n’est jamais conservée."
         ],
         "why": "L’équivalence n’implique pas une conversion automatique.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1000,7 +1000,7 @@
           "Comme une erreur des horloges mécaniques."
         ],
         "why": "Les corps suivent la géométrie courbe.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1085,7 +1085,7 @@
           "Parce qu’il veut limiter le tableau à dix éléments."
         ],
         "why": "Une bonne classification devient prédictive.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1098,7 +1098,7 @@
           "Son prix commercial."
         ],
         "why": "La charge nucléaire définit l’élément.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1111,7 +1111,7 @@
           "Parce qu’ils sont tous solides à température ambiante."
         ],
         "why": "Les électrons de valence gouvernent une grande part de la chimie.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1124,7 +1124,7 @@
           "Leur place dans une colonne différente."
         ],
         "why": "Le numéro atomique reste identique.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Approfondissement « Élément et isotope »."
       },
       {
@@ -1137,7 +1137,7 @@
           "Parce que les colonnes changent chaque jour."
         ],
         "why": "Le tableau est une carte, pas une réponse automatique.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       }
     ],
@@ -1222,7 +1222,7 @@
           "Le changement annuel de vitesse de la lumière."
         ],
         "why": "L’inclinaison modifie hauteur solaire et durée du jour.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1235,7 +1235,7 @@
           "Parce que la Terre arrête de tourner."
         ],
         "why": "L’angle d’incidence modifie l’énergie par unité de surface.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1248,7 +1248,7 @@
           "L’année comporte douze mois."
         ],
         "why": "La distance n’explique pas l’opposition des saisons.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Approfondissement « Périhélie »."
       },
       {
@@ -1261,7 +1261,7 @@
           "Parce que la Terre se rapproche brutalement du Soleil en août."
         ],
         "why": "L’inertie thermique crée un décalage.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1274,7 +1274,7 @@
           "Parce que la Terre n’y tourne pas."
         ],
         "why": "Les pluies peuvent y structurer davantage l’année.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1359,7 +1359,7 @@
           "Les deux mots désignent exactement la même mesure."
         ],
         "why": "La distinction permet d’analyser accumulation et sécurité.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1372,7 +1372,7 @@
           "Parce qu’elle ignore la moitié de la population."
         ],
         "why": "La médiane décrit la position centrale.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Introduction et section 2."
       },
       {
@@ -1385,7 +1385,7 @@
           "La croissance annuelle des prix."
         ],
         "why": "Le Gini est synthétique mais ne dit pas tout.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1398,7 +1398,7 @@
           "Parce qu’ils ne bénéficient qu’aux plus hauts revenus."
         ],
         "why": "La redistribution dépasse les transferts monétaires.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1411,7 +1411,7 @@
           "Non, parce que personne ne change jamais de position."
         ],
         "why": "Distance et mobilité sont deux dimensions différentes.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1496,7 +1496,7 @@
           "Parce que l’espérance de vie diminue fortement."
         ],
         "why": "L’écart entre naissances et décès s’élargit.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Sections 1 et 2."
       },
       {
@@ -1509,7 +1509,7 @@
           "Parce que les personnes âgées ne sont pas comptées."
         ],
         "why": "La moyenne résume des risques très inégaux selon l’âge.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1522,7 +1522,7 @@
           "La température annuelle du pays."
         ],
         "why": "La structure d’âge conserve une mémoire.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1535,7 +1535,7 @@
           "Le refus des statistiques de changer."
         ],
         "why": "La structure d’âge prolonge les tendances.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1548,7 +1548,7 @@
           "Parce qu’il empêche toute migration."
         ],
         "why": "Le défi démographique vient d’un progrès sanitaire réel.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1633,7 +1633,7 @@
           "Parce que les combustibles fossiles n’ont aucun usage industriel."
         ],
         "why": "Les équipements et territoires forment un ensemble durable.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1646,7 +1646,7 @@
           "Parce que les réseaux interdisent toute prévision."
         ],
         "why": "Stockage, interconnexion et demande pilotable équilibrent le système.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1659,7 +1659,7 @@
           "Parce qu’elle transforme toute chaleur en pétrole."
         ],
         "why": "L’électrification peut être plus efficace.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1672,7 +1672,7 @@
           "La fin de tous les conflits fonciers."
         ],
         "why": "La décarbonation déplace une partie des dépendances.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1685,7 +1685,7 @@
           "Parce qu’une transition ne crée jamais d’emplois."
         ],
         "why": "Les capacités d’adaptation sont inégales.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],
@@ -1770,7 +1770,7 @@
           "Elle ne travaille jamais la texture sonore."
         ],
         "why": "La source enregistrée devient un matériau.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1783,7 +1783,7 @@
           "Il remplace toute pulsation par du silence."
         ],
         "why": "Le filtre façonne le timbre.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1796,7 +1796,7 @@
           "Parce qu’il naît dans les studios hollywoodiens des années 1920."
         ],
         "why": "Le studio devient un instrument performatif.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1809,7 +1809,7 @@
           "Parce qu’elles n’ont aucun lien avec la danse."
         ],
         "why": "Un genre naît d’un écosystème social.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1822,7 +1822,7 @@
           "Le son acoustique brut d’une salle."
         ],
         "why": "MIDI relie et pilote des appareils.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Approfondissement « MIDI »."
       }
     ],
@@ -1907,7 +1907,7 @@
           "Remplacer les tribunaux par des salons littéraires."
         ],
         "why": "La liberté politique exige des pouvoirs qui se limitent.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 2."
       },
       {
@@ -1920,7 +1920,7 @@
           "Pour prouver que tout est toujours pour le mieux."
         ],
         "why": "La fiction rend la critique mobile et accessible.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 3."
       },
       {
@@ -1933,7 +1933,7 @@
           "Elle est rédigée par un seul auteur en une semaine."
         ],
         "why": "Les planches donnent une dignité nouvelle aux arts mécaniques.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 4."
       },
       {
@@ -1946,7 +1946,7 @@
           "L’interdiction de toute correspondance."
         ],
         "why": "Les publics de lecture deviennent un acteur politique.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 1."
       },
       {
@@ -1959,7 +1959,7 @@
           "Parce qu’elles se déroulent uniquement dans l’Antiquité."
         ],
         "why": "D’autres acteurs prolongent et contestent leur universel.",
-        "trap": "Choisir une réponse plausible mais contredite ou trop simplifiée par le cours.",
+        "trap": "",
         "evidence": "Section 5."
       }
     ],

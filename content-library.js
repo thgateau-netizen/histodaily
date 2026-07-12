@@ -5262,8 +5262,8 @@
           "Uniquement la Voie lactée.",
           "La partie de l’espace visible à l’œil nu."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -5275,8 +5275,8 @@
           "Parce que les télescopes enregistrent avec retard.",
           "Parce que la lumière ralentit près de la Terre."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -5288,8 +5288,8 @@
           "Oui, il marque le bord certain de l’Univers.",
           "Non, mais il correspond à la limite de la Voie lactée."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -5301,8 +5301,8 @@
           "Les aurores polaires.",
           "Le rayonnement d’une supernova récente."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -5314,8 +5314,8 @@
           "Parce que les galaxies n’ont pas de position.",
           "Parce que les unités astronomiques sont imprécises."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -5394,8 +5394,8 @@
           "La luminosité annuelle du Soleil.",
           "La vitesse moyenne d’une fusée."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -5407,8 +5407,8 @@
           "À une année-lumière exacte.",
           "Au diamètre de la Voie lactée."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -5420,8 +5420,8 @@
           "Il correspond au temps d’une orbite.",
           "Il est déterminé par la masse du Soleil."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -5433,8 +5433,8 @@
           "La température de l’atmosphère terrestre.",
           "La forme des constellations."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -5446,8 +5446,8 @@
           "Parce que la lumière n’a pas de vitesse fixe.",
           "Parce que les galaxies refusent les mesures radar."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -5526,8 +5526,8 @@
           "Une collision entre deux galaxies dans un vide immobile.",
           "La naissance du Soleil."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -5539,8 +5539,8 @@
           "Parce qu’aucune matière n’existait après lui.",
           "Parce que les galaxies se déplacent toutes vers un même point."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -5552,8 +5552,8 @@
           "La lumière réfléchie par la Lune.",
           "Les rayons d’une supernova médiévale."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -5565,8 +5565,8 @@
           "Dans les océans terrestres.",
           "Dans les comètes froides."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -5578,8 +5578,8 @@
           "Non, car il ne possède aucune preuve.",
           "Oui, et il exclut toute nouvelle physique."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -5658,8 +5658,8 @@
           "Dans la taille quotidienne des humains.",
           "Entre la Terre et la Lune à chaque seconde."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -5671,8 +5671,8 @@
           "Parce qu’elle absorbe nécessairement toute lumière.",
           "Parce qu’elle est faite de trous noirs uniquement."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -5684,8 +5684,8 @@
           "Les saisons.",
           "La radioactivité des roches."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -5697,8 +5697,8 @@
           "L’énergie stockée dans les trous noirs seulement.",
           "La lumière invisible des planètes."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -5710,8 +5710,8 @@
           "La première existe dans le passé et la seconde aujourd’hui.",
           "L’une est une unité de distance."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -5790,8 +5790,8 @@
           "À la surface des planètes.",
           "Dans les queues de comètes uniquement."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -5803,8 +5803,8 @@
           "Quand elle devient visible depuis la Terre.",
           "Quand toute sa poussière disparaît."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -5816,8 +5816,8 @@
           "Le vent interstellaire uniquement.",
           "La rotation de la galaxie."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -5829,8 +5829,8 @@
           "Elles ne réalisent aucune fusion.",
           "Elles sont toujours plus anciennes."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -5842,8 +5842,8 @@
           "Il transforme immédiatement tout le gaz en lumière.",
           "Il empêche toute planète de se former."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -5926,8 +5926,8 @@
           "Un trou noir supermassif.",
           "Une nouvelle galaxie."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -5939,8 +5939,8 @@
           "Le cœur devient soudain froid et vide.",
           "Toutes les réactions nucléaires inversent le temps."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -5952,8 +5952,8 @@
           "Une étoile ordinaire cachée par une lune.",
           "Une comète très rapide."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -5965,8 +5965,8 @@
           "La limite de toute gravitation dans l’Univers.",
           "Le bord de la galaxie."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -5978,8 +5978,8 @@
           "Elles produisent uniquement de l’hydrogène.",
           "Elles empêchent toute nouvelle étoile."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -6058,8 +6058,8 @@
           "Dans les taches solaires.",
           "Dans les planètes proches."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -6071,8 +6071,8 @@
           "Le noyau du Soleil.",
           "La limite de son champ gravitationnel."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -6084,8 +6084,8 @@
           "Par des roches conductrices.",
           "Uniquement par des météorites."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -6097,8 +6097,8 @@
           "Elle ne contient aucune matière.",
           "Elle tourne autour de la Terre."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -6110,8 +6110,8 @@
           "Un an.",
           "Plusieurs millions d’années après sa sortie de la surface."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -6194,8 +6194,8 @@
           "Elle ne contient aucune matière.",
           "Elle absorbe toute lumière de l’Univers."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -6207,8 +6207,8 @@
           "Un siècle exact.",
           "Une année terrestre."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -6220,8 +6220,8 @@
           "Un simple rayon de lumière visible.",
           "La disparition de la couronne."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -6233,8 +6233,8 @@
           "Les océans réfléchissent les étoiles.",
           "La neige produit de la radioactivité."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -6246,8 +6246,8 @@
           "La rotation quotidienne de la Terre.",
           "La fusion au cœur du Soleil."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -6330,8 +6330,8 @@
           "D’une comète unique.",
           "D’un trou noir évaporé."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -6343,8 +6343,8 @@
           "Des quasars.",
           "Des photosphères."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -6356,8 +6356,8 @@
           "Une galaxie voisine l’a coupé.",
           "Les planètes ont aspiré toute la matière verticale."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -6369,8 +6369,8 @@
           "La lumière y voyageait moins vite.",
           "Les roches ne pouvaient pas exister."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -6382,8 +6382,8 @@
           "Les satellites de communication.",
           "Les taches solaires actuelles."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -6466,8 +6466,8 @@
           "Son sol brûle du charbon.",
           "Elle possède deux Soleils."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -6479,8 +6479,8 @@
           "Vénus de façon identique à la Terre.",
           "Mars avec des plaques rapides actuelles."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -6492,8 +6492,8 @@
           "Des traces de routes artificielles.",
           "Une atmosphère plus épaisse aujourd’hui."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -6505,8 +6505,8 @@
           "Elle change de distance chaque heure.",
           "Elle est entièrement recouverte d’eau."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -6518,8 +6518,8 @@
           "Parce que la lumière stellaire n’a aucun effet.",
           "Parce qu’une planète doit obligatoirement avoir des anneaux."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -6602,8 +6602,8 @@
           "Saturne.",
           "Neptune."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -6615,8 +6615,8 @@
           "Oui, une surface de glace plate.",
           "Non, car elles sont entièrement vides."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -6628,8 +6628,8 @@
           "De gaz brûlant immobile.",
           "De poussière provenant uniquement de la Terre."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -6641,8 +6641,8 @@
           "Elle ne possède aucune atmosphère.",
           "Elle tourne autour de Saturne."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -6654,8 +6654,8 @@
           "Ses vents viennent directement des comètes.",
           "Elle est réchauffée par la Lune."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -6738,8 +6738,8 @@
           "Les incendies de surface.",
           "La rotation de la Voie lactée."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -6751,8 +6751,8 @@
           "Phobos.",
           "Io uniquement."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -6764,8 +6764,8 @@
           "Ils prouvent directement une civilisation.",
           "Ils arrêtent les radiations solaires."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -6777,8 +6777,8 @@
           "Mercure.",
           "Vénus."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -6790,8 +6790,8 @@
           "Oui, si l’océan est sous la glace.",
           "Non, car la vie ne peut jamais exister dans l’eau."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -6874,8 +6874,8 @@
           "Au centre du Soleil.",
           "Au-delà de toutes les galaxies."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -6887,8 +6887,8 @@
           "Oui, elle forme une surface solide.",
           "Non, car elle ne contient qu’un seul objet."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -6900,8 +6900,8 @@
           "Elle capture les nuages de Jupiter.",
           "Son noyau devient une étoile."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -6913,8 +6913,8 @@
           "Toujours vers la Terre.",
           "Vers le centre de la galaxie."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -6926,8 +6926,8 @@
           "Ils produisent la majorité de la lumière solaire.",
           "Ils déterminent les saisons terrestres."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -7010,8 +7010,8 @@
           "Une planète naine.",
           "Une étoile qui explose."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -7023,8 +7023,8 @@
           "Un pulsar.",
           "Une nébuleuse."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -7036,8 +7036,8 @@
           "La Lune libère ses roches chaque été.",
           "Le Soleil fabrique les mêmes météores chaque nuit."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -7049,8 +7049,8 @@
           "Parce qu’un trou noir les attire.",
           "Parce que la Terre s’arrête de tourner."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -7062,8 +7062,8 @@
           "Éteindre les satellites.",
           "Changer la masse de la Terre."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -7146,8 +7146,8 @@
           "La température de la Terre.",
           "La rotation de la galaxie entière."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -7159,8 +7159,8 @@
           "Les étoiles empêchent toujours les transits.",
           "Une planète doit posséder une lune."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -7172,8 +7172,8 @@
           "La distance exacte de toutes les galaxies.",
           "La couleur du télescope."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -7185,8 +7185,8 @@
           "De prouver une vie intelligente.",
           "De connaître chaque élément du noyau."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -7198,8 +7198,8 @@
           "Elles produisent leur propre télescope.",
           "Elles sont toutes visibles à l’œil nu."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -7282,8 +7282,8 @@
           "Une atmosphère identique à celle de la Terre.",
           "Une civilisation technologique."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -7295,8 +7295,8 @@
           "La glace produit spontanément du feu.",
           "La gravitation n’y existe pas."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -7308,8 +7308,8 @@
           "Un message radio forcément artificiel.",
           "La forme circulaire d’une planète."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -7321,8 +7321,8 @@
           "Parce que toute vie détruit l’oxygène.",
           "Parce qu’il est invisible à la spectroscopie."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -7334,8 +7334,8 @@
           "La certitude que toutes les civilisations communiquent.",
           "L’impossibilité de voyager dans le Système solaire."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -7418,8 +7418,8 @@
           "Changer la couleur des étoiles.",
           "Supprimer la gravitation."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -7431,8 +7431,8 @@
           "La forme géographique de la surface.",
           "Le nombre de planètes de toute étoile."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -7444,8 +7444,8 @@
           "La source devient une géante rouge.",
           "Le télescope est mal peint."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -7457,8 +7457,8 @@
           "Pour augmenter la gravité.",
           "Pour éviter la rotation terrestre."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -7470,8 +7470,8 @@
           "Parce que toutes les longueurs d’onde donnent exactement la même image.",
           "Parce que les étoiles changent de position selon la couleur."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -7554,8 +7554,8 @@
           "Une gravité nulle dans tout l’Univers.",
           "Une lumière plus rapide."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -7567,8 +7567,8 @@
           "Ils sont produits uniquement par les satellites.",
           "Les miroirs au sol refusent de tourner."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -7580,8 +7580,8 @@
           "Pour augmenter la vitesse de la lumière.",
           "Pour fabriquer de l’oxygène."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -7593,8 +7593,8 @@
           "Le centre d’un trou noir.",
           "Une station sur la Lune."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -7606,8 +7606,8 @@
           "Oui, car ils sont gratuits.",
           "Non, car ils ne peuvent observer aucune lumière."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -7690,8 +7690,8 @@
           "Elle est attirée par les étoiles.",
           "Elle réduit la masse de la Terre."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -7703,8 +7703,8 @@
           "Pour créer plusieurs gravités.",
           "Pour ralentir la lumière."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -7716,8 +7716,8 @@
           "Un cercle matériel autour de la Terre.",
           "Une trajectoire qui exige une poussée constante."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -7729,8 +7729,8 @@
           "L’air les porte.",
           "Le Soleil annule exactement toute force."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -7742,8 +7742,8 @@
           "Elle transforme une sonde en satellite naturel.",
           "Elle produit du carburant à partir du vide."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -7826,8 +7826,8 @@
           "Un carburant illimité déjà exploité.",
           "La découverte de forêts fossiles."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 1 du cours complet."
       },
       {
@@ -7839,8 +7839,8 @@
           "Ils se déplacent plus vite que la lumière.",
           "La Terre ne tourne pas dans la même direction."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 2 du cours complet."
       },
       {
@@ -7852,8 +7852,8 @@
           "Les volcans actifs observés chaque jour.",
           "Les villes artificielles visibles depuis l’orbite."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 3 du cours complet."
       },
       {
@@ -7865,8 +7865,8 @@
           "Les sondes ne peuvent mesurer aucune composition.",
           "Il évite toute règle de protection planétaire."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       },
       {
@@ -7878,8 +7878,8 @@
           "Oui, les robots ne produisent aucune science.",
           "Non, car les humains n’ont aucun avantage sur place."
         ],
-        "why": "Cette réponse reprend le mécanisme expliqué dans le cours.",
-        "trap": "Choisir une formulation spectaculaire mais incompatible avec les observations.",
+        "why": "",
+        "trap": "",
         "evidence": "Section 4 du cours complet."
       }
     ]
@@ -8297,7 +8297,7 @@
     caseTitle: "Reste stellaire",
     subjectType: "astre compact",
     periodHint: "Fin de vie de certaines étoiles massives",
-    lessonId: "astro-stellar-deaths",
+    lessonId: "astro-black-holes-relativity",
     prompt: "Je peux naître lorsque le cœur d’une étoile très massive s’effondre. Autour de moi, une frontière marque le point au-delà duquel aucun signal, même lumineux, ne peut revenir vers l’extérieur.",
     answer: "Un trou noir",
     aliases: [

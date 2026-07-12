@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.231.0";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.242.0";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -36,7 +36,8 @@ const DISCIPLINES = [
   { id: "astronomy", title: "Astronomie", emoji: "🪐", accent: "#8b5cf6", description: "Univers, étoiles, galaxies, trous noirs et exploration spatiale." },
   { id: "economy", title: "Économie", emoji: "📈", accent: "#10b981", description: "Marchés, crises, monnaies et grandes notions." },
   { id: "geography", title: "Géographie", emoji: "🗺️", accent: "#84cc16", description: "Pays, milieux, villes, frontières et cartes." },
-  { id: "music", title: "Musique", emoji: "🎼", accent: "#fb7185", description: "Histoire de la musique, styles, compositeurs et révolutions sonores." }
+  { id: "music", title: "Musique", emoji: "🎼", accent: "#fb7185", description: "Histoire de la musique, styles, compositeurs et révolutions sonores." },
+  { id: "literature", title: "Littérature", emoji: "📚", accent: "#f97316", description: "Récits, théâtre, poésie, romans et grandes révolutions littéraires." }
 ];
 
 const DISCIPLINE_OUTLINES = {
@@ -176,8 +177,26 @@ function lessonQuizPassThreshold(total = 5) { return Math.max(1, Math.ceil(Numbe
 const PWA_ASSETS_VERSION = HISTODAILY_CORE.assetsVersion || APP_VERSION;
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register(`service-worker.js?v=${PWA_ASSETS_VERSION}`).catch(() => {});
+  window.addEventListener("load", async () => {
+    try {
+      const registration = await navigator.serviceWorker.register(`service-worker.js?v=${PWA_ASSETS_VERSION}`, { updateViaCache: "none" });
+      registration.update().catch(() => {});
+      if (registration.waiting) registration.waiting.postMessage({ type: "HISTODAILY_SKIP_WAITING" });
+      registration.addEventListener("updatefound", () => {
+        const worker = registration.installing;
+        worker?.addEventListener("statechange", () => {
+          if (worker.state === "installed" && navigator.serviceWorker.controller) worker.postMessage({ type: "HISTODAILY_SKIP_WAITING" });
+        });
+      });
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        const key = `histodaily_sw_reload_${PWA_ASSETS_VERSION}`;
+        try {
+          if (sessionStorage.getItem(key)) return;
+          sessionStorage.setItem(key, "1");
+          window.location.reload();
+        } catch {}
+      }, { once: true });
+    } catch {}
   });
 }
 registerServiceWorker();
@@ -197,6 +216,7 @@ const defaultState = {
   gems: 12,
   pseudo: "Invité",
   completedLessons: {},
+  readLessons: {},
   quizProgress: {},
   quizFeedback: {},
   solvedMysteries: {},
@@ -256,7 +276,7 @@ function applyStartupMaintenanceActions() {
     const params = new URLSearchParams(window.location.search);
     const shouldReset = params.get("reset") === "1" || params.get("clear") === "1" || params.get("resetLocal") === "1";
     if (!shouldReset) return;
-    [STORAGE_KEY, `${STORAGE_KEY}_backup`, `${STORAGE_KEY}_last_ok`, ...(HISTODAILY_CORE.legacyStorageKeys || [])].forEach(key => localStorage.removeItem(key));
+    [STORAGE_KEY, `${STORAGE_KEY}_backup`, `${STORAGE_KEY}_last_ok`, `${STORAGE_KEY}_progress_v3`, ...(HISTODAILY_CORE.legacyStorageKeys || [])].forEach(key => localStorage.removeItem(key));
     params.delete("reset");
     params.delete("clear");
     params.delete("resetLocal");
@@ -320,6 +340,7 @@ function mergeState(base, stored) {
   stored = sanitizeStoredState(stored || {});
   const merged = { ...base, ...stored };
   merged.completedLessons = { ...base.completedLessons, ...(stored?.completedLessons || {}) };
+  merged.readLessons = { ...base.readLessons, ...(stored?.readLessons || {}) };
   merged.quizProgress = typeof stored?.quizProgress === "object" && stored.quizProgress ? { ...base.quizProgress, ...stored.quizProgress } : { ...base.quizProgress };
   merged.quizFeedback = typeof stored?.quizFeedback === "object" && stored.quizFeedback ? { ...base.quizFeedback, ...stored.quizFeedback } : { ...base.quizFeedback };
   merged.solvedMysteries = { ...base.solvedMysteries, ...(stored?.solvedMysteries || {}) };
@@ -398,6 +419,7 @@ function allLessons() { return lessonIndex().all; }
 function lessonById(id) { return lessonIndex().byId.get(id) || null; }
 function lessonsFor(worldId) { return data.lessons[worldId] || []; }
 function lessonDone(id) { return Boolean(state.completedLessons[id]); }
+function lessonRead(id) { return Boolean(state.readLessons?.[id] || state.completedLessons?.[id] || lessonQuizPassed?.(id)); }
 /* LTS: ancienne implémentation de activeWorld supprimée (409-409). */
 function mysterySolved(id) { return Boolean(state.solvedMysteries[id]); }
 function short(text, n = 110) { return String(text || "").length > n ? String(text).slice(0, n - 1) + "…" : String(text || ""); }
@@ -1141,7 +1163,16 @@ function disciplineForLessonObject(lesson = {}) {
   catch { return disciplineById(state.currentDiscipline || "history"); }
 }
 function relatedMysteryForLesson(lessonId) {
-  return data.mysteries.find(mystery => mystery.lessonId === lessonId);
+  const linked = (data.mysteries || []).filter(mystery => mystery.lessonId === lessonId);
+  if (!linked.length) return null;
+  const selected = state.currentMysteryId ? linked.find(mystery => mystery.id === state.currentMysteryId) : null;
+  if (selected) return selected;
+  const daily = typeof dailyMystery === "function" ? dailyMystery() : null;
+  if (daily?.lessonId === lessonId) return daily;
+  const recentlySolved = linked
+    .filter(mystery => state.solvedMysteries?.[mystery.id])
+    .sort((a, b) => Number(state.solvedMysteries?.[b.id]?.at || 0) - Number(state.solvedMysteries?.[a.id]?.at || 0))[0];
+  return recentlySolved || linked[0];
 }
 function relatedLessonForMystery(mystery) {
   if (!mystery?.lessonId) return null;
@@ -6958,9 +6989,9 @@ function normalizeQuizPack(quiz = [], lesson = {}, content = {}) {
     kind: item.kind || quizKindFallback(index),
     q: item.q || `Question ${index + 1}`,
     a: item.a || "Réponse à retrouver dans le cours.",
-    why: item.why || "Cette question vérifie que tu as compris le mécanisme historique, pas seulement retenu un mot-clé.",
-    trap: item.trap || "Répondre par une formule trop générale, sans date, lieu, acteur ou trace.",
-    evidence: item.evidence || (content.ready ? "La réponse est explicitement formulée dans le cours." : "La réponse se trouve dans la version express ou dans le cours complet."),
+    why: item.why || "",
+    trap: item.trap || "",
+    evidence: item.evidence || "",
     choices: Array.isArray(item.choices) ? item.choices.slice(0, 3) : []
   }));
 }
@@ -7037,6 +7068,7 @@ function readyLessonPack(lesson, world, mystery, profile, context) {
   return {
     hook: pack.hook,
     keyFacts: pack.keyFacts,
+    learningPath: pack.learningPath,
     takeaways: pack.takeaways,
     express: pack.express,
     complete: pack.complete,
@@ -7116,7 +7148,10 @@ function renderLesson() {
     event.preventDefault();
     event.stopPropagation();
     const nextView = btn.dataset.lessonView;
-    if (nextView && nextView !== state.lessonView) setState({ lessonView: nextView, lessonFocus: null });
+    if (nextView && nextView !== state.lessonView) {
+      const readLessons = nextView === "quiz" ? { ...(state.readLessons || {}), [lesson.id]: true } : state.readLessons;
+      setState({ lessonView: nextView, lessonFocus: null, ...(nextView === "quiz" ? { readLessons } : {}) });
+    }
   }));
   document.querySelectorAll("[data-reading-mode]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); setReadingMode(btn.dataset.readingMode); }));
   document.querySelectorAll("[data-open-linked-mystery]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); setState({ tab: "mystery", currentMysteryId: btn.dataset.openLinkedMystery, currentMysteryDiscipline: mysteryById(btn.dataset.openLinkedMystery) ? mysteryDisciplineId(mysteryById(btn.dataset.openLinkedMystery)) : activeDisciplineId() }); }));
@@ -7396,7 +7431,7 @@ function quizItemMarkup(item, index, quizItems, lesson, content) {
         return `<button type="button" class="quiz-choice ${cls}" data-quiz-choice="${index}" data-choice-index="${choiceIndex}" ${isLocked ? "disabled" : ""}><span>${String.fromCharCode(65 + choiceIndex)}</span>${escapeHtml(choice.text)}</button>`;
       }).join("")}
     </div>
-    ${isCorrect ? `<p class="quiz-result good"><b>Correct.</b> ${escapeHtml(item.a)}</p><p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why || "Cette réponse reprend précisément l’idée démontrée dans le cours.")}</p>${item.evidence ? `<p class="quiz-evidence"><strong>À retrouver dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : wrongSelected ? `<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${escapeHtml(item.a)}</strong></p><p class="quiz-explain"><strong>Pourquoi :</strong> ${escapeHtml(item.why || "La correction reprend l’idée explicitement expliquée dans le cours.")}</p>${item.trap ? `<p class="quiz-trap"><strong>Le piège :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>À revoir dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : `<p class="quiz-result neutral">Choisis la réponse la plus précise. Après ton choix, la correction et l’explication apparaîtront ici.</p>`}
+    ${isCorrect ? `<p class="quiz-result good"><b>Correct.</b> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Explication :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : wrongSelected ? `<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${escapeHtml(item.a)}</strong></p>${item.why ? `<p class="quiz-explain"><strong>Explication :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>À ne pas confondre :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : `<p class="quiz-result neutral">Choisis la réponse la plus précise. La correction apparaîtra après ton choix.</p>`}
   </article>`;
 }
 function handleQuizChoice(lessonId, questionIndex, choiceIndex) {
@@ -8359,6 +8394,7 @@ function resetProgressOnly({ silent = false } = {}) {
     streak: 0,
     gems: 0,
     completedLessons: {},
+    readLessons: {},
     solvedMysteries: {},
     seenHints: {},
     mysteryTries: {},
@@ -11183,6 +11219,8 @@ function applyVisibleStateGuard({ save = true } = {}) {
 
   const nextCompleted = keepAllowedKeys(state.completedLessons, curatedIds);
   if (shallowDifferentKeys(state.completedLessons, nextCompleted)) { state.completedLessons = nextCompleted; changed = true; }
+  const nextReadLessons = keepAllowedKeys(state.readLessons, curatedIds);
+  if (shallowDifferentKeys(state.readLessons, nextReadLessons)) { state.readLessons = nextReadLessons; changed = true; }
   const nextQuizProgress = keepAllowedKeys(state.quizProgress, curatedIds);
   if (shallowDifferentKeys(state.quizProgress, nextQuizProgress)) { state.quizProgress = nextQuizProgress; changed = true; }
   const nextQuizFeedback = keepAllowedKeys(state.quizFeedback, curatedIds);
@@ -15836,7 +15874,8 @@ render = function beta113ScheduledRender(options = {}) {
   });
 };
 
-applyVisibleStateGuard({ save: false });
+/* La garde de progression doit attendre le chargement de tous les packs de contenu.
+   L'appel immédiat supprimait à tort les cours premium lors d'une relance. */
 
 /* =========================================================
    Beta 114 — robustesse mobile et profil
@@ -15875,6 +15914,7 @@ function beta114NormalizeState() {
   state.currentDiscipline = beta114ValidDisciplineId(state.currentDiscipline);
   state.currentMysteryDiscipline = beta114ValidDisciplineId(state.currentMysteryDiscipline || state.currentDiscipline);
   state.completedLessons = beta114CoercePlainObject(state.completedLessons, defaultState.completedLessons);
+  state.readLessons = beta114CoercePlainObject(state.readLessons, defaultState.readLessons);
   state.quizProgress = beta114CoercePlainObject(state.quizProgress, defaultState.quizProgress);
   state.quizFeedback = beta114CoercePlainObject(state.quizFeedback, defaultState.quizFeedback);
   state.solvedMysteries = beta114CoercePlainObject(state.solvedMysteries, defaultState.solvedMysteries);
@@ -16726,15 +16766,18 @@ function beta124HydrateProfileFromIdentity() {
   return changed;
 }
 
+let beta124MemoryUserId = "";
+let beta124MemoryFriendCode = "";
 const beta124PreviousLocalUserId = localUserId;
 localUserId = function beta124LocalUserId() {
   const identity = beta124ReadIdentity();
-  let id = beta124CleanUserSuffix(identity.localUserId);
+  let id = beta124CleanUserSuffix(identity.localUserId) || beta124CleanUserSuffix(beta124MemoryUserId);
   if (!id) id = BETA124_USER_ID_KEYS.map(beta124LocalGet).map(beta124CleanUserSuffix).find(Boolean) || "";
   if (!id) {
     try { id = crypto?.randomUUID?.().replace(/-/g, "").slice(0, 6).toUpperCase() || ""; } catch {}
   }
   if (!id) id = Math.random().toString(36).slice(2, 8).toUpperCase();
+  beta124MemoryUserId = id;
   beta124WriteIdentity({ localUserId: id });
   return id;
 };
@@ -16743,19 +16786,23 @@ const beta124PreviousFriendCode = friendCode;
 friendCode = function beta124FriendCode() {
   const identity = beta124ReadIdentity();
   if (identity.friendCode && parseFriendCode(identity.friendCode)) {
+    beta124MemoryFriendCode = identity.friendCode;
     beta124WriteIdentity({ friendCode: identity.friendCode, localUserId: identity.localUserId || friendCodeSuffix(identity.friendCode) });
     return identity.friendCode;
   }
+  if (beta124MemoryFriendCode && parseFriendCode(beta124MemoryFriendCode)) return beta124MemoryFriendCode;
   const legacy = BETA124_FRIEND_CODE_KEYS.map(beta124LocalGet).map(normalizeFriendCode).find(code => parseFriendCode(code));
   if (legacy) {
+    beta124MemoryFriendCode = legacy;
     beta124WriteIdentity({ friendCode: legacy, localUserId: friendCodeSuffix(legacy) });
     return legacy;
   }
   const persistentPseudo = beta124ReadIdentity().pseudo || state?.pseudo || "Joueur";
   const base = normalize(persistentPseudo || "joueur").replace(/\s+/g, "").slice(0, 6).toUpperCase() || "JOUEUR";
-  const code = `${base}-${localUserId()}`.toUpperCase();
-  beta124WriteIdentity({ friendCode: code });
-  return code;
+  const generatedCode = `${base}-${localUserId()}`.toUpperCase();
+  beta124MemoryFriendCode = generatedCode;
+  beta124WriteIdentity({ friendCode: generatedCode });
+  return generatedCode;
 };
 
 const beta124PreviousSaveState = saveState;
@@ -19658,6 +19705,7 @@ document.addEventListener("visibilitychange", () => {
     if (booted) return;
     booted = true;
     try { beta114NormalizeState(); } catch {}
+    try { applyVisibleStateGuard({ save: false }); } catch {}
     try {
       state.beta172ArchitectureVersion = VERSION;
       window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, architectureStable: true, storageSchema: 2 };
@@ -19668,4 +19716,310 @@ document.addEventListener("visibilitychange", () => {
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
   else queueMicrotask(boot);
+})();
+
+/* =========================================================
+   BETA 238 — cohérence pédagogique + progression durable
+   1. Un même fil partout : Problème → Cours → Révision.
+   2. Les repères sont reconstruits depuis le cours, avec contexte.
+   3. La progression critique est sauvegardée immédiatement et dans
+      un journal compact indépendant de l’état d’interface.
+   ========================================================= */
+(function histodailyBeta238PedagogyAndPersistence(){
+  const VERSION = "1.0.0-beta.242.0";
+  const PROGRESS_KEY = `${STORAGE_KEY}_progress_v3`;
+  const PROGRESS_KEYS = new Set([
+    "completedLessons", "readLessons", "quizProgress", "solvedMysteries", "dailyClaims",
+    "dailyHistory", "unlockedMysteries", "seenHints", "mysteryTries",
+    "xp", "streak", "gems", "achievements", "lastDailySolvedKey"
+  ]);
+
+  const parseJson = raw => {
+    try { const value = JSON.parse(raw || "null"); return value && typeof value === "object" ? value : null; }
+    catch { return null; }
+  };
+  const answerCount = entry => Object.keys(entry?.answers || {}).length;
+  function mergeQuizEntry(current = {}, incoming = {}) {
+    if (!incoming || typeof incoming !== "object") return current || {};
+    if (!current || typeof current !== "object") return incoming;
+    const answers = { ...(current.answers || {}), ...(incoming.answers || {}) };
+    const correct = { ...(current.correct || {}), ...(incoming.correct || {}) };
+    return {
+      ...current,
+      ...incoming,
+      answers,
+      correct,
+      attempts: Math.max(Number(current.attempts || 0), Number(incoming.attempts || 0)),
+      passed: Boolean(current.passed || incoming.passed)
+    };
+  }
+  function mergeProgressSnapshot(snapshot = {}) {
+    if (!snapshot || typeof snapshot !== "object") return false;
+    let changed = false;
+    const mergeMap = key => {
+      const incoming = snapshot[key];
+      if (!incoming || typeof incoming !== "object" || Array.isArray(incoming)) return;
+      const before = JSON.stringify(state[key] || {});
+      state[key] = { ...(state[key] || {}), ...incoming };
+      if (before !== JSON.stringify(state[key] || {})) changed = true;
+    };
+    mergeMap("completedLessons");
+    mergeMap("readLessons");
+    mergeMap("solvedMysteries");
+    mergeMap("dailyClaims");
+    mergeMap("dailyHistory");
+    mergeMap("unlockedMysteries");
+    mergeMap("seenHints");
+    mergeMap("mysteryTries");
+    mergeMap("achievements");
+    if (snapshot.quizProgress && typeof snapshot.quizProgress === "object") {
+      const next = { ...(state.quizProgress || {}) };
+      Object.entries(snapshot.quizProgress).forEach(([id, entry]) => {
+        const merged = mergeQuizEntry(next[id], entry);
+        if (JSON.stringify(merged) !== JSON.stringify(next[id] || {})) changed = true;
+        next[id] = merged;
+      });
+      state.quizProgress = next;
+    }
+    ["xp", "streak", "gems"].forEach(key => {
+      const incoming = Number(snapshot[key]);
+      if (!Number.isFinite(incoming)) return;
+      const current = Number(state[key] || 0);
+      if (incoming > current) { state[key] = incoming; changed = true; }
+    });
+    if (!state.lastDailySolvedKey && snapshot.lastDailySolvedKey) {
+      state.lastDailySolvedKey = snapshot.lastDailySolvedKey;
+      changed = true;
+    }
+    return changed;
+  }
+  function progressSnapshot() {
+    return {
+      schema: 3,
+      version: VERSION,
+      savedAt: Date.now(),
+      completedLessons: { ...(state.completedLessons || {}) },
+      readLessons: { ...(state.readLessons || {}) },
+      quizProgress: { ...(state.quizProgress || {}) },
+      solvedMysteries: { ...(state.solvedMysteries || {}) },
+      dailyClaims: { ...(state.dailyClaims || {}) },
+      dailyHistory: { ...(state.dailyHistory || {}) },
+      unlockedMysteries: { ...(state.unlockedMysteries || {}) },
+      seenHints: { ...(state.seenHints || {}) },
+      mysteryTries: { ...(state.mysteryTries || {}) },
+      achievements: { ...(state.achievements || {}) },
+      lastDailySolvedKey: state.lastDailySolvedKey || null,
+      xp: Number(state.xp || 0),
+      streak: Number(state.streak || 0),
+      gems: Number(state.gems || 0)
+    };
+  }
+  function writeProgressJournal() {
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressSnapshot())); return true; }
+    catch { return false; }
+  }
+  function recoverProgress() {
+    const keys = [STORAGE_KEY, `${STORAGE_KEY}_backup`, PROGRESS_KEY];
+    let changed = false;
+    keys.forEach(key => {
+      try { changed = mergeProgressSnapshot(parseJson(localStorage.getItem(key))) || changed; }
+      catch {}
+    });
+    if (changed) {
+      try { saveState(); } catch {}
+    }
+    writeProgressJournal();
+  }
+  recoverProgress();
+
+  const previousSaveState = typeof saveState === "function" ? saveState : null;
+  if (previousSaveState) {
+    saveState = function beta238SaveState(){
+      const result = previousSaveState();
+      writeProgressJournal();
+      return result;
+    };
+  }
+  const previousSetState = typeof setState === "function" ? setState : null;
+  if (previousSetState) {
+    setState = function beta238SetState(patch = {}, options = {}){
+      const result = previousSetState(patch, options);
+      if (options.save !== false && patch && typeof patch === "object" && Object.keys(patch).some(key => PROGRESS_KEYS.has(key))) {
+        try {
+          if (saveStateTimer) { window.clearTimeout(saveStateTimer); saveStateTimer = null; }
+          saveState();
+        } catch { writeProgressJournal(); }
+      }
+      return result;
+    };
+  }
+
+  const cleanText = value => String(value || "").replace(/\s+/g, " ").trim();
+  const trimAtWord = (value, max = 155) => {
+    const text = cleanText(value);
+    if (text.length <= max) return text;
+    const cut = text.slice(0, max).replace(/\s+\S*$/, "").trim();
+    return `${cut}…`;
+  };
+  const firstSentence = value => {
+    const text = cleanText(value);
+    const match = text.match(/^.*?[.!?](?:\s|$)/);
+    return trimAtWord(match ? match[0].trim() : text, 155);
+  };
+  const cleanBlockTitle = value => cleanText(value).replace(/^\d+[.)]?\s*/, "");
+
+  const oldLessonKeyFacts = typeof lessonKeyFacts === "function" ? lessonKeyFacts : null;
+  lessonKeyFacts = function beta238LessonKeyFacts(lesson = {}, content = {}) {
+    if (String(lesson?.id) === "astro-black-holes-relativity") {
+      return [
+        "Horizon des événements — une frontière causale, pas une surface solide.",
+        "Formation — un trou noir stellaire peut naître de l’effondrement d’un cœur suffisamment massif.",
+        "Lumière — ce que l’on voit vient surtout du gaz chaud autour du trou noir.",
+        "Détection — orbites, rayons X, ondes gravitationnelles et radioastronomie révèlent l’objet invisible."
+      ];
+    }
+    const blocks = Array.isArray(content.complete) ? content.complete.filter(Boolean) : [];
+    const generated = blocks.slice(0, 4).map(block => {
+      const title = cleanBlockTitle(block?.title || "Repère");
+      const sentence = firstSentence(block?.text || "");
+      return title && sentence ? `${title} — ${sentence}` : sentence;
+    }).filter(Boolean);
+    if (generated.length >= 3) return generated;
+    const fallback = oldLessonKeyFacts ? oldLessonKeyFacts(lesson, content) : [];
+    const contextual = (fallback || []).map(cleanText).filter(text => text.split(/\s+/).length >= 7).slice(0, 4);
+    return [...generated, ...contextual].filter((value, index, list) => value && list.indexOf(value) === index).slice(0, 4);
+  };
+
+  function learningPathMarkup(lesson, content, view) {
+    const mystery = content?.mystery || null;
+    const problemDone = !mystery || Boolean(mysterySolved?.(mystery.id));
+    const revisionDone = Boolean(lessonQuizPassed?.(lesson.id));
+    const courseDone = Boolean(lessonRead?.(lesson.id) || revisionDone || view === "quiz");
+    const steps = [
+      { label: "Problème", state: problemDone ? "done" : "current" },
+      { label: "Cours", state: courseDone ? "done" : (view === "quiz" ? "done" : "current") },
+      { label: "Révision", state: revisionDone ? "done" : (view === "quiz" ? "current" : "future") }
+    ];
+    return `<section class="hd238-learning-path" aria-label="Parcours pédagogique">
+      ${steps.map((step, index) => `<div class="${step.state}" ${step.state === "current" ? 'aria-current="step"' : ""}><span>${step.state === "done" ? "✓" : index + 1}</span><b>${escapeHtml(step.label)}</b></div>`).join("")}
+    </section>`;
+  }
+  function problemMarkup(lesson, content) {
+    const mystery = content?.mystery || null;
+    if (mystery) {
+      const solved = Boolean(mysterySolved?.(mystery.id));
+      if (solved) {
+        return `<section class="hd238-problem-card solved"><span class="card-label">1 · Problème résolu</span><h2>${escapeHtml(mysteryDisplayTitle?.(mystery) || mystery.title || "Problème de départ")}</h2><p><strong>Réponse : ${escapeHtml(mystery.answer || "")}</strong> ${escapeHtml(mystery.explanation || "Le cours explique maintenant le mécanisme derrière cette réponse.")}</p></section>`;
+      }
+      return `<section class="hd238-problem-card"><span class="card-label">1 · Problème à résoudre</span><h2>${escapeHtml(mysteryDisplayTitle?.(mystery) || mystery.title || "Problème de départ")}</h2><p>${escapeHtml(mysteryPublicPrompt?.(mystery) || mystery.prompt || content.hook || "Observe le problème avant de lire le cours.")}</p></section>`;
+    }
+    return `<section class="hd238-problem-card"><span class="card-label">1 · Problème de départ</span><h2>${escapeHtml(content?.title || lesson?.title || "Question de départ")}</h2><p>${escapeHtml(content?.hook || "Le cours part d’une question précise, puis construit la réponse.")}</p></section>`;
+  }
+  function factsMarkup(lesson, content) {
+    const facts = lessonKeyFacts(lesson, content);
+    if (!facts.length) return "";
+    return `<section class="hd238-course-landmarks"><div><span class="card-label">Repères du cours</span><h2>Les quatre idées qui structurent la réponse</h2></div><ul>${facts.map(fact => `<li>${escapeHtml(fact)}</li>`).join("")}</ul></section>`;
+  }
+
+  const previousRenderLessonText = typeof renderLessonText === "function" ? renderLessonText : null;
+  if (previousRenderLessonText) {
+    renderLessonText = function beta238RenderLessonText(lesson, content) {
+      const view = typeof lessonView === "function" ? lessonView() : "express";
+      let html = previousRenderLessonText(lesson, content);
+      html = String(html || "")
+        .replace(/<section class="lesson-hook[^>]*>[\s\S]*?<\/section>/g, "")
+        .replace(/<div class="key-facts[^\"]*"[^>]*>[\s\S]*?<\/div>/g, "")
+        .replace(/<section class="text-block express-block compact-reminder"[^>]*>[\s\S]*?<\/section>/g, "")
+        .replace(/Choisis ton format/g, "2 · Cours")
+        .replace(/Choisis la profondeur du cours/g, "2 · Cours")
+        .replace(/Le format court : dates, lieux, acteurs et exemple concret\. Tu peux basculer vers le complet si tu veux plus d’infos\./g, "Lis l’essentiel ou approfondis : les deux formats répondent au même problème de départ.")
+        .replace(/Une vraie lecture d’environ 5 minutes, avec contexte, acteurs, traces, pièges et synthèse\./g, "Le cours complet développe le mécanisme, les preuves et les nuances utiles.")
+        .replace(/Étape finale/g, "3 · Révision")
+        .replace(/Quiz final/g, "Révision")
+        .replace(/Quiz en (\d+) étapes/g, "Révision en $1 questions")
+        .replace(/Une question à la fois : moins lourd, plus lisible\./g, "Une question à la fois pour vérifier que le raisonnement tient.");
+      const landmarks = view === "quiz" ? "" : factsMarkup(lesson, content);
+      if (landmarks) {
+        if (view === "complete" && html.includes('<section class="complete-course-panel"')) {
+          html = html.replace('<section class="complete-course-panel"', `${landmarks}<section class="complete-course-panel"`);
+        } else if (html.includes('<div class="express-steps')) {
+          html = html.replace('<div class="express-steps', `${landmarks}<div class="express-steps`);
+        } else {
+          html = `${landmarks}${html}`;
+        }
+      }
+      return `${learningPathMarkup(lesson, content, view)}${problemMarkup(lesson, content)}${html}`;
+    };
+  }
+
+  try {
+    state.beta238PedagogyVersion = VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, pedagogyFlow: "problem-course-review", durableProgress: true };
+    writeProgressJournal();
+  } catch {}
+})();
+
+/* =========================================================
+   BETA 239 — rendu pédagogique cohérent
+   Les anciens "repères" deviennent un véritable fil de réponse.
+   ========================================================= */
+(function histodailyBeta239LessonCoherence(){
+  const VERSION = "1.0.0-beta.242.0";
+  const clean = value => String(value || "").replace(/\s+/g, " ").trim();
+  const ensurePeriod = value => {
+    const text = clean(value);
+    return text && !/[.!?…]$/.test(text) ? `${text}.` : text;
+  };
+  const wordCount = value => clean(value).split(/\s+/).filter(Boolean).length;
+  const stripNumber = value => clean(value).replace(/^\d+[.)]?\s*/, "");
+  const firstSentence = value => {
+    const text = clean(value);
+    const match = text.match(/^.*?[.!?](?:\s|$)/);
+    return ensurePeriod(match ? match[0].trim() : text);
+  };
+
+  const previousLessonKeyFacts239 = typeof lessonKeyFacts === "function" ? lessonKeyFacts : null;
+  lessonKeyFacts = function beta239LessonKeyFacts(lesson = {}, content = {}) {
+    const explicitPath = Array.isArray(content.learningPath) ? content.learningPath : [];
+    if (explicitPath.length >= 3) return explicitPath.slice(0, 4).map(ensurePeriod);
+
+    const takeaways = (content.takeaways || []).map(item => {
+      if (!item) return "";
+      const label = clean(item.label || "");
+      const text = ensurePeriod(typeof item === "string" ? item : item.text || "");
+      return text ? `${label ? `${label} — ` : ""}${text}` : "";
+    }).filter(item => wordCount(item) >= 7);
+    if (takeaways.length >= 3) return takeaways.slice(0, 4);
+
+    const sections = (content.complete || []).map(block => {
+      const title = stripNumber(block?.title || "");
+      const sentence = firstSentence(block?.text || "");
+      return title && sentence ? `${title} — ${sentence}` : sentence;
+    }).filter(item => wordCount(item) >= 8);
+    if (sections.length >= 3) return sections.slice(0, 4);
+
+    const fallback = previousLessonKeyFacts239 ? previousLessonKeyFacts239(lesson, content) : [];
+    return (fallback || []).map(ensurePeriod).filter(item => wordCount(item) >= 7).slice(0, 4);
+  };
+
+  const previousRenderLessonText239 = typeof renderLessonText === "function" ? renderLessonText : null;
+  if (previousRenderLessonText239) {
+    renderLessonText = function beta239RenderLessonText(lesson, content) {
+      let html = previousRenderLessonText239(lesson, content);
+      html = String(html || "")
+        .replace(/Repères du cours/g, "Fil du cours")
+        .replace(/Les quatre idées qui structurent la réponse/g, "Quatre étapes pour construire la réponse")
+        .replace(/Avant de creuser/g, "Avant le cours")
+        .replace(/repères/g, "fil conducteur")
+        .replace(/Repères utiles/g, "Points à revoir")
+        .replace(/Relire express/g, "Relire l’essentiel")
+        .replace(/Relire complet/g, "Relire le cours");
+      return html;
+    };
+  }
+
+  try {
+    state.beta239PedagogyVersion = VERSION;
+    window.HistoDaily = { ...(window.HistoDaily || {}), version:VERSION, lessonCoherence239:true };
+  } catch {}
 })();
