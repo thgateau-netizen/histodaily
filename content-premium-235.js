@@ -1,7 +1,7 @@
 /* HistoDaily beta 235 — extension éditoriale premium multi-disciplines. */
 (function histodailyBeta235PremiumContent(){
   "use strict";
-  const VERSION = "1.0.0-beta.245.0";
+  const VERSION = "1.0.0-beta.246.0";
   const GROUPS = {
   "history": [
     {

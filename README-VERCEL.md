@@ -1,4 +1,4 @@
-# Déployer HistoDaily 1.0.0-beta.207 sur Vercel
+# Déployer HistoDaily 1.0.0-beta.246 sur Vercel
 
 1. Extraire entièrement le zip.
 2. Remplacer **tous** les fichiers de l’ancien déploiement, y compris le dossier `api` et le dossier `lib`.
@@ -7,13 +7,13 @@
    - `SUPABASE_SERVICE_ROLE_KEY`
 4. Vérifier que `SUPABASE-SOCIAL-SCHEMA.sql` a été exécuté au moins une fois dans le projet Supabase.
 5. Déployer le dossier racine contenant `index.html`, `vercel.json`, `api/` et `lib/`.
-6. Effectuer une actualisation forcée. Pour une PWA installée, la fermer complètement puis la rouvrir afin d’activer le cache `beta177`.
+6. Effectuer une actualisation forcée. Pour une PWA installée, la fermer complètement puis la rouvrir afin d’activer le cache `beta246`.
 
 Aucune nouvelle colonne n’est nécessaire si le schéma social fourni avec les versions précédentes a déjà été appliqué.
 
 ## Vérification rapide après déploiement
 
-- Ouvrir `/api/v1/health` : la réponse doit indiquer la version `1.0.0-beta.207`.
+- Ouvrir `/api/v1/health` : la réponse doit indiquer la version `1.0.0-beta.246`.
 - Créer ou synchroniser deux profils distincts.
 - Envoyer une demande avec le code ami du second profil, puis l’accepter depuis ce second profil.
 - Vérifier que chacun apparaît dans la liste de l’autre.
@@ -24,3 +24,11 @@ Le mode solo, les cours, les quiz et les mystères restent utilisables lorsque S
 ## Beta 244 — classement et amis
 
 Aucune migration Supabase supplémentaire n'est nécessaire. Après le déploiement, mettre à jour l'application sur les deux téléphones afin que les deux clients utilisent la vérité serveur de la beta 244.
+
+
+## Beta 246 — multi et amis robustes
+
+- Une suppression d’ami ferme aussi l’ancienne demande acceptée : la relation ne réapparaît plus après actualisation.
+- Les acceptations/refus et suppressions sont mis en file hors ligne puis rejoués automatiquement.
+- Les doubles clics sont neutralisés et tous les classements Amis (jour/semaine/année) sont invalidés après une mutation.
+- Aucune migration Supabase supplémentaire n’est nécessaire.

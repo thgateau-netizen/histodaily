@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.245.0",
-  assetsVersion: "1.0.0-beta.245.0",
+  version: "1.0.0-beta.246.0",
+  assetsVersion: "1.0.0-beta.246.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 244",
+    versionLabel: "beta 246",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Sauvegarde renforcée : écriture transactionnelle, copie de secours et récupération de la progression.",
-      "Classement stabilisé : quatre vues fixes, scores calculés sur les bonnes périodes locales et doublons d’identité évités.",
-      "Amis fiabilisés : demandes à accepter, envois hors ligne conservés et synchronisation relancée automatiquement."
+      "Amis robustes : une relation supprimée ne peut plus réapparaître après actualisation.",
+      "Actions sociales hors ligne : acceptations, refus et suppressions sont conservés puis rejoués dans le bon ordre.",
+      "Classements Amis cohérents : jour, semaine et année sont recalculés après chaque changement de relation."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
@@ -139,7 +139,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.245.0",
+  version: "1.0.0-beta.246.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

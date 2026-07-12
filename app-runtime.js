@@ -5110,7 +5110,7 @@
 (function histodailyBeta219VisualV2(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.245.0";
+  const VERSION = "1.0.0-beta.246.0";
   const esc = value => String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -5480,7 +5480,7 @@
 /* ===== HistoDaily beta 244 — fiabilité, classement et amis ===== */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-beta.245.0";
+  const VERSION = "1.0.0-beta.246.0";
   const SOCIAL_SNAPSHOT_KEY = `${HISTODAILY_CORE?.storageKey || "histodaily_state"}_social_snapshot_v3`;
   const VALID_SCOPES = new Set(["daily", "week", "year", "friends"]);
   const leaderboardInFlight = new Map();
