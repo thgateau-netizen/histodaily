@@ -1,4 +1,4 @@
-# HistoDaily beta 263 — vérifications audio
+# HistoDaily beta 264 — vérifications audio
 
 - Effets générés localement avec Web Audio : aucun fichier distant ni licence audio.
 - Aucun son automatique au chargement ; déverrouillage uniquement après une action utilisateur.

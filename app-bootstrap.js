@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.263.0",
-  assetsVersion: "1.0.0-beta.263.0",
+  version: "1.0.0-beta.264.0",
+  assetsVersion: "1.0.0-beta.264.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 263",
+    versionLabel: "beta 264",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Version de consolidation : classement, profil, amis et rotation quotidienne sont figés sur leurs moteurs actuels.",
-      "Le retour dans l’app et le passage à un nouveau jour resynchronisent proprement le dossier et les classements.",
-      "Le cache PWA, les états de chargement et les reprises hors ligne ont été durcis sans modifier les données Supabase."
+      "Expédition du jour reconstruite comme un vrai parcours : observation, déduction et révélation.",
+      "Le score potentiel, le chrono, les indices choisis et les essais restent visibles pendant toute la résolution.",
+      "La révélation affiche désormais score, temps, précision et rang du jour avant de poursuivre vers le cours lié."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
@@ -139,7 +139,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.263.0",
+  version: "1.0.0-beta.264.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

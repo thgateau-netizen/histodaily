@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.263.0";
+  const VERSION = "1.0.0-beta.264.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }

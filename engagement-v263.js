@@ -1,10 +1,10 @@
-/* HistoDaily beta 263 — finite daily engagement loop
+/* HistoDaily beta 264 — finite daily engagement loop
    A clear daily objective, weekly rhythm and a small collectible reward.
    No infinite feed, no autoplay and no social engine changes. */
 (function histodailyEngagement263(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.263.0";
+  const VERSION = "1.0.0-beta.264.0";
   const STORAGE_KEY = "histodaily.engagement.v263";
   let mountTimer = null;
   let previousSignature = "";

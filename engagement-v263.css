@@ -1,4 +1,4 @@
-/* HistoDaily beta 263 — finite daily engagement loop */
+/* HistoDaily beta 264 — finite daily engagement loop */
 .hd263-engagement{
   position:relative;
   display:grid;
@@ -154,7 +154,7 @@
 }
 @media(prefers-reduced-motion:reduce){.hd263-engagement,.hd263-toast,.hd263-progress i{animation:none!important;transition:none!important}}
 
-/* beta 263 compact pass: the home keeps one clear hero and one small momentum card. */
+/* beta 264 compact pass: the home keeps one clear hero and one small momentum card. */
 .hd263-engagement{gap:12px;padding:17px 18px;border-radius:25px}
 .hd263-engagement .hd263-steps{display:none}
 .hd263-engagement .hd263-footer{grid-template-columns:1.08fr .92fr 1.1fr}
