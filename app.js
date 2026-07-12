@@ -17807,6 +17807,9 @@ function beta128RetryDelayMs(item = {}) {
 }
 const beta128SubmitScoreToServer = submitScoreToServer;
 async function beta128FlushScoreOutbox({ force = false, reason = "auto" } = {}) {
+  // beta254 : tant que social-v2.js n'a pas repris cette fonction, aucun score
+  // ne doit repartir vers l'ancienne API leaderboard.
+  if (window.HD_SOCIAL_V2_ONLY === true) return;
   if (beta128ScoreFlushInFlight) return;
   const now = Date.now();
   let outbox = beta128ReadScoreOutbox();
@@ -17884,6 +17887,7 @@ queueScoreSubmit = function beta128QueueScoreSubmit(mysteryId) {
 };
 const beta128PreviousFetchServerLeaderboard = fetchServerLeaderboard;
 fetchServerLeaderboard = async function beta128FetchServerLeaderboard(scope = "daily", options = {}) {
+  if (window.HD_SOCIAL_V2_ONLY === true) return state.serverLeaderboards?.[scope] || [];
   await beta128FlushScoreOutbox({ force: Boolean(options.force), reason: `leaderboard:${scope}` }).catch(() => {});
   return beta128PreviousFetchServerLeaderboard(scope, options);
 };
@@ -17919,6 +17923,7 @@ function beta128DecorateSyncCards() {
   if (state.tab === "home" && (!isOnline || beta128PendingScoreCount())) document.querySelector(".daily-hero,.hero-card,.home-hero")?.insertAdjacentHTML("afterend", markup);
 }
 function beta128RefreshLive({ force = false, reason = "auto" } = {}) {
+  if (window.HD_SOCIAL_V2_ONLY === true) return;
   if (!isOnline) return;
   const now = Date.now();
   if (!force && now - beta128LastLiveRefresh < 25000) return;
@@ -17950,14 +17955,16 @@ savePseudoValue = function beta128SavePseudoValue(rawValue, options = {}) {
 };
 try {
   beta128RecoverIdentity();
+  // La récupération reste locale. L'envoi est repris par social-v2.js, une fois
+  // l'identité canonique chargée, afin d'éviter tout départ vers l'ancienne API.
   Object.entries(state.solvedMysteries || {}).forEach(([mysteryId, solved]) => {
     const status = state.lastScoreSubmit?.[mysteryId];
-    if (solved && (!status || (!status.stored && (status.mode === "offline" || status.mode === "error")))) {
+    if (solved && (!status || !status.stored)) {
       beta128QueueScorePayload(scorePayloadForMystery(mysteryId), "recovery");
     }
   });
   beta128MirrorIdentity();
-  beta128FlushScoreOutbox({ force: false, reason: "startup" }).catch(() => {});
+  if (window.HD_SOCIAL_V2_ONLY !== true) beta128FlushScoreOutbox({ force: false, reason: "startup" }).catch(() => {});
   window.HistoDailyBeta128 = { version: BETA128_HARDENING_VERSION, scoreOutbox: beta128ReadScoreOutbox, flushScores: beta128FlushScoreOutbox, identity: beta128IdentitySnapshot };
 } catch {}
 

@@ -1,34 +1,32 @@
-# Déployer HistoDaily 1.0.0-beta.246 sur Vercel
+# Déployer HistoDaily 1.0.0-beta.254
 
-1. Extraire entièrement le zip.
-2. Remplacer **tous** les fichiers de l’ancien déploiement, y compris le dossier `api` et le dossier `lib`.
-3. Dans Vercel, conserver ou ajouter les variables d’environnement :
+Cette version remplace l’empilement de correctifs sociaux par un moteur unique : `social-v2.js` côté application et `lib/hd-social-v2.js` côté serveur.
+
+## Déploiement
+
+1. Extraire entièrement le ZIP.
+2. Remplacer **tout** l’ancien déploiement, y compris `api/`, `lib/`, `index.html` et `service-worker.js`.
+3. Conserver dans Vercel :
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
-4. Vérifier que `SUPABASE-SOCIAL-SCHEMA.sql` a été exécuté au moins une fois dans le projet Supabase.
-5. Déployer le dossier racine contenant `index.html`, `vercel.json`, `api/` et `lib/`.
-6. Effectuer une actualisation forcée. Pour une PWA installée, la fermer complètement puis la rouvrir afin d’activer le cache `beta246`.
+4. Exécuter la version fournie de `SUPABASE-SOCIAL-SCHEMA.sql` dans Supabase, même si une ancienne version du schéma avait déjà été installée. Le script est idempotent et ajoute les fonctions atomiques de la beta 254.
+5. Déployer le dossier racine contenant `index.html` et `vercel.json`.
+6. Fermer complètement la PWA puis la rouvrir. Le cache attendu est `histodaily-beta254-v1`.
 
-Aucune nouvelle colonne n’est nécessaire si le schéma social fourni avec les versions précédentes a déjà été appliqué.
+Aucune nouvelle table n’est nécessaire. `SUPABASE-SOCIAL-V2-CLEANUP.sql` est seulement un nettoyage optionnel des doublons anciens.
 
-## Vérification rapide après déploiement
+## Vérification immédiate
 
-- Ouvrir `/api/v1/health` : la réponse doit indiquer la version `1.0.0-beta.246`.
-- Créer ou synchroniser deux profils distincts.
-- Envoyer une demande avec le code ami du second profil, puis l’accepter depuis ce second profil.
-- Vérifier que chacun apparaît dans la liste de l’autre.
-- Résoudre un mystère et vérifier que le classement affiche le score du mystère, pas l’XP totale du compte.
+- Ouvrir `/api/v1/social-v2/health` : `ok` doit être `true`, avec `architecture: "single-social-engine-v2"`.
+- Sur Pepito, actualiser le profil puis envoyer une demande au code exact de Manon.
+- Sur Manon, actualiser le profil puis accepter la demande.
+- Les deux profils doivent apparaître dans « Mes amis », même avec zéro point sur la période.
+- Résoudre un mystère puis ouvrir jour, semaine et année : chaque onglet doit additionner uniquement les dossiers de sa période.
 
-Le mode solo, les cours, les quiz et les mystères restent utilisables lorsque Supabase est momentanément indisponible.
+## Ce qui a changé
 
-## Beta 244 — classement et amis
-
-Aucune migration Supabase supplémentaire n'est nécessaire. Après le déploiement, mettre à jour l'application sur les deux téléphones afin que les deux clients utilisent la vérité serveur de la beta 244.
-
-
-## Beta 246 — multi et amis robustes
-
-- Une suppression d’ami ferme aussi l’ancienne demande acceptée : la relation ne réapparaît plus après actualisation.
-- Les acceptations/refus et suppressions sont mis en file hors ligne puis rejoués automatiquement.
-- Les doubles clics sont neutralisés et tous les classements Amis (jour/semaine/année) sont invalidés après une mutation.
-- Aucune migration Supabase supplémentaire n’est nécessaire.
+- Supabase est la seule vérité partagée. Le navigateur ne crée plus de faux ami ou de faux classement.
+- Une seule requête de démarrage renvoie le profil, les amis et les demandes.
+- Les classements général et amis sont séparés par période.
+- Les appels ont un délai maximal et un état explicite : chargement, synchronisé, dernière copie ou erreur.
+- Les anciens fichiers `social-reliability-*` ne sont plus chargés et ont été retirés du projet.

@@ -3114,7 +3114,13 @@
 
   function enhanceProfile(){
     const shell = document.querySelector(".app-shell.tab-profile");
-    if (!shell || shell.dataset.hd187Enhanced === "1") return;
+    if (!shell) return;
+    if (window.HD_SOCIAL_V2_ONLY === true && shell.querySelector(".hdsv2-profile-screen")) {
+      shell.dataset.hd187Enhanced = "1";
+      shell.querySelectorAll(":scope > .hd187-curiosity-card, :scope > .hd217-curiosity-card").forEach(node => node.remove());
+      return;
+    }
+    if (shell.dataset.hd187Enhanced === "1") return;
     shell.dataset.hd187Enhanced = "1";
     const target = shell.querySelector(".beta181-weekly-card,.beta179-profile-mastery,.public-profile-card,.topbar");
     if (target) target.insertAdjacentHTML("beforebegin", curiosityMarkup());
@@ -5383,6 +5389,7 @@
     if (document.documentElement.classList.contains("hd220-visual")) return;
     const shell = document.querySelector(".app-shell.tab-profile");
     if (!shell) return;
+    if (window.HD_SOCIAL_V2_ONLY === true && shell.querySelector(".hdsv2-profile-screen")) return;
     shell.classList.add("hd219-profile-shell");
 
     const topbar = shell.querySelector(":scope > .topbar");
@@ -5700,6 +5707,9 @@
   ensureServerFriends = function beta242EnsureServerFriends() { return fetchServerFriends().catch(() => state.friends || {}); };
 
   async function refreshSocial({ force = true, scope = safeScope(state.rankScope || "daily") } = {}) {
+    // beta254 : les listeners historiques gardent cette closure. On les rend
+    // explicitement muets lorsque le moteur social v2 est actif.
+    if (window.HD_SOCIAL_V2_ONLY === true) return null;
     if (fullRefreshInFlight) return fullRefreshInFlight;
     fullRefreshInFlight = (async () => {
       try { await syncMyProfileToServer?.({ source: "beta242-refresh" }); } catch {}

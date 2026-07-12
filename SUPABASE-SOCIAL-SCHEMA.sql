@@ -1,5 +1,5 @@
--- HistoDaily beta132 — migration Supabase additive complète
--- À lancer dans SQL Editor sur le projet existant. Ne supprime aucune donnée.
+-- HistoDaily beta 254 — schéma social additif et fonctions atomiques
+-- À relancer dans SQL Editor sur le projet existant. Script idempotent, sans suppression de données.
 
 -- Profils
 alter table public.hd_profiles add column if not exists friend_code text;

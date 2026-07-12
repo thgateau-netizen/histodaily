@@ -1,0 +1,361 @@
+/* HistoDaily beta 254 — interface sociale isolée */
+*, *::before, *::after { box-sizing: border-box; }
+
+.tab-rank,
+.tab-profile,
+.tab-publicProfile {
+  padding-bottom: calc(126px + env(safe-area-inset-bottom));
+}
+
+.hdsv2-screen {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 18px 18px 24px;
+  display: grid;
+  gap: 16px;
+  overflow: visible;
+}
+
+.hdsv2-screen > * { min-width: 0; }
+
+.hdsv2-topbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  min-height: 88px;
+  padding: 4px 2px 2px;
+}
+
+.hdsv2-topbar > div { min-width: 0; }
+.hdsv2-topbar .eyebrow { margin: 0 0 3px; }
+.hdsv2-topbar h1 {
+  margin: 0;
+  max-width: 100%;
+  font-size: clamp(2rem, 9vw, 3.4rem);
+  line-height: .96;
+  letter-spacing: -.055em;
+  overflow-wrap: anywhere;
+}
+
+.hdsv2-topbar h1[tabindex="-1"]:focus { outline: 0; }
+
+.hdsv2-profile-shortcut {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  padding: 0;
+  border-radius: 18px;
+  font-size: 1.35rem;
+  font-weight: 950;
+  color: #111827;
+  background: linear-gradient(145deg, #ffd36b, #ffad22);
+  box-shadow: 0 10px 30px rgba(255, 181, 43, .22);
+}
+
+.hdsv2-home-shortcut { white-space: nowrap; }
+
+.hdsv2-period-tabs,
+.hdsv2-audience-tabs {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgba(151, 177, 207, .16);
+  border-radius: 24px;
+  background: rgba(8, 19, 34, .78);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.hdsv2-period-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hdsv2-audience-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.hdsv2-period-tabs button,
+.hdsv2-audience-tabs button {
+  min-width: 0;
+  min-height: 54px;
+  padding: 10px 6px;
+  border: 0;
+  border-radius: 18px;
+  color: #9dafc7;
+  background: transparent;
+  font-size: clamp(.82rem, 3.6vw, 1.04rem);
+  font-weight: 850;
+  line-height: 1.05;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.hdsv2-period-tabs button.active {
+  color: #121a27;
+  background: linear-gradient(145deg, #ffd36b, #ffad22);
+  box-shadow: 0 10px 25px rgba(255, 181, 43, .18);
+}
+
+.hdsv2-audience-tabs button.active {
+  color: #fff;
+  background: linear-gradient(135deg, #7057ff, #416af2);
+  box-shadow: 0 10px 25px rgba(88, 92, 255, .18);
+}
+
+.hdsv2-audience-tabs button span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 21px;
+  height: 21px;
+  margin-left: 6px;
+  border-radius: 999px;
+  font-size: .72rem;
+  color: #131827;
+  background: #ffd166;
+}
+
+.hdsv2-card {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 24px;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.hdsv2-card h2 { margin: 6px 0 8px; }
+.hdsv2-card p { margin: 0; color: #b9c6d8; line-height: 1.48; }
+
+.hdsv2-score-head,
+.hdsv2-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hdsv2-score-head > div,
+.hdsv2-section-head > div { min-width: 0; }
+.hdsv2-score-head h2 { font-size: clamp(2.3rem, 11vw, 4rem); letter-spacing: -.055em; }
+.hdsv2-score-head > button { flex: 0 0 auto; min-width: 112px; }
+
+.hdsv2-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.hdsv2-kpis > div {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(154, 179, 207, .14);
+  border-radius: 20px;
+  background: rgba(5, 13, 25, .54);
+}
+
+.hdsv2-kpis b { display: block; font-size: 1.65rem; line-height: 1; }
+.hdsv2-kpis span { display: block; margin-top: 7px; color: #91a4bf; font-size: .78rem; font-weight: 750; }
+
+.hdsv2-status {
+  display: block;
+  margin-top: 17px;
+  color: #93a5bd;
+  font-size: .82rem;
+  font-weight: 720;
+}
+.hdsv2-status.ready { color: #85d7b2; }
+.hdsv2-status.error,
+.hdsv2-status.stale { color: #ffb870; }
+
+.hdsv2-rank-list,
+.hdsv2-friend-list { display: grid; gap: 9px; margin-top: 18px; }
+
+.hdsv2-rank-row {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 36px 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 72px;
+  padding: 11px 13px;
+  border: 1px solid rgba(151, 177, 207, .13);
+  border-radius: 20px;
+  color: #f4f7fb;
+  text-align: left;
+  background: rgba(4, 12, 23, .58);
+}
+
+.hdsv2-rank-row.me {
+  border-color: rgba(255, 196, 73, .45);
+  background: linear-gradient(135deg, rgba(255, 198, 76, .12), rgba(5, 14, 26, .7));
+}
+
+.hdsv2-rank-row:disabled { opacity: 1; }
+.hdsv2-rank-number { color: #f4be4f; font-weight: 900; text-align: center; }
+
+.hdsv2-avatar,
+.hdsv2-profile-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+  color: white;
+  font-weight: 900;
+  background: linear-gradient(145deg, #537cff, #38bdf8);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.24);
+}
+
+.hdsv2-profile-avatar { width: 66px; height: 66px; border-radius: 22px; font-size: 1.6rem; }
+
+.hdsv2-rank-player { min-width: 0; }
+.hdsv2-rank-player strong,
+.hdsv2-rank-player small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdsv2-rank-player small { margin-top: 4px; color: #8fa2bd; font-size: .72rem; }
+.hdsv2-rank-row > b { white-space: nowrap; font-size: 1.05rem; }
+.hdsv2-rank-row > b small { font-size: .68rem; color: #9aacbf; }
+
+.hdsv2-empty,
+.hdsv2-loading {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 30px 16px 20px;
+  text-align: center;
+}
+.hdsv2-empty p,
+.hdsv2-loading p { max-width: 420px; }
+.hdsv2-empty.error strong { color: #ffbd78; }
+.hdsv2-loading { grid-template-columns: repeat(3, 10px); justify-content: center; }
+.hdsv2-loading span { width: 10px; height: 10px; border-radius: 50%; background: #5f7eff; animation: hdsv2Pulse 1s infinite alternate; }
+.hdsv2-loading span:nth-child(2) { animation-delay: .15s; }
+.hdsv2-loading span:nth-child(3) { animation-delay: .3s; }
+.hdsv2-loading p { grid-column: 1 / -1; }
+@keyframes hdsv2Pulse { to { opacity: .25; transform: translateY(-4px); } }
+
+.hdsv2-add-card form,
+.hdsv2-identity-card form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.hdsv2-add-card input,
+.hdsv2-identity-card input {
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  border-radius: 17px;
+}
+
+.hdsv2-feedback {
+  margin-top: 14px !important;
+  padding: 12px 14px;
+  border-radius: 15px;
+  color: #dce7f4 !important;
+  background: rgba(67, 93, 136, .22);
+}
+
+.hdsv2-friend-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid rgba(151, 177, 207, .12);
+  border-radius: 20px;
+  background: rgba(4, 12, 23, .5);
+}
+
+.hdsv2-friend-main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+}
+.hdsv2-friend-main > span:last-child { min-width: 0; }
+.hdsv2-friend-main strong,
+.hdsv2-friend-main small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdsv2-friend-main small { margin-top: 4px; color: #8fa2bd; font-size: .72rem; }
+.hdsv2-remove { padding-inline: 12px; font-size: .75rem; }
+
+.hdsv2-request-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(151, 177, 207, .13);
+  border-radius: 20px;
+  background: rgba(4, 12, 23, .52);
+}
+.hdsv2-request-row > div:nth-child(2) { min-width: 0; }
+.hdsv2-request-row strong,
+.hdsv2-request-row small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdsv2-request-row small { margin-top: 4px; color: #8fa2bd; }
+.hdsv2-request-actions { display: flex; gap: 7px; }
+.hdsv2-request-actions button { padding: 10px 12px; font-size: .75rem; }
+.hdsv2-pending-pill { color: #f7c76d; font-size: .74rem; font-weight: 850; }
+
+.hdsv2-profile-hero { display: flex; align-items: center; gap: 16px; }
+.hdsv2-profile-hero > div:last-child { min-width: 0; }
+.hdsv2-profile-hero h2 { font-size: clamp(1.8rem, 8vw, 2.8rem); overflow-wrap: anywhere; }
+
+.hdsv2-code-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(255, 197, 77, .45);
+  border-radius: 17px;
+  background: rgba(255, 195, 70, .07);
+}
+.hdsv2-code-box span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 850; letter-spacing: .04em; }
+
+.hdsv2-sync-card,
+.hdsv2-rank-shortcuts { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 15px; }
+.hdsv2-rank-shortcuts > div:last-child { display: flex; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+
+@media (max-width: 460px) {
+  .hdsv2-screen { padding: 14px 14px 22px; gap: 13px; }
+  .hdsv2-card { padding: 20px; border-radius: 26px; }
+  .hdsv2-score-head { display: grid; }
+  .hdsv2-score-head > button { width: 100%; }
+  .hdsv2-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hdsv2-rank-row { grid-template-columns: 30px 40px minmax(0, 1fr) auto; gap: 8px; padding-inline: 9px; }
+  .hdsv2-avatar { width: 40px; height: 40px; border-radius: 13px; }
+  .hdsv2-add-card form,
+  .hdsv2-identity-card form { grid-template-columns: 1fr; }
+  .hdsv2-add-card form button,
+  .hdsv2-identity-card form button { width: 100%; }
+  .hdsv2-request-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .hdsv2-request-actions,
+  .hdsv2-pending-pill { grid-column: 1 / -1; }
+  .hdsv2-request-actions button { flex: 1; }
+  .hdsv2-sync-card,
+  .hdsv2-rank-shortcuts { grid-template-columns: 1fr; }
+  .hdsv2-sync-card > button { width: 100%; }
+  .hdsv2-rank-shortcuts > div:last-child { justify-content: stretch; }
+  .hdsv2-rank-shortcuts > div:last-child button { flex: 1; }
+}
+
+@media (max-width: 360px) {
+  .hdsv2-period-tabs button { font-size: .74rem; padding-inline: 3px; }
+  .hdsv2-rank-row { grid-template-columns: 28px 36px minmax(0, 1fr) auto; }
+  .hdsv2-avatar { width: 36px; height: 36px; }
+  .hdsv2-rank-row > b { font-size: .9rem; }
+  .hdsv2-friend-row { grid-template-columns: 1fr; }
+  .hdsv2-remove { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hdsv2-loading span { animation: none; }
+}

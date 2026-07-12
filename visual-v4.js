@@ -350,7 +350,7 @@
     const switcher = shell?.querySelector(".hd222-world-switcher");
     const activeWorld = switcher?.querySelector(".hd222-world.active");
     if (switcher && activeWorld) {
-      const targetLeft = Math.max(0, activeWorld.offsetLeft - (switcher.clientWidth - activeWorld.offsetWidth) / 2);
+      const targetLeft = Math.max(0, activeWorld.offsetLeft);
       const previousId = switcher.dataset.lastCentered;
       switcher.dataset.lastCentered = disciplineId;
       window.requestAnimationFrame?.(() => {
