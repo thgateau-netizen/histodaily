@@ -17807,7 +17807,7 @@ function beta128RetryDelayMs(item = {}) {
 }
 const beta128SubmitScoreToServer = submitScoreToServer;
 async function beta128FlushScoreOutbox({ force = false, reason = "auto" } = {}) {
-  // beta254 : tant que social-v2.js n'a pas repris cette fonction, aucun score
+  // beta255 : tant que social-v2.js n'a pas repris cette fonction, aucun score
   // ne doit repartir vers l'ancienne API leaderboard.
   if (window.HD_SOCIAL_V2_ONLY === true) return;
   if (beta128ScoreFlushInFlight) return;

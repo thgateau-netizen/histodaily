@@ -5707,7 +5707,7 @@
   ensureServerFriends = function beta242EnsureServerFriends() { return fetchServerFriends().catch(() => state.friends || {}); };
 
   async function refreshSocial({ force = true, scope = safeScope(state.rankScope || "daily") } = {}) {
-    // beta254 : les listeners historiques gardent cette closure. On les rend
+    // beta255 : les listeners historiques gardent cette closure. On les rend
     // explicitement muets lorsque le moteur social v2 est actif.
     if (window.HD_SOCIAL_V2_ONLY === true) return null;
     if (fullRefreshInFlight) return fullRefreshInFlight;
