@@ -1,11 +1,11 @@
 /* =========================================================
-   HistoDaily beta 258 — moteur social unique, chemins hérités neutralisés
+   HistoDaily beta 259 — amis à zéro point et relations héritées
    Une seule couche client, Supabase comme seule vérité partagée.
    ========================================================= */
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-beta.258.0";
+  const VERSION = "1.0.0-beta.259.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const requestFlights = new Map();
@@ -293,7 +293,9 @@
         loadedAt: now(),
         generatedAt: json.generatedAt || "",
         message: "Classement partagé à jour.",
-        authoritative: true
+        authoritative: true,
+        friendCount: Number(json.friendCount || 0),
+        zeroScoreFriendCount: Number(json.zeroScoreFriendCount || 0)
       };
       // Miroirs limités pour l'accueil et les composants non sociaux hérités.
       const legacyScope = audience === "friends" ? "friends" : period;
@@ -427,7 +429,7 @@
       <header class="hdsv2-topbar"><div><p class="eyebrow">Classement</p><h1>${esc(periodLabel(context.period))}</h1></div><button type="button" class="hdsv2-profile-shortcut" data-open-profile aria-label="Ouvrir le profil">${esc(pseudo().charAt(0).toUpperCase() || "P")}</button></header>
       <nav class="hdsv2-period-tabs" aria-label="Période">${["daily", "week", "year"].map(period => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}">${esc(({ daily: "Aujourd’hui", week: "Semaine", year: "Année" })[period])}</button>`).join("")}</nav>
       <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Général</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
-      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">Ton résultat partagé</span><h2>${Number(me?.score || 0)} points</h2><p>${context.audience === "friends" ? "Même période, uniquement toi et tes amis confirmés." : `Somme de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" data-social-refresh>Actualiser</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${Number(me?.solvedInPeriod || 0)}</b><span>dossiers comptés</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small></section>
+      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">Ton résultat partagé</span><h2>${Number(me?.score || 0)} points</h2><p>${context.audience === "friends" ? "Même période, uniquement toi et tes amis confirmés." : `Somme de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" data-social-refresh>Actualiser</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${Number(me?.solvedInPeriod || 0)}</b><span>dossiers comptés</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score inclus dans le classement.</small>` : ""}</section>
       ${context.audience === "friends" ? requestMarkup() : ""}
       <section class="card hdsv2-card hdsv2-leaderboard"><div class="hdsv2-section-head"><div><span class="card-label">${context.audience === "friends" ? "Entre amis" : "Classement général"}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2></div></div>${leaderboardMarkup(rows, context, status)}</section>
       ${context.audience === "friends" ? friendsMarkup({ includeAdd: true }) : ""}
@@ -746,9 +748,16 @@
 
     s.publicProfiles[id] = { ...cached, phase: "loading", message: "Chargement du profil partagé…" };
     saveSoon();
+    const linkedFriend = s.friends.find(friend =>
+      String(friend.playerId || friend.id || "") === String(id) ||
+      Boolean(code(friend.friendCode || friend.code || "") && code(friend.friendCode || friend.code || "") === code(id))
+    );
+    const targetPlayerId = linkedFriend?.playerId || (linkedFriend ? "" : id);
+    const targetFriendCode = code(linkedFriend?.friendCode || linkedFriend?.code || "");
     const flight = api("profile", {
       query: {
-        playerId: id,
+        playerId: targetPlayerId,
+        friendCode: targetFriendCode,
         myPlayerId: meId(),
         myFriendCode: meCode(),
         myPseudo: pseudo(),
@@ -1079,6 +1088,22 @@
 
   function init() {
     const s = social();
+    const previousVersion = s.version || "";
+    if (previousVersion !== VERSION) {
+      // Une ancienne copie du classement Amis ne doit pas masquer les lignes à
+      // zéro ajoutées par cette version. Le classement général reste intact.
+      s.loadedAt = 0;
+      s.phase = "idle";
+      Object.keys(s.leaderboardStatus || {}).forEach(key => {
+        if (!key.startsWith("friends:")) return;
+        s.leaderboardStatus[key] = {
+          ...s.leaderboardStatus[key],
+          loadedAt: 0,
+          phase: Array.isArray(s.leaderboards?.[key]) ? "stale" : "idle",
+          message: "Liste d’amis à resynchroniser."
+        };
+      });
+    }
     s.version = VERSION;
     window.HD_SOCIAL_V2_ONLY = true;
     state.rankPeriod = safePeriod(state.rankPeriod || state.rankFriendPeriod || (state.rankScope === "friends" ? "daily" : state.rankScope));

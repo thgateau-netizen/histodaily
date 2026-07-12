@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.258.0",
-  assetsVersion: "1.0.0-beta.258.0",
+  version: "1.0.0-beta.259.0",
+  assetsVersion: "1.0.0-beta.259.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 254",
+    versionLabel: "beta 259",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Multi reconstruit : un seul moteur client remplace l’empilement de correctifs.",
-      "Supabase est l’unique vérité pour les profils, amis, demandes et classements.",
-      "Classements jour, semaine et année séparés proprement, avec les amis à zéro point visibles."
+      "Le classement Amis part désormais des relations confirmées, même sans aucun score.",
+      "Les anciennes amitiés enregistrées dans un seul sens sont récupérées à l’affichage.",
+      "Profil Orbit, classement général et rotation quotidienne restent inchangés."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
@@ -139,7 +139,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.258.0",
+  version: "1.0.0-beta.259.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

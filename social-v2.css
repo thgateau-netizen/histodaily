@@ -359,3 +359,12 @@
 @media (prefers-reduced-motion: reduce) {
   .hdsv2-loading span { animation: none; }
 }
+
+/* beta 259 — confirmation discrète des amis inclus à zéro point */
+.hdsv2-zero-friends {
+  display: block;
+  margin-top: .55rem;
+  color: var(--muted, #9aa8bd);
+  font-size: .82rem;
+  line-height: 1.35;
+}
