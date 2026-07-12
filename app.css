@@ -6283,7 +6283,7 @@ html.hd250-mobile-fixes .app-shell.tab-profile .beta128-sync-card{padding:18px!i
 
 
 /* =========================================================
-   HistoDaily beta 262 — visual expansion for every discipline
+   HistoDaily beta 263 — visual expansion for every discipline
    Bring the immersive astronomy feeling to all daily disciplines.
    ========================================================= */
 .hd261-visual .hd222-expedition{
@@ -6580,7 +6580,7 @@ html.hd250-mobile-fixes .app-shell.tab-profile .beta128-sync-card{padding:18px!i
 }
 
 
-/* HistoDaily beta 262 — audio settings */
+/* HistoDaily beta 263 — audio settings */
 .hd262-sound-card{display:grid;gap:13px;padding:15px;border:1px solid rgba(117,209,255,.14);border-radius:18px;background:linear-gradient(145deg,rgba(79,181,255,.075),rgba(255,255,255,.025));}
 .hd262-sound-card h2{margin:4px 0 5px;font-size:1rem;}
 .hd262-sound-card p{margin:0;color:var(--muted);font-size:.76rem;line-height:1.42;}

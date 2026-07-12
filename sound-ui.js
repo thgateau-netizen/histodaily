@@ -1,9 +1,9 @@
-/* HistoDaily beta 262 — lightweight procedural audio
+/* HistoDaily beta 263 — lightweight procedural audio
    No external files, no autoplay, local preference, iOS/PWA friendly. */
 (function histodailyAudio262(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.262.0";
+  const VERSION = "1.0.0-beta.263.0";
   const STORAGE_KEY = "histodaily.sound.mode.v1";
   const MODES = new Set(["off", "soft", "normal"]);
   let context = null;

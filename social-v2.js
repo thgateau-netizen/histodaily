@@ -1,11 +1,11 @@
 /* =========================================================
-   HistoDaily beta 262 — amis à zéro point et relations héritées
+   HistoDaily beta 263 — amis à zéro point et relations héritées
    Une seule couche client, Supabase comme seule vérité partagée.
    ========================================================= */
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-beta.262.0";
+  const VERSION = "1.0.0-beta.263.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;

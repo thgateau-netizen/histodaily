@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.262.0";
+  const VERSION = "1.0.0-beta.263.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }
@@ -292,6 +292,7 @@
     const greeting = pseudo && !/^invité$/i.test(pseudo) ? `Salut ${pseudo}` : "Bonjour";
     const art = heroArtwork(disciplineId, stageView.title);
     const heroIcon = safe(() => HD_ICONS.discipline(discipline), discipline.emoji || "✦");
+    const routeDone = clamp((stageView.index || 1) - 1, 0, 3);
 
     const titleClass = String(stageView.title || "").length > 34 ? "is-long" : "";
     renderShell(`<div class="hd220-home hd222-home" style="--world:${esc(discipline.accent)}">
@@ -307,7 +308,7 @@
 
       <section class="hd220-expedition hd222-expedition ${titleClass}" aria-labelledby="hd220-expedition-title">
         <div class="hd220-expedition-glow" aria-hidden="true"></div>
-        <div class="hd220-expedition-top"><span>${esc(stageView.eyebrow)}</span><b><i>${stageView.index}</i>/4</b></div>
+        <div class="hd220-expedition-top"><span>${esc(stageView.eyebrow)}</span><b><i>${routeDone}</i>/3</b></div>
         <div class="hd222-expedition-body">
           <div class="hd220-expedition-copy hd222-expedition-copy">
             <div class="hd220-expedition-symbol">${heroIcon}</div>
