@@ -5453,35 +5453,47 @@
   } catch {}
 })();
 
-/* Beta 231 — le dossier Astronomie affiché sur l’accueil ouvre réellement Résoudre. */
-(function histodailyBeta231AstronomyDailyMystery(){
-  const FEATURED_ID = "astro-mystery-black-hole-231";
-  if (typeof mysteryForDisciplineDayOffset !== "function") return;
-
+/* Beta 258 — rotation quotidienne canonique.
+   L’ancien correctif beta 231 épinglait le trou noir comme mystère Astronomie
+   permanent. Il est volontairement supprimé : toutes les disciplines suivent
+   maintenant le même calendrier déterministe. */
+(function histodailyBeta258DailyRotationIntegrity(){
+  "use strict";
   try {
-    if (!state.beta231AstroDossierReady) {
-      state.betaMysteryShift = { ...(state.betaMysteryShift || {}), astronomy: 0 };
-      state.beta231AstroDossierReady = true;
-      if (typeof queueSaveState === "function") queueSaveState(80);
-    }
-  } catch {}
+    const today = typeof localDayKey === "function" ? localDayKey() : "";
+    const activeId = typeof activeDisciplineId === "function" ? activeDisciplineId() : (state.currentDiscipline || "history");
+    const selected = state.currentMysteryId && typeof mysteryById === "function" ? mysteryById(state.currentMysteryId) : null;
+    const selectedId = selected?.id || null;
+    const selectedDiscipline = selected && typeof mysteryDisciplineId === "function" ? mysteryDisciplineId(selected) : null;
+    const selectedDaily = selectedDiscipline && typeof mysteryForDisciplineDayOffset === "function"
+      ? mysteryForDisciplineDayOffset(selectedDiscipline, 0)
+      : null;
+    const activeDaily = typeof mysteryForDisciplineDayOffset === "function"
+      ? mysteryForDisciplineDayOffset(activeId, 0)
+      : null;
+    const permanent = Boolean(selectedId && ((typeof mysterySolved === "function" && mysterySolved(selectedId)) || state.unlockedMysteries?.[selectedId]));
+    const validDaily = Boolean(selectedId && selectedDaily?.id === selectedId && selectedDiscipline === activeId);
+    const validSameDayManual = Boolean(selectedId && state.currentMysteryOpenedDay === today && state.tab === "mystery");
 
-  const previousMysteryForDisciplineDayOffset = mysteryForDisciplineDayOffset;
-  mysteryForDisciplineDayOffset = function beta231MysteryForDisciplineDayOffset(disciplineId = activeDisciplineId(), offset = 0) {
-    const id = disciplineById(disciplineId || "history").id;
-    const shift = typeof beta117MysteryShift === "function" ? beta117MysteryShift(id) : 0;
-    if (id === "astronomy" && Number(offset) === 0 && shift === 0) {
-      const featured = (data.mysteries || []).find(item => item?.id === FEATURED_ID);
-      if (featured) return featured;
+    if (!permanent && !validDaily && !validSameDayManual) {
+      state.currentMysteryId = activeDaily?.id || null;
+      state.currentMysteryDiscipline = activeId;
+      state.currentMysteryOpenedDay = activeDaily?.id ? today : null;
+    } else if (selectedId && !state.currentMysteryOpenedDay) {
+      // Migration des états créés avant beta 258 : un mystère qui correspond
+      // réellement à aujourd’hui reçoit simplement son horodatage local.
+      state.currentMysteryOpenedDay = validDaily ? today : null;
     }
-    return previousMysteryForDisciplineDayOffset(id, offset);
-  };
 
-  mysteryForDayOffset = function beta231MysteryForDayOffset(offset = 0) {
-    return mysteryForDisciplineDayOffset(activeDisciplineId(), offset);
-  };
-  dailyMystery = function beta231DailyMystery() { return mysteryForDayOffset(0); };
-  isTodayMystery = function beta231IsTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); };
+    delete state.beta231AstroDossierReady;
+    state.dailyMysteryEngineVersion = "1.0.0-beta.258.0";
+    if (typeof queueSaveState === "function") queueSaveState(80);
+    window.setTimeout(() => {
+      try { if (typeof render === "function") render({ immediate: true }); } catch {}
+    }, 0);
+  } catch (error) {
+    try { console.warn("daily mystery rotation repair", error); } catch {}
+  }
 })();
 
 /* ===== HistoDaily beta 244 — fiabilité, classement et amis ===== */

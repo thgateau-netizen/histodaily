@@ -1,11 +1,11 @@
 /* =========================================================
-   HistoDaily beta 257 — moteur social unique, chemins hérités neutralisés
+   HistoDaily beta 258 — moteur social unique, chemins hérités neutralisés
    Une seule couche client, Supabase comme seule vérité partagée.
    ========================================================= */
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-beta.257.0";
+  const VERSION = "1.0.0-beta.258.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const requestFlights = new Map();

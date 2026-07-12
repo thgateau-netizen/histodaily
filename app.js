@@ -226,6 +226,7 @@ const defaultState = {
   currentLessonId: null,
   currentMysteryId: null,
   currentMysteryDiscipline: "history",
+  currentMysteryOpenedDay: null,
   lessonFocus: null,
   lessonView: "express",
   seenHints: {},
@@ -11757,8 +11758,20 @@ function mysteryDisciplineMatchesCurrent(mystery = {}) {
 function isSelectedMysteryPlayable(mystery = {}) {
   if (!mystery?.id) return false;
   if (mysterySolved(mystery.id) || state.unlockedMysteries?.[mystery.id]) return true;
-  if (mysteryDisciplineMatchesCurrent(mystery) && isTodayMystery(mystery.id)) return true;
-  return Boolean(state.currentMysteryId === mystery.id && state.currentMysteryDiscipline === mysteryDisciplineId(mystery));
+
+  const disciplineId = mysteryDisciplineId(mystery);
+  const disciplineDaily = mysteryForDisciplineDayOffset(disciplineId, 0);
+  if (disciplineDaily?.id === mystery.id && disciplineId === activeDisciplineId()) return true;
+
+  // Un dossier ouvert manuellement (cours lié, archive ou outil de test) reste
+  // consultable pendant la journée en cours, mais ne doit jamais survivre au
+  // changement de date et masquer le nouveau mystère quotidien.
+  return Boolean(
+    state.tab === "mystery" &&
+    state.currentMysteryId === mystery.id &&
+    state.currentMysteryDiscipline === disciplineId &&
+    state.currentMysteryOpenedDay === localDayKey()
+  );
 }
 function currentMystery() {
   const selected = state.currentMysteryId ? mysteryById(state.currentMysteryId) : null;
@@ -16009,6 +16022,9 @@ function setState(patch, options = {}) {
   if (!patch || typeof patch !== "object") return;
   const normalizedPatch = { ...patch };
   if (normalizedPatch.tab && !BETA114_ALLOWED_TABS.has(normalizedPatch.tab)) normalizedPatch.tab = "home";
+  if (Object.prototype.hasOwnProperty.call(normalizedPatch, "currentMysteryId")) {
+    normalizedPatch.currentMysteryOpenedDay = normalizedPatch.currentMysteryId ? localDayKey() : null;
+  }
   const previous = state;
   state = { ...state, ...normalizedPatch };
   beta114NormalizeState();

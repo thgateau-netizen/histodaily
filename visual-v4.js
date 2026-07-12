@@ -361,9 +361,17 @@
 
     shell?.querySelectorAll("[data-hd220-discipline]").forEach(button => button.addEventListener("click", () => {
       const nextId = button.dataset.hd220Discipline;
+      if (typeof switchHomeDiscipline === "function") return switchHomeDiscipline(nextId);
       const first = disciplineLessons(nextId)[0];
       const world = first ? safe(() => lessonWorld(first), {}) : {};
-      setState({ currentDiscipline: nextId, currentWorld: world?.id || state.currentWorld, currentGroup: world?.group || state.currentGroup });
+      const nextMystery = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset(nextId, 0) : null;
+      setState({
+        currentDiscipline: nextId,
+        currentWorld: world?.id || state.currentWorld,
+        currentGroup: world?.group || state.currentGroup,
+        currentMysteryId: nextMystery?.id || null,
+        currentMysteryDiscipline: nextId
+      });
     }));
     shell?.querySelectorAll("[data-hd220-profile]").forEach(button => button.addEventListener("click", () => setState({ tab:"profile" })));
     shell?.querySelector("[data-hd220-catalog]")?.addEventListener("click", () => openCatalog(disciplineId));
