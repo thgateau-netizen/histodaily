@@ -1,0 +1,120 @@
+/* HistoDaily beta 273 — profils publics et demandes depuis le classement */
+
+.hdsv2-rank-row {
+  position: relative;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.hdsv2-rank-row::after {
+  content: "›";
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  color: rgba(190, 205, 226, .48);
+  font-size: .88rem;
+  font-weight: 900;
+}
+
+.hdsv2-rank-row:hover,
+.hdsv2-rank-row:focus-visible {
+  border-color: rgba(102, 132, 255, .48);
+  background: rgba(12, 25, 46, .88);
+}
+
+.hdsv2-rank-row:active { transform: scale(.985); }
+.hdsv2-rank-row.me { cursor: pointer; }
+
+.hd273-public-card { overflow: visible; }
+
+.hd273-public-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.hd273-public-stats > div {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(151, 177, 207, .14);
+  border-radius: 19px;
+  background: rgba(5, 13, 25, .52);
+}
+
+.hd273-public-stats b,
+.hd273-public-stats span { display: block; }
+.hd273-public-stats b { font-size: 1.55rem; line-height: 1; }
+.hd273-public-stats span { margin-top: 6px; color: #96a8bf; font-size: .76rem; font-weight: 760; }
+
+.hd273-score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 10px;
+}
+
+.hd273-score-grid > div {
+  min-width: 0;
+  padding: 14px 11px;
+  border: 1px solid rgba(151, 177, 207, .13);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(17, 31, 54, .72), rgba(5, 13, 25, .64));
+}
+
+.hd273-score-grid span,
+.hd273-score-grid b,
+.hd273-score-grid small { display: block; }
+.hd273-score-grid span { color: #92a6c0; font-size: .7rem; font-weight: 820; }
+.hd273-score-grid b { margin-top: 7px; color: #f5f8fc; font-size: 1.08rem; line-height: 1.05; white-space: nowrap; }
+.hd273-score-grid small { margin-top: 6px; color: #f1c56d; font-size: .67rem; line-height: 1.25; }
+
+.hd273-relation-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, auto);
+  align-items: center;
+  gap: 18px;
+  border-color: rgba(88, 116, 255, .25);
+  background: linear-gradient(145deg, rgba(20, 35, 66, .94), rgba(6, 15, 29, .96));
+}
+
+.hd273-relation-card > div { min-width: 0; }
+.hd273-relation-card h2 { font-size: clamp(1.35rem, 5vw, 2rem); }
+.hd273-relation-card > button { width: 100%; min-height: 52px; }
+.hd273-relation-card.is-friend { border-color: rgba(72, 201, 151, .28); }
+.hd273-relation-card.is-incoming { border-color: rgba(255, 197, 83, .36); }
+.hd273-relation-card.is-pending { border-color: rgba(143, 161, 192, .22); }
+.hd273-relation-card button:disabled { opacity: .7; cursor: default; }
+
+.tab-publicProfile,
+.tab-publicProfile .app-shell,
+.tab-publicProfile main,
+.tab-publicProfile .hdsv2-screen {
+  overflow-y: visible !important;
+  max-height: none !important;
+  touch-action: pan-y !important;
+}
+
+@media (max-width: 560px) {
+  .hd273-relation-card { grid-template-columns: 1fr; }
+  .hd273-score-grid { grid-template-columns: 1fr; }
+  .hd273-score-grid > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px 12px;
+  }
+  .hd273-score-grid b { grid-column: 2; grid-row: 1 / span 2; text-align: right; }
+  .hd273-score-grid small { grid-column: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hdsv2-rank-row { transition: none; }
+}
+
+.hd273-profile-feedback {
+  width: 100%;
+  margin: 0 !important;
+  border: 1px solid rgba(112, 139, 255, .22);
+}

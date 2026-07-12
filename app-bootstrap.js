@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.272.0",
-  assetsVersion: "1.0.0-beta.272.0",
+  version: "1.0.0-beta.273.0",
+  assetsVersion: "1.0.0-beta.273.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 272",
+    versionLabel: "beta 273",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Chaque mystère formule désormais clairement la question et le type de réponse attendu.",
-      "Les trois indices suivent une vraie progression : contexte, déduction, puis coup de pouce presque décisif.",
-      "Le niveau moyen s’affiche « intermédiaire » au lieu de « corsé », sans modifier le barème ni les scores."
+      "Touchez désormais un joueur du classement pour ouvrir son profil public.",
+      "Une demande d’ami peut être envoyée ou acceptée directement depuis ce profil, sans recopier de code.",
+      "La série et le moteur de progression restent strictement inchangés dans cette version."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
@@ -139,7 +139,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.272.0",
+  version: "1.0.0-beta.273.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

@@ -5,7 +5,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-beta.271.0";
+  const VERSION = "1.0.0-beta.273.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -13,6 +13,7 @@
   const requestFlights = new Map();
   const refreshFlights = new Map();
   const publicProfileFlights = new Map();
+  const profileFriendFlights = new Map();
   let bootstrapFlight = null;
   let legacyBridgeMutedUntil = 0;
   let scoreFlushFlight = null;
@@ -80,9 +81,11 @@
 
   function social() {
     const current = state.socialV2 && typeof state.socialV2 === "object" ? state.socialV2 : {};
+    const versionChanged = Boolean(current.version && current.version !== VERSION);
     state.socialV2 = {
       ...defaultSocial(),
       ...current,
+      version: VERSION,
       requests: {
         incoming: Array.isArray(current.requests?.incoming) ? current.requests.incoming : [],
         outgoing: Array.isArray(current.requests?.outgoing) ? current.requests.outgoing : []
@@ -90,7 +93,7 @@
       friends: Array.isArray(current.friends) ? current.friends : [],
       leaderboards: current.leaderboards && typeof current.leaderboards === "object" ? current.leaderboards : {},
       leaderboardStatus: current.leaderboardStatus && typeof current.leaderboardStatus === "object" ? current.leaderboardStatus : {},
-      publicProfiles: current.publicProfiles && typeof current.publicProfiles === "object" ? current.publicProfiles : {}
+      publicProfiles: !versionChanged && current.publicProfiles && typeof current.publicProfiles === "object" ? current.publicProfiles : {}
     };
     return state.socialV2;
   }
@@ -454,7 +457,11 @@
     if (!rows.length) {
       return `<div class="hdsv2-empty"><strong>Aucun score ${periodShort(context.period)}</strong><p>${context.audience === "friends" ? "Tes amis sans score apparaîtront quand même dès que la liste sera synchronisée." : "Le premier dossier résolu ouvrira ce classement."}</p></div>`;
     }
-    return `<div class="hdsv2-rank-list">${rows.map(row => `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}" ${row.me ? "disabled" : `data-social-profile="${esc(row.playerId || row.id)}"`}><span class="hdsv2-rank-number">${row.rank || "—"}</span><span class="hdsv2-avatar">${esc((row.name || row.pseudo || "J").charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(row.name || row.pseudo || "Joueur")}${row.me ? " · toi" : ""}</strong><small>${Number(row.solvedInPeriod || 0)} dossier${Number(row.solvedInPeriod || 0) > 1 ? "s" : ""} compté${Number(row.solvedInPeriod || 0) > 1 ? "s" : ""}</small></span><b>${Number(row.score || 0)}<small> pts</small></b></button>`).join("")}</div>`;
+    return `<div class="hdsv2-rank-list">${rows.map(row => {
+      const profileTarget = row.playerId || row.id || row.friendCode || row.code || "";
+      const name = row.name || row.pseudo || "Joueur";
+      return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}" data-social-profile="${esc(profileTarget)}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank || "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${Number(row.solvedInPeriod || 0)} dossier${Number(row.solvedInPeriod || 0) > 1 ? "s" : ""} compté${Number(row.solvedInPeriod || 0) > 1 ? "s" : ""} · voir le profil</small></span><b>${Number(row.score || 0)}<small> pts</small></b></button>`;
+    }).join("")}</div>`;
   }
 
   async function refreshContext(context, button = null) {
@@ -857,17 +864,54 @@
     return flight;
   }
 
+  function sameSocialPlayer(item = {}, targetId = "", targetCode = "") {
+    const ids = [item.playerId, item.id, item.otherPlayerId, item.requesterPlayerId, item.targetPlayerId]
+      .map(value => String(value || "")).filter(Boolean);
+    const codes = [item.friendCode, item.code, item.otherFriendCode, item.requesterFriendCode, item.targetFriendCode]
+      .map(value => code(value || "")).filter(Boolean);
+    return Boolean((targetId && ids.includes(String(targetId))) || (targetCode && codes.includes(code(targetCode))));
+  }
+
+  function relationForPlayer(id, player = null) {
+    const targetId = String(player?.playerId || player?.id || id || "");
+    const targetCode = code(player?.friendCode || player?.code || "");
+    if ((targetId && targetId === String(meId() || "")) || (targetCode && targetCode === code(meCode()))) {
+      return { status: "self", targetId, targetCode };
+    }
+    const s = social();
+    const friend = s.friends.find(item => sameSocialPlayer(item, targetId, targetCode));
+    if (friend) return { status: "friend", targetId, targetCode, friend };
+    const incoming = (s.requests.incoming || []).find(item => sameSocialPlayer(item, targetId, targetCode));
+    if (incoming) return { status: "incoming", targetId, targetCode, request: incoming };
+    const outgoing = (s.requests.outgoing || []).find(item => sameSocialPlayer(item, targetId, targetCode));
+    if (outgoing) return { status: "outgoing", targetId, targetCode, request: outgoing };
+    return { status: "none", targetId, targetCode };
+  }
+
   function acceptedFriend(id, player = null) {
-    const targetId = String(player?.playerId || id || "");
-    const targetCode = code(player?.friendCode || "");
-    return social().friends.some(friend =>
-      String(friend.playerId || friend.id || "") === targetId ||
-      Boolean(targetCode && code(friend.friendCode || friend.code || "") === targetCode)
-    );
+    return relationForPlayer(id, player).status === "friend";
+  }
+
+  function publicProfileActionMarkup(player, id) {
+    const relation = relationForPlayer(id, player);
+    const flightKey = relation.targetId || relation.targetCode || id;
+    const busy = profileFriendFlights.has(flightKey);
+    if (relation.status === "self") return "";
+    if (relation.status === "friend") {
+      return `<section class="card hdsv2-card hd273-relation-card is-friend"><div><span class="card-label">Relation</span><h2>Vous êtes amis</h2><p>Ce joueur apparaît dans ton classement Amis, même sans point sur la période.</p></div><button type="button" class="ghost wide" data-social-remove="${esc(player.playerId || id)}">Retirer des amis</button></section>`;
+    }
+    if (relation.status === "incoming") {
+      return `<section class="card hdsv2-card hd273-relation-card is-incoming"><div><span class="card-label">Demande reçue</span><h2>${esc(player.pseudo || "Ce joueur")} veut t’ajouter</h2><p>Accepte ici sans avoir à recopier son code ami.</p></div><button type="button" class="wide" data-social-respond="accept" data-request-id="${esc(relation.request?.requestId || relation.request?.id || "")}">${busy ? "Acceptation…" : "Accepter la demande"}</button></section>`;
+    }
+    if (relation.status === "outgoing") {
+      return `<section class="card hdsv2-card hd273-relation-card is-pending"><div><span class="card-label">Demande envoyée</span><h2>En attente de réponse</h2><p>La demande est déjà enregistrée. Elle sera visible sur l’autre téléphone après actualisation.</p></div><button type="button" class="wide" disabled>Demande envoyée</button></section>`;
+    }
+    return `<section class="card hdsv2-card hd273-relation-card"><div><span class="card-label">Communauté</span><h2>Ajouter ${esc(player.pseudo || "ce joueur")}</h2><p>La demande utilise directement son profil : aucun code à recopier.</p></div><button type="button" class="wide" data-social-add-profile data-target-player-id="${esc(player.playerId || id)}" data-target-friend-code="${esc(player.friendCode || "")}" data-target-pseudo="${esc(player.pseudo || "Joueur")}" ${busy ? "disabled" : ""}>${busy ? "Envoi…" : "Ajouter en ami"}</button></section>`;
   }
 
   viewProfile = function socialV2ViewProfile(id) {
     if (!id || id === meId()) return setState({ tab: "profile" });
+    social().feedback = "";
     setState({ tab: "publicProfile", selectedProfileId: id }, { save: true });
     loadPublicProfile(id).then(() => {
       if (state.tab === "publicProfile" && state.selectedProfileId === id) renderNow();
@@ -878,9 +922,8 @@
     const id = state.selectedProfileId || "";
     const record = social().publicProfiles[id] || {};
     const player = record.profile;
-    const isFriend = player ? acceptedFriend(id, player) : false;
     const body = player
-      ? `<section class="card hdsv2-card hdsv2-profile-summary"><div class="hdsv2-profile-hero"><div class="hdsv2-profile-avatar">${esc((player.pseudo || "J").charAt(0).toUpperCase())}</div><div><span class="card-label">Joueur</span><h2>${esc(player.pseudo || "Joueur")}</h2><p>Niveau ${Number(player.level || 1)} · ${Number(player.xp || 0)} XP</p></div></div><div class="hdsv2-kpis"><div><b>${Number(player.scores?.daily || 0)}</b><span>aujourd’hui</span></div><div><b>${Number(player.scores?.week || 0)}</b><span>semaine</span></div><div><b>${Number(player.scores?.year || 0)}</b><span>année</span></div></div></section>${isFriend ? `<section class="card hdsv2-card"><button type="button" class="ghost wide" data-social-remove="${esc(player.playerId || id)}">Retirer des amis</button></section>` : `<section class="card hdsv2-card hdsv2-neutral-note"><p>Ce joueur apparaît dans le classement général mais ne fait pas partie de tes amis confirmés.</p></section>`}`
+      ? `<section class="card hdsv2-card hdsv2-profile-summary hd273-public-card"><div class="hdsv2-profile-hero"><div class="hdsv2-profile-avatar">${esc((player.pseudo || "J").charAt(0).toUpperCase())}</div><div><span class="card-label">Profil public</span><h2>${esc(player.pseudo || "Joueur")}</h2><p>Niveau ${Number(player.level || 1)} · ${Number(player.xp || 0)} XP</p></div></div><div class="hd273-public-stats"><div><b>${Number(player.streak || 0)}</b><span>jours de série</span></div><div><b>${Number(player.solvedCount || 0)}</b><span>dossiers résolus</span></div></div><div class="hd273-score-grid">${[['daily', 'Aujourd’hui'], ['week', 'Semaine'], ['year', 'Année']].map(([period, label]) => `<div><span>${label}</span><b>${Number(player.scores?.[period] || 0)} pts</b><small>${Number(player.ranks?.[period] || 0) ? `#${Number(player.ranks[period])} au général` : "Pas encore classé"}</small></div>`).join("")}</div></section>${publicProfileActionMarkup(player, id)}${social().feedback ? `<p class="hdsv2-feedback hd273-profile-feedback" role="status">${esc(social().feedback)}</p>` : ""}`
       : record.phase === "error"
         ? `<section class="card hdsv2-card"><div class="hdsv2-empty error"><strong>Profil indisponible</strong><p>${esc(record.message || "Le serveur n’a pas répondu.")}</p><button type="button" data-public-profile-retry>Réessayer</button></div></section>`
         : `<section class="card hdsv2-card"><div class="hdsv2-loading"><span></span><span></span><span></span><p>${esc(record.message || "Chargement du profil partagé…")}</p></div></section>`;
@@ -891,12 +934,53 @@
       loadPublicProfile(id, { force: true }).then(() => { if (state.tab === "publicProfile") renderNow(); });
       renderNow();
     });
+    document.querySelector("[data-social-add-profile]")?.addEventListener("click", event => {
+      const button = event.currentTarget;
+      requestFriendFromProfile({
+        playerId: button.dataset.targetPlayerId || player?.playerId || id,
+        friendCode: button.dataset.targetFriendCode || player?.friendCode || "",
+        pseudo: button.dataset.targetPseudo || player?.pseudo || "Joueur"
+      });
+    });
     bindCommonSocialHandlers(activeContext());
     // Une erreur reste stable jusqu'à une action explicite : pas de boucle réseau.
     if (!player && (!record.phase || record.phase === "idle")) {
       loadPublicProfile(id).then(() => { if (state.tab === "publicProfile") renderNow(); });
     }
   };
+
+  async function requestFriendFromProfile(target = {}) {
+    const s = social();
+    const targetPlayerId = String(target.playerId || "");
+    const targetFriendCode = code(target.friendCode || "");
+    const key = targetPlayerId || targetFriendCode;
+    if (!key || profileFriendFlights.has(key)) return profileFriendFlights.get(key) || null;
+    profileFriendFlights.set(key, null);
+    const flight = (async () => {
+      s.feedback = `Envoi de la demande à ${target.pseudo || "ce joueur"}…`;
+      saveSoon();
+      renderNow();
+      try {
+        const json = await api("friends/request", {
+          method: "POST",
+          body: identityPayload({ targetPlayerId, targetFriendCode })
+        });
+        applySnapshot(json, { quiet: true });
+        s.feedback = json.message || "Demande envoyée.";
+        await loadLeaderboard(activeContext().period, "friends", { force: true, quiet: true });
+        return json;
+      } catch (error) {
+        s.feedback = error.message || "Demande non envoyée.";
+        return null;
+      } finally {
+        profileFriendFlights.delete(key);
+        saveSoon();
+        renderNow();
+      }
+    })();
+    profileFriendFlights.set(key, flight);
+    return flight;
+  }
 
   addFriend = async function socialV2AddFriend(event) {
     event?.preventDefault?.();
@@ -957,7 +1041,6 @@
       applySnapshot(json, { quiet: true });
       s.feedback = json.message || "Ami retiré.";
       await loadLeaderboard(activeContext().period, "friends", { force: true, quiet: true });
-      if (state.tab === "publicProfile") state.tab = "profile";
     } catch (error) {
       s.feedback = error.message || "Suppression impossible.";
     }

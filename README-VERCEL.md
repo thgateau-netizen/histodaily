@@ -16,7 +16,7 @@ Cette version consolide la base fonctionnelle validée : classement, profil Orbi
 
 ## Vérification immédiate
 
-- `/api/v1/social-v2/health` doit répondre avec `ok: true`, `version: "1.0.0-beta.271.0"` et `architecture: "single-social-engine-v2"`.
+- `/api/v1/social-v2/health` doit répondre avec `ok: true`, `version: "1.0.0-beta.273.0"` et `architecture: "single-social-engine-v2"`.
 - Le classement général et le classement Amis doivent conserver leurs données pendant une coupure réseau.
 - Un ami confirmé sans score doit rester visible à 0 point.
 - Après retour dans l’application, le profil, les demandes et le classement doivent quitter tout ancien état de chargement bloqué.
