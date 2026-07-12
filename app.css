@@ -6280,3 +6280,313 @@ html.hd250-mobile-fixes .app-shell.tab-profile .beta128-sync-card{padding:18px!i
   html.hd250-mobile-fixes .hd245-period-tabs{gap:4px!important;padding:5px!important}
   html.hd250-mobile-fixes .hd245-period-tabs button{padding-inline:3px!important;font-size:.69rem!important}
 }
+
+
+/* =========================================================
+   HistoDaily beta 262 — visual expansion for every discipline
+   Bring the immersive astronomy feeling to all daily disciplines.
+   ========================================================= */
+.hd261-visual .hd222-expedition{
+  overflow:hidden;
+}
+.hd261-visual .hd222-expedition-body{
+  min-height:336px;
+}
+.hd261-visual .hd222-expedition-copy{
+  width:47%;
+  z-index:4;
+}
+.hd261-visual .hd222-expedition-copy::after{
+  inset:-30px 8px -18px -28px;
+  background:linear-gradient(90deg, rgba(7,12,22,.97) 0%, rgba(7,12,22,.94) 56%, rgba(7,12,22,.68) 78%, rgba(7,12,22,.16) 92%, transparent 100%);
+}
+.hd261-visual .hd222-expedition-copy h2{
+  max-width:8.2ch;
+  font-size:clamp(2.5rem,8.5vw,3.45rem);
+  line-height:.92;
+  text-wrap:balance;
+}
+.hd261-visual .hd222-expedition-copy p{
+  max-width:20ch;
+  color:#d5deea;
+}
+.hd261-visual .hd222-expedition-art{
+  width:54%;
+  right:-1%;
+  top:18px;
+  height:calc(100% - 24px);
+  overflow:visible;
+  opacity:1;
+}
+.hd261-visual .hd222-expedition-art::before,
+.hd261-visual .hd222-expedition-art::after{
+  content:none;
+}
+.hd261-visual .hd261-discipline-hero{
+  position:relative;
+  width:100%;
+  height:100%;
+  min-height:278px;
+  border-radius:36px;
+  overflow:hidden;
+  isolation:isolate;
+}
+.hd261-visual .hd261-hero-backdrop,
+.hd261-visual .hd261-hero-shine{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.hd261-visual .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 74% 28%, color-mix(in srgb,var(--world) 24%,transparent), transparent 33%),
+    radial-gradient(circle at 66% 72%, rgba(255,255,255,.10), transparent 30%),
+    linear-gradient(135deg, color-mix(in srgb,var(--world) 18%,#122337), #0a1522 56%, #07111c 100%);
+}
+.hd261-visual .hd261-hero-shine{
+  background:
+    radial-gradient(circle at 77% 18%, rgba(255,255,255,.20), transparent 20%),
+    linear-gradient(180deg, rgba(255,255,255,.05), transparent 30%),
+    linear-gradient(90deg, rgba(5,10,18,0) 0%, rgba(5,10,18,0) 58%, rgba(5,10,18,.14) 82%, rgba(5,10,18,.38) 100%);
+  mix-blend-mode:screen;
+  opacity:.9;
+}
+.hd261-visual .hd261-discipline-hero .hd222-hero-svg{
+  position:absolute;
+  inset:6% 4% 8% 10%;
+  width:auto;
+  height:auto;
+  max-width:none;
+  max-height:none;
+}
+.hd261-visual .hd261-discipline-hero .hd222-hero-svg g[fill="var(--world)"]{
+  filter:drop-shadow(0 0 12px color-mix(in srgb,var(--world) 24%,transparent));
+}
+.hd261-visual .discipline-history .hd222-expedition{
+  background:
+    radial-gradient(circle at 78% 28%, rgba(214,179,107,.18), transparent 24%),
+    linear-gradient(135deg,#34261a 0%,#1a1310 55%,#0d1017 100%);
+}
+.hd261-visual .discipline-history .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 73% 31%, rgba(236,201,124,.20), transparent 24%),
+    linear-gradient(180deg, rgba(255,213,130,.08), transparent 26%),
+    linear-gradient(135deg,#3b2b1b 0%,#19120e 54%,#09111a 100%);
+}
+.hd261-visual .discipline-history .hd261-discipline-hero .hd222-hero-svg{inset:8% 5% 8% 8%;}
+.hd261-visual .discipline-art .hd222-expedition{
+  background:
+    radial-gradient(circle at 76% 24%, rgba(255,170,118,.20), transparent 22%),
+    radial-gradient(circle at 66% 66%, rgba(255,105,180,.16), transparent 25%),
+    linear-gradient(135deg,#3b1d30 0%,#181228 50%,#08101c 100%);
+}
+.hd261-visual .discipline-art .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 62% 62%, rgba(255,114,171,.24), transparent 26%),
+    radial-gradient(circle at 80% 24%, rgba(255,194,121,.22), transparent 22%),
+    linear-gradient(135deg,#4a1f3a 0%,#1d1430 52%,#09111c 100%);
+}
+.hd261-visual .discipline-art .hd261-discipline-hero .hd222-hero-svg{inset:6% 0 6% 7%; transform:rotate(-4deg) scale(1.06);}
+.hd261-visual .discipline-geography .hd222-expedition{
+  background:
+    radial-gradient(circle at 78% 24%, rgba(89,216,255,.16), transparent 22%),
+    linear-gradient(135deg,#10263a 0%,#102033 52%,#08121d 100%);
+}
+.hd261-visual .discipline-geography .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 77% 24%, rgba(104,224,255,.18), transparent 22%),
+    radial-gradient(circle at 52% 74%, rgba(61,175,132,.20), transparent 28%),
+    linear-gradient(135deg,#0f2d45 0%,#102033 52%,#08111c 100%);
+}
+.hd261-visual .discipline-geography .hd261-discipline-hero .hd222-hero-svg{inset:5% -4% 5% 7%; transform:scale(1.06);}
+.hd261-visual .discipline-music .hd222-expedition{
+  background:
+    radial-gradient(circle at 77% 24%, rgba(181,136,255,.18), transparent 24%),
+    linear-gradient(135deg,#24123f 0%,#15102d 52%,#09111a 100%);
+}
+.hd261-visual .discipline-music .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 72% 24%, rgba(185,136,255,.24), transparent 24%),
+    radial-gradient(circle at 64% 68%, rgba(110,220,255,.16), transparent 28%),
+    linear-gradient(135deg,#29144a 0%,#16102f 52%,#08111c 100%);
+}
+.hd261-visual .discipline-music .hd261-discipline-hero .hd222-hero-svg{inset:8% 3% 8% 8%; transform:rotate(2deg) scale(1.02);}
+.hd261-visual .discipline-literature .hd222-expedition{
+  background:
+    radial-gradient(circle at 79% 22%, rgba(243,205,118,.16), transparent 22%),
+    linear-gradient(135deg,#2b1c13 0%,#15110e 52%,#09111b 100%);
+}
+.hd261-visual .discipline-literature .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 79% 22%, rgba(243,205,118,.20), transparent 22%),
+    radial-gradient(circle at 58% 68%, rgba(255,255,255,.09), transparent 26%),
+    linear-gradient(135deg,#3a281b 0%,#17120e 52%,#08111b 100%);
+}
+.hd261-visual .discipline-literature .hd261-discipline-hero .hd222-hero-svg{inset:4% 2% 6% 8%; transform:rotate(-2deg) scale(1.02);}
+.hd261-visual .discipline-cinema .hd222-expedition{
+  background:
+    radial-gradient(circle at 80% 22%, rgba(255,117,159,.18), transparent 22%),
+    linear-gradient(135deg,#261327 0%,#131222 52%,#07111b 100%);
+}
+.hd261-visual .discipline-cinema .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 80% 22%, rgba(255,117,159,.22), transparent 22%),
+    radial-gradient(circle at 62% 68%, rgba(123,172,255,.16), transparent 28%),
+    linear-gradient(135deg,#30142f 0%,#161426 52%,#08111b 100%);
+}
+.hd261-visual .discipline-cinema .hd261-discipline-hero .hd222-hero-svg{inset:4% -1% 6% 5%; transform:scale(1.07);}
+.hd261-visual .discipline-science-inventions .hd222-expedition{
+  background:
+    radial-gradient(circle at 80% 22%, rgba(75,232,212,.20), transparent 22%),
+    linear-gradient(135deg,#0f2733 0%,#101b2a 52%,#07111b 100%);
+}
+.hd261-visual .discipline-science-inventions .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 80% 22%, rgba(75,232,212,.24), transparent 22%),
+    radial-gradient(circle at 58% 66%, rgba(255,255,255,.09), transparent 28%),
+    linear-gradient(135deg,#103240 0%,#0f1b2a 52%,#08111b 100%);
+}
+.hd261-visual .discipline-science-inventions .hd261-discipline-hero .hd222-hero-svg{inset:3% -4% 5% 6%; transform:scale(1.08);}
+.hd261-visual .discipline-economy .hd222-expedition{
+  background:
+    radial-gradient(circle at 79% 24%, rgba(114,236,130,.16), transparent 22%),
+    linear-gradient(135deg,#11271f 0%,#101b18 52%,#08111b 100%);
+}
+.hd261-visual .discipline-economy .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 79% 24%, rgba(114,236,130,.20), transparent 22%),
+    radial-gradient(circle at 60% 68%, rgba(255,219,112,.14), transparent 26%),
+    linear-gradient(135deg,#143025 0%,#111c18 52%,#08111b 100%);
+}
+.hd261-visual .discipline-economy .hd261-discipline-hero .hd222-hero-svg{inset:5% -4% 6% 6%; transform:scale(1.08);}
+.hd261-visual .discipline-astronomy .hd222-expedition{
+  background:
+    radial-gradient(circle at 79% 34%, rgba(149,118,255,.24) 0%, rgba(149,118,255,.08) 16%, transparent 34%),
+    radial-gradient(circle at 82% 38%, rgba(255,190,128,.10) 0%, transparent 21%),
+    linear-gradient(135deg,#0f1232 0%,#08102b 46%,#05091a 100%);
+}
+.hd261-visual .discipline-astronomy .hd261-hero-backdrop{
+  background:
+    radial-gradient(circle at 73% 44%, rgba(147,118,255,.18), transparent 26%),
+    radial-gradient(circle at 80% 36%, rgba(255,196,134,.10), transparent 16%),
+    linear-gradient(135deg,#10143a 0%,#08102b 46%,#05091a 100%);
+}
+.hd261-visual .discipline-astronomy .hd222-expedition-art{
+  width:52%;
+  right:0;
+  top:22px;
+  height:calc(100% - 38px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.hd261-visual .hd261-hero-astronomy{
+  min-height:280px;
+  background: radial-gradient(circle at 50% 50%, rgba(87,70,170,.10), rgba(8,12,28,0) 68%);
+}
+.hd261-visual .hd225-astro-visual{
+  position:absolute;
+  inset:11% 5% 11% 9%;
+  border-radius:34px;
+  background-image:url('./hero-astronomy-art-v3-faded.png');
+  background-repeat:no-repeat;
+  background-size:contain;
+  background-position:58% 50%;
+  transform:scale(.94);
+  filter:saturate(1.05) contrast(1.03) brightness(1.02) drop-shadow(0 18px 40px rgba(0,0,0,.28));
+  box-shadow:0 0 0 1px rgba(255,255,255,.03), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.hd261-visual .hd225-astro-overlay{
+  position:absolute;
+  inset:11% 5% 11% 9%;
+  border-radius:34px;
+  background:
+    radial-gradient(circle at 61% 44%, rgba(130,105,255,.10) 0%, transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+  mix-blend-mode:screen;
+}
+.hd261-visual .hd225-astro-dust{display:none;}
+.hd261-visual .discipline-astronomy .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#9d79ff 0%, #786dff 52%, #6478ff 100%)!important;
+}
+.hd261-visual .discipline-history .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#cfb47f 0%, #a37d54 52%, #8f653e 100%)!important;
+}
+.hd261-visual .discipline-art .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#ff7cbe 0%, #ff8f6a 50%, #f3b253 100%)!important;
+}
+.hd261-visual .discipline-geography .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#5ad5ff 0%, #2fa4dd 52%, #3cd59d 100%)!important;
+}
+.hd261-visual .discipline-music .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#b67fff 0%, #7f86ff 52%, #53cfff 100%)!important;
+}
+.hd261-visual .discipline-literature .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#e4c17a 0%, #b88b56 52%, #9e6b40 100%)!important;
+}
+.hd261-visual .discipline-cinema .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#ff739f 0%, #a269ff 52%, #6f8fff 100%)!important;
+}
+.hd261-visual .discipline-science-inventions .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#54e5cf 0%, #38bbda 52%, #64b1ff 100%)!important;
+}
+.hd261-visual .discipline-economy .hd222-expedition-action > button{
+  background:linear-gradient(102deg,#6fdd7f 0%, #3db975 52%, #72c86b 100%)!important;
+}
+.hd261-visual .discipline-history .hd222-progress-strip,
+.hd261-visual .discipline-history .hd222-next-grid .hd220-next-card{border-color:rgba(207,180,127,.18)}
+.hd261-visual .discipline-art .hd222-progress-strip,
+.hd261-visual .discipline-art .hd222-next-grid .hd220-next-card{border-color:rgba(255,127,187,.18)}
+.hd261-visual .discipline-geography .hd222-progress-strip,
+.hd261-visual .discipline-geography .hd222-next-grid .hd220-next-card{border-color:rgba(90,213,255,.18)}
+.hd261-visual .discipline-music .hd222-progress-strip,
+.hd261-visual .discipline-music .hd222-next-grid .hd220-next-card{border-color:rgba(182,127,255,.18)}
+.hd261-visual .discipline-literature .hd222-progress-strip,
+.hd261-visual .discipline-literature .hd222-next-grid .hd220-next-card{border-color:rgba(228,193,122,.18)}
+.hd261-visual .discipline-cinema .hd222-progress-strip,
+.hd261-visual .discipline-cinema .hd222-next-grid .hd220-next-card{border-color:rgba(255,115,159,.18)}
+.hd261-visual .discipline-science-inventions .hd222-progress-strip,
+.hd261-visual .discipline-science-inventions .hd222-next-grid .hd220-next-card{border-color:rgba(84,229,207,.18)}
+.hd261-visual .discipline-economy .hd222-progress-strip,
+.hd261-visual .discipline-economy .hd222-next-grid .hd220-next-card{border-color:rgba(111,221,127,.18)}
+.hd261-visual .discipline-astronomy .hd222-progress-strip,
+.hd261-visual .discipline-astronomy .hd222-next-grid .hd220-next-card{border-color:rgba(143,112,255,.18)}
+@media (max-width:430px){
+  .hd261-visual .hd222-expedition-copy{width:50%;}
+  .hd261-visual .hd222-expedition-copy h2{font-size:clamp(2.16rem,8.3vw,2.95rem);}
+  .hd261-visual .hd222-expedition-copy p{max-width:17.2ch;font-size:.86rem;}
+  .hd261-visual .hd222-expedition-art{width:52%;right:-2%;top:24px;height:calc(100% - 34px);}
+  .hd261-visual .hd261-discipline-hero{min-height:252px;}
+  .hd261-visual .hd261-discipline-hero .hd222-hero-svg{inset:8% 2% 8% 7%;}
+  .hd261-visual .discipline-cinema .hd261-discipline-hero .hd222-hero-svg{inset:7% -3% 7% 4%;}
+  .hd261-visual .discipline-science-inventions .hd261-discipline-hero .hd222-hero-svg,
+  .hd261-visual .discipline-economy .hd261-discipline-hero .hd222-hero-svg{inset:6% -5% 8% 4%;}
+  .hd261-visual .discipline-astronomy .hd222-expedition-copy{width:50%;}
+  .hd261-visual .discipline-astronomy .hd222-expedition-art{width:50%;top:28px;height:calc(100% - 46px);}
+  .hd261-visual .hd225-astro-visual,
+  .hd261-visual .hd225-astro-overlay{inset:12% 4% 12% 8%;background-position:60% 50%;transform:scale(.90);}
+}
+@media (max-width:370px){
+  .hd261-visual .hd222-expedition-body{min-height:302px;}
+  .hd261-visual .hd222-expedition-copy{width:54%;}
+  .hd261-visual .hd222-expedition-copy h2{font-size:2rem;max-width:7.6ch;}
+  .hd261-visual .hd222-expedition-copy p{max-width:15.6ch;font-size:.81rem;-webkit-line-clamp:4;}
+  .hd261-visual .hd222-expedition-art{width:49%;right:-4%;top:28px;height:calc(100% - 42px);}
+  .hd261-visual .hd261-discipline-hero{min-height:232px;}
+  .hd261-visual .discipline-astronomy .hd222-expedition-copy{width:53%;}
+  .hd261-visual .discipline-astronomy .hd222-expedition-art{width:48%;top:30px;height:calc(100% - 50px);}
+  .hd261-visual .hd225-astro-visual,
+  .hd261-visual .hd225-astro-overlay{background-position:62% 50%;transform:scale(.88);}
+}
+
+
+/* HistoDaily beta 262 — audio settings */
+.hd262-sound-card{display:grid;gap:13px;padding:15px;border:1px solid rgba(117,209,255,.14);border-radius:18px;background:linear-gradient(145deg,rgba(79,181,255,.075),rgba(255,255,255,.025));}
+.hd262-sound-card h2{margin:4px 0 5px;font-size:1rem;}
+.hd262-sound-card p{margin:0;color:var(--muted);font-size:.76rem;line-height:1.42;}
+.hd262-sound-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+.hd262-sound-actions button{min-width:0;min-height:42px;padding:9px 7px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);color:#aab9c9;font-size:.72rem;font-weight:900;box-shadow:none;}
+.hd262-sound-actions button.active{border-color:rgba(102,211,255,.52);background:linear-gradient(145deg,rgba(74,194,255,.22),rgba(91,121,255,.13));color:#ecfaff;box-shadow:0 0 22px rgba(71,190,255,.10),inset 0 1px 0 rgba(255,255,255,.09);}
+.hd262-sound-note{display:block;color:#72869a;font-size:.65rem;line-height:1.35;}
+html[data-hd-sound-mode="off"] .hd262-sound-card{border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.022);}
+@media(max-width:370px){.hd262-sound-actions{gap:5px}.hd262-sound-actions button{font-size:.67rem;padding:8px 4px}}

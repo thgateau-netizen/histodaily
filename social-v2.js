@@ -1,13 +1,15 @@
 /* =========================================================
-   HistoDaily beta 259 — amis à zéro point et relations héritées
+   HistoDaily beta 262 — amis à zéro point et relations héritées
    Une seule couche client, Supabase comme seule vérité partagée.
    ========================================================= */
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-beta.259.0";
+  const VERSION = "1.0.0-beta.262.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
+  const LOADING_TIMEOUT_MS = 15_000;
+  const BACKGROUND_REFRESH_MS = 120_000;
   const requestFlights = new Map();
   const refreshFlights = new Map();
   const publicProfileFlights = new Map();
@@ -15,6 +17,7 @@
   let legacyBridgeMutedUntil = 0;
   let scoreFlushFlight = null;
   let refreshTimer = 0;
+  let lastObservedDay = "";
 
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
@@ -24,6 +27,11 @@
   };
 
   function now() { return Date.now(); }
+  function dayKey() {
+    try { return typeof localDayKey === "function" ? localDayKey() : new Date().toISOString().slice(0, 10); }
+    catch { return new Date().toISOString().slice(0, 10); }
+  }
+  function visible() { return typeof document === "undefined" || document.visibilityState !== "hidden"; }
   function legacyBridgeMuted() { return now() < legacyBridgeMutedUntil; }
   function online() { return typeof navigator === "undefined" || navigator.onLine !== false; }
   function safePeriod(value) { return ["daily", "week", "year"].includes(value) ? value : "daily"; }
@@ -57,6 +65,7 @@
       version: VERSION,
       phase: "idle",
       message: "Connexion au classement…",
+      startedAt: 0,
       loadedAt: 0,
       profile: null,
       friends: [],
@@ -195,6 +204,7 @@
       };
     }
     s.phase = "ready";
+    s.startedAt = 0;
     s.loadedAt = now();
     s.lastError = "";
     // quiet empêche uniquement un rendu intermédiaire ; il ne doit jamais
@@ -214,6 +224,7 @@
     if (!force && s.loadedAt && now() - s.loadedAt < STALE_MS && s.phase === "ready") return s;
     if (bootstrapFlight) return bootstrapFlight;
     s.phase = "loading";
+    s.startedAt = now();
     s.message = "Synchronisation du profil et des amis…";
     if (!quiet && ["rank", "profile", "publicProfile"].includes(state.tab)) renderNow();
     bootstrapFlight = api("bootstrap", {
@@ -224,6 +235,7 @@
       return json;
     }).catch(error => {
       s.phase = s.loadedAt ? "stale" : "error";
+      s.startedAt = 0;
       s.lastError = error.message || "Service social indisponible.";
       s.message = s.loadedAt ? "Dernière copie affichée : actualisation impossible." : s.lastError;
       saveSoon();
@@ -252,6 +264,7 @@
     const s = social();
     const key = leaderboardKey(period, audience);
     const status = s.leaderboardStatus[key] || {};
+    if (period === "daily" && status.periodKey && status.periodKey !== dayKey()) force = true;
     if (!online()) {
       s.leaderboardStatus[key] = { ...status, phase: status.loadedAt ? "offline" : "error", message: status.loadedAt ? "Hors ligne : dernière copie." : "Connexion nécessaire." };
       saveSoon();
@@ -260,7 +273,7 @@
     if (!force && status.loadedAt && now() - status.loadedAt < STALE_MS && status.phase === "ready") return s.leaderboards[key] || [];
     if (requestFlights.has(key)) return requestFlights.get(key);
 
-    s.leaderboardStatus[key] = { ...status, phase: "loading", message: "Actualisation du classement…" };
+    s.leaderboardStatus[key] = { ...status, phase: "loading", startedAt: now(), message: "Actualisation du classement…" };
     if (!quiet && state.tab === "rank") renderNow();
     const flight = api("leaderboard", {
       query: {
@@ -290,8 +303,10 @@
       s.leaderboards[key] = rows;
       s.leaderboardStatus[key] = {
         phase: "ready",
+        startedAt: 0,
         loadedAt: now(),
         generatedAt: json.generatedAt || "",
+        periodKey: json.periodKey || (period === "daily" ? dayKey() : ""),
         message: "Classement partagé à jour.",
         authoritative: true,
         friendCount: Number(json.friendCount || 0),
@@ -311,6 +326,7 @@
       s.leaderboardStatus[key] = {
         ...status,
         phase: hadCache ? "stale" : "error",
+        startedAt: 0,
         loadedAt: status.loadedAt || 0,
         message: hadCache ? "Dernière copie affichée : serveur indisponible." : (error.message || "Classement indisponible."),
         authoritative: false
@@ -323,6 +339,51 @@
     });
     requestFlights.set(key, flight);
     return flight;
+  }
+
+  function repairStuckStates() {
+    const s = social();
+    const cutoff = now() - LOADING_TIMEOUT_MS;
+    if (s.phase === "loading" && (!Number(s.startedAt || 0) || Number(s.startedAt) < cutoff) && !bootstrapFlight) {
+      s.phase = s.loadedAt ? "stale" : "error";
+      s.startedAt = 0;
+      s.message = s.loadedAt ? "Dernière copie affichée : la synchronisation a expiré." : "La synchronisation a expiré. Réessaie.";
+    }
+    Object.entries(s.leaderboardStatus || {}).forEach(([key, status]) => {
+      if (status?.phase !== "loading" || (Number(status.startedAt || 0) && Number(status.startedAt) >= cutoff) || requestFlights.has(key)) return;
+      s.leaderboardStatus[key] = {
+        ...status,
+        phase: Array.isArray(s.leaderboards?.[key]) ? "stale" : "error",
+        startedAt: 0,
+        message: Array.isArray(s.leaderboards?.[key]) ? "Dernière copie affichée : actualisation expirée." : "Le classement a mis trop de temps à répondre."
+      };
+    });
+  }
+
+  function invalidateDailyLeaderboards(message = "Nouveau jour : classement à actualiser.") {
+    const s = social();
+    ["general:daily", "friends:daily"].forEach(key => {
+      const status = s.leaderboardStatus[key] || {};
+      s.leaderboardStatus[key] = { ...status, loadedAt: 0, startedAt: 0, phase: Array.isArray(s.leaderboards?.[key]) ? "stale" : "idle", message };
+    });
+    try {
+      state.serverLeaderboardStatus = {
+        ...(state.serverLeaderboardStatus || {}),
+        daily: { ...(state.serverLeaderboardStatus?.daily || {}), loadedAt: 0, loading: false, note: message },
+        friends: { ...(state.serverLeaderboardStatus?.friends || {}), loadedAt: 0, loading: false, note: message }
+      };
+    } catch {}
+    saveSoon();
+  }
+
+  function reconcileDayBoundary() {
+    const current = dayKey();
+    if (!lastObservedDay) { lastObservedDay = current; return false; }
+    if (lastObservedDay === current) return false;
+    lastObservedDay = current;
+    invalidateDailyLeaderboards();
+    try { window.HistoDailyDailyRotation?.reconcile?.({ renderAfter: false }); } catch {}
+    return true;
   }
 
   function activeContext() {
@@ -1078,29 +1139,51 @@
   function scheduleBackgroundRefresh() {
     clearTimeout(refreshTimer);
     refreshTimer = setTimeout(async () => {
-      if (!online()) return scheduleBackgroundRefresh();
-      await bootstrap({ quiet: true });
-      const context = activeContext();
-      if (["rank", "profile"].includes(state.tab)) await loadLeaderboard(context.period, context.audience, { quiet: true });
-      scheduleBackgroundRefresh();
-    }, 60_000);
+      try {
+        repairStuckStates();
+        const dayChanged = reconcileDayBoundary();
+        if (!online() || !visible()) return;
+        await bootstrap({ quiet: true });
+        const context = activeContext();
+        if (["rank", "profile"].includes(state.tab)) await loadLeaderboard(context.period, context.audience, { force: dayChanged, quiet: true });
+        else if (state.tab === "home" && dayChanged) await loadLeaderboard("daily", "general", { force: true, quiet: true });
+      } catch {} finally {
+        scheduleBackgroundRefresh();
+      }
+    }, BACKGROUND_REFRESH_MS);
+  }
+
+  async function refreshVisibleState({ force = false } = {}) {
+    repairStuckStates();
+    const dayChanged = reconcileDayBoundary();
+    if (!online() || !visible()) return null;
+    await bootstrap({ force: force || dayChanged, quiet: true });
+    const context = activeContext();
+    if (["rank", "profile"].includes(state.tab)) await loadLeaderboard(context.period, context.audience, { force: force || dayChanged, quiet: true });
+    else if (state.tab === "home" && dayChanged) await loadLeaderboard("daily", "general", { force: true, quiet: true });
+    if (["home", "rank", "profile", "publicProfile"].includes(state.tab)) renderNow();
+    return social();
   }
 
   function init() {
     const s = social();
+    lastObservedDay = dayKey();
+    repairStuckStates();
     const previousVersion = s.version || "";
     if (previousVersion !== VERSION) {
-      // Une ancienne copie du classement Amis ne doit pas masquer les lignes à
-      // zéro ajoutées par cette version. Le classement général reste intact.
+      // Une nouvelle version ne réutilise jamais un état « loading » ni un
+      // classement quotidien potentiellement daté de la veille. Les lignes
+      // déjà affichées restent disponibles comme copie de secours.
       s.loadedAt = 0;
+      s.startedAt = 0;
       s.phase = "idle";
       Object.keys(s.leaderboardStatus || {}).forEach(key => {
-        if (!key.startsWith("friends:")) return;
         s.leaderboardStatus[key] = {
           ...s.leaderboardStatus[key],
           loadedAt: 0,
+          startedAt: 0,
           phase: Array.isArray(s.leaderboards?.[key]) ? "stale" : "idle",
-          message: "Liste d’amis à resynchroniser."
+          message: "Données partagées à resynchroniser."
         };
       });
     }
@@ -1126,8 +1209,25 @@
 
     scheduleBackgroundRefresh();
     window.addEventListener("online", () => {
-      refreshContext(activeContext()).finally(renderNow);
+      refreshVisibleState({ force: true }).finally(renderNow);
     });
+    window.addEventListener("offline", () => {
+      const current = social();
+      current.phase = current.loadedAt ? "offline" : "error";
+      current.startedAt = 0;
+      current.message = current.loadedAt ? "Hors ligne : dernière copie affichée." : "Connexion nécessaire pour charger le multi.";
+      Object.keys(current.leaderboardStatus || {}).forEach(key => {
+        const status = current.leaderboardStatus[key] || {};
+        current.leaderboardStatus[key] = { ...status, startedAt: 0, phase: status.loadedAt ? "offline" : "error", message: status.loadedAt ? "Hors ligne : dernière copie." : "Connexion nécessaire." };
+      });
+      saveSoon();
+      if (["home", "rank", "profile", "publicProfile"].includes(state.tab)) renderNow();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") refreshVisibleState({ force: false }).catch(() => {});
+      else saveSoon();
+    });
+    window.addEventListener("focus", () => refreshVisibleState({ force: false }).catch(() => {}));
     window.HistoDaily = {
       ...(window.HistoDaily || {}),
       version: VERSION,
@@ -1147,6 +1247,9 @@
         pendingScores: typeof beta128PendingScoreCount === "function" ? beta128PendingScoreCount() : 0,
         bootstrapInFlight: Boolean(bootstrapFlight),
         scoreFlushInFlight: Boolean(scoreFlushFlight),
+        dayKey: lastObservedDay || dayKey(),
+        visible: visible(),
+        online: online(),
         legacySocialNetworkDisabled: window.HD_SOCIAL_V2_ONLY === true
       })
     };

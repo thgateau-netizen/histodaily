@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.259.0",
-  assetsVersion: "1.0.0-beta.259.0",
+  version: "1.0.0-beta.262.0",
+  assetsVersion: "1.0.0-beta.262.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,12 +19,12 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 259",
+    versionLabel: "beta 262",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
-      "Le classement Amis part désormais des relations confirmées, même sans aucun score.",
-      "Les anciennes amitiés enregistrées dans un seul sens sont récupérées à l’affichage.",
-      "Profil Orbit, classement général et rotation quotidienne restent inchangés."
+      "Version de consolidation : classement, profil, amis et rotation quotidienne sont figés sur leurs moteurs actuels.",
+      "Le retour dans l’app et le passage à un nouveau jour resynchronisent proprement le dossier et les classements.",
+      "Le cache PWA, les états de chargement et les reprises hors ligne ont été durcis sans modifier les données Supabase."
     ]
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
@@ -139,7 +139,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.259.0",
+  version: "1.0.0-beta.262.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

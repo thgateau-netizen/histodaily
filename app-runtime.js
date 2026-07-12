@@ -5453,47 +5453,79 @@
   } catch {}
 })();
 
-/* Beta 258 — rotation quotidienne canonique.
-   L’ancien correctif beta 231 épinglait le trou noir comme mystère Astronomie
-   permanent. Il est volontairement supprimé : toutes les disciplines suivent
-   maintenant le même calendrier déterministe. */
-(function histodailyBeta258DailyRotationIntegrity(){
+/* Beta 260 — rotation quotidienne canonique et changement de jour à chaud.
+   Le dossier du jour est recalculé au démarrage, au retour dans l’application
+   et lorsqu’un onglet reste ouvert au passage de minuit. */
+(function histodailyBeta260DailyRotationIntegrity(){
   "use strict";
-  try {
-    const today = typeof localDayKey === "function" ? localDayKey() : "";
-    const activeId = typeof activeDisciplineId === "function" ? activeDisciplineId() : (state.currentDiscipline || "history");
-    const selected = state.currentMysteryId && typeof mysteryById === "function" ? mysteryById(state.currentMysteryId) : null;
-    const selectedId = selected?.id || null;
-    const selectedDiscipline = selected && typeof mysteryDisciplineId === "function" ? mysteryDisciplineId(selected) : null;
-    const selectedDaily = selectedDiscipline && typeof mysteryForDisciplineDayOffset === "function"
-      ? mysteryForDisciplineDayOffset(selectedDiscipline, 0)
-      : null;
-    const activeDaily = typeof mysteryForDisciplineDayOffset === "function"
-      ? mysteryForDisciplineDayOffset(activeId, 0)
-      : null;
-    const permanent = Boolean(selectedId && ((typeof mysterySolved === "function" && mysterySolved(selectedId)) || state.unlockedMysteries?.[selectedId]));
-    const validDaily = Boolean(selectedId && selectedDaily?.id === selectedId && selectedDiscipline === activeId);
-    const validSameDayManual = Boolean(selectedId && state.currentMysteryOpenedDay === today && state.tab === "mystery");
+  const ENGINE_VERSION = "1.0.0-beta.262.0";
+  let lastObservedDay = "";
 
-    if (!permanent && !validDaily && !validSameDayManual) {
-      state.currentMysteryId = activeDaily?.id || null;
-      state.currentMysteryDiscipline = activeId;
-      state.currentMysteryOpenedDay = activeDaily?.id ? today : null;
-    } else if (selectedId && !state.currentMysteryOpenedDay) {
-      // Migration des états créés avant beta 258 : un mystère qui correspond
-      // réellement à aujourd’hui reçoit simplement son horodatage local.
-      state.currentMysteryOpenedDay = validDaily ? today : null;
-    }
-
-    delete state.beta231AstroDossierReady;
-    state.dailyMysteryEngineVersion = "1.0.0-beta.258.0";
-    if (typeof queueSaveState === "function") queueSaveState(80);
-    window.setTimeout(() => {
-      try { if (typeof render === "function") render({ immediate: true }); } catch {}
-    }, 0);
-  } catch (error) {
-    try { console.warn("daily mystery rotation repair", error); } catch {}
+  function currentDayKey(){
+    try { return typeof localDayKey === "function" ? localDayKey() : new Date().toISOString().slice(0, 10); }
+    catch { return new Date().toISOString().slice(0, 10); }
   }
+
+  function reconcileDailyMystery({ renderAfter = false } = {}){
+    try {
+      const today = currentDayKey();
+      const previousDay = lastObservedDay || state.dailyRuntimeDay || today;
+      const dayChanged = previousDay !== today;
+      lastObservedDay = today;
+      state.dailyRuntimeDay = today;
+
+      const activeId = typeof activeDisciplineId === "function" ? activeDisciplineId() : (state.currentDiscipline || "history");
+      const selected = state.currentMysteryId && typeof mysteryById === "function" ? mysteryById(state.currentMysteryId) : null;
+      const selectedId = selected?.id || null;
+      const selectedDiscipline = selected && typeof mysteryDisciplineId === "function" ? mysteryDisciplineId(selected) : null;
+      const selectedDaily = selectedDiscipline && typeof mysteryForDisciplineDayOffset === "function"
+        ? mysteryForDisciplineDayOffset(selectedDiscipline, 0)
+        : null;
+      const activeDaily = typeof mysteryForDisciplineDayOffset === "function"
+        ? mysteryForDisciplineDayOffset(activeId, 0)
+        : null;
+      const permanent = Boolean(selectedId && ((typeof mysterySolved === "function" && mysterySolved(selectedId)) || state.unlockedMysteries?.[selectedId]));
+      const validDaily = Boolean(selectedId && selectedDaily?.id === selectedId && selectedDiscipline === activeId);
+      const validSameDayManual = Boolean(selectedId && state.currentMysteryOpenedDay === today && state.tab === "mystery");
+      const keepPermanentOpen = Boolean(permanent && state.tab === "mystery");
+      const mustReturnToDaily = Boolean(dayChanged && state.tab !== "mystery");
+
+      let changed = false;
+      if (mustReturnToDaily || (!keepPermanentOpen && !validDaily && !validSameDayManual)) {
+        const nextId = activeDaily?.id || null;
+        if (state.currentMysteryId !== nextId || state.currentMysteryDiscipline !== activeId || state.currentMysteryOpenedDay !== (nextId ? today : null)) {
+          state.currentMysteryId = nextId;
+          state.currentMysteryDiscipline = activeId;
+          state.currentMysteryOpenedDay = nextId ? today : null;
+          changed = true;
+        }
+      } else if (selectedId && !state.currentMysteryOpenedDay && validDaily) {
+        state.currentMysteryOpenedDay = today;
+        changed = true;
+      }
+
+      delete state.beta231AstroDossierReady;
+      state.dailyMysteryEngineVersion = ENGINE_VERSION;
+      if (changed || dayChanged) {
+        try { if (typeof queueSaveState === "function") queueSaveState(60); else saveState?.(); } catch {}
+        if (renderAfter) {
+          try { if (typeof render === "function") render({ immediate: true }); } catch {}
+        }
+      }
+      return changed || dayChanged;
+    } catch (error) {
+      try { console.warn("daily mystery rotation integrity", error); } catch {}
+      return false;
+    }
+  }
+
+  reconcileDailyMystery({ renderAfter: true });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") reconcileDailyMystery({ renderAfter: true });
+  });
+  window.addEventListener("focus", () => reconcileDailyMystery({ renderAfter: true }));
+  window.setInterval(() => reconcileDailyMystery({ renderAfter: true }), 60_000);
+  window.HistoDailyDailyRotation = { version: ENGINE_VERSION, reconcile: reconcileDailyMystery, dayKey: currentDayKey };
 })();
 
 /* ===== HistoDaily beta 244 — fiabilité, classement et amis ===== */
