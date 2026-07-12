@@ -3,7 +3,7 @@
 (function histodailyExpedition264(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.266.0";
+  const VERSION = "1.0.0-beta.268.0";
   const STORAGE_KEY = "histodaily.expedition.v264";
   let timerId = 0;
   let scheduled = false;

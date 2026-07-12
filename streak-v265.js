@@ -4,7 +4,7 @@
    completion without granting duplicate gems or duplicate scores. */
 (function histodailyBeta265StreakRepair(){
   "use strict";
-  const VERSION = "1.0.0-beta.266.0";
+  const VERSION = "1.0.0-beta.268.0";
   const DAY_MS = 86400000;
 
   const safe = (fn, fallback = null) => {
