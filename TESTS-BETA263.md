@@ -6,4 +6,4 @@
 - capsule locale attribuée une seule fois par jour après 3/3 ;
 - bonus facultatif limité à un seul cours suggéré ;
 - aucun changement des routes sociales ni du schéma Supabase ;
-- cache PWA et version harmonisés en `1.0.0-beta.265.0`.
+- cache PWA et version harmonisés en `1.0.0-beta.266.0`.

@@ -1,0 +1,182 @@
+/* HistoDaily beta 266 — compact mobile home hero
+   Rebalances title/artwork, keeps the 3-step route visible and prevents
+   the fixed navigation from hiding the useful part of the expedition. */
+
+.hd266-home .app-shell.tab-home{
+  padding-bottom:calc(106px + env(safe-area-inset-bottom))!important;
+}
+
+@media (max-width:430px){
+  .hd266-home .hd222-home{gap:16px}
+  .hd266-home .hd222-home-head{padding-top:1px}
+  .hd266-home .hd222-worlds .hd222-section-cap{padding-bottom:7px}
+  .hd266-home .hd222-world-switcher{gap:8px}
+  .hd266-home .hd222-world{
+    min-height:72px;
+    padding:8px 10px;
+    grid-template-columns:42px minmax(0,1fr);
+    border-radius:22px;
+  }
+  .hd266-home .hd222-world>span{width:42px;height:42px;border-radius:15px}
+  .hd266-home .hd222-world b{font-size:.75rem;line-height:1.02}
+
+  .hd266-home .hd222-expedition{
+    padding:18px;
+    border-radius:30px;
+  }
+  .hd266-home .hd222-expedition .hd220-expedition-top>span{
+    min-height:30px;
+    padding:6px 12px;
+    font-size:.63rem;
+  }
+  .hd266-home .hd222-expedition .hd220-expedition-top>b{font-size:.82rem}
+  .hd266-home .hd222-expedition .hd220-expedition-top b i{font-size:1.18rem}
+
+  .hd266-home .hd222-expedition-body{
+    min-height:266px;
+    margin-top:7px;
+    align-items:center;
+  }
+  .hd266-home .hd222-expedition-copy{
+    width:56%;
+    padding:10px 0 4px;
+  }
+  .hd266-home .hd222-expedition-copy::after{
+    inset:-16px -32px -14px -18px;
+    background:linear-gradient(90deg,rgba(5,10,18,.98) 0%,rgba(5,10,18,.94) 59%,rgba(5,10,18,.58) 80%,transparent 100%);
+  }
+  .hd266-home .hd222-expedition-copy .hd220-expedition-symbol{
+    width:48px;
+    height:48px;
+    margin-bottom:12px;
+    border-radius:16px;
+  }
+  .hd266-home .hd222-expedition-copy .hd220-expedition-symbol .hd-icon{width:26px;height:26px}
+  .hd266-home .hd222-expedition-copy h2{
+    max-width:9.3ch;
+    font-size:clamp(2.05rem,8.4vw,2.48rem);
+    line-height:.94;
+    letter-spacing:-.058em;
+    text-wrap:pretty;
+  }
+  .hd266-home .hd222-expedition-copy p{
+    max-width:20ch;
+    margin-top:12px;
+    font-size:.81rem;
+    line-height:1.43;
+    -webkit-line-clamp:3;
+  }
+  .hd266-home .hd222-expedition-art{
+    width:47%;
+    right:-1%;
+    top:12px;
+    height:calc(100% - 20px);
+    opacity:.9;
+  }
+  .hd266-home .hd261-discipline-hero{
+    min-height:222px;
+    border-radius:27px;
+  }
+  .hd266-home .hd261-discipline-hero .hd222-hero-svg{
+    inset:10% 1% 10% 5%;
+    transform:scale(.95);
+  }
+
+  /* Long prompts need more text room rather than four cramped lines. */
+  .hd266-home .hd222-expedition.is-long .hd222-expedition-copy,
+  .hd266-home .discipline-cinema .hd222-expedition-copy{
+    width:63%;
+  }
+  .hd266-home .hd222-expedition.is-long .hd222-expedition-copy h2,
+  .hd266-home .discipline-cinema .hd222-expedition-copy h2{
+    max-width:11.2ch;
+    font-size:clamp(1.78rem,7.3vw,2.12rem);
+    line-height:.97;
+  }
+  .hd266-home .hd222-expedition.is-long .hd222-expedition-copy p,
+  .hd266-home .discipline-cinema .hd222-expedition-copy p{
+    max-width:23ch;
+    font-size:.79rem;
+  }
+  .hd266-home .hd222-expedition.is-long .hd222-expedition-art,
+  .hd266-home .discipline-cinema .hd222-expedition-art{
+    width:41%;
+    right:-2%;
+    opacity:.78;
+  }
+  .hd266-home .discipline-cinema .hd261-discipline-hero .hd222-hero-svg{
+    inset:12% -5% 12% 1%;
+    transform:scale(.91);
+  }
+  .hd266-home .discipline-science-inventions .hd261-discipline-hero .hd222-hero-svg,
+  .hd266-home .discipline-economy .hd261-discipline-hero .hd222-hero-svg{
+    inset:9% -4% 10% 2%;
+    transform:scale(.94);
+  }
+
+  /* The route now precedes the CTA and remains fully visible. */
+  .hd266-home .hd222-expedition .hd220-route{
+    margin-top:9px;
+    padding-top:12px;
+    gap:4px;
+  }
+  .hd266-home .hd222-expedition .hd220-route span{
+    width:28px;
+    height:28px;
+    font-size:.62rem;
+  }
+  .hd266-home .hd222-expedition .hd220-route>div:not(:last-child)::after{
+    top:13px;
+    left:calc(50% + 15px);
+    right:calc(-50% + 15px);
+  }
+  .hd266-home .hd222-expedition .hd220-route b{font-size:.58rem}
+
+  .hd266-home .hd222-expedition-action{margin-top:13px}
+  .hd266-home .hd222-expedition-action>button{
+    min-height:58px;
+    padding:10px 12px 10px 17px;
+    border-radius:19px;
+    font-size:.94rem;
+  }
+  .hd266-home .hd222-expedition-action>button b{
+    width:37px;
+    height:37px;
+    border-radius:13px;
+    font-size:1.08rem;
+  }
+
+  .hd266-home .hd222-home-shell .bottom-nav,
+  .hd266-home .bottom-nav.hd183-bottom-nav{
+    min-height:64px!important;
+    height:64px!important;
+    bottom:4px!important;
+    padding:5px 6px calc(5px + env(safe-area-inset-bottom))!important;
+    border-radius:22px!important;
+  }
+  .hd266-home .hd222-home-shell .nav-item,
+  .hd266-home .bottom-nav.hd183-bottom-nav .nav-item{
+    min-height:48px!important;
+    border-radius:15px!important;
+  }
+}
+
+@media (max-width:370px){
+  .hd266-home .hd222-expedition{padding:16px}
+  .hd266-home .hd222-expedition-body{min-height:252px}
+  .hd266-home .hd222-expedition-copy{width:58%}
+  .hd266-home .hd222-expedition-copy h2{font-size:1.92rem;max-width:9ch}
+  .hd266-home .hd222-expedition-copy p{font-size:.77rem;max-width:18ch}
+  .hd266-home .hd222-expedition-art{width:45%;right:-3%}
+  .hd266-home .hd222-expedition.is-long .hd222-expedition-copy,
+  .hd266-home .discipline-cinema .hd222-expedition-copy{width:65%}
+  .hd266-home .hd222-expedition.is-long .hd222-expedition-copy h2,
+  .hd266-home .discipline-cinema .hd222-expedition-copy h2{font-size:1.68rem;max-width:10.8ch}
+  .hd266-home .hd222-expedition.is-long .hd222-expedition-art,
+  .hd266-home .discipline-cinema .hd222-expedition-art{width:38%;opacity:.72}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hd266-home .hd222-expedition-art,
+  .hd266-home .hd261-discipline-hero .hd222-hero-svg{transition:none!important;animation:none!important}
+}
