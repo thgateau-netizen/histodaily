@@ -16,6 +16,6 @@
 
 - `content-audit-v267.js` se charge après les anciennes passes éditoriales et avant le runtime ;
 - aucune route sociale, table Supabase ou logique de score modifiée ;
-- cache PWA isolé sous `histodaily-beta268-v1` ;
-- version active `1.0.0-beta.268.0` ;
+- cache PWA isolé sous `histodaily-beta270-v1` ;
+- version active `1.0.0-beta.270.0` ;
 - aucun SQL requis.

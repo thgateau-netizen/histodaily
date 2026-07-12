@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.268.0";
+  const VERSION = "1.0.0-beta.271.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }
@@ -290,6 +290,7 @@
     const progressPercentText = astroData ? astroData.progressLabel : `${progress}% exploré`;
     const pseudo = String(state.pseudo || "").trim();
     const greeting = pseudo && !/^invité$/i.test(pseudo) ? `Salut ${pseudo}` : "Bonjour";
+    const homeStreak = Math.max(0, Number(safe(() => currentStreakValue(), state.streak || 0)) || 0);
     const art = heroArtwork(disciplineId, stageView.title);
     const heroIcon = safe(() => HD_ICONS.discipline(discipline), discipline.emoji || "✦");
     const routeDone = clamp((stageView.index || 1) - 1, 0, 3);
@@ -298,7 +299,7 @@
     renderShell(`<div class="hd220-home hd222-home" style="--world:${esc(discipline.accent)}">
       <header class="hd220-home-head hd222-home-head">
         <div class="hd220-brand"><span>HistoDaily</span><h1>${esc(greeting)}</h1></div>
-        <div class="hd220-head-metrics"><button type="button" data-hd220-profile aria-label="Ouvrir le profil"><span>🔥</span><b>${state.streak || 0}</b></button><button type="button" data-hd220-profile aria-label="Ouvrir le profil, niveau ${level()}"><span>Niv.</span><b>${level()}</b></button></div>
+        <div class="hd220-head-metrics"><button type="button" data-hd220-profile aria-label="Ouvrir le profil"><span>🔥</span><b>${homeStreak}</b></button><button type="button" data-hd220-profile aria-label="Ouvrir le profil, niveau ${level()}"><span>Niv.</span><b>${level()}</b></button></div>
       </header>
 
       <section class="hd220-worlds hd222-worlds">

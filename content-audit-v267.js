@@ -4,7 +4,7 @@
    donnaient involontairement une partie de la réponse. */
 (function histodailyBeta267ContentAudit(){
   "use strict";
-  const VERSION = "1.0.0-beta.268.0";
+  const VERSION = "1.0.0-beta.271.0";
   const packs = (typeof READY_LESSON_PACKS === "object" && READY_LESSON_PACKS) || {};
   const mysteries = Array.isArray(data?.mysteries) ? data.mysteries : [];
   const clean = value => String(value || "").replace(/\s+/g, " ").trim();

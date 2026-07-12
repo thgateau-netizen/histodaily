@@ -4,7 +4,7 @@
    completion without granting duplicate gems or duplicate scores. */
 (function histodailyBeta265StreakRepair(){
   "use strict";
-  const VERSION = "1.0.0-beta.268.0";
+  const VERSION = "1.0.0-beta.271.0";
   const DAY_MS = 86400000;
 
   const safe = (fn, fallback = null) => {
@@ -31,6 +31,37 @@
     date.setDate(date.getDate() + delta);
     return keyFor(date.getTime());
   };
+
+  function progressSnapshotStreak(){
+    try {
+      const storageKey = typeof STORAGE_KEY === "string" ? STORAGE_KEY : "histodaily_state";
+      const snapshot = JSON.parse(localStorage.getItem(`${storageKey}_progress_v3`) || "null");
+      return Math.max(0, number(snapshot?.streak, 0));
+    } catch { return 0; }
+  }
+
+  function latestRecordedStreak(){
+    const records = { ...(state?.dailyHistory || {}), ...(state?.dailyClaims || {}) };
+    const latestKey = Object.keys(records).filter(Boolean).sort().pop();
+    return latestKey ? Math.max(0, number(records[latestKey]?.streak, 0)) : 0;
+  }
+
+  function canonicalStreakValue(){
+    return Math.max(
+      0,
+      number(state?.streak, 0),
+      number(state?.socialV2?.profile?.streak, 0),
+      latestRecordedStreak(),
+      progressSnapshotStreak()
+    );
+  }
+
+  function adoptCanonicalStreak(){
+    const value = canonicalStreakValue();
+    if (number(state?.streak, 0) >= value) return false;
+    state.streak = value;
+    return true;
+  }
 
   function mysteryEverywhere(id){
     if (!id) return null;
@@ -121,8 +152,9 @@
     };
   }
 
-  function repairTodayStreak({ persist = true, rerender = true } = {}){
+  function repairTodayStreak({ persist = true, rerender = true } = {}) {
     if (!state || typeof state !== "object") return false;
+    let changed = adoptCanonicalStreak();
     const todayKey = safe(() => localDayKey(), keyFor());
     state.dailyClaims = state.dailyClaims && typeof state.dailyClaims === "object" ? state.dailyClaims : {};
     state.dailyHistory = state.dailyHistory && typeof state.dailyHistory === "object" ? state.dailyHistory : {};
@@ -131,12 +163,15 @@
 
     const existing = recordForDay(todayKey);
     const solved = solvedTodayCandidate(todayKey);
-    if (!existing && !solved) return false;
+    if (!existing && !solved) {
+      if (changed && persist) { try { saveState(); } catch {} }
+      if (changed && rerender) { try { render({ immediate: true }); } catch { try { render(); } catch {} } }
+      return changed;
+    }
 
     const mysteryId = existing?.mysteryId || solved?.id;
-    if (!mysteryId) return false;
+    if (!mysteryId) return changed;
     const streak = desiredTodayStreak(todayKey, existing);
-    let changed = false;
 
     const claim = normalizeTodayRecord(state.dailyClaims[todayKey] || existing, mysteryId, todayKey, streak);
     const history = normalizeTodayRecord(state.dailyHistory[todayKey] || existing, mysteryId, todayKey, streak);
@@ -198,6 +233,7 @@
   window.HistoDailyStreakRepair = {
     version: VERSION,
     repair: runRepair,
+    value: canonicalStreakValue,
     isTodayMystery: canonicalIsToday,
     diagnostics: () => {
       const todayKey = safe(() => localDayKey(), keyFor());

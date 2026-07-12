@@ -5,7 +5,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-beta.268.0";
+  const VERSION = "1.0.0-beta.271.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -189,8 +189,17 @@
 
   function applySnapshot(json = {}, { quiet = false } = {}) {
     const s = social();
+    let streakRaised = false;
     adoptIdentity(json);
-    if (json.profile) s.profile = { ...json.profile };
+    if (json.profile) {
+      s.profile = { ...json.profile };
+      const serverStreak = Math.max(0, Number(json.profile.streak || 0));
+      const localStreak = Math.max(0, Number(state.streak || 0));
+      if (serverStreak > localStreak) {
+        state.streak = serverStreak;
+        streakRaised = true;
+      }
+    }
     if (Array.isArray(json.friends)) {
       s.friends = json.friends.map(friend => ({ ...friend }));
       // Ce miroir ne sert qu'aux écrans historiques. Il n'est jamais utilisé
@@ -211,6 +220,12 @@
     // laisser le texte « Synchronisation… » après une réponse réussie.
     s.message = json.message || "Profil et amis synchronisés.";
     saveSoon();
+    if (streakRaised) {
+      queueMicrotask(() => {
+        try { window.HistoDailyStreakRepair?.repair?.(); } catch {}
+        if (state.tab === "home") renderNow();
+      });
+    }
   }
 
   async function bootstrap({ force = false, allowPseudoChange = false, quiet = false } = {}) {
@@ -490,7 +505,7 @@
       <header class="hdsv2-topbar"><div><p class="eyebrow">Classement</p><h1>${esc(periodLabel(context.period))}</h1></div><button type="button" class="hdsv2-profile-shortcut" data-open-profile aria-label="Ouvrir le profil">${esc(pseudo().charAt(0).toUpperCase() || "P")}</button></header>
       <nav class="hdsv2-period-tabs" aria-label="Période">${["daily", "week", "year"].map(period => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}">${esc(({ daily: "Aujourd’hui", week: "Semaine", year: "Année" })[period])}</button>`).join("")}</nav>
       <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Général</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
-      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">Ton résultat partagé</span><h2>${Number(me?.score || 0)} points</h2><p>${context.audience === "friends" ? "Même période, uniquement toi et tes amis confirmés." : `Somme de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" data-social-refresh>Actualiser</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${Number(me?.solvedInPeriod || 0)}</b><span>dossiers comptés</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score inclus dans le classement.</small>` : ""}</section>
+      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">Ton résultat partagé</span><h2>${Number(me?.score || 0)} points</h2><p>${context.audience === "friends" ? "Même période, uniquement toi et tes amis confirmés." : `Somme de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" data-social-refresh>Actualiser</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${Number(me?.solvedInPeriod || 0)}</b><span>dossiers comptés</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${context.period === "daily" && context.audience === "general" ? `<small class="hdsv2-zero-friends">Le classement général masque les autres joueurs à 0 point. Les amis confirmés restent visibles dans l’onglet Amis, même sans score. Un dossier d’archive ne compte pas dans le classement du jour.</small>` : ""}${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score inclus dans le classement.</small>` : ""}</section>
       ${context.audience === "friends" ? requestMarkup() : ""}
       <section class="card hdsv2-card hdsv2-leaderboard"><div class="hdsv2-section-head"><div><span class="card-label">${context.audience === "friends" ? "Entre amis" : "Classement général"}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2></div></div>${leaderboardMarkup(rows, context, status)}</section>
       ${context.audience === "friends" ? friendsMarkup({ includeAdd: true }) : ""}
@@ -1144,6 +1159,8 @@
         const dayChanged = reconcileDayBoundary();
         if (!online() || !visible()) return;
         await bootstrap({ quiet: true });
+        queueRecoveredScores();
+        await socialV2FlushScoreOutbox({ force: false, reason: "background-refresh" }).catch(() => null);
         const context = activeContext();
         if (["rank", "profile"].includes(state.tab)) await loadLeaderboard(context.period, context.audience, { force: dayChanged, quiet: true });
         else if (state.tab === "home" && dayChanged) await loadLeaderboard("daily", "general", { force: true, quiet: true });
@@ -1158,6 +1175,8 @@
     const dayChanged = reconcileDayBoundary();
     if (!online() || !visible()) return null;
     await bootstrap({ force: force || dayChanged, quiet: true });
+    queueRecoveredScores();
+    await socialV2FlushScoreOutbox({ force, reason: "visible-refresh" }).catch(() => null);
     const context = activeContext();
     if (["rank", "profile"].includes(state.tab)) await loadLeaderboard(context.period, context.audience, { force: force || dayChanged, quiet: true });
     else if (state.tab === "home" && dayChanged) await loadLeaderboard("daily", "general", { force: true, quiet: true });

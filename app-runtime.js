@@ -5044,7 +5044,7 @@
     renderShell(`<div class="hd218-home" style="--discipline-accent:${esc(discipline.accent)}">
       <header class="hd218-home-head">
         <div><span>HistoDaily</span><h1>Ton parcours</h1></div>
-        <div class="hd218-head-stats" aria-label="Statistiques"><b title="Série">🔥 ${state.streak || 0}</b><b title="Gemmes">◆ ${state.gems || 0}</b><b title="Niveau">Niv. ${level()}</b></div>
+        <div class="hd218-head-stats" aria-label="Statistiques"><b title="Série">🔥 ${typeof currentStreakValue === "function" ? currentStreakValue() : (state.streak || 0)}</b><b title="Gemmes">◆ ${state.gems || 0}</b><b title="Niveau">Niv. ${level()}</b></div>
       </header>
 
       ${modeSwitcherMarkup()}
@@ -5294,7 +5294,7 @@
     renderShell(`<div class="hd219-home" style="--discipline-accent:${esc(discipline.accent)}">
       <header class="hd219-appbar">
         <div><span>${esc(greeting)}</span><h1>Continue ton exploration</h1></div>
-        <div class="hd219-quick-stats"><b title="Série">🔥 ${state.streak || 0}</b><b title="Niveau">Niv. ${level()}</b></div>
+        <div class="hd219-quick-stats"><b title="Série">🔥 ${typeof currentStreakValue === "function" ? currentStreakValue() : (state.streak || 0)}</b><b title="Niveau">Niv. ${level()}</b></div>
       </header>
 
       <section class="hd219-domain-zone">
@@ -5458,7 +5458,7 @@
    et lorsqu’un onglet reste ouvert au passage de minuit. */
 (function histodailyBeta260DailyRotationIntegrity(){
   "use strict";
-  const ENGINE_VERSION = "1.0.0-beta.268.0";
+  const ENGINE_VERSION = "1.0.0-beta.271.0";
   let lastObservedDay = "";
 
   function currentDayKey(){

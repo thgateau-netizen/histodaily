@@ -1,0 +1,99 @@
+/* HistoDaily beta 270 — Android course/library vertical scrolling.
+   The document remains the only vertical scroll container; course content must
+   never become a viewport-sized nested panel. */
+html.hd269-course-scroll{
+  min-height:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  touch-action:pan-y pinch-zoom!important;
+  scroll-behavior:auto!important;
+}
+html.hd269-course-scroll body:not(.hd187-layer-open){
+  position:static!important;
+  inset:auto!important;
+  min-height:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  touch-action:pan-y pinch-zoom!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+html.hd269-course-scroll body:not(.hd187-layer-open) #app{
+  position:relative!important;
+  min-height:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  touch-action:pan-y pinch-zoom!important;
+}
+html.hd269-course-scroll .app-shell.tab-lesson.hd269-scroll-safe,
+html.hd269-course-scroll .app-shell.tab-learn.hd269-scroll-safe{
+  position:relative!important;
+  display:block!important;
+  min-height:100svh!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  overflow-y:visible!important;
+  overscroll-behavior-y:auto!important;
+  touch-action:pan-y pinch-zoom!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+html.hd269-course-scroll .app-shell.tab-lesson.hd269-scroll-safe{
+  padding-bottom:calc(54px + env(safe-area-inset-bottom))!important;
+}
+html.hd269-course-scroll .app-shell.tab-learn.hd269-scroll-safe{
+  padding-bottom:calc(126px + env(safe-area-inset-bottom))!important;
+}
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe > *,
+html.hd269-course-scroll .tab-learn.hd269-scroll-safe > *,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .hd214-reader-page,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .reading-card,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .lesson-full-page,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .complete-course-panel,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .express-coach-card,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .quiz-section,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .deep-reading-block{
+  max-height:none!important;
+  overflow-y:visible!important;
+  touch-action:pan-y pinch-zoom!important;
+}
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe button,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe input,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe summary,
+html.hd269-course-scroll .tab-learn.hd269-scroll-safe button,
+html.hd269-course-scroll .tab-learn.hd269-scroll-safe input,
+html.hd269-course-scroll .tab-learn.hd269-scroll-safe summary{
+  touch-action:manipulation!important;
+}
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .lesson-view-tabs,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .hd183-lesson-tabs,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .hd214-reader-tabs{
+  touch-action:pan-x pan-y!important;
+}
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .hd214-reader-footer,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .lesson-next-choice,
+html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .quiz-section{
+  scroll-margin-bottom:calc(34vh + env(safe-area-inset-bottom));
+}
+@media(max-width:800px){
+  html.hd269-course-scroll body{background-attachment:scroll!important;}
+  html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .hd214-reader-header,
+  html.hd269-course-scroll .tab-lesson.hd269-scroll-safe .lesson-full-topbar{
+    position:sticky!important;
+    top:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  html.hd269-course-scroll.hd269-android .tab-lesson.hd269-scroll-safe .hd214-reader-header{
+    background:rgba(5,11,21,.985)!important;
+    box-shadow:0 7px 20px rgba(0,0,0,.2)!important;
+  }
+}

@@ -4,7 +4,7 @@
 (function histodailyArchiveMobile268(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.268.0";
+  const VERSION = "1.0.0-beta.271.0";
   const PENDING_KEY = "histodaily.archive.pending.v268";
   let scheduled = false;
   let lastMysteryId = "";

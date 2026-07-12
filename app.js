@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.268.0";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.271.0";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -477,6 +477,13 @@ function timeToNextDaily() {
   return `${hours} h ${String(minutes).padStart(2, "0")}`;
 }
 function todayClaim() { return state.dailyClaims?.[localDayKey()] || null; }
+function currentStreakValue() {
+  const local = Math.max(0, Number(state?.streak || 0));
+  const server = Math.max(0, Number(state?.socialV2?.profile?.streak || 0));
+  let repaired = 0;
+  try { repaired = Math.max(0, Number(window.HistoDailyStreakRepair?.value?.() || 0)); } catch {}
+  return Math.max(local, server, repaired);
+}
 /* LTS: fonction morte supprimée (dailySolvedToday). */
 function dailyRewardPreview() {
   const nextStreak = state.lastDailySolvedKey === localDayKey() ? state.streak : (dayDiff(state.lastDailySolvedKey, localDayKey()) === 1 ? (state.streak || 0) + 1 : 1);
@@ -7620,7 +7627,7 @@ function renderMystery() {
       <div class="mystery-progress-grid">
         <div><strong>${stats.solved}/${stats.total}</strong><span>mystères résolus</span></div>
         <div><strong>${state.gems || 0}</strong><span>gemmes dispo</span></div>
-        <div><strong>${state.streak || 0}</strong><span>série quotidienne</span></div>
+        <div><strong>${currentStreakValue()}</strong><span>série quotidienne</span></div>
       </div>
     </section>
     ${archiveBacklogMarkup()}
@@ -11244,9 +11251,10 @@ function applyVisibleStateGuard({ save = true } = {}) {
   const nextDailyHistory = cleanDailyRecords(state.dailyHistory, mysteryIds);
   if (shallowDifferentKeys(state.dailyHistory, nextDailyHistory)) { state.dailyHistory = nextDailyHistory; changed = true; }
   if (state.lastDailySolvedKey && !state.dailyHistory?.[state.lastDailySolvedKey] && !state.dailyClaims?.[state.lastDailySolvedKey]) {
-    state.lastDailySolvedKey = null;
-    state.streak = 0;
-    changed = true;
+    // Ne jamais effacer une série uniquement parce qu'un ancien enregistrement
+    // quotidien manque. Le profil serveur ou le journal de progression peuvent
+    // encore contenir la valeur correcte ; streak-v265.js réconcilie ensuite
+    // les différentes sources sans récompenser deux fois le joueur.
   }
 
   const cleanXp = clampInt(state.xp, 0, 999999);
@@ -11892,7 +11900,7 @@ function renderHome() {
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
         <p class="premium-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours progressif pour comprendre et retenir.")}</p>
-        <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
+        <div class="hero-metrics"><span>Série ${currentStreakValue()}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
       ${premiumHeaderVisual(discipline.id)}
     </header>
@@ -16500,7 +16508,7 @@ renderHome = function beta117RenderHome() {
         <p class="eyebrow">HistoDaily · ${escapeHtml(mode.label)}</p>
         <h1>${escapeHtml(mode.headline)}</h1>
         <p class="premium-header-subtitle">${escapeHtml(mode.promise || discipline.description || "Un parcours progressif pour comprendre et retenir.")}</p>
-        <div class="hero-metrics"><span>Série ${state.streak || 0}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
+        <div class="hero-metrics"><span>Série ${currentStreakValue()}</span><span>${state.gems || 0} gemmes</span><span>Niv. ${level()}</span>${homeVersionPillMarkup()}</div>
       </div>
       ${premiumHeaderVisual(discipline.id)}
     </header>

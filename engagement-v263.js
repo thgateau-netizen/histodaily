@@ -4,7 +4,7 @@
 (function histodailyEngagement263(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.268.0";
+  const VERSION = "1.0.0-beta.271.0";
   const STORAGE_KEY = "histodaily.engagement.v263";
   let mountTimer = null;
   let previousSignature = "";
@@ -173,7 +173,7 @@
   }
 
   function nextMilestone(){
-    const streak = Math.max(0, Number(safe(() => state.streak, 0)) || 0);
+    const streak = Math.max(0, Number(safe(() => currentStreakValue(), state.streak || 0)) || 0);
     const milestones = [3, 7, 14, 30, 60, 100, 180, 365];
     const target = milestones.find(value => value > streak) || (Math.ceil((streak + 1) / 100) * 100);
     const previous = [...milestones].reverse().find(value => value <= streak) || 0;
@@ -287,7 +287,7 @@
       mystery: data.mystery?.id || "",
       discipline: data.disciplineId,
       done: data.done,
-      streak: safe(() => state.streak, 0),
+      streak: safe(() => currentStreakValue(), state.streak || 0),
       day: dateKey(),
       capsuleCount: reward.count
     });
