@@ -3,7 +3,7 @@
 (function histodailyAudio262(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.264.0";
+  const VERSION = "1.0.0-beta.265.0";
   const STORAGE_KEY = "histodaily.sound.mode.v1";
   const MODES = new Set(["off", "soft", "normal"]);
   let context = null;

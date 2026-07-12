@@ -4,7 +4,7 @@
 (function histodailyEngagement263(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.264.0";
+  const VERSION = "1.0.0-beta.265.0";
   const STORAGE_KEY = "histodaily.engagement.v263";
   let mountTimer = null;
   let previousSignature = "";

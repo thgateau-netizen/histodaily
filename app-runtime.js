@@ -5458,7 +5458,7 @@
    et lorsqu’un onglet reste ouvert au passage de minuit. */
 (function histodailyBeta260DailyRotationIntegrity(){
   "use strict";
-  const ENGINE_VERSION = "1.0.0-beta.264.0";
+  const ENGINE_VERSION = "1.0.0-beta.265.0";
   let lastObservedDay = "";
 
   function currentDayKey(){

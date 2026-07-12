@@ -15,8 +15,8 @@ Les fichiers d’interface suivants sont inchangés :
 
 ## Consolidation effectuée
 
-- version active harmonisée en `1.0.0-beta.264.0` dans l’application, le manifeste, le service worker et les réponses serveur ;
-- cache PWA isolé sous `histodaily-beta264-v1` ;
+- version active harmonisée en `1.0.0-beta.265.0` dans l’application, le manifeste, le service worker et les réponses serveur ;
+- cache PWA isolé sous `histodaily-beta265-v1` ;
 - réponses API et manifeste explicitement non mis en cache par Vercel ;
 - suppression du fichier dangereux et inutile `SUPABASE-SOCIAL-V2-CLEANUP.sql` du paquet de déploiement ;
 - suppression des anciens rapports de beta du paquet final, qui n’étaient jamais chargés par l’application ;
