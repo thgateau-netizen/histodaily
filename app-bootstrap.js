@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.242.0",
-  assetsVersion: "1.0.0-beta.242.0",
+  version: "1.0.0-beta.243.0",
+  assetsVersion: "1.0.0-beta.243.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,7 +19,7 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 242",
+    versionLabel: "beta 243",
     shareBaseUrl: "https://histodaily.vercel.app",
     releaseNotes: [
       "Sauvegarde renforcée : écriture transactionnelle, copie de secours et récupération de la progression.",
@@ -139,7 +139,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.242.0",
+  version: "1.0.0-beta.243.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

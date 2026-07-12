@@ -1,7 +1,7 @@
 /* HistoDaily beta 232 — Littérature : première discipline éditoriale complète. */
 (function histodailyBeta232Literature(){
   "use strict";
-  const VERSION = "1.0.0-beta.242.0";
+  const VERSION = "1.0.0-beta.243.0";
   const DISCIPLINE = {
     id: "literature",
     title: "Littérature",

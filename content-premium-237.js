@@ -1,7 +1,7 @@
-/* HistoDaily beta 242 — grands thèmes structurants, extension premium. */
+/* HistoDaily beta 243 — grands thèmes structurants, extension premium. */
 (function histodailyBeta237PremiumContent(){
   "use strict";
-  const VERSION = "1.0.0-beta.242.0";
+  const VERSION = "1.0.0-beta.243.0";
   const GROUPS = {
   "literature": [
     {

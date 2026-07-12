@@ -20,3 +20,7 @@ Aucune nouvelle colonne n’est nécessaire si le schéma social fourni avec les
 - Résoudre un mystère et vérifier que le classement affiche le score du mystère, pas l’XP totale du compte.
 
 Le mode solo, les cours, les quiz et les mystères restent utilisables lorsque Supabase est momentanément indisponible.
+
+## Beta 243 — classement et amis
+
+Aucune migration Supabase supplémentaire n'est nécessaire. Après le déploiement, mettre à jour l'application sur les deux téléphones afin que les deux clients utilisent la vérité serveur de la beta 243.

@@ -1,4 +1,4 @@
-# Audit éditorial — HistoDaily beta 242
+# Audit éditorial — HistoDaily beta 243
 
 ## Objectif
 
@@ -42,4 +42,4 @@ Audit exécuté sur les 110 packs de contenu externes chargés par l’applicati
 - 0 fil pédagogique réduit à un fragment incompréhensible ;
 - 13 approfondissements faibles ou redondants retirés ;
 - syntaxe JavaScript validée pour tous les scripts ;
-- cache PWA et versions alignés sur `1.0.0-beta.242.0`.
+- cache PWA et versions alignés sur `1.0.0-beta.243.0`.

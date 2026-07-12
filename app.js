@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.242.0";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.243.0";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -19726,7 +19726,7 @@ document.addEventListener("visibilitychange", () => {
       un journal compact indépendant de l’état d’interface.
    ========================================================= */
 (function histodailyBeta238PedagogyAndPersistence(){
-  const VERSION = "1.0.0-beta.242.0";
+  const VERSION = "1.0.0-beta.243.0";
   const PROGRESS_KEY = `${STORAGE_KEY}_progress_v3`;
   const PROGRESS_KEYS = new Set([
     "completedLessons", "readLessons", "quizProgress", "solvedMysteries", "dailyClaims",
@@ -19964,7 +19964,7 @@ document.addEventListener("visibilitychange", () => {
    Les anciens "repères" deviennent un véritable fil de réponse.
    ========================================================= */
 (function histodailyBeta239LessonCoherence(){
-  const VERSION = "1.0.0-beta.242.0";
+  const VERSION = "1.0.0-beta.243.0";
   const clean = value => String(value || "").replace(/\s+/g, " ").trim();
   const ensurePeriod = value => {
     const text = clean(value);

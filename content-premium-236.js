@@ -1,7 +1,7 @@
 /* HistoDaily beta 236 — grands sujets premium, priorité aux thèmes centraux. */
 (function histodailyBeta236PremiumContent(){
   "use strict";
-  const VERSION = "1.0.0-beta.242.0";
+  const VERSION = "1.0.0-beta.243.0";
   const GROUPS = {};
   const WORLDS = {
   "history": [

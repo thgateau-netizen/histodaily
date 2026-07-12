@@ -5929,7 +5929,7 @@ body{
 .hd220-route{grid-template-columns:repeat(3,minmax(0,1fr));}
 
 /* =========================================================
-   HistoDaily beta 242 — classement, amis et stabilité mobile
+   HistoDaily beta 243 — classement, amis et stabilité mobile
    ========================================================= */
 .hd242-reliability .tab-rank{
   min-height:100svh;

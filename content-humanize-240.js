@@ -1,8 +1,8 @@
-/* HistoDaily beta 242 — passe éditoriale anti-texte générique. */
+/* HistoDaily beta 243 — passe éditoriale anti-texte générique. */
 (function histodailyBeta240Humanize(){
   "use strict";
 
-  const VERSION = "1.0.0-beta.242.0";
+  const VERSION = "1.0.0-beta.243.0";
   const packs = typeof READY_LESSON_PACKS === "object" && READY_LESSON_PACKS ? READY_LESSON_PACKS : {};
 
   const clean = value => String(value || "").replace(/\s+/g, " ").trim();

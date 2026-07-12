@@ -1,4 +1,4 @@
-# Audit éditorial — HistoDaily beta 242
+# Audit éditorial — HistoDaily beta 243
 
 ## Objectif
 
@@ -24,4 +24,4 @@ Une correction doit apporter au moins une information supplémentaire : cause, m
 
 - Syntaxe JavaScript validée pour les fichiers principaux et tous les packs de contenu.
 - Test unitaire de la passe éditoriale : explication extraite du bon bloc, titre de section reconstruit, piège générique supprimé, intitulé interne masqué.
-- Cache PWA et versions alignés sur `1.0.0-beta.242.0`.
+- Cache PWA et versions alignés sur `1.0.0-beta.243.0`.
