@@ -1,10 +1,10 @@
 {
   "name": "histodaily",
-  "version": "1.0.0-rc.15",
+  "version": "1.0.0-rc.15.1",
   "private": true,
   "description": "HistoDaily PWA",
   "engines": {
-    "node": ">=18"
+    "node": "22.x"
   },
   "dependencies": {
     "web-push": "3.6.7"

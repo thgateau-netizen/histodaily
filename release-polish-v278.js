@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.15";
+  const VERSION = "1.0.0-rc.15.1";
   const ID = "hd-release-status";
   let hideTimer = 0;
 

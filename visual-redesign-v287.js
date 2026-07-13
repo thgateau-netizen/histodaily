@@ -1,7 +1,7 @@
 /* HistoDaily RC14 — refonte visuelle visible, sans modifier le moteur */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.15";
+  const VERSION = "1.0.0-rc.15.1";
 
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 

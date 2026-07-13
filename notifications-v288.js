@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.0.0-rc.15';
+  const VERSION = '1.0.0-rc.15.1';
   const CARD_ATTR = 'data-hd-push-card';
   const DEVICE_TOKEN_KEY = 'histodaily_push_device_token_v1';
   const SYNC_KEY = 'histodaily_push_last_sync_v1';

@@ -9987,7 +9987,7 @@ button:focus-visible,[role="button"]:focus-visible{
 
 /* ===== launch-readiness-v284.css ===== */
 /* HistoDaily 1.0 RC8 — release readiness */
-html[data-release="1.0.0-rc.15"] .version-pill{letter-spacing:.035em}
+html[data-release="1.0.0-rc.15.1"] .version-pill{letter-spacing:.035em}
 @media (max-width:420px){.backup-actions{grid-template-columns:1fr!important}.backup-actions button{width:100%}}
 
 
