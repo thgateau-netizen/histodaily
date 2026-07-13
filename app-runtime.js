@@ -1609,17 +1609,26 @@
 
   pruneDailyLearningLogs();
   pruneWeeklyRewards();
-  reconcileCollections({ notify: false });
-  reconcileDailyPlanBonus({ notify: false });
-  reconcileWeeklyReward({ notify: false });
   persistSoon();
 
-  // Les extensions sont chargées après le premier rendu de l’app : repeindre une fois
-  // garantit que les nouveaux blocs apparaissent dès l’ouverture, sans navigation préalable.
-  try {
-    if (typeof renderSoon === "function") renderSoon();
-    else if (typeof render === "function") render({ immediate: true });
-  } catch {}
+  // RC9 : les calculs de collections et de récompenses parcourent tout le catalogue.
+  // Ils ne doivent plus bloquer le premier affichage. Les enveloppes de rendu sont déjà
+  // installées avant DOMContentLoaded, donc aucun second rendu synchrone n’est nécessaire.
+  const runStartupReconciliation = () => {
+    let changed = false;
+    try { changed = reconcileCollections({ notify: false }).length > 0 || changed; } catch {}
+    try { changed = Boolean(reconcileDailyPlanBonus({ notify: false })) || changed; } catch {}
+    try { changed = Boolean(reconcileWeeklyReward({ notify: false })) || changed; } catch {}
+    try { persistSoon(); } catch {}
+    if (changed) {
+      try {
+        if (typeof renderSoon === "function") renderSoon();
+        else if (typeof render === "function") render({ immediate: true });
+      } catch {}
+    }
+  };
+  if (typeof requestIdleCallback === "function") requestIdleCallback(runStartupReconciliation, { timeout: 2200 });
+  else window.setTimeout(runStartupReconciliation, 900);
 
   try {
     window.HistoDaily = {
@@ -1630,8 +1639,7 @@
       weeklyGoals: true,
       guidedPath: true,
       spacedReview: true,
-      collections: collectionDefinitions().length,
-      reviews: validReviewEntries().length,
+      startupReconciliation: "idle",
       synthesisSize: SYNTHESIS_SIZE,
       progressionDebug: {
         applyReviewAnswer,
@@ -1786,15 +1794,7 @@
     };
   } catch {}
 
-  const previousReleaseNotesMarkup = typeof releaseNotesMarkup === "function" ? releaseNotesMarkup : null;
-  if (previousReleaseNotesMarkup) {
-    releaseNotesMarkup = function beta182ReleaseNotesMarkup({ home = false } = {}) {
-      if (!home) return previousReleaseNotesMarkup({ home });
-      const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
-      if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
-      return `<section class="card beta182-update-card"><details><summary><span>Nouveautés de la ${esc(HISTODAILY_CORE.ui?.versionLabel || "mise à jour")}</span><small>Voir</small></summary><div><ul>${notes.map(note => `<li>${esc(note)}</li>`).join("")}</ul><button type="button" class="ghost wide" data-dismiss-release>J’ai compris</button></div></details></section>`;
-    };
-  }
+  releaseNotesMarkup = function beta182ReleaseNotesMarkup() { return ""; };
 
   function directShellChildren(shell, selectors) {
     const selector = selectors.join(",");
@@ -2869,15 +2869,51 @@
     const reward = rewardData(info);
     const performance = expeditionPerformance(info);
     const elapsed = expeditionElapsedMinutes();
-    const overlay = layer("Expédition terminée", "Tu as résolu, compris, relié et retenu.", `<section class="hd213-celebration">
-      <div class="hd213-celebration-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><span>${HD_ICONS.action("trophy")}</span></div>
-      <small>${esc(todayLabel())} · dossier #${dossierNumber()}</small>
-      <h3>La boucle est fermée.</h3>
-      <p>Tu as relié <b>${esc(info.lesson?.title || "le cours du jour")}</b> à <b>${esc(info.connection?.title || "une nouvelle notion")}</b>.</p>
-      <div class="hd213-celebration-stats"><span><b>${elapsed || 1} min</b><small>durée</small></span><span><b>${performance.precision ? "0 indice" : `${performance.hints} indice${performance.hints > 1 ? "s" : ""}`}</b><small>enquête</small></span><span><b>+10 XP</b><small>mémoire</small></span><span><b>+${reward.gems}</b><small>gemme</small></span></div>
-      <div class="hd213-celebration-actions"><button type="button" data-hd213-share-expedition>Partager mon résultat</button><button type="button" class="primary" data-hd187-action="surprise">Continuer avec un bonus →</button><button type="button" class="ghost" data-hd187-close>Retour à l’accueil</button></div>
-    </section>`, "hd213-complete-layer");
-    bindShellActions(overlay);
+    const screens = [
+      {
+        title: "Mission accomplie",
+        subtitle: "Le parcours est terminé. On te livre le résultat étape par étape.",
+        markup: `<section class="hd276-finish-screen mission"><div class="hd276-finish-trophy" aria-hidden="true">${HD_ICONS.action("trophy")}</div><span class="hd276-delivery-kicker">Expédition terminée</span><h3>Tu as fermé la boucle.</h3><p>Enquête, compréhension, connexion et rappel : les quatre gestes sont validés.</p><button type="button" class="hd276-delivery-primary" data-hd276-finish-next>Voir ce que j’ai relié <b aria-hidden="true">→</b></button></section>`
+      },
+      {
+        title: "La connexion du jour",
+        subtitle: "Une idée principale, puis une ouverture vers une autre notion.",
+        markup: `<section class="hd276-finish-screen connection"><span class="hd276-delivery-kicker">Ce que tu retiens</span><h3>Deux sujets, une même carte mentale.</h3><div class="hd276-finish-link"><article><small>Point de départ</small><b>${esc(info.lesson?.title || "Le cours du jour")}</b></article><span aria-hidden="true">→</span><article><small>Connexion créée</small><b>${esc(info.connection?.title || "Une nouvelle notion")}</b></article></div><div class="hd276-finish-actions"><button type="button" class="ghost" data-hd276-finish-prev>Retour</button><button type="button" class="hd276-delivery-primary" data-hd276-finish-next>Voir mes récompenses <b aria-hidden="true">→</b></button></div></section>`
+      },
+      {
+        title: "Récompenses obtenues",
+        subtitle: "Le bilan final reste lisible et les actions viennent seulement après.",
+        markup: `<section class="hd276-finish-screen rewards"><span class="hd276-delivery-kicker">Bilan du jour</span><h3>Expédition livrée.</h3><div class="hd276-finish-stats"><span><b>${elapsed || 1} min</b><small>durée</small></span><span><b>${performance.precision ? "0 indice" : `${performance.hints} indice${performance.hints > 1 ? "s" : ""}`}</b><small>enquête</small></span><span><b>+10 XP</b><small>mémoire</small></span><span><b>+${reward.gems}</b><small>gemme${reward.gems > 1 ? "s" : ""}</small></span></div><div class="hd276-finish-actions"><button type="button" data-hd213-share-expedition>Partager</button><button type="button" class="primary" data-hd187-action="surprise">Sujet bonus</button><button type="button" class="ghost wide" data-hd276-finish-home>Retour à l’accueil</button></div><button type="button" class="hd276-delivery-backlink" data-hd276-finish-prev>← Revoir la connexion</button></section>`
+      }
+    ];
+    let step = 0;
+    const overlay = layer(screens[0].title, screens[0].subtitle, `<div class="hd276-finish-flow"></div><div class="hd276-delivery-progress" aria-label="Étape 1 sur 3"><i class="current"></i><i></i><i></i></div>`, "hd276-finish-layer");
+    const panelTitle = overlay.querySelector("#hd187-layer-title");
+    const panelSubtitle = panelTitle?.nextElementSibling;
+    const flow = overlay.querySelector(".hd276-finish-flow");
+    const progress = overlay.querySelector(".hd276-delivery-progress");
+    const closeHome = () => {
+      closeLayer();
+      try { setState({ tab: "home" }, { renderImmediate: true, save: true }); } catch {}
+    };
+    const show = nextStep => {
+      step = Math.max(0, Math.min(2, Number(nextStep) || 0));
+      const screen = screens[step];
+      if (panelTitle) panelTitle.textContent = screen.title;
+      if (panelSubtitle) panelSubtitle.textContent = screen.subtitle;
+      if (flow) flow.innerHTML = screen.markup;
+      if (progress) progress.innerHTML = [0,1,2].map(index => `<i class="${index < step ? "done" : index === step ? "current" : ""}"></i>`).join("");
+      flow?.querySelectorAll("[data-hd276-finish-next]").forEach(button => button.addEventListener("click", () => show(step + 1)));
+      flow?.querySelectorAll("[data-hd276-finish-prev]").forEach(button => button.addEventListener("click", () => show(step - 1)));
+      flow?.querySelector("[data-hd276-finish-home]")?.addEventListener("click", closeHome);
+      bindShellActions(flow || overlay);
+      window.requestAnimationFrame(() => flow?.querySelector("button")?.focus?.({ preventScroll: true }));
+    };
+    overlay.addEventListener("keydown", event => {
+      if (event.key === "ArrowRight" && step < 2) show(step + 1);
+      if (event.key === "ArrowLeft" && step > 0) show(step - 1);
+    });
+    show(0);
     try { navigator.vibrate?.([20, 45, 28, 45, 40]); } catch {}
     return overlay;
   }
@@ -4693,6 +4729,7 @@
   }
 
   applyVikingPatches();
+  try { if (typeof invalidateCatalogCaches === "function") invalidateCatalogCaches(); } catch {}
 
   const STOP = new Set("alors au aux avec ce ces dans de des du elle elles en est et eux il ils je la le les leur lui mais ne nos notre nous on ou par pas pour que qui sa se ses son sur tu un une vos votre vous y être avoir comme plus moins très cette ces cela celui celle entre vers sans sous chez dont où quand pourquoi parce afin peut peuvent fait font aussi tout toute tous toutes même ainsi chaque après avant depuis lors pendant tandis soit sont était étaient été étant".split(/\s+/));
   const normalize = value => String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr-FR").replace(/[^a-z0-9]+/g, " ").trim();
@@ -4851,29 +4888,6 @@
     return report;
   }
 
-  function closeDiagnostic(){ document.querySelector?.(".hd216-diagnostic")?.remove?.(); document.documentElement?.classList?.remove?.("hd216-diagnostic-open"); }
-  function downloadReport(report){
-    try {
-      const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a"); anchor.href = url; anchor.download = `histodaily-audit-${localDayKey?.() || "beta216"}.json`; anchor.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch {}
-  }
-  function openDiagnostic(){
-    closeDiagnostic();
-    const report = runAudit({ includeRows: true });
-    const modal = document.createElement("div");
-    modal.className = "hd216-diagnostic";
-    const worst = report.rows.filter(row => row.issues.some(entry => entry.severity !== "info")).sort((a, b) => b.issues.filter(i => i.severity === "critical").length - a.issues.filter(i => i.severity === "critical").length || b.issues.length - a.issues.length).slice(0, 30);
-    modal.innerHTML = `<div class="hd216-diagnostic-backdrop" data-hd216-close></div><section class="hd216-diagnostic-panel" role="dialog" aria-modal="true" aria-label="Diagnostic HistoDaily"><header><div><span>Mode interne · beta 216</span><h1>Qualité des contenus</h1><p>Audit de la structure, des cours, des quiz, des révisions et de l’expédition enregistrée.</p></div><button type="button" data-hd216-close aria-label="Fermer">✕</button></header><div class="hd216-audit-kpis"><div><b>${report.summary.lessons}</b><span>cours</span></div><div><b>${report.summary.valid}</b><span>sans alerte</span></div><div class="bad"><b>${report.summary.severity.critical}</b><span>critiques</span></div><div><b>${report.summary.severity.warning}</b><span>avertissements</span></div></div><section class="hd216-viking-audit"><span>Chapitre pilote</span><h2>Vikings · ${report.summary.vikingFinal}/${report.summary.vikingLessons} cours finalisés</h2><p>${report.summary.vikingAverageWords} mots en moyenne · ${report.summary.vikingBlockingIssues ? `${report.summary.vikingBlockingIssues} alerte(s) restante(s)` : "aucune alerte bloquante"}</p></section><div class="hd216-audit-actions"><button type="button" data-hd216-download>Exporter le JSON</button><button type="button" class="ghost" data-hd216-refresh>Relancer</button></div><section class="hd216-audit-list"><h2>Cours à reprendre en priorité</h2>${worst.length ? worst.map(row => `<article><div><b>${esc(row.title)}</b><small>${esc(row.id)} · ${row.completeWords} mots</small></div><ul>${row.issues.filter(entry => entry.severity !== "info").slice(0, 4).map(entry => `<li class="${entry.severity}">${esc(entry.message)}</li>`).join("")}</ul></article>`).join("") : `<p class="good">Aucune alerte éditoriale importante.</p>`}</section></section>`;
-    document.body.appendChild(modal); document.documentElement.classList.add("hd216-diagnostic-open");
-    modal.querySelectorAll("[data-hd216-close]").forEach(button => button.addEventListener("click", closeDiagnostic));
-    modal.querySelector("[data-hd216-download]")?.addEventListener("click", () => downloadReport(report));
-    modal.querySelector("[data-hd216-refresh]")?.addEventListener("click", () => { closeDiagnostic(); openDiagnostic(); });
-    return report;
-  }
-
   function repairReviewQueue(){
     const queue = state?.reviewQueue && typeof state.reviewQueue === "object" ? state.reviewQueue : {};
     let removed = 0, repaired = 0;
@@ -4897,15 +4911,9 @@
   try {
     state.beta216QualityVersion = VERSION;
     queueSaveState?.(80);
-    window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, contentAuditV2: true, vikingChapterFinal: true, diagnosticMode: true, reviewQueueIntegrity: true };
-    window.HistoDailyContentAudit = { run: runAudit };
-    window.HistoDailyQuality = { version: VERSION, run: runAudit, open: openDiagnostic, close: closeDiagnostic, repairReviewQueue, reviewRepair, vikingIds: VIKING_IDS };
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, vikingChapterFinal: true, reviewQueueIntegrity: true };
   } catch {}
 
-  try {
-    const params = new URLSearchParams(location.search || "");
-    if (params.get("diagnostic") === "1" || String(location.hash || "").toLowerCase() === "#diagnostic") setTimeout(openDiagnostic, 120);
-  } catch {}
   try {
     if (state?.tab === "lesson" && VIKING_IDS.includes(String(state.currentLessonId || ""))) render({ immediate: true });
   } catch {}

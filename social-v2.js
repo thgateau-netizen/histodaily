@@ -1,11 +1,11 @@
 /* =========================================================
-   HistoDaily beta 264 — amis à zéro point et relations héritées
+   HistoDaily RC5 — classements, communauté et intégrité sociale
    Une seule couche client, Supabase comme seule vérité partagée.
    ========================================================= */
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-beta.273.0";
+  const VERSION = "1.0.0-rc.13";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -61,12 +61,109 @@
   }
   function solvedTotal() { return Object.values(state?.solvedMysteries || {}).filter(Boolean).length; }
 
+  function solvedEntry(mysteryId = "") {
+    const entry = state?.solvedMysteries?.[mysteryId];
+    return entry && typeof entry === "object" ? entry : {};
+  }
+
+  function scoreEligibleForRanking(mysteryId = "", payload = {}) {
+    const solved = solvedEntry(mysteryId || payload.mysteryId);
+    return !(payload.rankingEligible === false || payload.daily === false || payload.archive === true || solved.daily === false || solved.archive === true);
+  }
+
+  function scorePayloadWithEligibility(payload = {}) {
+    const mysteryId = String(payload.mysteryId || "");
+    const solved = solvedEntry(mysteryId);
+    const eligible = scoreEligibleForRanking(mysteryId, payload);
+    return {
+      ...payload,
+      daily: solved.daily !== undefined ? Boolean(solved.daily) : payload.daily,
+      archive: solved.archive !== undefined ? Boolean(solved.archive) : Boolean(payload.archive),
+      rankingEligible: eligible
+    };
+  }
+
+  function localPeriodRange(period = "daily") {
+    const nowDate = new Date();
+    const today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate()).getTime();
+    if (period === "week") {
+      const start = new Date(today);
+      const weekday = start.getDay() || 7;
+      start.setDate(start.getDate() - weekday + 1);
+      return { start: start.getTime(), end: today + 86_400_000 };
+    }
+    if (period === "year") return { start: new Date(nowDate.getFullYear(), 0, 1).getTime(), end: today + 86_400_000 };
+    return { start: today, end: today + 86_400_000 };
+  }
+
+  function localScoreCap(difficulty = "moyen") {
+    if (difficulty === "facile") return 95;
+    if (difficulty === "difficile") return 150;
+    if (difficulty === "expert") return 180;
+    return 120;
+  }
+
+  function localRankedEntries(period = "daily") {
+    const range = localPeriodRange(safePeriod(period));
+    return Object.entries(state?.solvedMysteries || {}).flatMap(([mysteryId, solved]) => {
+      const at = Number(solved?.at || 0);
+      if (!(at >= range.start && at < range.end)) return [];
+      if (!scoreEligibleForRanking(mysteryId, solved || {})) return [];
+      let difficulty = String(solved?.difficulty || "moyen");
+      try { difficulty = String(data?.mysteries?.find?.(item => String(item.id) === String(mysteryId))?.difficulty || difficulty); } catch {}
+      return [{ mysteryId, score: Math.max(0, Math.min(localScoreCap(difficulty), Number(solved?.score || 0))), at }];
+    });
+  }
+
+  function localSelfRow(period = "daily") {
+    const entries = localRankedEntries(period);
+    return {
+      id: meId(), playerId: meId(), friendCode: meCode(), code: meCode(),
+      name: pseudo(), pseudo: pseudo(), me: true, rank: 0,
+      score: entries.reduce((sum, item) => sum + item.score, 0),
+      solvedInPeriod: entries.length,
+      level: levelValue(), xp: Number(state?.xp || 0), solved: solvedTotal(), solvedCount: solvedTotal(),
+      streak: Number(state?.streak || 0), localFallback: true
+    };
+  }
+
+  function markScoreNotRanked(mysteryId = "") {
+    if (!mysteryId) return;
+    state.lastScoreSubmit = {
+      ...(state.lastScoreSubmit || {}),
+      [mysteryId]: {
+        pending: false,
+        stored: false,
+        skipped: true,
+        mode: "not-ranked",
+        message: "Archive résolue : progression conservée, hors classement."
+      }
+    };
+  }
+
+  function purgeIneligibleScoreOutbox() {
+    if (typeof beta128ReadScoreOutbox !== "function" || typeof beta128SaveScoreOutbox !== "function") return [];
+    const current = beta128ReadScoreOutbox();
+    const kept = [];
+    let changed = false;
+    current.forEach(item => {
+      if (scoreEligibleForRanking(item.mysteryId, item)) kept.push(item);
+      else {
+        changed = true;
+        markScoreNotRanked(item.mysteryId);
+      }
+    });
+    if (changed) beta128SaveScoreOutbox(kept);
+    return kept;
+  }
+
   function defaultSocial() {
     return {
       version: VERSION,
       phase: "idle",
       message: "Connexion au classement…",
       startedAt: 0,
+      lastAttemptAt: 0,
       loadedAt: 0,
       profile: null,
       friends: [],
@@ -82,7 +179,7 @@
   function social() {
     const current = state.socialV2 && typeof state.socialV2 === "object" ? state.socialV2 : {};
     const versionChanged = Boolean(current.version && current.version !== VERSION);
-    state.socialV2 = {
+    const next = {
       ...defaultSocial(),
       ...current,
       version: VERSION,
@@ -95,6 +192,21 @@
       leaderboardStatus: current.leaderboardStatus && typeof current.leaderboardStatus === "object" ? current.leaderboardStatus : {},
       publicProfiles: !versionChanged && current.publicProfiles && typeof current.publicProfiles === "object" ? current.publicProfiles : {}
     };
+    if (versionChanged) {
+      next.loadedAt = 0;
+      next.startedAt = 0;
+      next.phase = "idle";
+      Object.keys(next.leaderboardStatus || {}).forEach(key => {
+        next.leaderboardStatus[key] = {
+          ...next.leaderboardStatus[key],
+          loadedAt: 0,
+          startedAt: 0,
+          phase: Array.isArray(next.leaderboards?.[key]) ? "stale" : "idle",
+          message: "Nouvelle version : données partagées à resynchroniser."
+        };
+      });
+    }
+    state.socialV2 = next;
     return state.socialV2;
   }
 
@@ -234,15 +346,18 @@
   async function bootstrap({ force = false, allowPseudoChange = false, quiet = false } = {}) {
     const s = social();
     if (!online()) {
+      s.lastAttemptAt = now();
       s.phase = s.loadedAt ? "offline" : "error";
       s.message = s.loadedAt ? "Hors ligne : dernière copie affichée." : "Connexion nécessaire pour charger le multi.";
       saveSoon();
       return null;
     }
     if (!force && s.loadedAt && now() - s.loadedAt < STALE_MS && s.phase === "ready") return s;
+    if (!force && s.phase !== "ready" && Number(s.lastAttemptAt || 0) && now() - Number(s.lastAttemptAt || 0) < STALE_MS) return s.loadedAt ? s : null;
     if (bootstrapFlight) return bootstrapFlight;
     s.phase = "loading";
     s.startedAt = now();
+    s.lastAttemptAt = s.startedAt;
     s.message = "Synchronisation du profil et des amis…";
     if (!quiet && ["rank", "profile", "publicProfile"].includes(state.tab)) renderNow();
     bootstrapFlight = api("bootstrap", {
@@ -254,8 +369,8 @@
     }).catch(error => {
       s.phase = s.loadedAt ? "stale" : "error";
       s.startedAt = 0;
-      s.lastError = error.message || "Service social indisponible.";
-      s.message = s.loadedAt ? "Dernière copie affichée : actualisation impossible." : s.lastError;
+      s.lastError = "Service social indisponible.";
+      s.message = s.loadedAt ? "Dernière copie affichée : actualisation impossible." : "Le service social est indisponible pour le moment.";
       saveSoon();
       return null;
     }).finally(() => {
@@ -284,14 +399,16 @@
     const status = s.leaderboardStatus[key] || {};
     if (period === "daily" && status.periodKey && status.periodKey !== dayKey()) force = true;
     if (!online()) {
-      s.leaderboardStatus[key] = { ...status, phase: status.loadedAt ? "offline" : "error", message: status.loadedAt ? "Hors ligne : dernière copie." : "Connexion nécessaire." };
+      s.leaderboardStatus[key] = { ...status, attemptedAt: now(), phase: status.loadedAt ? "offline" : "error", message: status.loadedAt ? "Hors ligne : dernière copie." : "Connexion nécessaire." };
       saveSoon();
       return s.leaderboards[key] || [];
     }
     if (!force && status.loadedAt && now() - status.loadedAt < STALE_MS && status.phase === "ready") return s.leaderboards[key] || [];
+    if (!force && status.phase !== "ready" && Number(status.attemptedAt || 0) && now() - Number(status.attemptedAt || 0) < STALE_MS) return s.leaderboards[key] || [];
     if (requestFlights.has(key)) return requestFlights.get(key);
 
-    s.leaderboardStatus[key] = { ...status, phase: "loading", startedAt: now(), message: "Actualisation du classement…" };
+    const attemptedAt = now();
+    s.leaderboardStatus[key] = { ...status, phase: "loading", startedAt: attemptedAt, attemptedAt, message: "Actualisation du classement…" };
     if (!quiet && state.tab === "rank") renderNow();
     const flight = api("leaderboard", {
       query: {
@@ -322,6 +439,7 @@
       s.leaderboardStatus[key] = {
         phase: "ready",
         startedAt: 0,
+        attemptedAt: now(),
         loadedAt: now(),
         generatedAt: json.generatedAt || "",
         periodKey: json.periodKey || (period === "daily" ? dayKey() : ""),
@@ -345,8 +463,9 @@
         ...status,
         phase: hadCache ? "stale" : "error",
         startedAt: 0,
+        attemptedAt: now(),
         loadedAt: status.loadedAt || 0,
-        message: hadCache ? "Dernière copie affichée : serveur indisponible." : (error.message || "Classement indisponible."),
+        message: hadCache ? "Dernière copie affichée : serveur indisponible." : "Classement indisponible pour le moment.",
         authoritative: false
       };
       saveSoon();
@@ -412,21 +531,44 @@
   }
 
   function rowsFor(period, audience) {
-    return social().leaderboards[leaderboardKey(period, audience)] || [];
+    const shared = social().leaderboards[leaderboardKey(period, audience)] || [];
+    const local = localSelfRow(period);
+    const index = shared.findIndex(row => row.me || row.playerId === meId() || (meCode() && code(row.friendCode) === code(meCode())));
+    if (index >= 0) {
+      return shared.map((row, rowIndex) => rowIndex === index ? {
+        ...row,
+        me: true,
+        score: Math.max(Number(row.score || 0), Number(local.score || 0)),
+        solvedInPeriod: Math.max(Number(row.solvedInPeriod || 0), Number(local.solvedInPeriod || 0)),
+        optimistic: Number(local.score || 0) > Number(row.score || 0)
+      } : row);
+    }
+    // Hors ligne, au premier démarrage du classement ou pendant l'envoi d'un
+    // score, la position reste visible au lieu d'afficher artificiellement 0.
+    if (!shared.length || local.score > 0 || audience === "friends") return [local, ...shared];
+    return shared;
   }
 
   function myRow(period, audience) {
-    return rowsFor(period, audience).find(row => row.me || row.playerId === meId() || (meCode() && code(row.friendCode) === code(meCode()))) || null;
+    return rowsFor(period, audience).find(row => row.me || row.playerId === meId() || (meCode() && code(row.friendCode) === code(meCode()))) || localSelfRow(period);
   }
 
   function statusText(status = {}) {
-    if (!online()) return status.loadedAt ? "Hors ligne · dernière copie enregistrée" : "Hors ligne";
-    if (status.phase === "loading") return "Actualisation en cours…";
+    if (!online()) return status.loadedAt ? "Hors connexion · dernière version disponible" : "Connexion nécessaire pour charger le classement";
+    if (status.phase === "loading") return "Mise à jour du classement…";
     if (status.phase === "ready") {
       const seconds = Math.max(0, Math.round((now() - Number(status.loadedAt || 0)) / 1000));
-      return seconds < 5 ? "Synchronisé à l’instant" : `Synchronisé il y a ${seconds} s`;
+      return seconds < 5 ? "À jour à l’instant" : seconds < 60 ? `À jour il y a ${seconds} s` : "Classement à jour";
     }
-    return status.message || "Classement non chargé.";
+    if (status.phase === "stale" || status.phase === "offline") return "Dernière version disponible affichée";
+    return status.message || "Le classement sera chargé dès que possible.";
+  }
+
+  function pendingScoreCount() {
+    try {
+      purgeIneligibleScoreOutbox();
+      return typeof beta128ReadScoreOutbox === "function" ? beta128ReadScoreOutbox().length : 0;
+    } catch { return 0; }
   }
 
   function requestMarkup() {
@@ -434,34 +576,76 @@
     const incoming = requests.incoming || [];
     const outgoing = requests.outgoing || [];
     if (!incoming.length && !outgoing.length) return "";
+    const incomingBlock = incoming.length ? `<div class="hdsv2-request-group"><div class="hdsv2-request-group-title"><strong>À répondre</strong><span>${incoming.length}</span></div>${incoming.map(item => `<div class="hdsv2-request-row"><div class="hdsv2-avatar">${esc((item.otherPseudo || item.requesterPseudo || "A").charAt(0).toUpperCase())}</div><div><strong>${esc(item.otherPseudo || item.requesterPseudo || "Joueur")}</strong><small>Souhaite rejoindre ton cercle · ${esc(item.otherFriendCode || item.requesterFriendCode || "")}</small></div><div class="hdsv2-request-actions"><button type="button" data-social-respond="accept" data-request-id="${esc(item.requestId || item.id)}">Accepter</button><button type="button" class="ghost" data-social-respond="decline" data-request-id="${esc(item.requestId || item.id)}">Refuser</button></div></div>`).join("")}</div>` : "";
+    const outgoingBlock = outgoing.length ? `<div class="hdsv2-request-group is-outgoing"><div class="hdsv2-request-group-title"><strong>Envoyées</strong><span>${outgoing.length}</span></div>${outgoing.map(item => `<div class="hdsv2-request-row pending"><div class="hdsv2-avatar">${esc((item.otherPseudo || "A").charAt(0).toUpperCase())}</div><div><strong>${esc(item.otherPseudo || "Joueur")}</strong><small>La demande apparaîtra après sa prochaine synchronisation · ${esc(item.otherFriendCode || "")}</small></div><span class="hdsv2-pending-pill">En attente</span></div>`).join("")}</div>` : "";
     return `<section class="card hdsv2-card hdsv2-requests">
-      <div class="hdsv2-section-head"><div><span class="card-label">Demandes d’amis</span><h2>${incoming.length ? `${incoming.length} à traiter` : "En attente"}</h2></div></div>
-      ${incoming.map(item => `<div class="hdsv2-request-row"><div class="hdsv2-avatar">${esc((item.otherPseudo || item.requesterPseudo || "A").charAt(0).toUpperCase())}</div><div><strong>${esc(item.otherPseudo || item.requesterPseudo || "Joueur")}</strong><small>${esc(item.otherFriendCode || item.requesterFriendCode || "")}</small></div><div class="hdsv2-request-actions"><button type="button" data-social-respond="accept" data-request-id="${esc(item.requestId || item.id)}">Accepter</button><button type="button" class="ghost" data-social-respond="decline" data-request-id="${esc(item.requestId || item.id)}">Refuser</button></div></div>`).join("")}
-      ${outgoing.map(item => `<div class="hdsv2-request-row pending"><div class="hdsv2-avatar">${esc((item.otherPseudo || "A").charAt(0).toUpperCase())}</div><div><strong>${esc(item.otherPseudo || "Joueur")}</strong><small>Demande envoyée · ${esc(item.otherFriendCode || "")}</small></div><span class="hdsv2-pending-pill">En attente</span></div>`).join("")}
+      <div class="hdsv2-section-head"><div><span class="card-label">Invitations</span><h2>${incoming.length ? `${incoming.length} demande${incoming.length > 1 ? "s" : ""} à traiter` : "Demandes envoyées"}</h2><p>${incoming.length ? "Réponds ici : le classement Amis se mettra ensuite à jour automatiquement." : "Tu seras prévenu dès qu’une demande sera acceptée."}</p></div></div>
+      ${incomingBlock}${outgoingBlock}
     </section>`;
   }
 
-  function friendsMarkup({ includeAdd = true } = {}) {
+  function friendPeriodRow(friend, context) {
+    if (!context) return null;
+    const friendId = String(friend.playerId || friend.id || "");
+    const friendCode = code(friend.friendCode || friend.code || "");
+    return rowsFor(context.period, "friends").find(row =>
+      Boolean(friendId && String(row.playerId || row.id || "") === friendId) ||
+      Boolean(friendCode && code(row.friendCode || row.code || "") === friendCode)
+    ) || null;
+  }
+
+  function friendsMarkup({ includeAdd = true, context = null } = {}) {
     const s = social();
-    return `${includeAdd ? `<section class="card hdsv2-card hdsv2-add-card"><div><span class="card-label">Ajouter un ami</span><h2>Avec son code exact</h2><p>Aucun ami n’est ajouté localement avant confirmation du serveur.</p></div><form data-social-add-friend><input type="text" name="friendCode" value="${esc(state.friendCodeDraft || "")}" placeholder="MANON-ABC123" autocomplete="off" autocapitalize="characters" spellcheck="false"/><button type="submit">Envoyer</button></form>${s.feedback ? `<p class="hdsv2-feedback">${esc(s.feedback)}</p>` : ""}</section>` : ""}
-    <section class="card hdsv2-card hdsv2-friends-card"><div class="hdsv2-section-head"><div><span class="card-label">Mes amis</span><h2>${s.friends.length} ami${s.friends.length > 1 ? "s" : ""}</h2></div></div>${s.friends.length ? `<div class="hdsv2-friend-list">${s.friends.map(friend => `<div class="hdsv2-friend-row"><button type="button" class="hdsv2-friend-main" data-social-profile="${esc(friend.playerId || friend.id || friend.friendCode)}"><span class="hdsv2-avatar">${esc((friend.pseudo || friend.name || "A").charAt(0).toUpperCase())}</span><span><strong>${esc(friend.pseudo || friend.name || "Ami")}</strong><small>${esc(friend.friendCode || friend.code || "")}</small></span></button><button type="button" class="ghost hdsv2-remove" data-social-remove="${esc(friend.playerId || friend.id || "")}" aria-label="Retirer ${esc(friend.pseudo || friend.name || "cet ami")}">Retirer</button></div>`).join("")}</div>` : `<div class="hdsv2-empty"><strong>Aucun ami confirmé</strong><p>Une relation apparaît ici uniquement après validation en ligne.</p></div>`}</section>`;
+    const addCard = includeAdd ? `<section class="card hdsv2-card hdsv2-add-card"><div><span class="card-label">Agrandir ton cercle</span><h2>Inviter avec un code ami</h2><p>Entre le code affiché sur le profil de ton ami. La relation n’apparaît qu’après son acceptation.</p></div><form data-social-add-friend><input type="text" name="friendCode" value="${esc(state.friendCodeDraft || "")}" placeholder="MANON-ABC123" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code ami"/><button type="submit">Envoyer la demande</button></form>${s.feedback ? `<p class="hdsv2-feedback" role="status">${esc(s.feedback)}</p>` : ""}</section>` : "";
+    const list = s.friends.length ? `<div class="hdsv2-friend-list">${s.friends.map(friend => {
+      const periodRow = friendPeriodRow(friend, context);
+      const name = friend.pseudo || friend.name || "Ami";
+      const details = [`Niveau ${Number(friend.level || 1)}`, `${Number(friend.solvedCount || friend.solved || friend.solved_count || 0)} dossiers`];
+      if (Number(friend.streak || 0) > 0) details.push(`${Number(friend.streak)} j de série`);
+      return `<div class="hdsv2-friend-row"><button type="button" class="hdsv2-friend-main" data-social-profile="${esc(friend.playerId || friend.id || friend.friendCode)}"><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span><strong>${esc(name)}</strong><small>${esc(details.join(" · "))}</small></span></button><div class="hdsv2-friend-period">${periodRow ? `<b>${Number(periodRow.score || 0)} pts</b><small>${periodRow.rank ? `#${Number(periodRow.rank)} entre amis` : "Pas encore classé"}</small>` : `<b>—</b><small>${context ? `Aucun score ${periodShort(context.period)}` : esc(friend.friendCode || friend.code || "")}</small>`}</div><button type="button" class="ghost hdsv2-remove" data-social-remove="${esc(friend.playerId || friend.id || "")}" aria-label="Retirer ${esc(name)}">Retirer</button></div>`;
+    }).join("")}</div>` : `<div class="hdsv2-empty hdsv2-empty-friends"><span class="hdsv2-empty-icon" aria-hidden="true">◎</span><strong>Ton cercle est prêt à grandir</strong><p>Ajoute un proche pour comparer vos expéditions, même lorsqu’il n’a encore aucun point.</p>${includeAdd ? `<button type="button" class="ghost" data-focus-add-friend>Entrer un code ami</button>` : ""}</div>`;
+    return `${addCard}<section class="card hdsv2-card hdsv2-friends-card"><div class="hdsv2-section-head"><div><span class="card-label">Ton cercle</span><h2>${s.friends.length} ami${s.friends.length > 1 ? "s" : ""} confirmé${s.friends.length > 1 ? "s" : ""}</h2><p>${s.friends.length ? "Ouvre un profil pour découvrir sa progression complète." : "Les relations confirmées apparaîtront ici."}</p></div></div>${list}</section>`;
+  }
+
+  function rowName(row = {}) { return row.name || row.pseudo || "Joueur"; }
+  function rowTarget(row = {}) { return row.playerId || row.id || row.friendCode || row.code || ""; }
+  function rowMeta(row = {}) {
+    const solved = Number(row.solvedInPeriod || 0);
+    return `${solved} dossier${solved > 1 ? "s" : ""} compté${solved > 1 ? "s" : ""}`;
+  }
+  function rankRowMarkup(row, { selfCard = false } = {}) {
+    const name = rowName(row);
+    return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}${selfCard ? " hdsv2-self-row" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank ? `#${Number(row.rank)}` : "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${esc(rowMeta(row))} · voir le profil</small></span><b>${Number(row.score || 0)}<small> pts</small></b></button>`;
+  }
+
+  function podiumMarkup(rows = []) {
+    const podium = rows.filter(row => Number(row.rank || 0) >= 1 && Number(row.rank || 0) <= 3).sort((a, b) => Number(a.rank) - Number(b.rank));
+    if (podium.length < 3 || !podium.some(row => Number(row.score || 0) > 0)) return "";
+    const order = [podium.find(row => Number(row.rank) === 2), podium.find(row => Number(row.rank) === 1), podium.find(row => Number(row.rank) === 3)].filter(Boolean);
+    return `<div class="hdsv2-podium" aria-label="Podium du classement">${order.map(row => {
+      const rank = Number(row.rank || 0);
+      const name = rowName(row);
+      const medal = rank === 1 ? "1" : rank === 2 ? "2" : "3";
+      return `<button type="button" class="hdsv2-podium-card rank-${rank}${row.me ? " me" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="${esc(name)}, ${rank}${rank === 1 ? "er" : "e"} du classement"><span class="hdsv2-podium-medal">${medal}</span><span class="hdsv2-podium-avatar">${esc(name.charAt(0).toUpperCase())}</span><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><b>${Number(row.score || 0)} pts</b><small>${esc(rowMeta(row))}</small></button>`;
+    }).join("")}</div>`;
   }
 
   function leaderboardMarkup(rows, context, status) {
     if (status.phase === "loading" && !rows.length) {
-      return `<div class="hdsv2-loading" aria-live="polite"><span></span><span></span><span></span><p>Chargement du classement partagé…</p></div>`;
+      return `<div class="hdsv2-loading" aria-live="polite"><span></span><span></span><span></span><p>Le classement se met en place…</p></div>`;
     }
     if (status.phase === "error" && !rows.length) {
-      return `<div class="hdsv2-empty error"><strong>Classement indisponible</strong><p>${esc(status.message || "Le serveur n’a pas répondu.")}</p><button type="button" data-social-refresh>Réessayer</button></div>`;
+      return `<div class="hdsv2-empty error"><span class="hdsv2-empty-icon" aria-hidden="true">↻</span><strong>Impossible d’actualiser pour le moment</strong><p>Tes résultats restent enregistrés. Réessaie lorsque la connexion est revenue.</p><button type="button" data-social-refresh>Réessayer</button></div>`;
     }
     if (!rows.length) {
-      return `<div class="hdsv2-empty"><strong>Aucun score ${periodShort(context.period)}</strong><p>${context.audience === "friends" ? "Tes amis sans score apparaîtront quand même dès que la liste sera synchronisée." : "Le premier dossier résolu ouvrira ce classement."}</p></div>`;
+      return `<div class="hdsv2-empty"><span class="hdsv2-empty-icon" aria-hidden="true">◇</span><strong>${context.audience === "friends" ? "Le terrain est encore libre" : "Sois le premier à ouvrir le classement"}</strong><p>${context.audience === "friends" ? `Aucun de vous n’a encore marqué de point ${periodShort(context.period)}.` : `Le premier dossier résolu ${periodShort(context.period)} fera apparaître le classement.`}</p></div>`;
     }
-    return `<div class="hdsv2-rank-list">${rows.map(row => {
-      const profileTarget = row.playerId || row.id || row.friendCode || row.code || "";
-      const name = row.name || row.pseudo || "Joueur";
-      return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}" data-social-profile="${esc(profileTarget)}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank || "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${Number(row.solvedInPeriod || 0)} dossier${Number(row.solvedInPeriod || 0) > 1 ? "s" : ""} compté${Number(row.solvedInPeriod || 0) > 1 ? "s" : ""} · voir le profil</small></span><b>${Number(row.score || 0)}<small> pts</small></b></button>`;
-    }).join("")}</div>`;
+    const me = rows.find(row => row.me || row.playerId === meId() || (meCode() && code(row.friendCode) === code(meCode()))) || null;
+    const podium = podiumMarkup(rows);
+    const podiumShown = Boolean(podium);
+    const remaining = rows.filter(row => row !== me && !(podiumShown && Number(row.rank || 0) <= 3));
+    const showSelfPosition = Boolean(me && (!podiumShown || Number(me.rank || 0) > 3));
+    return `${showSelfPosition ? `<div class="hdsv2-self-position"><span>Ta position</span>${rankRowMarkup(me, { selfCard: true })}</div>` : ""}${podium}${remaining.length ? `<div class="hdsv2-rank-list">${remaining.map(row => rankRowMarkup(row)).join("")}</div>` : `<div class="hdsv2-ranking-complete"><span>✓</span><p>Tout le classement est déjà visible ci-dessus.</p></div>`}`;
   }
 
   async function refreshContext(context, button = null) {
@@ -494,6 +678,14 @@
       state.friendCodeDraft = event.currentTarget.value || "";
       saveSoon();
     });
+    document.querySelector("[data-focus-add-friend]")?.addEventListener("click", () => {
+      const input = document.querySelector("[data-social-add-friend] input");
+      input?.focus({ preventScroll: false });
+      document.querySelector("[data-social-add-friend]")?.scrollIntoView({
+        behavior: globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ? "auto" : "smooth",
+        block: "center"
+      });
+    });
   }
 
   renderRank = function socialV2RenderRank() {
@@ -507,15 +699,17 @@
     const status = s.leaderboardStatus[context.key] || { phase: "idle", loadedAt: 0 };
     const me = myRow(context.period, context.audience);
     const incoming = s.requests.incoming.length;
+    const pending = pendingScoreCount();
+    const audienceLabel = context.audience === "friends" ? "Ton cercle" : "Tous les joueurs";
 
     renderShell(`<div class="hdsv2-screen hdsv2-rank-screen">
-      <header class="hdsv2-topbar"><div><p class="eyebrow">Classement</p><h1>${esc(periodLabel(context.period))}</h1></div><button type="button" class="hdsv2-profile-shortcut" data-open-profile aria-label="Ouvrir le profil">${esc(pseudo().charAt(0).toUpperCase() || "P")}</button></header>
-      <nav class="hdsv2-period-tabs" aria-label="Période">${["daily", "week", "year"].map(period => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}">${esc(({ daily: "Aujourd’hui", week: "Semaine", year: "Année" })[period])}</button>`).join("")}</nav>
-      <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Général</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
-      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">Ton résultat partagé</span><h2>${Number(me?.score || 0)} points</h2><p>${context.audience === "friends" ? "Même période, uniquement toi et tes amis confirmés." : `Somme de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" data-social-refresh>Actualiser</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${Number(me?.solvedInPeriod || 0)}</b><span>dossiers comptés</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${context.period === "daily" && context.audience === "general" ? `<small class="hdsv2-zero-friends">Le classement général masque les autres joueurs à 0 point. Les amis confirmés restent visibles dans l’onglet Amis, même sans score. Un dossier d’archive ne compte pas dans le classement du jour.</small>` : ""}${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score inclus dans le classement.</small>` : ""}</section>
+      <header class="hdsv2-topbar"><div><p class="eyebrow">Classements</p><h1>${esc(periodLabel(context.period))}</h1></div><button type="button" class="hdsv2-profile-shortcut" data-open-profile aria-label="Ouvrir le profil">${esc(pseudo().charAt(0).toUpperCase() || "P")}</button></header>
+      <nav class="hdsv2-period-tabs" aria-label="Période">${[["daily", "Jour", "Aujourd’hui"], ["week", "Semaine", "Cette semaine"], ["year", "Année", "Cette année"]].map(([period, shortLabel, fullLabel]) => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}" aria-label="${fullLabel}" aria-current="${context.period === period ? "page" : "false"}">${shortLabel}</button>`).join("")}</nav>
+      <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Tous</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
+      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">Ta performance · ${esc(audienceLabel)}</span><h2>${Number(me?.score || 0)} points</h2><p>${context.audience === "friends" ? `Ta place parmi ${Math.max(1, s.friends.length + 1)} joueur${s.friends.length ? "s" : ""} de ton cercle.` : `Total de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" class="ghost" data-social-refresh>Mettre à jour</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${Number(me?.solvedInPeriod || 0)}</b><span>dossiers comptés</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div><div class="hdsv2-sync-line"><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${pending ? `<span class="hdsv2-sync-pill pending"><i></i>${pending} score${pending > 1 ? "s" : ""} à envoyer</span>` : `<span class="hdsv2-sync-pill ok">✓ aucun score en attente</span>`}</div>${context.period === "daily" && context.audience === "general" ? `<small class="hdsv2-zero-friends">Les joueurs à 0 point sont masqués ici. Tes amis restent visibles dans l’onglet Amis et les archives ne modifient jamais le score du jour.</small>` : ""}${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score ${Number(status.zeroScoreFriendCount) > 1 ? "restent" : "reste"} visible${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""}.</small>` : ""}</section>
       ${context.audience === "friends" ? requestMarkup() : ""}
-      <section class="card hdsv2-card hdsv2-leaderboard"><div class="hdsv2-section-head"><div><span class="card-label">${context.audience === "friends" ? "Entre amis" : "Classement général"}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2></div></div>${leaderboardMarkup(rows, context, status)}</section>
-      ${context.audience === "friends" ? friendsMarkup({ includeAdd: true }) : ""}
+      <section class="card hdsv2-card hdsv2-leaderboard"><div class="hdsv2-section-head hdsv2-ranking-head"><div><span class="card-label">${context.audience === "friends" ? "Entre amis" : "Classement général"}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2><p>${context.audience === "friends" ? "Ta position reste affichée au-dessus du classement, même loin du podium." : "Le podium distingue les trois meilleurs résultats de la période."}</p></div></div>${leaderboardMarkup(rows, context, status)}</section>
+      ${context.audience === "friends" ? friendsMarkup({ includeAdd: true, context }) : ""}
     </div>`);
 
     document.querySelector("[data-open-profile]")?.addEventListener("click", () => setState({ tab: "profile" }));
@@ -523,11 +717,15 @@
     document.querySelectorAll("[data-social-audience]").forEach(button => button.addEventListener("click", () => setState({ rankAudience: safeAudience(button.dataset.socialAudience), rankScope: button.dataset.socialAudience === "friends" ? "friends" : context.period }, { save: true, renderImmediate: true })));
     bindCommonSocialHandlers(context);
 
-    const needsLeaderboard = (!status.loadedAt || now() - Number(status.loadedAt) > STALE_MS) && status.phase !== "loading";
-    if (!s.loadedAt && s.phase !== "loading") {
-      bootstrap({ quiet: true }).then(() => needsLeaderboard ? loadLeaderboard(context.period, context.audience, { quiet: true }) : null).then(() => { if (state.tab === "rank") renderNow(); });
-    } else if (s.phase === "loading") {
-      bootstrapFlight?.then(() => needsLeaderboard ? loadLeaderboard(context.period, context.audience, { quiet: true }) : null).then(() => { if (state.tab === "rank") renderNow(); });
+    const leaderboardRetryReady = !Number(status.attemptedAt || 0) || now() - Number(status.attemptedAt || 0) >= STALE_MS;
+    const bootstrapRetryReady = !Number(s.lastAttemptAt || 0) || now() - Number(s.lastAttemptAt || 0) >= STALE_MS;
+    const needsLeaderboard = (!status.loadedAt || now() - Number(status.loadedAt) > STALE_MS) && status.phase !== "loading" && leaderboardRetryReady;
+    if (!s.loadedAt) {
+      if (s.phase === "loading") {
+        bootstrapFlight?.then(result => result && needsLeaderboard ? loadLeaderboard(context.period, context.audience, { quiet: true }) : null).then(() => { if (state.tab === "rank") renderNow(); });
+      } else if (bootstrapRetryReady) {
+        bootstrap({ quiet: true }).then(result => result && needsLeaderboard ? loadLeaderboard(context.period, context.audience, { quiet: true }) : null).then(() => { if (state.tab === "rank") renderNow(); });
+      }
     } else if (needsLeaderboard) {
       loadLeaderboard(context.period, context.audience, { quiet: true }).then(() => { if (state.tab === "rank") renderNow(); });
     }
@@ -609,16 +807,32 @@
     return `<span class="hd257-medal-symbol">${esc(raw || "✦")}</span>`;
   }
 
-  function profileAchievements() {
+  function profileAchievements(s = social()) {
     const source = state.achievements || {};
-    return [
-      { key: "firstLesson", label: "Premier cours", icon: "lesson", on: Boolean(source.firstLesson || profileCompletedLessons() > 0) },
-      { key: "firstMystery", label: "Premier mystère", icon: "mystery", on: Boolean(source.firstMystery || solvedTotal() > 0) },
-      { key: "streak3", label: "Série de 3 jours", icon: "spark", on: Boolean(source.streak3 || Number(state.streak || 0) >= 3) },
-      { key: "streak7", label: "Série de 7 jours", icon: "trophy", on: Boolean(source.streak7 || Number(state.streak || 0) >= 7) },
-      { key: "noHint", label: "Sans indice", icon: "check", on: Boolean(source.noHint) },
-      { key: "expertMystery", label: "Mystère expert", icon: "review", on: Boolean(source.expertMystery) }
+    const completed = profileCompletedLessons();
+    const solved = solvedTotal();
+    const streak = Math.max(0, Number(state.streak || 0));
+    const friends = Array.isArray(s?.friends) ? s.friends.length : 0;
+    const definitions = [
+      { key: "firstLesson", group: "Premiers pas", label: "Premier cours", description: "Valider un cours et son quiz.", icon: "lesson", current: completed, goal: 1, on: Boolean(source.firstLesson || completed > 0), unit: "cours" },
+      { key: "firstMystery", group: "Premiers pas", label: "Premier mystère", description: "Résoudre une expédition quotidienne.", icon: "mystery", current: solved, goal: 1, on: Boolean(source.firstMystery || solved > 0), unit: "dossier" },
+      { key: "firstArchive", group: "Exploration", label: "Mémoire retrouvée", description: "Résoudre un mystère depuis les archives.", icon: "catalog", current: source.firstArchive ? 1 : 0, goal: 1, on: Boolean(source.firstArchive), unit: "archive" },
+      { key: "streak3", group: "Régularité", label: "Élan de curiosité", description: "Revenir trois jours de suite.", icon: "spark", current: streak, goal: 3, on: Boolean(source.streak3 || streak >= 3), unit: "jours" },
+      { key: "streak7", group: "Régularité", label: "Une semaine d’exploration", description: "Maintenir une série de sept jours.", icon: "trophy", current: streak, goal: 7, on: Boolean(source.streak7 || streak >= 7), unit: "jours" },
+      { key: "noHint", group: "Maîtrise", label: "Instinct sûr", description: "Résoudre un mystère sans demander d’indice.", icon: "check", current: source.noHint ? 1 : 0, goal: 1, on: Boolean(source.noHint), unit: "défi" },
+      { key: "expertMystery", group: "Maîtrise", label: "Dossier expert", description: "Venir à bout d’un mystère expert.", icon: "review", current: source.expertMystery ? 1 : 0, goal: 1, on: Boolean(source.expertMystery), unit: "défi" },
+      { key: "tenMysteries", group: "Exploration", label: "Chasseur de mystères", description: "Résoudre dix dossiers différents.", icon: "search", current: solved, goal: 10, on: solved >= 10, unit: "dossiers" },
+      { key: "fiveLessons", group: "Apprentissage", label: "Carnet bien rempli", description: "Valider cinq cours complets.", icon: "courses", current: completed, goal: 5, on: completed >= 5, unit: "cours" },
+      { key: "threeFriends", group: "Communauté", label: "Cercle de curieux", description: "Rassembler trois amis dans HistoDaily.", icon: "users", current: friends, goal: 3, on: friends >= 3, unit: "amis" }
     ];
+    return definitions.map((item, index) => {
+      const current = Math.max(0, Number(item.current || 0));
+      const goal = Math.max(1, Number(item.goal || 1));
+      const on = Boolean(item.on || current >= goal);
+      const progress = on ? 100 : Math.max(0, Math.min(99, Math.round(current / goal * 100)));
+      const progressLabel = on ? "Débloqué" : goal === 1 ? "À accomplir" : `${Math.min(current, goal)}/${goal} ${item.unit}`;
+      return { ...item, current, goal, on, progress, progressLabel, order: index };
+    });
   }
 
   function profileActionIcon(name, fallback = "✦") {
@@ -670,22 +884,34 @@
     return labels[discipline?.id] || "Explorateur de savoirs";
   }
 
+  function profileLevelTitle(level) {
+    const value = Math.max(1, Number(level || 1));
+    if (value >= 12) return "Maître des savoirs";
+    if (value >= 8) return "Érudit confirmé";
+    if (value >= 5) return "Connaisseur";
+    if (value >= 3) return "Explorateur";
+    return "Curieux en éveil";
+  }
+
   function profileHeroMarkup(model) {
     const s = social();
     const profile = s.profile || identityPayload();
     const xp = Math.max(Number(state.xp || 0), Number(profile.xp || 0));
     const levelNumber = Math.max(1, Number(profile.level || levelValue()));
     const levelBase = Math.max(0, (levelNumber - 1) * 250);
-    const levelPct = Math.max(3, Math.min(100, Math.round((xp - levelBase) / 250 * 100)));
+    const levelXp = Math.max(0, Math.min(250, xp - levelBase));
+    const levelPct = Math.max(3, Math.min(100, Math.round(levelXp / 250 * 100)));
+    const xpRemaining = Math.max(0, 250 - levelXp);
     const solved = Math.max(solvedTotal(), Number(profile.solvedCount || profile.solved_count || 0));
     const streak = Math.max(Number(state.streak || 0), Number(profile.streak || 0));
     const accent = model.favorite.discipline.accent || "#f6c453";
-    return `<section class="hd257-hero" style="--profile-accent:${esc(accent)};--level-progress:${levelPct * 3.6}deg">
+    const levelTitle = profileLevelTitle(levelNumber);
+    return `<section class="hd257-hero hd281-hero" style="--profile-accent:${esc(accent)};--level-progress:${levelPct * 3.6}deg">
       <div class="hd257-hero-glow" aria-hidden="true"></div>
-      <div class="hd257-avatar"><div>${esc(profileInitials())}</div><span>Niv. ${levelNumber}</span></div>
-      <div class="hd257-hero-copy"><span>${esc(profileTitleFor(model.favorite.discipline))}</span><h2>${esc(pseudo())}</h2><p>${profileDisciplineIcon(model.favorite)} ${esc(model.favorite.discipline.title || "Culture générale")} est aujourd’hui ton univers le plus exploré.</p></div>
-      <div class="hd257-hero-numbers"><div><b>${xp}</b><small>XP</small></div><div><b>${streak}</b><small>jours de série</small></div><div><b>${solved}</b><small>dossiers</small></div></div>
-      <div class="hd257-level-line"><div><span>Niveau ${levelNumber}</span><b>${levelPct}% vers le suivant</b></div><i><em style="width:${levelPct}%"></em></i></div>
+      <div class="hd257-avatar hd281-avatar"><div>${esc(profileInitials())}</div><span>Niveau ${levelNumber}</span></div>
+      <div class="hd257-hero-copy hd281-hero-copy"><span class="hd281-rank-label">Rang · ${esc(levelTitle)}</span><h2>${esc(pseudo())}</h2><p>${profileDisciplineIcon(model.favorite)} ${esc(profileTitleFor(model.favorite.discipline))} · ${esc(model.favorite.discipline.title || "Culture générale")} est ton univers le plus exploré.</p></div>
+      <div class="hd257-hero-numbers hd281-hero-numbers"><div><b>${xp.toLocaleString("fr-FR")}</b><small>XP accumulés</small></div><div><b>${streak}</b><small>${streak === 1 ? "jour de série" : "jours de série"}</small></div><div><b>${solved}</b><small>${solved === 1 ? "dossier résolu" : "dossiers résolus"}</small></div></div>
+      <div class="hd257-level-line hd281-level-line"><div><span>Niveau ${levelNumber} · ${levelXp}/250 XP</span><b>${xpRemaining ? `${xpRemaining} XP avant le niveau ${levelNumber + 1}` : "Niveau suivant atteint"}</b></div><i role="progressbar" aria-label="Progression vers le niveau suivant" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${levelPct}"><em style="width:${levelPct}%"></em></i></div>
     </section>`;
   }
 
@@ -732,21 +958,27 @@
   function profileCollectionsMarkup() {
     const unlocked = profileUnlockedCollections();
     const completed = profileCompletedLessons();
-    const cards = unlocked.slice(0, 5).map(item => ({ ...item, unlocked: true }));
-    const placeholders = [
+    const derived = [
       { title: "Premier parcours", icon: profileActionIcon("lesson"), unlocked: completed >= 3 },
       { title: "Explorateur régulier", icon: profileActionIcon("spark"), unlocked: Number(state.streak || 0) >= 7 },
       { title: "Chasseur de mystères", icon: profileActionIcon("mystery"), unlocked: solvedTotal() >= 10 }
     ];
-    placeholders.forEach(item => { if (cards.length < 6 && !cards.some(card => card.title === item.title)) cards.push(item); });
-    while (cards.length < 6) cards.push({ title: "À débloquer", icon: profileActionIcon("lock"), unlocked: false });
-    return `<section class="hd257-collections-card"><header class="hd257-section-head"><div><span>Collections</span><h2>Trophées d’exploration</h2><p>Les médailles gardent la trace des parcours que tu as vraiment terminés.</p></div><b>${unlocked.length}<small>débloquée${unlocked.length > 1 ? "s" : ""}</small></b></header><div class="hd257-medal-rail">${cards.map(card => `<article class="${card.unlocked ? "unlocked" : "locked"}"><div>${profileCollectionIcon(card.icon)}</div><span>${card.unlocked ? "Débloquée" : "Verrouillée"}</span><b>${esc(card.title)}</b></article>`).join("")}</div></section>`;
+    const cards = unlocked.slice(0, 5).map(item => ({ ...item, unlocked: true }));
+    derived.forEach(item => { if (cards.length < 6 && !cards.some(card => card.title === item.title)) cards.push(item); });
+    while (cards.length < 6) cards.push({ title: "Prochaine collection", icon: profileActionIcon("lock"), unlocked: false });
+    const displayedUnlocked = cards.filter(card => card.unlocked).length;
+    return `<section class="hd257-collections-card"><header class="hd257-section-head"><div><span>Collections</span><h2>Trophées d’exploration</h2><p>Les médailles gardent la trace des parcours que tu as vraiment terminés.</p></div><b>${displayedUnlocked}<small>sur ${cards.length}</small></b></header><div class="hd257-medal-rail">${cards.map(card => `<article class="${card.unlocked ? "unlocked" : "locked"}"><div>${profileCollectionIcon(card.icon)}</div><span>${card.unlocked ? "Débloquée" : "À découvrir"}</span><b>${esc(card.title)}</b></article>`).join("")}</div></section>`;
   }
 
-  function profileAchievementsMarkup() {
-    const achievements = profileAchievements();
+  function profileAchievementsMarkup(s) {
+    const achievements = profileAchievements(s);
     const count = achievements.filter(item => item.on).length;
-    return `<section class="hd257-achievements-card"><header class="hd257-section-head"><div><span>Succès</span><h2>Étapes marquantes</h2></div><b>${count}/${achievements.length}</b></header><div class="hd257-badge-grid">${achievements.map(item => `<article class="${item.on ? "on" : "off"}"><div>${profileActionIcon(item.icon)}</div><span>${esc(item.label)}</span></article>`).join("")}</div></section>`;
+    const completion = Math.round(count / Math.max(1, achievements.length) * 100);
+    const next = achievements.filter(item => !item.on).sort((a, b) => b.progress - a.progress || a.order - b.order)[0] || null;
+    const nextMarkup = next
+      ? `<div class="hd281-next-success"><div class="hd281-next-icon">${profileActionIcon(next.icon)}</div><div><span>Prochain succès</span><h3>${esc(next.label)}</h3><p>${esc(next.description)}</p><div class="hd281-next-progress"><i><em style="width:${next.progress}%"></em></i><b>${esc(next.progressLabel)}</b></div></div></div>`
+      : `<div class="hd281-next-success complete"><div class="hd281-next-icon">${profileActionIcon("trophy")}</div><div><span>Collection complète</span><h3>Tous les succès sont débloqués</h3><p>Ton profil raconte déjà un parcours remarquable.</p></div></div>`;
+    return `<section class="hd257-achievements-card hd281-achievements-card"><header class="hd257-section-head"><div><span>Succès</span><h2>Ton carnet d’exploits</h2><p>Chaque succès correspond à une action réelle dans HistoDaily. Les objectifs verrouillés indiquent exactement ce qu’il reste à accomplir.</p></div><b>${count}/${achievements.length}<small>${completion}%</small></b></header>${nextMarkup}<div class="hd281-achievement-grid">${achievements.map(item => `<article class="hd281-achievement ${item.on ? "on" : "off"}" aria-label="${esc(item.label)} — ${esc(item.progressLabel)}"><div class="hd281-achievement-icon">${profileActionIcon(item.icon)}</div><div class="hd281-achievement-copy"><span>${esc(item.group)}</span><h3>${esc(item.label)}</h3><p>${esc(item.description)}</p></div><div class="hd281-achievement-status"><i><em style="width:${item.progress}%"></em></i><b>${esc(item.progressLabel)}</b></div></article>`).join("")}</div></section>`;
   }
 
   function profileIdentityMarkup(s) {
@@ -769,7 +1001,7 @@
       <section class="hd257-dashboard">${profileRhythmMarkup()}${profileCommunityMarkup(s)}</section>
       ${profileProgressMarkup(model)}
       ${profileCollectionsMarkup()}
-      ${profileAchievementsMarkup()}
+      ${profileAchievementsMarkup(s)}
       ${profileDetailsMarkup(s)}
     </div>`);
     sealSocialProfileShell();
@@ -819,8 +1051,38 @@
     document.querySelector("[data-download-save]")?.addEventListener("click", downloadLocalSave);
     document.querySelector("[data-import-save]")?.addEventListener("click", importLocalSave);
 
-    if ((!s.loadedAt || now() - s.loadedAt > STALE_MS) && s.phase !== "loading") bootstrap({ quiet: true }).then(() => { if (state.tab === "profile") renderNow(); });
+    const profileRetryReady = !Number(s.lastAttemptAt || 0) || now() - Number(s.lastAttemptAt || 0) >= STALE_MS;
+    if ((!s.loadedAt || now() - s.loadedAt > STALE_MS) && s.phase !== "loading" && profileRetryReady) bootstrap({ quiet: true }).then(() => { if (state.tab === "profile") renderNow(); });
   };
+
+  function fallbackPublicProfile(id) {
+    const s = social();
+    const friend = s.friends.find(item => sameSocialPlayer(item, String(id || ""), code(id || ""))) || null;
+    const rows = Object.values(s.leaderboards || {}).flatMap(list => Array.isArray(list) ? list : []);
+    const match = rows.find(item => sameSocialPlayer(item, String(id || ""), code(id || ""))) || null;
+    const base = friend || match;
+    if (!base) return null;
+    const scores = {};
+    const ranks = {};
+    ["daily", "week", "year"].forEach(period => {
+      const row = rowsFor(period, "general").find(item => sameSocialPlayer(item, base.playerId || id, base.friendCode || base.code || ""))
+        || rowsFor(period, "friends").find(item => sameSocialPlayer(item, base.playerId || id, base.friendCode || base.code || ""));
+      scores[period] = Number(row?.score || 0);
+      ranks[period] = Number(row?.rank || 0);
+    });
+    return {
+      playerId: base.playerId || base.id || String(id || ""),
+      friendCode: code(base.friendCode || base.code || ""),
+      pseudo: base.pseudo || base.name || "Joueur",
+      level: Number(base.level || 1),
+      xp: Number(base.xp || 0),
+      solvedCount: Number(base.solvedCount || base.solved_count || base.solved || 0),
+      streak: Number(base.streak || 0),
+      scores,
+      ranks,
+      partial: true
+    };
+  }
 
   async function loadPublicProfile(id, { force = false } = {}) {
     if (!id) return null;
@@ -838,6 +1100,7 @@
     const targetPlayerId = linkedFriend?.playerId || (linkedFriend ? "" : id);
     const targetFriendCode = code(linkedFriend?.friendCode || linkedFriend?.code || "");
     const flight = api("profile", {
+      timeout: 12_000,
       query: {
         playerId: targetPlayerId,
         friendCode: targetFriendCode,
@@ -851,14 +1114,16 @@
       saveSoon();
       return json.profile;
     }).catch(error => {
+      const fallback = cached.profile || fallbackPublicProfile(id);
       s.publicProfiles[id] = {
         ...cached,
-        loadedAt: cached.loadedAt || 0,
-        phase: "error",
-        message: error.message || "Profil partagé indisponible."
+        profile: fallback || null,
+        loadedAt: cached.loadedAt || (fallback ? now() : 0),
+        phase: fallback ? "stale" : "error",
+        message: fallback ? "Profil partiel affiché depuis les données déjà synchronisées." : (error.message || "Profil partagé indisponible.")
       };
       saveSoon();
-      return null;
+      return fallback || null;
     }).finally(() => publicProfileFlights.delete(id));
     publicProfileFlights.set(id, flight);
     return flight;
@@ -923,7 +1188,7 @@
     const record = social().publicProfiles[id] || {};
     const player = record.profile;
     const body = player
-      ? `<section class="card hdsv2-card hdsv2-profile-summary hd273-public-card"><div class="hdsv2-profile-hero"><div class="hdsv2-profile-avatar">${esc((player.pseudo || "J").charAt(0).toUpperCase())}</div><div><span class="card-label">Profil public</span><h2>${esc(player.pseudo || "Joueur")}</h2><p>Niveau ${Number(player.level || 1)} · ${Number(player.xp || 0)} XP</p></div></div><div class="hd273-public-stats"><div><b>${Number(player.streak || 0)}</b><span>jours de série</span></div><div><b>${Number(player.solvedCount || 0)}</b><span>dossiers résolus</span></div></div><div class="hd273-score-grid">${[['daily', 'Aujourd’hui'], ['week', 'Semaine'], ['year', 'Année']].map(([period, label]) => `<div><span>${label}</span><b>${Number(player.scores?.[period] || 0)} pts</b><small>${Number(player.ranks?.[period] || 0) ? `#${Number(player.ranks[period])} au général` : "Pas encore classé"}</small></div>`).join("")}</div></section>${publicProfileActionMarkup(player, id)}${social().feedback ? `<p class="hdsv2-feedback hd273-profile-feedback" role="status">${esc(social().feedback)}</p>` : ""}`
+      ? `<section class="card hdsv2-card hdsv2-profile-summary hd273-public-card"><div class="hdsv2-profile-hero"><div class="hdsv2-profile-avatar">${esc((player.pseudo || "J").charAt(0).toUpperCase())}</div><div><span class="card-label">Profil public</span><h2>${esc(player.pseudo || "Joueur")}</h2><p>Niveau ${Number(player.level || 1)} · ${Number(player.xp || 0)} XP</p></div></div><div class="hd273-public-stats"><div><b>${Number(player.streak || 0)}</b><span>jours de série</span></div><div><b>${Number(player.solvedCount || 0)}</b><span>dossiers résolus</span></div></div><div class="hd273-score-grid">${[['daily', 'Aujourd’hui'], ['week', 'Semaine'], ['year', 'Année']].map(([period, label]) => `<div><span>${label}</span><b>${Number(player.scores?.[period] || 0)} pts</b><small>${Number(player.ranks?.[period] || 0) ? `#${Number(player.ranks[period])} au général` : "Pas encore classé"}</small></div>`).join("")}</div>${player.partial ? `<p class="hd274-partial-profile">Données partielles : une actualisation complétera ce profil dès que le serveur répondra.</p>` : ""}</section>${publicProfileActionMarkup(player, id)}${social().feedback ? `<p class="hdsv2-feedback hd273-profile-feedback" role="status">${esc(social().feedback)}</p>` : ""}`
       : record.phase === "error"
         ? `<section class="card hdsv2-card"><div class="hdsv2-empty error"><strong>Profil indisponible</strong><p>${esc(record.message || "Le serveur n’a pas répondu.")}</p><button type="button" data-public-profile-retry>Réessayer</button></div></section>`
         : `<section class="card hdsv2-card"><div class="hdsv2-loading"><span></span><span></span><span></span><p>${esc(record.message || "Chargement du profil partagé…")}</p></div></section>`;
@@ -1034,7 +1299,9 @@
     const s = social();
     const friend = s.friends.find(item => item.playerId === id || item.id === id || code(item.friendCode) === code(id));
     if (!friend) return;
-    s.feedback = `Suppression de ${friend.pseudo || friend.name || "cet ami"}…`;
+    const friendName = friend.pseudo || friend.name || "cet ami";
+    if (typeof window.confirm === "function" && !window.confirm(`Retirer ${friendName} de tes amis ? Vos profils resteront intacts, mais il disparaîtra du classement Amis.`)) return;
+    s.feedback = `Suppression de ${friendName}…`;
     renderNow();
     try {
       const json = await api("friends/remove", { method: "DELETE", body: identityPayload({ friendPlayerId: friend.playerId, friendCodeTarget: friend.friendCode }) });
@@ -1061,14 +1328,22 @@
   }
 
   async function sendScorePayload(payload) {
-    const json = await api("score", { method: "POST", body: { ...identityPayload(), ...(payload || {}) } });
-    if (!json.stored) throw new Error(json.message || "Score non enregistré.");
+    const prepared = scorePayloadWithEligibility(payload || {});
+    if (!prepared.rankingEligible) {
+      markScoreNotRanked(prepared.mysteryId);
+      return { ok: true, stored: false, skipped: true, mode: "not-ranked", message: "Archive conservée dans la progression, hors classement." };
+    }
+    // L'identité canonique gagne toujours sur l'identité ancienne éventuellement
+    // conservée dans une file locale après changement d'appareil ou réconciliation.
+    const json = await api("score", { method: "POST", body: { ...prepared, ...identityPayload() } });
+    if (!json.stored && !json.skipped) throw new Error(json.message || "Score non enregistré.");
     adoptIdentity(json);
     return json;
   }
 
   submitScoreToServer = async function socialV2SubmitScore(payload) {
     const json = await sendScorePayload(payload);
+    if (json.skipped) return json;
     invalidateLeaderboards();
     const context = activeContext();
     setTimeout(() => {
@@ -1081,7 +1356,7 @@
   async function socialV2FlushScoreOutbox({ force = false, reason = "auto" } = {}) {
     if (scoreFlushFlight) return scoreFlushFlight;
     if (typeof beta128ReadScoreOutbox !== "function" || typeof beta128SaveScoreOutbox !== "function") return null;
-    let outbox = beta128ReadScoreOutbox();
+    let outbox = purgeIneligibleScoreOutbox();
     if (!outbox.length) return { storedCount: 0, pendingCount: 0 };
     if (!online()) {
       outbox.forEach(item => {
@@ -1093,7 +1368,7 @@
     }
 
     const startedAt = now();
-    const due = outbox.filter(item => force || !item.nextTryAt || Number(item.nextTryAt) <= startedAt).slice(0, 12);
+    const due = outbox.filter(item => force || !item.nextTryAt || Number(item.nextTryAt) <= startedAt).slice(0, 18);
     if (!due.length) return { storedCount: 0, pendingCount: outbox.length };
 
     scoreFlushFlight = (async () => {
@@ -1104,20 +1379,32 @@
         try {
           state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: true, stored: false, mode: "social-v2", message: "Envoi vers le classement partagé…" } };
           const result = await sendScorePayload(payload);
-          storedCount += 1;
           if (typeof beta128RemoveScorePayload === "function") beta128RemoveScorePayload(payload);
           else beta128SaveScoreOutbox(beta128ReadScoreOutbox().filter(item => (typeof beta128ScoreKey === "function" ? beta128ScoreKey(item) : `${item.mysteryId}|${item.periodKey || item.dayKey}`) !== key));
-          state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: false, stored: true, mode: result.mode || "supabase-atomic", message: result.message || "Score synchronisé." } };
+          if (result.skipped) {
+            markScoreNotRanked(payload.mysteryId);
+          } else {
+            storedCount += 1;
+            state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: false, stored: true, mode: result.mode || "supabase-atomic", message: result.message || "Score synchronisé.", syncedAt: now() } };
+          }
         } catch (error) {
+          const permanent = [400, 422].includes(Number(error?.status || 0));
           const current = beta128ReadScoreOutbox();
-          beta128SaveScoreOutbox(current.map(item => {
-            const itemKey = typeof beta128ScoreKey === "function" ? beta128ScoreKey(item) : `${item.mysteryId}|${item.periodKey || item.dayKey}`;
-            if (itemKey !== key) return item;
-            const retryCount = Number(item.retryCount || 0) + 1;
-            const delay = typeof beta128RetryDelayMs === "function" ? beta128RetryDelayMs({ ...item, retryCount, lastMode: "error" }) : Math.min(600000, 15000 * Math.pow(1.7, retryCount));
-            return { ...item, retryCount, lastMode: "error", lastMessage: error.message || "Connexion instable : renvoi automatique prévu.", nextTryAt: now() + delay, updatedAt: now() };
-          }));
-          state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: false, stored: false, mode: "error", message: error.message || "Score gardé localement pour un nouveau renvoi." } };
+          if (permanent) {
+            beta128SaveScoreOutbox(current.filter(item => {
+              const itemKey = typeof beta128ScoreKey === "function" ? beta128ScoreKey(item) : `${item.mysteryId}|${item.periodKey || item.dayKey}`;
+              return itemKey !== key;
+            }));
+          } else {
+            beta128SaveScoreOutbox(current.map(item => {
+              const itemKey = typeof beta128ScoreKey === "function" ? beta128ScoreKey(item) : `${item.mysteryId}|${item.periodKey || item.dayKey}`;
+              if (itemKey !== key) return item;
+              const retryCount = Number(item.retryCount || 0) + 1;
+              const delay = typeof beta128RetryDelayMs === "function" ? beta128RetryDelayMs({ ...item, retryCount, lastMode: "error" }) : Math.min(600000, 15000 * Math.pow(1.7, retryCount));
+              return { ...item, retryCount, lastMode: "error", lastMessage: error.message || "Connexion instable : renvoi automatique prévu.", nextTryAt: now() + delay, updatedAt: now(), lastAttemptAt: now() };
+            }));
+          }
+          state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [payload.mysteryId]: { pending: false, stored: false, mode: permanent ? "rejected" : "error", message: permanent ? "Score refusé car les données locales sont invalides." : (error.message || "Score gardé localement pour un nouveau renvoi.") } };
         }
       }
       if (storedCount) {
@@ -1126,7 +1413,11 @@
         await loadLeaderboard(context.period, context.audience, { force: true, quiet: true }).catch(() => []);
       }
       saveSoon();
-      return { storedCount, pendingCount: beta128ReadScoreOutbox().length, reason };
+      const pendingCount = purgeIneligibleScoreOutbox().length;
+      if (pendingCount && online()) {
+        setTimeout(() => socialV2FlushScoreOutbox({ force: false, reason: "continue-drain" }).catch(() => {}), 750);
+      }
+      return { storedCount, pendingCount, reason };
     })().finally(() => {
       scoreFlushFlight = null;
       if (["home", "rank", "profile", "mystery"].includes(state.tab)) renderNow();
@@ -1138,14 +1429,31 @@
     if (typeof beta128QueueScorePayload !== "function" || typeof scorePayloadForMystery !== "function") return;
     Object.entries(state.solvedMysteries || {}).forEach(([mysteryId, solved]) => {
       if (!solved) return;
+      if (!scoreEligibleForRanking(mysteryId, solved)) {
+        markScoreNotRanked(mysteryId);
+        return;
+      }
       const status = state.lastScoreSubmit?.[mysteryId];
-      if (!status || !status.stored) beta128QueueScorePayload(scorePayloadForMystery(mysteryId), "social-v2-recovery");
+      if (["rejected", "not-ranked"].includes(status?.mode) || status?.stored) return;
+      const solvedAt = Number(solved?.at || 0);
+      // Évite de reconstruire indéfiniment une file de scores très anciens après
+      // restauration d'une sauvegarde. Les 31 derniers jours couvrent largement
+      // une coupure réseau ou un changement d'appareil normal.
+      if (!solvedAt || now() - solvedAt > 31 * 86_400_000 || solvedAt > now() + 86_400_000) return;
+      beta128QueueScorePayload(scorePayloadWithEligibility(scorePayloadForMystery(mysteryId)), "social-v2-recovery");
     });
   }
 
   queueScoreSubmit = function socialV2QueueScoreSubmit(mysteryId) {
     if (!mysteryId || typeof scorePayloadForMystery !== "function" || typeof beta128QueueScorePayload !== "function") return;
-    const payload = scorePayloadForMystery(mysteryId);
+    const payload = scorePayloadWithEligibility(scorePayloadForMystery(mysteryId));
+    if (!payload.rankingEligible) {
+      markScoreNotRanked(mysteryId);
+      if (typeof beta128RemoveScorePayload === "function") beta128RemoveScorePayload(payload);
+      saveSoon();
+      if (state.tab === "mystery") renderNow();
+      return;
+    }
     beta128QueueScorePayload(payload, "solve-social-v2");
     state.lastScoreSubmit = { ...(state.lastScoreSubmit || {}), [mysteryId]: {
       pending: online(), stored: false, mode: online() ? "social-v2-outbox" : "offline",
@@ -1184,8 +1492,9 @@
 
   scoreForScope = function socialV2ScoreForScope(scope = "daily") {
     const context = activeContext();
-    const row = scope === "friends" ? myRow(context.period, "friends") : myRow(safePeriod(scope), "general");
-    return Number(row?.score || 0);
+    const period = scope === "friends" ? context.period : safePeriod(scope);
+    const row = scope === "friends" ? myRow(period, "friends") : myRow(period, "general");
+    return Math.max(Number(row?.score || 0), Number(localSelfRow(period).score || 0));
   };
 
   friendProfiles = function socialV2FriendProfiles() {
@@ -1271,28 +1580,12 @@
     const s = social();
     lastObservedDay = dayKey();
     repairStuckStates();
-    const previousVersion = s.version || "";
-    if (previousVersion !== VERSION) {
-      // Une nouvelle version ne réutilise jamais un état « loading » ni un
-      // classement quotidien potentiellement daté de la veille. Les lignes
-      // déjà affichées restent disponibles comme copie de secours.
-      s.loadedAt = 0;
-      s.startedAt = 0;
-      s.phase = "idle";
-      Object.keys(s.leaderboardStatus || {}).forEach(key => {
-        s.leaderboardStatus[key] = {
-          ...s.leaderboardStatus[key],
-          loadedAt: 0,
-          startedAt: 0,
-          phase: Array.isArray(s.leaderboards?.[key]) ? "stale" : "idle",
-          message: "Données partagées à resynchroniser."
-        };
-      });
-    }
+    // social() applique déjà la migration de version avant de rendre l’état.
     s.version = VERSION;
     window.HD_SOCIAL_V2_ONLY = true;
     state.rankPeriod = safePeriod(state.rankPeriod || state.rankFriendPeriod || (state.rankScope === "friends" ? "daily" : state.rankScope));
     state.rankAudience = safeAudience(state.rankAudience || (state.rankScope === "friends" ? "friends" : "general"));
+    purgeIneligibleScoreOutbox();
     saveSoon();
 
     // Remplace immédiatement l'écran social hérité avant toute requête.

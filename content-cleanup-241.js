@@ -196,7 +196,7 @@
     append("lit-poetry-modernity", 3, "Le vers libre ne supprime pas le rythme : il l’organise autrement par les reprises, les coupes et les respirations.");
     append("history-reformations-print-culture", 0, "En 1517, Luther rend publique sa critique des indulgences et ouvre une controverse européenne.");
     append("astro-star-birth-fusion", 0, "Les étoiles naissent dans les régions les plus denses de nuages froids de gaz et de poussière.");
-    append("astro-rocky-planets", 3, "Les vallées et anciens deltas de Mars témoignent d’écoulements d’eau liquide dans un passé plus humide.");
+    append("astro-rocky-planets", 3, "Les vallées et anciens deltas de Mars témoignent d’écoulements d’eau liquide dans un passé plus humide. Comparer ces reliefs avec ceux de la Terre aide à distinguer l’action ancienne de l’eau, du volcanisme, des impacts et de l’érosion atmosphérique.");
     append("astro-moon-mars-exploration", 4, "Robots et humains ne sont pas nécessairement rivaux : l’endurance et l’autonomie des machines complètent les capacités d’observation et de décision d’un équipage, au prix de risques très différents.");
     append("music-recording-studio-industry", 0, "Le phonographe introduit une rupture décisive : une performance sonore peut désormais être enregistrée puis reproduite.");
   }

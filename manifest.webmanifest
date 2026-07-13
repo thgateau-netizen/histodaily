@@ -1,7 +1,7 @@
 {
   "name": "HistoDaily",
   "short_name": "HistoDaily",
-  "description": "HistoDaily — une expédition quotidienne et un catalogue libre de cours, mystères et révisions.",
+  "description": "Un mystère quotidien, des expéditions culturelles et des cours pour apprendre un peu chaque jour.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -38,5 +38,33 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "1.0.0-beta.273.0"
+  "version": "1.0.0-rc.13",
+  "shortcuts": [
+    {
+      "name": "Mystère du jour",
+      "short_name": "Mystère",
+      "description": "Ouvrir le défi quotidien",
+      "url": "/?view=daily",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Mes cours",
+      "short_name": "Cours",
+      "description": "Continuer les cours",
+      "url": "/?view=courses",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

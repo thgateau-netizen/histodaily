@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-beta.271.0";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-rc.13";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -211,9 +211,9 @@ window.addEventListener("beforeinstallprompt", (event) => {
 
 const defaultState = {
   tab: "home",
-  xp: 180,
+  xp: 0,
   streak: 0,
-  gems: 12,
+  gems: 0,
   pseudo: "Invité",
   completedLessons: {},
   readLessons: {},
@@ -401,8 +401,9 @@ function level() { return Math.floor(state.xp / 250) + 1; }
 /* LTS: fonction morte supprimée (levelProgress). */
 let lessonIndexCache = null;
 function lessonIndex() {
-  const signature = Object.entries(data.lessons).reduce((sum, [, lessons]) => sum + (Array.isArray(lessons) ? lessons.length : 0), 0);
-  if (lessonIndexCache?.signature === signature) return lessonIndexCache;
+  // RC9 : le catalogue est immuable pendant une session après le chargement des modules.
+  // Éviter de recompter tous les cours à chaque accès économise plusieurs secondes sur mobile.
+  if (lessonIndexCache) return lessonIndexCache;
   const all = [];
   const byId = new Map();
   const worldByLessonId = new Map();
@@ -413,7 +414,7 @@ function lessonIndex() {
       if (!worldByLessonId.has(lesson.id)) worldByLessonId.set(lesson.id, worldId);
     });
   });
-  lessonIndexCache = { signature, all, byId, worldByLessonId };
+  lessonIndexCache = { all, byId, worldByLessonId };
   return lessonIndexCache;
 }
 function allLessons() { return lessonIndex().all; }
@@ -1061,7 +1062,21 @@ function submitGuess(event) {
   const selected = state.currentMysteryId ? mysteryById(state.currentMysteryId) : null;
   const mystery = (selected && isSelectedMysteryPlayable(selected)) ? selected : currentMystery();
   if (!mystery?.id) return;
-  const guess = input?.value || "";
+  const guess = String(input?.value || "").trim();
+  // Une pression accidentelle sur « Valider » ne doit jamais consommer un essai
+  // ni réduire le score potentiel. On affiche l’aide, puis on rend le focus au champ.
+  if (!normalize(guess)) {
+    state.mysteryFeedback = { ...(state.mysteryFeedback || {}), [mystery.id]: guessFeedback(guess, mystery) };
+    saveState();
+    render();
+    window.setTimeout(() => {
+      const nextInput = document.querySelector("[data-guess-input]");
+      nextInput?.focus?.({ preventScroll: true });
+      nextInput?.classList?.add("shake");
+      window.setTimeout(() => nextInput?.classList?.remove("shake"), 450);
+    }, 0);
+    return;
+  }
   state.mysteryTries[mystery.id] = (state.mysteryTries[mystery.id] || 0) + 1;
   if (isAcceptedGuess(guess, mystery)) {
     const score = mysteryScore(mystery.id);
@@ -1075,8 +1090,19 @@ function submitGuess(event) {
     state.rewardFeedback = { ...(state.rewardFeedback || {}), [mystery.id]: dailyReward || (isArchive ? "Archive résolue : XP gagné, mais les gemmes restent réservées au rendez-vous quotidien." : "") };
     if (state.mysteryFeedback) delete state.mysteryFeedback[mystery.id];
     awardXP(score, "mystère résolu");
+    if (isArchive) {
+      state.lastScoreSubmit = {
+        ...(state.lastScoreSubmit || {}),
+        [mystery.id]: {
+          pending: false,
+          stored: false,
+          mode: "not-ranked",
+          message: "Archive conservée dans la progression, hors classement."
+        }
+      };
+    }
     saveState();
-    queueScoreSubmit(mystery.id);
+    if (!isArchive) queueScoreSubmit(mystery.id);
     window.HDSound?.play?.("mystery", { force: true });
     render();
   } else {
@@ -1111,15 +1137,9 @@ function installPromptMarkup() {
   return `<section class="card install-card soft-panel"><div><span class="card-label">App mobile</span><h2>Installe HistoDaily en raccourci.</h2><p>${platformInstallHint()} C’est plus rapide pour revenir au mystère du jour.</p></div><div class="install-actions"><button data-install-app>${canPrompt ? "Installer" : "Comment faire"}</button><button class="ghost" data-dismiss-install>Plus tard</button></div>${state.installFeedback ? `<p>${escapeHtml(state.installFeedback)}</p>` : ""}</section>`;
 }
 
-function releaseNotesMarkup({ home = false } = {}) {
-  const notes = HISTODAILY_CORE.ui?.releaseNotes || [];
-  if (!notes.length || state.dismissedReleaseVersion === APP_VERSION) return "";
-  const versionLabel = HISTODAILY_CORE.ui?.versionLabel || APP_VERSION;
-  return `<section class="card release-card soft-panel ${home ? "home-release-card" : ""}"><div class="section-title-row"><div><span class="card-label">Nouveautés</span><h2>Mise à jour HistoDaily</h2></div><small>Dernière mise à jour</small></div><p>Ce qui a changé dans cette version :</p><ul>${notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ul><div class="home-card-footer"><span>Bon jeu.</span><button class="ghost" data-dismiss-release>OK</button></div></section>`;
+function releaseNotesMarkup() { return "";
 }
-function homeVersionPillMarkup() {
-  const versionLabel = HISTODAILY_CORE.ui?.versionLabel || APP_VERSION;
-  return `<span class="version-pill">${escapeHtml(versionLabel)}</span>`;
+function homeVersionPillMarkup() { return "";
 }
 /* LTS: ancienne implémentation de performanceMode supprimée (1228-1228). */
 /* LTS: ancienne implémentation de applyPerformanceMode supprimée (1229-1234). */
@@ -1251,12 +1271,15 @@ function extendExpressForPublished(pack = {}, lesson = {}, world = {}, profile =
   return Array.isArray(pack.express) ? pack.express.slice() : [];
 }
 
+let publishedQualityCache = new WeakMap();
 function rawPublishedQuality(pack = {}) {
-  const countWords = text => String(text || "").split(/\s+/).filter(Boolean).length;
-  const expressWords = countWords(Array.isArray(pack.express) ? pack.express.join(" ") : "");
-  const completeWords = countWords(Array.isArray(pack.complete) ? pack.complete.map(block => `${block?.title || ""} ${block?.text || block || ""}`).join(" ") : "");
+  if (pack && typeof pack === "object" && publishedQualityCache.has(pack)) return publishedQualityCache.get(pack);
+  const expressWords = qualityWordCount(Array.isArray(pack.express) ? pack.express.join(" ") : "");
+  const completeWords = qualityWordCount(Array.isArray(pack.complete) ? pack.complete.map(block => `${block?.title || ""} ${block?.text || block || ""}`).join(" ") : "");
   const quizCount = Array.isArray(pack.quiz) ? pack.quiz.length : 0;
-  return { expressWords, completeWords, quizCount, pass: expressWords >= 80 && completeWords >= 170 && quizCount === 5 };
+  const result = { expressWords, completeWords, quizCount, pass: expressWords >= 80 && completeWords >= 170 && quizCount === 5 };
+  if (pack && typeof pack === "object") publishedQualityCache.set(pack, result);
+  return result;
 }
 
 function extendCompleteForPublished(pack = {}, lesson = {}, world = {}, profile = {}, context = {}) {
@@ -1284,14 +1307,28 @@ function isCuratedLesson(lesson = {}) {
   const pack = lesson && READY_LESSON_PACKS[lesson.id];
   return Boolean(lesson && pack && PUBLISHED_LESSON_IDS.has(lesson.id) && rawPublishedQuality(pack).pass);
 }
+let curatedLessonsCache = null;
+let curatedLessonsForCache = new Map();
+let curatedLessonByIdCache = null;
 function curatedLessons() {
-  return allLessons().filter(isCuratedLesson);
+  if (!curatedLessonsCache) curatedLessonsCache = allLessons().filter(isCuratedLesson);
+  return curatedLessonsCache;
 }
 function curatedLessonsFor(worldId) {
-  return lessonsFor(worldId).filter(isCuratedLesson);
+  const key = String(worldId || "");
+  if (!curatedLessonsForCache.has(key)) curatedLessonsForCache.set(key, lessonsFor(worldId).filter(isCuratedLesson));
+  return curatedLessonsForCache.get(key);
 }
 function curatedLessonById(id) {
-  return curatedLessons().find(lesson => lesson.id === id) || null;
+  if (!curatedLessonByIdCache) curatedLessonByIdCache = new Map(curatedLessons().map(lesson => [String(lesson.id), lesson]));
+  return curatedLessonByIdCache.get(String(id)) || null;
+}
+function invalidateCatalogCaches() {
+  lessonIndexCache = null;
+  publishedQualityCache = new WeakMap();
+  curatedLessonsCache = null;
+  curatedLessonsForCache = new Map();
+  curatedLessonByIdCache = null;
 }
 /* LTS: ancienne implémentation de curatedWorlds supprimée (1549-1551). */
 /* LTS: ancienne implémentation de visibleWorlds supprimée (1552-1555). */
@@ -7608,7 +7645,7 @@ function renderMystery() {
       ${!solved ? `<div class="score-explain"><b>Barème clair</b><span>indice choisi : -${SCORE_PENALTY_HINT} XP potentiel · essai supplémentaire : -${SCORE_PENALTY_EXTRA_TRY} XP · aucune aide donnée automatiquement</span></div>${scoreBreakdownMarkup(mystery.id)}` : ""}
       <div class="hints">${(mystery.clues || []).slice(0, hints).map((c, index) => `<p><b>${escapeHtml(mysteryHintLabels()[index] || `Indice ${index + 1}`)}</b> · ${escapeHtml(c)}</p>`).join("")}</div>
       ${feedback && !solved ? `<p class="guess-feedback">${escapeHtml(feedback)}</p>` : ""}
-      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}${scoreSyncMarkup(mystery.id)}<div class="after-actions"><button data-go-rank>Voir le classement</button><button class="ghost" data-open-profile-after>Profil</button></div></div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" /><button type="submit" data-guess-submit>Valider</button></form><button type="button" class="ghost wide mystery-action-button" data-hint data-mystery-action="hint">${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
+      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}${scoreSyncMarkup(mystery.id)}<div class="after-actions"><button data-go-rank>Voir le classement</button><button class="ghost" data-open-profile-after>Profil</button></div></div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" required aria-required="true" /><button type="submit" data-guess-submit>Valider</button></form><button type="button" class="ghost wide mystery-action-button" data-hint data-mystery-action="hint">${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
     </section>
     ${solved && lesson ? `<section class="card after-mystery">
       <div class="card-label">Après le mystère</div>
@@ -8334,23 +8371,53 @@ async function copyText(text, okMessage, feedbackKey = "profileFeedback") {
   } catch {}
   setState({ [feedbackKey]: ok ? okMessage : text });
 }
-function exportLocalSave() {
-  const payload = {
+function portableSocialStorageKeys() {
+  return [
+    `${STORAGE_KEY}_friend_code`,
+    `${STORAGE_KEY}_local_user_id`,
+    `${STORAGE_KEY}_social_snapshot_v3`,
+    `${STORAGE_KEY}_social_identity_v2`,
+    `${STORAGE_KEY}_score_outbox_v1`,
+    "histodaily_social_identity_v1",
+    "histodaily_friend_code_v1",
+    "histodaily_player_suffix_v1",
+    "histodaily_local_user_id",
+    "histodaily_pseudo_v1",
+    "histodaily_last_pseudo",
+    "histodaily_saved_pseudo"
+  ];
+}
+function backupExtraStorage() {
+  const keys = portableSocialStorageKeys();
+  const storage = {};
+  for (const key of keys) {
+    try {
+      const value = localStorage.getItem(key);
+      if (value !== null && value.length <= 500000) storage[key] = value;
+    } catch {}
+  }
+  return storage;
+}
+function localBackupPayload() {
+  return {
     app: "HistoDaily",
+    format: 2,
     version: APP_VERSION,
     exportedAt: new Date().toISOString(),
+    identity: {
+      friendCode: friendCode(),
+      localUserId: (() => { try { return localStorage.getItem(`${STORAGE_KEY}_local_user_id`) || ""; } catch { return ""; } })()
+    },
+    storage: backupExtraStorage(),
     state
   };
-  copyText(JSON.stringify(payload), "Sauvegarde copiée. Colle-la dans tes notes si tu veux garder une copie.", "backupFeedback");
+}
+function exportLocalSave() {
+  copyText(JSON.stringify(localBackupPayload()), "Sauvegarde complète copiée. Elle contient aussi ton identité sociale.", "backupFeedback");
 }
 
 function downloadLocalSave() {
-  const payload = {
-    app: "HistoDaily",
-    version: APP_VERSION,
-    exportedAt: new Date().toISOString(),
-    state
-  };
+  const payload = localBackupPayload();
   try {
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -8360,25 +8427,75 @@ function downloadLocalSave() {
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(url);
-    setState({ backupFeedback: "Fichier de sauvegarde généré." });
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setState({ backupFeedback: "Sauvegarde complète téléchargée avec ton code ami." });
   } catch {
     exportLocalSave();
   }
 }
-function importLocalSave() {
-  const raw = window.prompt("Colle ici une sauvegarde HistoDaily exportée précédemment.");
-  if (!raw) return;
-  try {
-    const parsed = JSON.parse(raw);
-    const imported = parsed.state || parsed;
-    state = mergeState(defaultState, imported);
-    state.backupFeedback = "Sauvegarde restaurée localement.";
-    saveState();
-    render();
-  } catch {
-    setState({ backupFeedback: "Impossible de lire cette sauvegarde. Vérifie que tu as collé le texte complet." });
+function applyImportedSave(parsed) {
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("format");
+  if (parsed.app && parsed.app !== "HistoDaily") throw new Error("app");
+  const imported = parsed.state || parsed;
+  if (!imported || typeof imported !== "object" || Array.isArray(imported)) throw new Error("state");
+  const allowedStorage = new Set(portableSocialStorageKeys());
+  const extras = parsed.storage && typeof parsed.storage === "object" ? parsed.storage : {};
+  for (const [key, value] of Object.entries(extras)) {
+    if (!allowedStorage.has(key) || typeof value !== "string" || value.length > 500000) continue;
+    try { localStorage.setItem(key, value); } catch {}
   }
+  if (parsed.identity?.friendCode && parseFriendCode(normalizeFriendCode(parsed.identity.friendCode))) {
+    try { localStorage.setItem(`${STORAGE_KEY}_friend_code`, normalizeFriendCode(parsed.identity.friendCode)); } catch {}
+  }
+  if (parsed.identity?.localUserId && /^[A-Z0-9_-]{3,40}$/i.test(String(parsed.identity.localUserId))) {
+    try { localStorage.setItem(`${STORAGE_KEY}_local_user_id`, String(parsed.identity.localUserId)); } catch {}
+  }
+  // Une ancienne identité du navigateur ne doit jamais écraser celle du fichier
+  // juste après la restauration. On reconstruit toutes les clés canoniques avant
+  // le premier saveState(), puis on vide les mémoires héritées.
+  const restoredPseudo = sanitizePseudo(imported.pseudo || parsed.identity?.pseudo || "") || "Invité";
+  const restoredCode = normalizeFriendCode(parsed.identity?.friendCode || extras[`${STORAGE_KEY}_friend_code`] || "");
+  const restoredLocalId = String(parsed.identity?.localUserId || extras[`${STORAGE_KEY}_local_user_id`] || friendCodeSuffix(restoredCode) || "").trim().toUpperCase();
+  if (parseFriendCode(restoredCode) && /^[A-Z0-9_-]{3,40}$/i.test(restoredLocalId)) {
+    const identityV1 = { friendCode: restoredCode, localUserId: restoredLocalId, pseudo: restoredPseudo, updatedAt: Date.now(), appVersion: APP_VERSION };
+    const identityV2 = { ...identityV1, playerId: `me-${restoredLocalId}`, version: APP_VERSION, restoredAt: new Date().toISOString() };
+    try {
+      ["histodaily_friend_code_v1", `${STORAGE_KEY}_friend_code`].forEach(key => localStorage.setItem(key, restoredCode));
+      ["histodaily_player_suffix_v1", "histodaily_local_user_id", `${STORAGE_KEY}_local_user_id`].forEach(key => localStorage.setItem(key, restoredLocalId));
+      ["histodaily_pseudo_v1", "histodaily_last_pseudo", "histodaily_saved_pseudo"].forEach(key => localStorage.setItem(key, restoredPseudo));
+      localStorage.setItem("histodaily_social_identity_v1", JSON.stringify(identityV1));
+      localStorage.setItem(`${STORAGE_KEY}_social_identity_v2`, JSON.stringify(identityV2));
+      try { beta124MemoryUserId = restoredLocalId; beta124MemoryFriendCode = restoredCode; } catch {}
+    } catch {}
+  }
+  state = mergeState(defaultState, imported);
+  state.backupFeedback = "Sauvegarde restaurée, identité sociale comprise.";
+  saveState();
+  render();
+  try { window.HistoDaily?.socialV2?.bootstrap?.({ force: true, quiet: true }); } catch {}
+}
+function importLocalSave() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,application/json";
+  input.hidden = true;
+  input.addEventListener("change", async () => {
+    const file = input.files?.[0];
+    input.remove();
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setState({ backupFeedback: "Ce fichier est trop volumineux pour être une sauvegarde HistoDaily." });
+      return;
+    }
+    try {
+      const raw = await file.text();
+      applyImportedSave(JSON.parse(raw));
+    } catch {
+      setState({ backupFeedback: "Sauvegarde illisible ou incomplète. Aucun changement n’a été appliqué." });
+    }
+  }, { once: true });
+  document.body.appendChild(input);
+  input.click();
 }
 async function shareInviteCode() {
   syncMyProfileToServer({ source: "invite-share" }).catch(() => {});
@@ -8429,7 +8546,7 @@ function resetProgressOnly({ silent = false } = {}) {
 }
 
 function backupToolsMarkup() {
-  return `<section class="card backup-card"><div><span class="card-label">Sauvegarde locale</span><h2>Garde une copie de sécurité.</h2><p>Copie ou télécharge ta progression. Tu peux la restaurer plus tard sur le même navigateur.</p></div><div class="backup-actions"><button data-export-save>Copier sauvegarde</button><button class="ghost" data-download-save>Télécharger</button><button class="ghost" data-import-save>Restaurer</button></div>${state.backupFeedback ? `<p>${escapeHtml(state.backupFeedback)}</p>` : ""}</section>`;
+  return `<section class="card backup-card"><div><span class="card-label">Sauvegarde locale</span><h2>Garde une copie de sécurité.</h2><p>Télécharge une copie complète de ta progression et de ton identité sociale avant de changer de téléphone ou de navigateur.</p></div><div class="backup-actions"><button data-export-save>Copier</button><button class="ghost" data-download-save>Télécharger</button><button class="ghost" data-import-save>Restaurer un fichier</button></div>${state.backupFeedback ? `<p>${escapeHtml(state.backupFeedback)}</p>` : ""}</section>`;
 }
 function settingsInnerMarkup(markup, extraClass = "") {
   return String(markup || "")
@@ -8447,7 +8564,7 @@ function renderProfile() {
   renderShell(`<header class="topbar"><button data-home>←</button><div><p class="eyebrow">Profil social</p><h1>${escapeHtml(state.pseudo)}</h1></div></header>
     ${publicProfileMarkup(myPlayerProfile())}
     ${disciplineWheelMarkup()}
-    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Tu peux le modifier à tout moment.</p></div><form data-pseudo-form novalidate><input data-pseudo-input name="pseudo" type="text" value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo" autocomplete="nickname" autocapitalize="words" enterkeyhint="done"/><button type="button" data-save-pseudo>Enregistrer</button></form><button type="button" class="ghost wide" data-pseudo-prompt>Modifier via fenêtre simple</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
+    <section class="card pseudo-card"><div><span class="card-label">Identité</span><h2>Ton nom dans les classements</h2><p>Ce pseudo sert au profil, aux amis et au classement. Tu peux le modifier à tout moment.</p></div><form data-pseudo-form novalidate><input data-pseudo-input name="pseudo" type="text" value="${escapeHtml(state.pseudo)}" maxlength="18" aria-label="Pseudo" autocomplete="nickname" autocapitalize="words" enterkeyhint="done"/><button type="button" data-save-pseudo>Enregistrer</button></form><button type="button" class="ghost wide" data-pseudo-prompt>Modifier le pseudo</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>
     ${addFriendMarkup()}
     ${socialInviteLinkMarkup()}
     ${friendListMarkup()}
@@ -15875,7 +15992,7 @@ function renderShell(content) {
         ${navButton("profile", "profile", "Profil")}
       </nav>`;
   app.innerHTML = `
-    <main class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${motionClass} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
+    <main id="main-content" tabindex="-1" class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${motionClass} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
       ${systemStatusMarkup()}
       ${content}
       ${navMarkup}
@@ -16281,17 +16398,12 @@ function beta115SoftRepairState({ goHome = false, feedback = "Affichage réparé
   saveState();
   render({ immediate: true });
 }
-function beta115HealthMarkup() {
-  const health = beta115ReadHealth();
-  const recovered = Number(health.blankScreenRecovered || 0);
-  const lastOk = health.lastHealthyRender ? new Date(health.lastHealthyRender).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "—";
-  const mode = performanceMode();
-  return `<section class="card beta115-health-card"><div class="section-title-row"><div><span class="card-label">Assistance</span><h2>Stabilité de l’app</h2><p>Outils utiles quand un téléphone garde un ancien état, un onglet vide ou un affichage bizarre.</p></div><small>${escapeHtml(APP_VERSION)}</small></div><div class="public-stats-grid"><div><strong>${escapeHtml(mode)}</strong><span>Mode</span></div><div><strong>${recovered}</strong><span>Relances</span></div><div><strong>${escapeHtml(lastOk)}</strong><span>Dernier rendu OK</span></div><div><strong>${isOnline ? "Oui" : "Non"}</strong><span>Réseau</span></div></div><div class="home-actions-row beta115-actions"><button type="button" data-beta115-repaint>Relancer affichage</button><button type="button" class="ghost" data-beta115-static>Mode statique</button></div><button type="button" class="ghost wide" data-beta115-soft-repair>Réparer sans supprimer ma progression</button>${state.profileFeedback ? `<p class="profile-feedback">${escapeHtml(state.profileFeedback)}</p>` : ""}</section>`;
+function beta115HealthMarkup() { return "";
 }
 
 const beta115PreviousProfileSettingsMarkup = profileSettingsMarkup;
 profileSettingsMarkup = function beta115ProfileSettingsMarkup() {
-  return `${beta115HealthMarkup()}${beta115PreviousProfileSettingsMarkup()}`;
+  return beta115PreviousProfileSettingsMarkup();
 };
 
 function beta115HandleRepairActions(event) {
@@ -16315,12 +16427,6 @@ window.addEventListener("pageshow", event => {
   } catch {}
 });
 
-window.HistoDailyDebug = {
-  version: BETA115_VERSION,
-  health: beta115ReadHealth,
-  repair: () => beta115SoftRepairState({ goHome: true }),
-  state: () => ({ ...state })
-};
 
 try {
   beta115NormalizeDeepState();
@@ -16339,13 +16445,10 @@ function beta117PlainObject(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
 function beta117MysteryShiftMap() {
-  state.betaMysteryShift = beta117PlainObject(state.betaMysteryShift);
+  state.betaMysteryShift = {};
   return state.betaMysteryShift;
 }
-function beta117MysteryShift(disciplineId = activeDisciplineId()) {
-  const map = beta117MysteryShiftMap();
-  const n = Number(map[disciplineById(disciplineId).id] || 0);
-  return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+function beta117MysteryShift() { return 0;
 }
 const beta117BaseMysteryForDisciplineDayOffset = mysteryForDisciplineDayOffset;
 mysteryForDisciplineDayOffset = function beta117MysteryForDisciplineDayOffset(disciplineId = activeDisciplineId(), offset = 0) {
@@ -16362,27 +16465,9 @@ dailyMystery = function beta117DailyMystery() {
 isTodayMystery = function beta117IsTodayMystery(id) {
   return Boolean(id && dailyMystery()?.id === id);
 };
-function beta117RefreshMystery(disciplineId = activeDisciplineId()) {
-  const id = disciplineById(disciplineId || "history").id;
-  const pool = publicMysteries(id);
-  if (!pool.length) return;
-  const nextShift = beta117MysteryShift(id) + 1;
-  const nextMystery = beta117BaseMysteryForDisciplineDayOffset(id, -nextShift) || pool[nextShift % pool.length];
-  const nextMap = { ...beta117MysteryShiftMap(), [id]: nextShift };
-  setState({
-    betaMysteryShift: nextMap,
-    currentMysteryId: nextMystery?.id || null,
-    currentMysteryDiscipline: id,
-    currentDiscipline: id,
-    mysteryFeedback: { ...(state.mysteryFeedback || {}) },
-    rewardFeedback: { ...(state.rewardFeedback || {}) }
-  });
+function beta117RefreshMystery() { return false;
 }
-function beta117MysteryToolMarkup(disciplineId = activeDisciplineId()) {
-  const pool = publicMysteries(disciplineId);
-  if (pool.length <= 1) return "";
-  const tested = beta117MysteryShift(disciplineId);
-  return `<button type="button" class="ghost beta-mystery-refresh" data-beta-refresh-mystery title="Afficher un autre dossier">↻ Autre mystère</button>`;
+function beta117MysteryToolMarkup() { return "";
 }
 
 function premiumHeaderVisual(disciplineId = activeDisciplineId()) {
@@ -16560,15 +16645,10 @@ renderHome = function beta117RenderHome() {
 const beta117PreviousNormalizeState = beta114NormalizeState;
 beta114NormalizeState = function beta117NormalizeState() {
   try { beta117PreviousNormalizeState(); } catch {}
-  state.betaMysteryShift = beta117PlainObject(state.betaMysteryShift);
+  state.betaMysteryShift = {};
   if (state.learnDrill !== "courses" && state.learnDrill !== "chapters") state.learnDrill = "chapters";
 };
 
-window.HistoDailyBeta117 = {
-  version: BETA117_VERSION,
-  refreshMystery: beta117RefreshMystery,
-  mysteryShift: beta117MysteryShift
-};
 
 try { beta114NormalizeState(); } catch {}
 
@@ -16684,7 +16764,7 @@ const beta118PreviousNormalizeState = beta114NormalizeState;
 beta114NormalizeState = function beta118NormalizeState() {
   try { beta118PreviousNormalizeState(); } catch {}
   try {
-    state.betaMysteryShift = beta117PlainObject(state.betaMysteryShift);
+    state.betaMysteryShift = {};
     if (state.learnDrill !== "courses" && state.learnDrill !== "chapters") state.learnDrill = "chapters";
     beta118NormalizeLearnState();
   } catch {}

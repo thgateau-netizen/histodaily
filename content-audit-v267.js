@@ -338,3 +338,7 @@
     if (typeof renderSoon === "function") renderSoon();
   } catch {}
 })();
+
+/* RC9 — les enrichissements éditoriaux précédents modifient les packs :
+   invalider une seule fois les caches de catalogue avant le moteur d'interface. */
+try { if (typeof invalidateCatalogCaches === "function") invalidateCatalogCaches(); } catch {}

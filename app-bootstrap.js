@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-beta.273.0",
-  assetsVersion: "1.0.0-beta.273.0",
+  version: "1.0.0-rc.13",
+  assetsVersion: "1.0.0-rc.13",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -19,13 +19,9 @@ window.HISTODAILY_CORE = {
     friendNames: []
   },
   ui: {
-    versionLabel: "beta 273",
+    versionLabel: "1.0",
     shareBaseUrl: "https://histodaily.vercel.app",
-    releaseNotes: [
-      "Touchez désormais un joueur du classement pour ouvrir son profil public.",
-      "Une demande d’ami peut être envoyée ou acceptée directement depuis ce profil, sans recopier de code.",
-      "La série et le moteur de progression restent strictement inchangés dans cette version."
-    ]
+    releaseNotes: []
   },
   clamp(value, min, max) { return Math.min(max, Math.max(min, value)); },
   storage: {
@@ -67,6 +63,25 @@ window.HISTODAILY_CORE = {
             try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
           })
           .filter(item => item && typeof item === "object" && !Array.isArray(item));
+
+        // Plusieurs couches historiques peuvent demander une sauvegarde
+        // après le même rendu. Ne pas réécrire trois copies identiques évite des
+        // blocages localStorage inutiles, surtout sur Android modeste.
+        const comparable = value => {
+          if (!value || typeof value !== "object" || Array.isArray(value)) return "";
+          const clean = { ...value };
+          delete clean._hdRevision;
+          delete clean._hdSavedAt;
+          try { return JSON.stringify(clean); } catch { return ""; }
+        };
+        let currentPrimary = null;
+        try { currentPrimary = JSON.parse(localStorage.getItem(primaryKey) || "null"); } catch {}
+        if (currentPrimary && typeof currentPrimary === "object" && !Array.isArray(currentPrimary) && comparable(currentPrimary) === comparable(parsed)) {
+          const healthyAt = Number(currentPrimary._hdSavedAt || Date.now());
+          localStorage.setItem(`${primaryKey}_last_ok`, String(healthyAt));
+          return true;
+        }
+
         const nextRevision = Math.max(0, ...previousValues.map(item => Number(item._hdRevision || 0))) + 1;
         parsed._hdRevision = nextRevision;
         parsed._hdSavedAt = Date.now();
@@ -139,7 +154,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-beta.273.0",
+  version: "1.0.0-rc.13",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;
