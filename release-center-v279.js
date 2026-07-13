@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.13";
+  const VERSION = "1.0.0-rc.14";
   const MODAL_ID = "hd-release-center-modal";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 

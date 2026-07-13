@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.13";
+  const VERSION = "1.0.0-rc.14";
   const ERROR_KEY = "histodaily_release_errors_v1";
 
   function safeStateSummary() {
