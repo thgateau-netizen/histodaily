@@ -1,7 +1,7 @@
 /* HistoDaily 1.0 — stabilité, raccourcis PWA et version canonique. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.15.1";
+  const VERSION = "1.0.0-rc.13.1";
   const installedAt = performance.now();
   let versionRepairs = 0;
   let shortcutApplied = "";

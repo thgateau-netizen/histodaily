@@ -1,45 +1,44 @@
-const CACHE_NAME = "histodaily-rc15-1-v1";
-const APP_VERSION = "1.0.0-rc.15.1";
+const CACHE_NAME = "histodaily-rc13-1-push-v1";
+const APP_VERSION = "1.0.0-rc.13.1";
 const CRITICAL_ASSETS = [
   "/",
   "/index.html",
-  "/histodaily.css?v=1.0.0-rc.15.1",
-  "/lessons-lite.js?v=1.0.0-rc.15.1",
-  "/app-bootstrap.js?v=1.0.0-rc.15.1",
-  "/sound-ui.js?v=1.0.0-rc.15.1",
-  "/app.js?v=1.0.0-rc.15.1",
-  "/content-library.js?v=1.0.0-rc.15.1",
-  "/content-literature.js?v=1.0.0-rc.15.1",
-  "/content-premium-233.js?v=1.0.0-rc.15.1",
-  "/content-premium-234.js?v=1.0.0-rc.15.1",
-  "/content-premium-235.js?v=1.0.0-rc.15.1",
-  "/content-premium-236.js?v=1.0.0-rc.15.1",
-  "/content-premium-237.js?v=1.0.0-rc.15.1",
-  "/content-coherence-239.js?v=1.0.0-rc.15.1",
-  "/content-humanize-240.js?v=1.0.0-rc.15.1",
-  "/content-cleanup-241.js?v=1.0.0-rc.15.1",
-  "/content-audit-v267.js?v=1.0.0-rc.15.1",
-  "/mystery-clarity-v272.js?v=1.0.0-rc.15.1",
-  "/app-runtime.js?v=1.0.0-rc.15.1",
-  "/visual-v4.js?v=1.0.0-rc.15.1",
-  "/engagement-v263.js?v=1.0.0-rc.15.1",
-  "/mobile-layout.js?v=1.0.0-rc.15.1",
-  "/social-v2.js?v=1.0.0-rc.15.1",
-  "/expedition-v264.js?v=1.0.0-rc.15.1",
-  "/streak-v265.js?v=1.0.0-rc.15.1",
-  "/archive-mobile-v268.js?v=1.0.0-rc.15.1",
-  "/course-mobile-v269.js?v=1.0.0-rc.15.1",
-  "/onboarding-v275.js?v=1.0.0-rc.15.1",
-  "/expedition-delivery-v276.js?v=1.0.0-rc.15.1",
-  "/release-polish-v278.js?v=1.0.0-rc.15.1",
-  "/release-center-v279.js?v=1.0.0-rc.15.1",
-  "/polish-v280.js?v=1.0.0-rc.15.1",
-  "/course-polish-v283.js?v=1.0.0-rc.15.1",
-  "/launch-readiness-v284.js?v=1.0.0-rc.15.1",
-  "/performance-accessibility-v285.js?v=1.0.0-rc.15.1",
-  "/stability-v286.js?v=1.0.0-rc.15.1",
-  "/visual-redesign-v287.js?v=1.0.0-rc.15.1",
-  "/notifications-v288.js?v=1.0.0-rc.15.1",
+  "/histodaily.css?v=1.0.0-rc.13.1",
+  "/lessons-lite.js?v=1.0.0-rc.13.1",
+  "/app-bootstrap.js?v=1.0.0-rc.13.1",
+  "/sound-ui.js?v=1.0.0-rc.13.1",
+  "/app.js?v=1.0.0-rc.13.1",
+  "/content-library.js?v=1.0.0-rc.13.1",
+  "/content-literature.js?v=1.0.0-rc.13.1",
+  "/content-premium-233.js?v=1.0.0-rc.13.1",
+  "/content-premium-234.js?v=1.0.0-rc.13.1",
+  "/content-premium-235.js?v=1.0.0-rc.13.1",
+  "/content-premium-236.js?v=1.0.0-rc.13.1",
+  "/content-premium-237.js?v=1.0.0-rc.13.1",
+  "/content-coherence-239.js?v=1.0.0-rc.13.1",
+  "/content-humanize-240.js?v=1.0.0-rc.13.1",
+  "/content-cleanup-241.js?v=1.0.0-rc.13.1",
+  "/content-audit-v267.js?v=1.0.0-rc.13.1",
+  "/mystery-clarity-v272.js?v=1.0.0-rc.13.1",
+  "/app-runtime.js?v=1.0.0-rc.13.1",
+  "/visual-v4.js?v=1.0.0-rc.13.1",
+  "/engagement-v263.js?v=1.0.0-rc.13.1",
+  "/mobile-layout.js?v=1.0.0-rc.13.1",
+  "/social-v2.js?v=1.0.0-rc.13.1",
+  "/expedition-v264.js?v=1.0.0-rc.13.1",
+  "/streak-v265.js?v=1.0.0-rc.13.1",
+  "/archive-mobile-v268.js?v=1.0.0-rc.13.1",
+  "/course-mobile-v269.js?v=1.0.0-rc.13.1",
+  "/onboarding-v275.js?v=1.0.0-rc.13.1",
+  "/expedition-delivery-v276.js?v=1.0.0-rc.13.1",
+  "/release-polish-v278.js?v=1.0.0-rc.13.1",
+  "/release-center-v279.js?v=1.0.0-rc.13.1",
+  "/polish-v280.js?v=1.0.0-rc.13.1",
+  "/course-polish-v283.js?v=1.0.0-rc.13.1",
+  "/launch-readiness-v284.js?v=1.0.0-rc.13.1",
+  "/performance-accessibility-v285.js?v=1.0.0-rc.13.1",
+  "/stability-v286.js?v=1.0.0-rc.13.1",
+  "/notifications-v288.js?v=1.0.0-rc.13.1",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
@@ -176,6 +175,8 @@ self.addEventListener("message", event => {
   if (event.data?.type === "HISTODAILY_SKIP_WAITING") self.skipWaiting();
 });
 
+
+/* Web Push notifications — RC13.1 */
 self.addEventListener("push", event => {
   event.waitUntil((async () => {
     let payload = {};
@@ -210,7 +211,7 @@ self.addEventListener("notificationclick", event => {
     });
     if (sameOrigin) {
       await sameOrigin.focus();
-      sameOrigin.navigate?.(targetUrl);
+      if (typeof sameOrigin.navigate === "function") await sameOrigin.navigate(targetUrl);
       return;
     }
     await self.clients.openWindow(targetUrl);

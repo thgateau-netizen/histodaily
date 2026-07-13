@@ -5,7 +5,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.15.1";
+  const VERSION = "1.0.0-rc.13.1";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
