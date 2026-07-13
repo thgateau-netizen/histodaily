@@ -1,7 +1,7 @@
 /* HistoDaily 1.0 RC3 — interface polish pass */
 (() => {
   'use strict';
-  const VERSION = '1.0.0-rc.14';
+  const VERSION = '1.0.0-rc.13';
 
   const TEXT_REPLACEMENTS = new Map([
     ['Reprendre', 'Poursuivre'],

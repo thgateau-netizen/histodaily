@@ -2,7 +2,7 @@
 (function histodailyExpeditionDelivery276(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.14";
+  const VERSION = "1.0.0-rc.13";
   const STORE_KEY = "histodaily.delivery.v276";
   const AUTO_OPEN_WINDOW_MS = 30000;
   let scheduled = false;
