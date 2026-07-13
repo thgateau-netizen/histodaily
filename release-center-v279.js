@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.13";
+  const VERSION = "1.0.0-rc.15";
   const MODAL_ID = "hd-release-center-modal";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
@@ -23,7 +23,7 @@
         <div class="hd-release-center-body">
           ${section === "help" ? `<article><h3>Comment fonctionne HistoDaily ?</h3><p>Chaque jour, résous un mystère, découvre sa révélation puis poursuis avec un cours ou un quiz. Les archives servent à réviser et restent hors du classement quotidien.</p><h3>Le score reste en attente ?</h3><p>Ta partie reste enregistrée sur cet appareil. Vérifie ta connexion puis ouvre le profil ou le classement pour relancer la synchronisation.</p><h3>Installer l’application</h3><p>Sur Android, ouvre le menu du navigateur puis choisis « Installer l’application » ou « Ajouter à l’écran d’accueil ».</p></article>` : ""}
           ${section === "data" ? `<article><h3>Une sauvegarde vraiment complète</h3><p>Le fichier contient la progression, le pseudo et l’identité sociale nécessaires pour conserver ton code ami lors d’un changement d’appareil.</p><div class="hd-release-data-actions"><button type="button" data-hd-data-action="download">Télécharger ma sauvegarde</button><button type="button" class="ghost" data-hd-data-action="repair">Réparer le cache</button></div><p class="hd-release-data-note" data-hd-data-feedback>Réparer le cache ne supprime pas ta progression locale.</p></article>` : ""}
-          ${section === "privacy" ? `<article><h3>Données utilisées</h3><p>HistoDaily utilise ton pseudo, un identifiant technique, ton code ami, tes scores et ta progression nécessaires au fonctionnement de l’application.</p><h3>Ce qui n’est pas demandé</h3><p>L’application ne demande ni caméra, ni microphone, ni géolocalisation. Elle ne comporte pas de messagerie privée.</p><p><a class="hd-release-legal-link" href="privacy.html" target="_blank" rel="noopener">Lire la notice de confidentialité complète</a></p></article>` : ""}
+          ${section === "privacy" ? `<article><h3>Données utilisées</h3><p>HistoDaily utilise ton pseudo, un identifiant technique, ton code ami, tes scores et ta progression nécessaires au fonctionnement de l’application. Si tu actives les rappels, un abonnement Web Push propre à cet appareil est aussi conservé.</p><h3>Ce qui n’est pas demandé</h3><p>L’application ne demande ni caméra, ni microphone, ni géolocalisation. Elle ne comporte pas de messagerie privée. Les notifications restent facultatives et peuvent être désactivées depuis le profil.</p><p><a class="hd-release-legal-link" href="privacy.html" target="_blank" rel="noopener">Lire la notice de confidentialité complète</a></p></article>` : ""}
         </div>
         <footer><span>${online ? "Connecté" : "Hors connexion"}</span></footer>
       </section>

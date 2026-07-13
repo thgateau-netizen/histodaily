@@ -69,5 +69,11 @@
         }
       ]
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/push-reminders",
+      "schedule": "0 18 * * *"
+    }
   ]
 }

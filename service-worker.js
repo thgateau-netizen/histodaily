@@ -1,43 +1,45 @@
-const CACHE_NAME = "histodaily-rc13-v1";
-const APP_VERSION = "1.0.0-rc.13";
+const CACHE_NAME = "histodaily-rc15-v1";
+const APP_VERSION = "1.0.0-rc.15";
 const CRITICAL_ASSETS = [
   "/",
   "/index.html",
-  "/histodaily.css?v=1.0.0-rc.13",
-  "/lessons-lite.js?v=1.0.0-rc.13",
-  "/app-bootstrap.js?v=1.0.0-rc.13",
-  "/sound-ui.js?v=1.0.0-rc.13",
-  "/app.js?v=1.0.0-rc.13",
-  "/content-library.js?v=1.0.0-rc.13",
-  "/content-literature.js?v=1.0.0-rc.13",
-  "/content-premium-233.js?v=1.0.0-rc.13",
-  "/content-premium-234.js?v=1.0.0-rc.13",
-  "/content-premium-235.js?v=1.0.0-rc.13",
-  "/content-premium-236.js?v=1.0.0-rc.13",
-  "/content-premium-237.js?v=1.0.0-rc.13",
-  "/content-coherence-239.js?v=1.0.0-rc.13",
-  "/content-humanize-240.js?v=1.0.0-rc.13",
-  "/content-cleanup-241.js?v=1.0.0-rc.13",
-  "/content-audit-v267.js?v=1.0.0-rc.13",
-  "/mystery-clarity-v272.js?v=1.0.0-rc.13",
-  "/app-runtime.js?v=1.0.0-rc.13",
-  "/visual-v4.js?v=1.0.0-rc.13",
-  "/engagement-v263.js?v=1.0.0-rc.13",
-  "/mobile-layout.js?v=1.0.0-rc.13",
-  "/social-v2.js?v=1.0.0-rc.13",
-  "/expedition-v264.js?v=1.0.0-rc.13",
-  "/streak-v265.js?v=1.0.0-rc.13",
-  "/archive-mobile-v268.js?v=1.0.0-rc.13",
-  "/course-mobile-v269.js?v=1.0.0-rc.13",
-  "/onboarding-v275.js?v=1.0.0-rc.13",
-  "/expedition-delivery-v276.js?v=1.0.0-rc.13",
-  "/release-polish-v278.js?v=1.0.0-rc.13",
-  "/release-center-v279.js?v=1.0.0-rc.13",
-  "/polish-v280.js?v=1.0.0-rc.13",
-  "/course-polish-v283.js?v=1.0.0-rc.13",
-  "/launch-readiness-v284.js?v=1.0.0-rc.13",
-  "/performance-accessibility-v285.js?v=1.0.0-rc.13",
-  "/stability-v286.js?v=1.0.0-rc.13",
+  "/histodaily.css?v=1.0.0-rc.15",
+  "/lessons-lite.js?v=1.0.0-rc.15",
+  "/app-bootstrap.js?v=1.0.0-rc.15",
+  "/sound-ui.js?v=1.0.0-rc.15",
+  "/app.js?v=1.0.0-rc.15",
+  "/content-library.js?v=1.0.0-rc.15",
+  "/content-literature.js?v=1.0.0-rc.15",
+  "/content-premium-233.js?v=1.0.0-rc.15",
+  "/content-premium-234.js?v=1.0.0-rc.15",
+  "/content-premium-235.js?v=1.0.0-rc.15",
+  "/content-premium-236.js?v=1.0.0-rc.15",
+  "/content-premium-237.js?v=1.0.0-rc.15",
+  "/content-coherence-239.js?v=1.0.0-rc.15",
+  "/content-humanize-240.js?v=1.0.0-rc.15",
+  "/content-cleanup-241.js?v=1.0.0-rc.15",
+  "/content-audit-v267.js?v=1.0.0-rc.15",
+  "/mystery-clarity-v272.js?v=1.0.0-rc.15",
+  "/app-runtime.js?v=1.0.0-rc.15",
+  "/visual-v4.js?v=1.0.0-rc.15",
+  "/engagement-v263.js?v=1.0.0-rc.15",
+  "/mobile-layout.js?v=1.0.0-rc.15",
+  "/social-v2.js?v=1.0.0-rc.15",
+  "/expedition-v264.js?v=1.0.0-rc.15",
+  "/streak-v265.js?v=1.0.0-rc.15",
+  "/archive-mobile-v268.js?v=1.0.0-rc.15",
+  "/course-mobile-v269.js?v=1.0.0-rc.15",
+  "/onboarding-v275.js?v=1.0.0-rc.15",
+  "/expedition-delivery-v276.js?v=1.0.0-rc.15",
+  "/release-polish-v278.js?v=1.0.0-rc.15",
+  "/release-center-v279.js?v=1.0.0-rc.15",
+  "/polish-v280.js?v=1.0.0-rc.15",
+  "/course-polish-v283.js?v=1.0.0-rc.15",
+  "/launch-readiness-v284.js?v=1.0.0-rc.15",
+  "/performance-accessibility-v285.js?v=1.0.0-rc.15",
+  "/stability-v286.js?v=1.0.0-rc.15",
+  "/visual-redesign-v287.js?v=1.0.0-rc.15",
+  "/notifications-v288.js?v=1.0.0-rc.15",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
@@ -172,4 +174,45 @@ self.addEventListener("message", event => {
     event.source?.postMessage?.({ type: "HISTODAILY_VERSION", version: APP_VERSION, cache: CACHE_NAME });
   }
   if (event.data?.type === "HISTODAILY_SKIP_WAITING") self.skipWaiting();
+});
+
+self.addEventListener("push", event => {
+  event.waitUntil((async () => {
+    let payload = {};
+    try { payload = event.data ? event.data.json() : {}; } catch {
+      try { payload = JSON.parse(event.data?.text?.() || "{}"); } catch { payload = {}; }
+    }
+    const title = String(payload.title || "HistoDaily");
+    const data = payload.data && typeof payload.data === "object" ? payload.data : {};
+    const url = String(payload.url || data.url || "/?view=daily&source=push");
+    const options = {
+      body: String(payload.body || "Ton expédition du jour est disponible."),
+      icon: String(payload.icon || "/icon-192.png"),
+      badge: String(payload.badge || "/icon-192.png"),
+      tag: String(payload.tag || "histodaily-reminder"),
+      renotify: false,
+      data: { ...data, url },
+      actions: [{ action: "open", title: "Ouvrir HistoDaily" }]
+    };
+    try { await self.navigator?.setAppBadge?.(1); } catch {}
+    await self.registration.showNotification(title, options);
+  })());
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification?.close?.();
+  const targetUrl = new URL(event.notification?.data?.url || "/?view=daily&source=push", self.location.origin).href;
+  event.waitUntil((async () => {
+    try { await self.navigator?.clearAppBadge?.(); } catch {}
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    const sameOrigin = windows.find(client => {
+      try { return new URL(client.url).origin === self.location.origin; } catch { return false; }
+    });
+    if (sameOrigin) {
+      await sameOrigin.focus();
+      sameOrigin.navigate?.(targetUrl);
+      return;
+    }
+    await self.clients.openWindow(targetUrl);
+  })());
 });
