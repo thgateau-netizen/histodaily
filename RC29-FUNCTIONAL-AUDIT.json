@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0-rc.29.0",
+  "ranking": {
+    "general_includes_zero_score_profiles": true,
+    "podium_plus_full_list": true,
+    "client_top50_removed": true,
+    "social_general_top100_removed": true,
+    "profile_pagination_max": 2500,
+    "unit_test": "5 registered profiles / 3 scorers => 5 displayed rows; 2 zero-score rows preserved"
+  },
+  "daily_rotation": {
+    "persistent_assignment_per_day_and_discipline": true,
+    "same_day_stable_after_solve": true,
+    "avoid_previous_day_even_if_unplayed": true,
+    "exclude_solved_while_unsolved_available": true,
+    "archive_fallback_preserved": true,
+    "unit_tests": [
+      "day 1 assignment is stable across repeated reads",
+      "day 2 differs from day 1 without requiring day 1 completion",
+      "solving day 2 does not change the day-2 assignment",
+      "day 3 excludes solved mysteries and yesterday assignment"
+    ]
+  },
+  "validation": {
+    "javascript_files_checked": 65,
+    "javascript_syntax_failures": 0,
+    "pwa_cache": "histodaily-rc29-ranking-rotation-v1"
+  }
+}

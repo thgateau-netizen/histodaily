@@ -444,9 +444,8 @@
     }
 
     return Array.from(map.values())
-      .filter(row => row.me || Number(row.score || 0) > 0)
+      .filter(Boolean)
       .sort((a, b) => Number(b.score || 0) - Number(a.score || 0) || String(a.name || "").localeCompare(String(b.name || ""), "fr"))
-      .slice(0, 50)
       .map((row, index) => ({ ...row, rank: index + 1 }));
   };
 
@@ -3814,6 +3813,7 @@
     const myScore = canonicalLocalScore(scope);
     const mySolved = canonicalLocalSolved(scope);
     const generalScope = scope === "friends" ? "daily" : scope;
+    const scoredPlayers = rows.filter(row => Number(row.score || 0) > 0).length;
 
     renderShell(`<header class="topbar hd198-rank-topbar"><button type="button" data-home>←</button><div><p class="eyebrow">Classement</p><h1>${esc(scopeTitle(scope))}</h1></div></header>
       <section class="hd198-rank-tabs" aria-label="Période du classement">
@@ -3832,7 +3832,7 @@
         <button type="button" data-rank-scope="friends" class="${scope === "friends" ? "active" : ""}">Entre amis</button>
       </section>
       <section class="card hd198-leaderboard-card">
-        <div class="section-title-row"><div><span class="card-label">${esc(leaderboardTitle(scope))}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""} classé${rows.length > 1 ? "s" : ""}</h2></div><button type="button" class="ghost" data-open-profile>Mon profil</button></div>
+        <div class="section-title-row"><div><span class="card-label">${esc(leaderboardTitle(scope))}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""} inscrit${rows.length > 1 ? "s" : ""}</h2><small>${scoredPlayers} avec un score sur cette période</small></div><button type="button" class="ghost" data-open-profile>Mon profil</button></div>
         <div class="hd198-rank-list">${rows.length ? rowsMarkup(rows) : emptyMarkup(scope)}</div>
       </section>
       ${scope === "friends" ? `${typeof addFriendMarkup === "function" ? addFriendMarkup() : ""}${typeof friendListMarkup === "function" ? friendListMarkup() : ""}` : ""}
