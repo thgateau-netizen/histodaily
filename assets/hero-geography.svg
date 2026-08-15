@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 480" role="img" aria-label="Illustration geography">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#172410"/><stop offset="1" stop-color="#07151c"/></linearGradient>
+ <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a3e635"/><stop offset="1" stop-color="#ffffff" stop-opacity=".42"/></linearGradient>
+ <linearGradient id="beam"><stop stop-color="#ddd6fe" stop-opacity=".62"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></linearGradient>
+ <linearGradient id="bars" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a3e635"/><stop offset="1" stop-color="#a3e635" stop-opacity=".06"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#a3e635" stop-opacity=".22"/><stop offset="1" stop-color="#a3e635" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="840" height="480" fill="url(#bg)"/><circle cx="640" cy="180" r="280" fill="url(#glow)"/><g>
+<circle cx="585" cy="235" r="175" fill="none" stroke="#bef264" stroke-width="5" opacity=".32"/>
+<ellipse cx="585" cy="235" rx="70" ry="175" fill="none" stroke="#bef264" stroke-width="3" opacity=".22"/><path d="M410 235h350M426 165h318M426 305h318" stroke="#bef264" stroke-width="3" opacity=".2"/>
+<path d="M510 118c45 4 58 32 84 40 33 10 51-4 77 24 20 22-2 43-18 58-19 18-7 54-36 62-28 7-46-27-76-25-28 2-44 24-64 6-23-21 0-49 13-65 16-19-6-40 20-60 20-15 4-35 0-40z" fill="#84cc16" opacity=".24"/>
+<path d="M91 111c96-38 169-1 236 52m-239 50c88-41 176-33 253 18M94 318c112-42 200-17 284 24" fill="none" stroke="#d9f99d" stroke-width="4" opacity=".18"/>
+</g>
+<path d="M0 420C170 370 285 460 450 422S680 367 840 398V480H0z" fill="#020617" opacity=".34"/>
+</svg>

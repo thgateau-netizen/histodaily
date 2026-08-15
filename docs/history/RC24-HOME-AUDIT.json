@@ -1,0 +1,23 @@
+{
+  "release": "1.0.0-rc.24.0",
+  "name": "Premium Home",
+  "scope": "Accueil réel de l’application",
+  "changes": [
+    "Hero du jour reconstruit en affiche éditoriale cinématique",
+    "Illustrations réelles utilisées pour Histoire, Astronomie, Philosophie et Anglais",
+    "Une seule prochaine action sous le hero",
+    "Révisions dues prioritaires via Smart Memory",
+    "Maîtrise du domaine en anneau compact",
+    "Sélecteur d’univers replié avec miniatures réelles lorsqu’elles existent",
+    "Renderer RC24 chargé après RC22 pour conserver la logique mémoire/adaptative"
+  ],
+  "validation": {
+    "javascript_files_checked": 60,
+    "javascript_syntax_errors": 0,
+    "index_missing_assets": 0,
+    "service_worker_missing_assets": 0,
+    "css_braces_balanced": true,
+    "local_http_smoke": "200 index/css/rc24-js/history-art",
+    "chromium_visual_capture": "unavailable: headless Chromium timed out in this environment; no mockup substituted"
+  }
+}

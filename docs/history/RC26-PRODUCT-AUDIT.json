@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0-rc.26.0",
+  "focus": [
+    "full-visual-coverage",
+    "expedition-clarity",
+    "course-reader-simplification",
+    "ui-consistency"
+  ],
+  "disciplineArtwork": {
+    "history": "assets/hero-history.webp",
+    "art": "assets/hero-art.svg",
+    "cinema": "assets/hero-cinema.svg",
+    "science-inventions": "assets/hero-science-inventions.svg",
+    "astronomy": "assets/hero-astronomy.webp",
+    "economy": "assets/hero-economy.svg",
+    "geography": "assets/hero-geography.svg",
+    "music": "assets/hero-music.svg",
+    "literature": "assets/hero-literature.svg",
+    "philosophy": "assets/hero-philosophy.webp",
+    "english": "assets/hero-english.webp"
+  },
+  "disciplineArtworkComplete": true,
+  "expedition": {
+    "mergedDossier": true,
+    "singleAnswerZone": true,
+    "foldedAssistance": true,
+    "legacyAnswerHeadingStillPresent": false
+  },
+  "courseReader": {
+    "singleLead": true,
+    "expressFlow": true,
+    "completeFlow": true,
+    "interactiveLabsPreserved": true
+  },
+  "staticValidation": {
+    "javascriptFiles": 60,
+    "syntaxErrors": 0,
+    "missingAssets": 0
+  }
+}

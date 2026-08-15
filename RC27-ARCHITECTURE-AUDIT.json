@@ -1,0 +1,52 @@
+{
+  "version": "1.0.0-rc.27.0",
+  "architecture": {
+    "loadedClientScriptsBefore": 43,
+    "loadedClientScriptsAfter": 3,
+    "reductionPercent": 93.0,
+    "bundleCount": 3,
+    "bundleRoles": {
+      "core": "boot, audio, main application",
+      "content": "course/mystery/discipline content and editorial patches",
+      "experience": "runtime, UI, mobile, social, memory, accessibility and premium home"
+    },
+    "sourceModulesPreserved": 43,
+    "rebuildCommand": "npm run build:client",
+    "individualSourceRawBytes": 3674021,
+    "bundleRawBytes": 3676584,
+    "individualSourceGzipSumBytes": 1001187,
+    "bundleGzipSumBytes": 974849,
+    "estimatedGzipReductionPercent": 2.6
+  },
+  "offline": {
+    "criticalJavascriptAssetsBefore": 43,
+    "criticalJavascriptAssetsAfter": 3,
+    "serviceWorkerCache": "histodaily-rc27-consolidated-v1",
+    "missingPrecacheAssets": []
+  },
+  "validation": {
+    "bundleSourceMarkers": 43,
+    "expectedSourceMarkers": 43,
+    "missingIndexAssets": [],
+    "manifestVersion": "1.0.0-rc.27.0",
+    "javascriptFilesChecked": 64,
+    "javascriptSyntaxErrors": [],
+    "cssAssetReferences": 18,
+    "missingCssAssets": [],
+    "externalScriptTags": 3,
+    "bundleTransferEstimate": {
+      "content-rc27.js": {
+        "bytes": 1642423,
+        "gzipBytes": 453621
+      },
+      "core-rc27.js": {
+        "bytes": 1379638,
+        "gzipBytes": 355341
+      },
+      "experience-rc27.js": {
+        "bytes": 654523,
+        "gzipBytes": 165887
+      }
+    }
+  }
+}

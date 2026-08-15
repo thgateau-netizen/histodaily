@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 480" role="img" aria-label="Illustration economy">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06251f"/><stop offset="1" stop-color="#071520"/></linearGradient>
+ <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#34d399"/><stop offset="1" stop-color="#ffffff" stop-opacity=".42"/></linearGradient>
+ <linearGradient id="beam"><stop stop-color="#ddd6fe" stop-opacity=".62"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></linearGradient>
+ <linearGradient id="bars" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#34d399"/><stop offset="1" stop-color="#34d399" stop-opacity=".06"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#34d399" stop-opacity=".22"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="840" height="480" fill="url(#bg)"/><circle cx="640" cy="180" r="280" fill="url(#glow)"/><g>
+<path d="M100 394V230h86v164zm120 0V166h86v228zm120 0V258h86v136zm120 0V108h86v286zm120 0V194h86v200" fill="url(#bars)" opacity=".5"/>
+<path d="M92 322c98-14 132-70 224-62 100 8 118-91 220-78 83 10 117-44 216-101" fill="none" stroke="#6ee7b7" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M720 81l-50 4 32 39" fill="none" stroke="#6ee7b7" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="697" cy="355" r="72" fill="#10b981" opacity=".14"/><circle cx="697" cy="355" r="48" fill="none" stroke="#a7f3d0" stroke-width="4" opacity=".35"/>
+</g>
+<path d="M0 420C170 370 285 460 450 422S680 367 840 398V480H0z" fill="#020617" opacity=".34"/>
+</svg>

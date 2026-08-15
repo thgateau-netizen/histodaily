@@ -10842,3 +10842,283 @@ html.hd287-redesign body::before{
 @media(prefers-reduced-motion:reduce){
   .hd323-visual .hd300-today,.hd323-visual .hd300-expedition-card,.hd323-visual .lesson-full-topbar{scroll-behavior:auto!important}
 }
+
+/* ================================================================
+   HistoDaily RC24 — Premium editorial home
+   Clarity retained; visual hierarchy rebuilt around a cinematic daily poster.
+   ================================================================ */
+.hd324-premium-home body{background:#050d17}
+.hd324-premium-home .app-shell.tab-home.rc24-home-shell{--page-max:720px;background:
+  radial-gradient(circle at 82% 2%,color-mix(in srgb,var(--discipline-accent,var(--world,#f5c451)) 10%,transparent),transparent 28%),
+  linear-gradient(180deg,#06101b 0%,#07121f 52%,#06101a 100%)!important}
+.hd324-premium-home .rc24-home{width:min(100%,720px);margin:0 auto;padding:18px 14px 112px;display:grid;gap:14px;color:#f5f7fb}
+.hd324-premium-home .rc24-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:4px 3px 2px}
+.hd324-premium-home .rc24-brand span{display:block;color:var(--world);font-size:.69rem;font-weight:950;letter-spacing:.22em;margin-bottom:6px}
+.hd324-premium-home .rc24-brand h1{margin:0;font-family:ui-serif,Georgia,"Times New Roman",serif;font-size:clamp(2.25rem,8vw,3.45rem);line-height:.94;letter-spacing:-.045em;font-weight:760;color:#fff}
+.hd324-premium-home .rc24-metrics{display:flex;gap:7px}
+.hd324-premium-home .rc24-metrics button{min-width:58px;height:47px;padding:0 11px;border-radius:15px;border:1px solid rgba(255,255,255,.105);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));display:flex;align-items:center;justify-content:center;gap:6px;color:#fff;box-shadow:inset 0 1px rgba(255,255,255,.035)}
+.hd324-premium-home .rc24-metrics span{font-size:.93rem}.hd324-premium-home .rc24-metrics b{font-size:.78rem;white-space:nowrap}
+
+.hd324-premium-home .rc24-hero{position:relative;isolation:isolate;overflow:hidden;min-height:500px;border-radius:29px;border:1px solid color-mix(in srgb,var(--world) 56%,rgba(255,255,255,.12));background:linear-gradient(145deg,#0b1725,#07111c);box-shadow:0 28px 72px rgba(0,0,0,.42),0 0 0 1px color-mix(in srgb,var(--world) 7%,transparent) inset}
+.hd324-premium-home .rc24-hero-image{position:absolute;inset:0;z-index:0;background:
+  radial-gradient(circle at 72% 29%,color-mix(in srgb,var(--world) 28%,transparent),transparent 28%),
+  linear-gradient(145deg,color-mix(in srgb,var(--world) 11%,#101b28),#07111c 72%);background-position:center;background-size:cover;transform:scale(1.012)}
+.hd324-premium-home .rc24-hero.art-history .rc24-hero-image{background-image:url('./assets/hero-history.webp');background-position:58% center}
+.hd324-premium-home .rc24-hero.art-astronomy .rc24-hero-image{background-image:url('./assets/hero-astronomy.webp');background-position:center}
+.hd324-premium-home .rc24-hero.art-philosophy .rc24-hero-image{background-image:url('./assets/hero-philosophy.webp');background-position:center}
+.hd324-premium-home .rc24-hero.art-english .rc24-hero-image{background-image:url('./assets/hero-english.webp');background-position:center}
+.hd324-premium-home .rc24-hero-vignette{position:absolute;inset:0;z-index:1;background:
+  linear-gradient(180deg,rgba(3,8,15,.18) 0%,rgba(3,8,15,.04) 24%,rgba(4,10,18,.42) 54%,rgba(4,10,18,.96) 82%,#07111c 100%),
+  linear-gradient(90deg,rgba(3,9,16,.35),transparent 55%);pointer-events:none}
+.hd324-premium-home .rc24-hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.14;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
+.hd324-premium-home .rc24-hero-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:17px 18px}
+.hd324-premium-home .rc24-hero-top span,.hd324-premium-home .rc24-hero-top small{border:1px solid rgba(255,255,255,.13);background:rgba(5,12,20,.56);backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.hd324-premium-home .rc24-hero-top span{padding:8px 11px;border-radius:999px;color:#e8eef6;font-size:.69rem;font-weight:900;letter-spacing:.035em}
+.hd324-premium-home .rc24-hero-top small{display:grid;place-items:center;min-width:44px;height:36px;border-radius:13px;color:#fff;font-weight:950}
+.hd324-premium-home .rc24-hero-content{position:absolute;z-index:3;left:18px;right:18px;bottom:79px;display:grid;gap:9px}
+.hd324-premium-home .rc24-hero-content p{margin:0;color:color-mix(in srgb,var(--world) 82%,#fff);font-size:.69rem;font-weight:950;letter-spacing:.16em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.55)}
+.hd324-premium-home .rc24-hero-content h2{margin:0;max-width:17ch;font-family:ui-serif,Georgia,"Times New Roman",serif;font-size:clamp(2rem,8.4vw,3rem);font-weight:760;letter-spacing:-.045em;line-height:.98;color:#fff;text-wrap:balance;text-shadow:0 5px 28px rgba(0,0,0,.66)}
+.hd324-premium-home .rc24-hero-content>span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-width:42ch;color:#d7e0eb;font-size:.87rem;line-height:1.52;text-shadow:0 2px 13px rgba(0,0,0,.72)}
+.hd324-premium-home .rc24-hero-cta{margin-top:8px;width:100%;min-height:58px;padding:0 18px;border-radius:18px;border:1px solid color-mix(in srgb,var(--world) 74%,white);display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(108deg,color-mix(in srgb,var(--world) 84%,#fff),var(--world))!important;color:#07111b!important;box-shadow:0 16px 35px color-mix(in srgb,var(--world) 27%,transparent),inset 0 1px rgba(255,255,255,.45)!important}
+.hd324-premium-home .rc24-hero-cta b{font-size:.98rem;font-weight:950}.hd324-premium-home .rc24-hero-cta i{font-style:normal;font-size:1.55rem;font-weight:600}
+.hd324-premium-home .rc24-route{position:absolute;z-index:3;left:18px;right:18px;bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.hd324-premium-home .rc24-route div{min-width:0;height:48px;border-radius:15px;border:1px solid rgba(255,255,255,.075);display:flex;align-items:center;justify-content:center;gap:7px;background:rgba(6,14,24,.72);backdrop-filter:blur(11px);color:#778a9e}
+.hd324-premium-home .rc24-route i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid currentColor;font-style:normal;font-size:.68rem;font-weight:950}.hd324-premium-home .rc24-route span{font-size:.64rem;font-weight:900}
+.hd324-premium-home .rc24-route .current{color:#fff;border-color:color-mix(in srgb,var(--world) 48%,rgba(255,255,255,.12));background:color-mix(in srgb,var(--world) 11%,rgba(6,14,24,.82))}.hd324-premium-home .rc24-route .current i{background:var(--world);border-color:var(--world);color:#07111b}.hd324-premium-home .rc24-route .done{color:#79dfb0}
+
+.hd324-premium-home .rc24-dashboard{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(150px,.75fr);gap:10px}
+.hd324-premium-home .rc24-next,.hd324-premium-home .rc24-mastery{border:1px solid rgba(255,255,255,.085);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.048),rgba(255,255,255,.018));box-shadow:0 16px 38px rgba(0,0,0,.17);color:#fff}
+.hd324-premium-home .rc24-next{min-height:112px;padding:13px;display:grid;grid-template-columns:70px minmax(0,1fr) 30px;align-items:center;gap:12px;text-align:left}
+.hd324-premium-home .rc24-next-thumb{position:relative;overflow:hidden;display:grid;place-items:center;width:70px;height:76px;border-radius:17px;border:1px solid color-mix(in srgb,var(--world) 30%,rgba(255,255,255,.08));background:color-mix(in srgb,var(--world) 10%,#0a1623);font-size:1.5rem;color:var(--world)}
+.hd324-premium-home .rc24-next-thumb.art-history{background-image:linear-gradient(0deg,rgba(4,10,18,.44),rgba(4,10,18,.1)),url('./assets/thumb-history.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-astronomy{background-image:linear-gradient(0deg,rgba(4,10,18,.4),rgba(4,10,18,.06)),url('./assets/thumb-astronomy.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-philosophy{background-image:linear-gradient(0deg,rgba(4,10,18,.4),rgba(4,10,18,.06)),url('./assets/thumb-philosophy.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-english{background-image:linear-gradient(0deg,rgba(4,10,18,.4),rgba(4,10,18,.06)),url('./assets/thumb-english.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-copy{min-width:0;display:grid;gap:3px}.hd324-premium-home .rc24-next-copy small{color:#8fa3b8;font-size:.64rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.hd324-premium-home .rc24-next-copy b{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-family:ui-serif,Georgia,serif;font-size:1.05rem;line-height:1.12}.hd324-premium-home .rc24-next-copy em{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8599ad;font-style:normal;font-size:.7rem}.hd324-premium-home .rc24-next-arrow{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.12);font-size:1rem;color:#cbd6e2}
+.hd324-premium-home .rc24-mastery{min-height:112px;padding:12px 10px;display:flex;align-items:center;justify-content:center;gap:10px;text-align:left}
+.hd324-premium-home .rc24-ring{--p:0;position:relative;display:grid;place-items:center;flex:0 0 62px;width:62px;height:62px;border-radius:50%;background:conic-gradient(var(--world) calc(var(--p)*1%),rgba(255,255,255,.08) 0);box-shadow:0 0 22px color-mix(in srgb,var(--world) 13%,transparent)}
+.hd324-premium-home .rc24-ring::after{content:"";position:absolute;inset:5px;border-radius:50%;background:#0a1522}.hd324-premium-home .rc24-ring i{position:relative;z-index:1;font-style:normal;font-size:.72rem;font-weight:950;color:#fff}
+.hd324-premium-home .rc24-mastery>span:last-child{min-width:0;display:grid;gap:2px}.hd324-premium-home .rc24-mastery small{font-size:.62rem;color:#8ea2b8;text-transform:uppercase;letter-spacing:.08em;font-weight:900}.hd324-premium-home .rc24-mastery b{font-size:.82rem}.hd324-premium-home .rc24-mastery em{font-style:normal;color:#71869c;font-size:.62rem;line-height:1.25}
+
+.hd324-premium-home .rc24-universes{border:1px solid rgba(255,255,255,.075);border-radius:21px;background:rgba(255,255,255,.022);overflow:hidden}.hd324-premium-home .rc24-universes summary{list-style:none;cursor:pointer;min-height:61px;padding:0 16px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}.hd324-premium-home .rc24-universes summary::-webkit-details-marker{display:none}.hd324-premium-home .rc24-universes summary span{color:#778ca3;font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em}.hd324-premium-home .rc24-universes summary b{font-family:ui-serif,Georgia,serif;font-size:1rem}.hd324-premium-home .rc24-universes summary em{font-style:normal;color:var(--world);font-size:.72rem;font-weight:900}.hd324-premium-home .rc24-universes[open] summary{border-bottom:1px solid rgba(255,255,255,.065)}
+.hd324-premium-home .rc24-world-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px}.hd324-premium-home .rc24-world{position:relative;isolation:isolate;overflow:hidden;min-height:78px;padding:9px;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:#0a1522;color:#fff;display:grid;grid-template-columns:45px minmax(0,1fr);align-items:center;gap:9px;text-align:left}.hd324-premium-home .rc24-world.active{border-color:color-mix(in srgb,var(--world) 48%,rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--world) 10%,transparent)}.hd324-premium-home .rc24-world-art{position:absolute;inset:0;z-index:0;opacity:.16;background-position:center;background-size:cover;mask-image:linear-gradient(90deg,transparent 18%,#000 68%)}.hd324-premium-home .rc24-world[data-rc24-world="history"] .rc24-world-art{background-image:url('./assets/thumb-history.webp')}.hd324-premium-home .rc24-world[data-rc24-world="astronomy"] .rc24-world-art{background-image:url('./assets/thumb-astronomy.webp')}.hd324-premium-home .rc24-world[data-rc24-world="philosophy"] .rc24-world-art{background-image:url('./assets/thumb-philosophy.webp')}.hd324-premium-home .rc24-world[data-rc24-world="english"] .rc24-world-art{background-image:url('./assets/thumb-english.webp')}.hd324-premium-home .rc24-world.active .rc24-world-art{opacity:.3}.hd324-premium-home .rc24-world-icon,.hd324-premium-home .rc24-world-copy{position:relative;z-index:1}.hd324-premium-home .rc24-world-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:color-mix(in srgb,var(--world) 11%,rgba(255,255,255,.025));border:1px solid color-mix(in srgb,var(--world) 24%,rgba(255,255,255,.07));color:var(--world)}.hd324-premium-home .rc24-world-copy{display:grid;gap:2px}.hd324-premium-home .rc24-world-copy b{font-size:.78rem}.hd324-premium-home .rc24-world-copy small{font-size:.62rem;color:#8296aa}
+
+.hd324-premium-home .app-shell.tab-home .bottom-nav{background:rgba(5,12,20,.92)!important;backdrop-filter:blur(18px)!important}
+
+@media(max-width:520px){
+  .hd324-premium-home .rc24-home{padding:15px 11px 105px;gap:11px}
+  .hd324-premium-home .rc24-hero{min-height:480px;border-radius:25px}
+  .hd324-premium-home .rc24-hero-content{left:16px;right:16px;bottom:75px}
+  .hd324-premium-home .rc24-hero-top{padding:14px 15px}
+  .hd324-premium-home .rc24-hero-content h2{font-size:clamp(1.82rem,8.7vw,2.45rem);max-width:16ch}
+  .hd324-premium-home .rc24-hero-content>span{font-size:.8rem;line-height:1.45;-webkit-line-clamp:2}
+  .hd324-premium-home .rc24-hero-cta{min-height:55px;border-radius:17px}
+  .hd324-premium-home .rc24-route{left:15px;right:15px;bottom:12px;gap:5px}.hd324-premium-home .rc24-route div{height:45px}.hd324-premium-home .rc24-route span{font-size:.58rem}
+  .hd324-premium-home .rc24-dashboard{grid-template-columns:1fr}
+  .hd324-premium-home .rc24-next{min-height:101px;grid-template-columns:62px minmax(0,1fr) 30px}.hd324-premium-home .rc24-next-thumb{width:62px;height:68px}
+  .hd324-premium-home .rc24-mastery{min-height:86px;justify-content:flex-start;padding:11px 14px}.hd324-premium-home .rc24-ring{width:56px;height:56px;flex-basis:56px}
+}
+@media(max-width:370px){
+  .hd324-premium-home .rc24-brand h1{font-size:2.1rem}.hd324-premium-home .rc24-metrics button{min-width:50px;height:43px;padding:0 8px}
+  .hd324-premium-home .rc24-hero{min-height:456px}.hd324-premium-home .rc24-hero-content h2{font-size:1.78rem}.hd324-premium-home .rc24-hero-content>span{display:none}
+  .hd324-premium-home .rc24-world-grid{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:no-preference){
+  .hd324-premium-home .rc24-hero-image{transition:transform .45s ease}.hd324-premium-home .rc24-hero:hover .rc24-hero-image{transform:scale(1.025)}
+  .hd324-premium-home .rc24-hero-cta,.hd324-premium-home .rc24-next,.hd324-premium-home .rc24-mastery{transition:transform .18s ease,filter .18s ease}.hd324-premium-home .rc24-hero-cta:active,.hd324-premium-home .rc24-next:active,.hd324-premium-home .rc24-mastery:active{transform:scale(.988)}
+}
+
+/* ================================================================
+   HistoDaily RC25 — Expedition dossier merge
+   Mission + contexte + première piste deviennent un seul bloc narratif.
+   ================================================================ */
+.hd325-dossier{
+  display:grid;gap:10px;margin:0;padding:2px 1px 14px;
+  border-bottom:1px solid rgba(255,255,255,.075)
+}
+.hd325-dossier-kicker{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.hd325-dossier-kicker>span{
+  color:color-mix(in srgb,var(--discipline-accent,var(--world,#f5c451)) 76%,white);
+  font-size:.69rem;font-weight:950;text-transform:uppercase;letter-spacing:.12em
+}
+.hd325-dossier-meta{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:5px;min-width:0}
+.hd325-dossier-meta small{
+  display:inline-flex;max-width:150px;padding:4px 7px;border-radius:999px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  background:rgba(255,255,255,.055);color:#96a9bd;font-size:.62rem;font-weight:850
+}
+.hd325-dossier h2{margin:0;font-size:1.3rem;line-height:1.2;letter-spacing:-.028em}
+.hd325-dossier-copy{
+  margin:0!important;color:#cbd7e4!important;font-size:.91rem!important;
+  line-height:1.48!important;font-weight:590!important
+}
+.hd325-free-clue{
+  position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;
+  margin-top:2px;padding:10px 11px;border:1px solid rgba(72,213,151,.19);border-radius:15px;
+  background:linear-gradient(145deg,rgba(72,213,151,.085),rgba(72,213,151,.025))
+}
+.hd325-free-clue>span{
+  display:inline-flex;align-items:center;min-height:23px;padding:3px 7px;border-radius:999px;
+  background:rgba(72,213,151,.11);color:#9be8bf;font-size:.61rem;font-weight:950;
+  text-transform:uppercase;letter-spacing:.065em;white-space:nowrap
+}
+.hd325-free-clue p{margin:1px 0 0!important;color:#e4edf6!important;font-size:.84rem!important;line-height:1.42!important}
+.hd325-extra-clues{display:grid;gap:7px;margin-top:9px}
+.hd325-extra-clues .hd300-clue{padding:10px 11px;border-radius:14px}
+.hd325-extra-clues .hd300-clue>span{margin-bottom:3px;font-size:.63rem}
+.hd325-extra-clues .hd300-clue p{font-size:.83rem!important}
+.hd325-answer-zone{margin-top:12px!important;padding-top:12px!important}
+.hd325-answer-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.hd325-answer-heading h2{margin:0!important;font-size:1.02rem!important}
+.hd325-answer-heading small{color:#8397ac;font-size:.66rem;line-height:1.25;text-align:right}
+.hd325-answer-zone .hd310-guided-note{display:none!important}
+
+/* RC23 artwork had restyled the old Context card. It no longer exists in RC25. */
+.hd323-visual .tab-mystery .hd325-dossier{
+  padding:3px 2px 15px;
+  background:linear-gradient(180deg,rgba(7,16,27,.16),rgba(7,16,27,.02))
+}
+.hd323-visual .tab-mystery .hd325-free-clue{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)
+}
+
+@media(max-width:430px){
+  .hd325-dossier{gap:9px;padding-bottom:12px}
+  .hd325-dossier-kicker{align-items:flex-start}
+  .hd325-dossier-meta{max-width:58%}
+  .hd325-dossier-meta small{max-width:128px}
+  .hd325-dossier h2{font-size:1.18rem;line-height:1.22}
+  .hd325-dossier-copy{font-size:.86rem!important;line-height:1.45!important}
+  .hd325-free-clue{grid-template-columns:1fr;gap:6px;padding:9px 10px}
+  .hd325-free-clue>span{justify-self:start}
+  .hd325-answer-heading{align-items:flex-start}
+  .hd325-answer-heading small{max-width:52%;font-size:.62rem}
+  .hd325-answer-zone .hd300-guess{margin-top:9px!important}
+}
+.hd325-evidence-stack{display:grid;gap:6px;margin-top:2px}
+.hd325-paid-clue{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;padding:9px 10px;border:1px solid rgba(255,255,255,.075);border-radius:13px;background:rgba(255,255,255,.028)}
+.hd325-paid-clue>span{padding-top:2px;color:#8fa3b8;font-size:.61rem;font-weight:950;text-transform:uppercase;letter-spacing:.065em;white-space:nowrap}
+.hd325-paid-clue p{margin:0!important;color:#d5e0eb!important;font-size:.82rem!important;line-height:1.4!important}
+@media(max-width:430px){.hd325-paid-clue{grid-template-columns:1fr;gap:4px}}
+
+/* ================================================================
+   HistoDaily RC26 — coherence pass
+   Full visual coverage + quieter expedition + compact course reader.
+   ================================================================ */
+:root{--hd26-radius:22px;--hd26-border:rgba(255,255,255,.085);--hd26-surface:rgba(255,255,255,.028)}
+
+/* Full artwork coverage: every public discipline now has a visual identity. */
+.hd324-premium-home .rc24-hero.art-art .rc24-hero-image{background-image:url('./assets/hero-art.svg');background-position:center}
+.hd324-premium-home .rc24-hero.art-cinema .rc24-hero-image{background-image:url('./assets/hero-cinema.svg');background-position:center}
+.hd324-premium-home .rc24-hero.art-science-inventions .rc24-hero-image{background-image:url('./assets/hero-science-inventions.svg');background-position:center}
+.hd324-premium-home .rc24-hero.art-economy .rc24-hero-image{background-image:url('./assets/hero-economy.svg');background-position:center}
+.hd324-premium-home .rc24-hero.art-geography .rc24-hero-image{background-image:url('./assets/hero-geography.svg');background-position:center}
+.hd324-premium-home .rc24-hero.art-music .rc24-hero-image{background-image:url('./assets/hero-music.svg');background-position:center}
+.hd324-premium-home .rc24-hero.art-literature .rc24-hero-image{background-image:url('./assets/hero-literature.svg');background-position:center}
+.hd324-premium-home .rc24-next-thumb.art-art{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-art.svg');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-cinema{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-cinema.svg');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-science-inventions{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-science-inventions.svg');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-economy{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-economy.svg');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-geography{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-geography.svg');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-music{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-music.svg');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-literature{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-literature.svg');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-world[data-rc24-world="art"] .rc24-world-art{background-image:url('./assets/hero-art.svg')}
+.hd324-premium-home .rc24-world[data-rc24-world="cinema"] .rc24-world-art{background-image:url('./assets/hero-cinema.svg')}
+.hd324-premium-home .rc24-world[data-rc24-world="science-inventions"] .rc24-world-art{background-image:url('./assets/hero-science-inventions.svg')}
+.hd324-premium-home .rc24-world[data-rc24-world="economy"] .rc24-world-art{background-image:url('./assets/hero-economy.svg')}
+.hd324-premium-home .rc24-world[data-rc24-world="geography"] .rc24-world-art{background-image:url('./assets/hero-geography.svg')}
+.hd324-premium-home .rc24-world[data-rc24-world="music"] .rc24-world-art{background-image:url('./assets/hero-music.svg')}
+.hd324-premium-home .rc24-world[data-rc24-world="literature"] .rc24-world-art{background-image:url('./assets/hero-literature.svg')}
+
+/* Extend RC23 artwork treatment to every discipline. */
+.hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card{position:relative;isolation:isolate;overflow:hidden;padding-top:210px!important;border-color:color-mix(in srgb,var(--discipline-accent,var(--accent)) 38%,rgba(255,255,255,.10));background:#0b1624!important;box-shadow:0 24px 60px rgba(0,0,0,.34)!important}
+.hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card::before{content:"";position:absolute;inset:0 0 auto 0;height:232px;z-index:0;background-position:center;background-size:cover;background-repeat:no-repeat;pointer-events:none}
+.hd323-visual .tab-mystery.discipline-art .hd300-expedition-card::before{background-image:url('./assets/hero-art.svg')}
+.hd323-visual .tab-mystery.discipline-cinema .hd300-expedition-card::before{background-image:url('./assets/hero-cinema.svg')}
+.hd323-visual .tab-mystery.discipline-science-inventions .hd300-expedition-card::before{background-image:url('./assets/hero-science-inventions.svg')}
+.hd323-visual .tab-mystery.discipline-economy .hd300-expedition-card::before{background-image:url('./assets/hero-economy.svg')}
+.hd323-visual .tab-mystery.discipline-geography .hd300-expedition-card::before{background-image:url('./assets/hero-geography.svg')}
+.hd323-visual .tab-mystery.discipline-music .hd300-expedition-card::before{background-image:url('./assets/hero-music.svg')}
+.hd323-visual .tab-mystery.discipline-literature .hd300-expedition-card::before{background-image:url('./assets/hero-literature.svg')}
+.hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card::after{content:"";position:absolute;inset:0 0 auto 0;height:245px;z-index:0;background:linear-gradient(180deg,rgba(4,10,18,.04),rgba(4,10,18,.16) 40%,#0b1624 98%);pointer-events:none}
+.hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card>*{position:relative;z-index:1}
+.hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-status{position:absolute;top:15px;left:15px;right:15px;z-index:2}
+
+.hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar{position:relative;isolation:isolate;overflow:hidden;min-height:170px;margin:8px 10px 12px;padding:18px 18px 20px!important;border:1px solid rgba(255,255,255,.09);border-radius:24px;background:#08131f;box-shadow:0 20px 54px rgba(0,0,0,.30)}
+.hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar::before{content:"";position:absolute;inset:0;z-index:0;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:.94;pointer-events:none}
+.hd323-visual .tab-lesson.discipline-art .lesson-full-topbar::before{background-image:url('./assets/hero-art.svg')}
+.hd323-visual .tab-lesson.discipline-cinema .lesson-full-topbar::before{background-image:url('./assets/hero-cinema.svg')}
+.hd323-visual .tab-lesson.discipline-science-inventions .lesson-full-topbar::before{background-image:url('./assets/hero-science-inventions.svg')}
+.hd323-visual .tab-lesson.discipline-economy .lesson-full-topbar::before{background-image:url('./assets/hero-economy.svg')}
+.hd323-visual .tab-lesson.discipline-geography .lesson-full-topbar::before{background-image:url('./assets/hero-geography.svg')}
+.hd323-visual .tab-lesson.discipline-music .lesson-full-topbar::before{background-image:url('./assets/hero-music.svg')}
+.hd323-visual .tab-lesson.discipline-literature .lesson-full-topbar::before{background-image:url('./assets/hero-literature.svg')}
+.hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar::after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(4,10,18,.98),rgba(4,10,18,.82) 43%,rgba(4,10,18,.16) 86%),linear-gradient(0deg,rgba(4,10,18,.82),transparent 62%);pointer-events:none}
+.hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar>*{position:relative;z-index:1}
+.hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar>div{max-width:74%}
+
+/* Expedition: one narrative unit, one answer action, optional help folded away. */
+.hd326-coherence .tab-mystery .hd300-expedition-topbar{margin-bottom:4px!important}
+.hd326-coherence .tab-mystery .hd300-expedition-topbar .eyebrow{opacity:.68}
+.hd326-coherence .tab-mystery .hd300-expedition-card{gap:11px!important}
+.hd326-coherence .tab-mystery .hd325-dossier{padding-bottom:6px!important;border-bottom:0!important;gap:8px!important}
+.hd326-coherence .tab-mystery .hd325-dossier-kicker>span{font-size:.62rem!important;letter-spacing:.11em}
+.hd326-coherence .tab-mystery .hd325-dossier-meta small{font-size:.55rem!important;opacity:.78}
+.hd326-coherence .tab-mystery .hd325-dossier h2{font-family:ui-serif,Georgia,serif;font-size:1.22rem!important;line-height:1.18!important}
+.hd326-coherence .tab-mystery .hd325-dossier-copy{margin:0!important;color:#b6c3d1!important;line-height:1.48!important}
+.hd326-coherence .tab-mystery .hd325-free-clue{padding:10px 11px!important;border-radius:14px!important;background:rgba(72,213,151,.06)!important}
+.hd326-coherence .tab-mystery .hd325-free-clue span{font-size:.57rem!important}
+.hd326-coherence .tab-mystery .rc26-answer-zone{display:grid;gap:10px!important;margin-top:2px!important;padding-top:11px!important;border-top:1px solid rgba(255,255,255,.06)!important}
+.hd326-coherence .tab-mystery .rc26-your-turn{font-size:.62rem;font-weight:950;letter-spacing:.11em;text-transform:uppercase;color:var(--discipline-accent,var(--accent))}
+.hd326-coherence .tab-mystery .rc26-choice-grid{gap:8px!important}
+.hd326-coherence .tab-mystery .rc26-guess{margin:0!important}
+.hd326-coherence .tab-mystery .rc26-assist{border:0!important;background:transparent!important;margin-top:0!important}
+.hd326-coherence .tab-mystery .rc26-assist summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:38px;padding:0 2px;color:#8194a8;cursor:pointer;font-size:.72rem;font-weight:800}
+.hd326-coherence .tab-mystery .rc26-assist summary::-webkit-details-marker{display:none}
+.hd326-coherence .tab-mystery .rc26-assist summary small{font-size:.61rem;color:#65798e;font-weight:700}
+.hd326-coherence .tab-mystery .rc26-assist-body{display:grid;gap:7px;padding:5px 0 2px}
+.hd326-coherence .tab-mystery .rc26-assist-body .ghost{min-height:43px!important;margin:0!important}
+.hd326-coherence .tab-mystery .rc26-score-note{margin:1px 2px 0;color:#63778b;font-size:.63rem}
+
+/* Course reader: remove the old card-on-card introduction. */
+.hd326-coherence .tab-lesson .reading-card{display:grid;gap:12px!important;background:transparent!important;border:0!important;box-shadow:none!important;padding-top:4px!important}
+.hd326-coherence .tab-lesson .rc26-course-toolbar{position:sticky;top:4px;z-index:12;padding:6px;border:1px solid var(--hd26-border);border-radius:17px;background:rgba(7,16,27,.91);backdrop-filter:blur(16px);box-shadow:0 10px 28px rgba(0,0,0,.18)}
+.hd326-coherence .tab-lesson .rc26-course-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.hd326-coherence .tab-lesson .rc26-course-tabs button{min-height:44px;padding:6px 7px!important;border-radius:12px!important;background:transparent!important;border:1px solid transparent!important;display:grid;gap:0!important;place-items:center;color:#8498ad!important;box-shadow:none!important}
+.hd326-coherence .tab-lesson .rc26-course-tabs button.active{background:color-mix(in srgb,var(--discipline-accent,var(--accent)) 11%,rgba(255,255,255,.035))!important;border-color:color-mix(in srgb,var(--discipline-accent,var(--accent)) 35%,rgba(255,255,255,.08))!important;color:#fff!important}
+.hd326-coherence .tab-lesson .rc26-course-tabs button b{font-size:.74rem}.hd326-coherence .tab-lesson .rc26-course-tabs button span{font-size:.57rem;opacity:.66}
+.hd326-coherence .tab-lesson .rc26-course-lead{padding:15px 16px;border:1px solid var(--hd26-border);border-radius:var(--hd26-radius);background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}
+.hd326-coherence .tab-lesson .rc26-course-lead p{margin:6px 0 0;font-family:ui-serif,Georgia,serif;font-size:1.04rem;line-height:1.48;color:#e1e8ef}
+.hd326-coherence .tab-lesson .rc26-key-facts{margin:0!important;border-radius:18px!important;background:rgba(255,255,255,.025)!important}
+.hd326-coherence .tab-lesson .rc26-express,.hd326-coherence .tab-lesson .rc26-complete,.hd326-coherence .tab-lesson .rc26-final-quiz,.hd326-coherence .tab-lesson .rc26-quiz-intro{border:1px solid var(--hd26-border)!important;border-radius:var(--hd26-radius)!important;background:rgba(255,255,255,.022)!important;box-shadow:none!important}
+.hd326-coherence .tab-lesson .rc26-quiz-intro{padding:14px 16px;display:flex;align-items:end;justify-content:space-between;gap:12px}
+.hd326-coherence .tab-lesson .rc26-quiz-intro h2,.hd326-coherence .tab-lesson .rc26-quiz-intro p{margin:0}.hd326-coherence .tab-lesson .rc26-quiz-intro p{max-width:35ch;color:#8da0b3;font-size:.73rem;text-align:right}
+.hd326-coherence .tab-lesson .rc26-section-head{margin-bottom:8px!important}
+.hd326-coherence .tab-lesson .rc26-course-next{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.hd326-coherence .tab-lesson .lesson-hook,.hd326-coherence .tab-lesson .lesson-choice-panel{display:none!important}
+
+/* Less prototype-like secondary UI. */
+.hd326-coherence .card{border-radius:var(--hd26-radius)}
+.hd326-coherence button,.hd326-coherence input,.hd326-coherence textarea{font-family:inherit}
+.hd326-coherence .topbar>button:first-child{border-radius:14px!important}
+.hd326-coherence .bottom-nav .nav-item small{font-size:.58rem!important}
+
+@media(max-width:430px){
+  .hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card{padding-top:190px!important}
+  .hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card::before{height:210px}
+  .hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar{min-height:152px;margin:6px 8px 10px;padding:15px!important;border-radius:21px}
+  .hd326-coherence .tab-lesson .rc26-course-lead p{font-size:.96rem}
+  .hd326-coherence .tab-lesson .rc26-quiz-intro{align-items:start;flex-direction:column}.hd326-coherence .tab-lesson .rc26-quiz-intro p{text-align:left}
+}
+
+/* Reader v214 already owns the persistent tabs: keep a single control surface. */
+.hd326-coherence .hd214-reader-shell .rc26-course-toolbar{display:none!important}
+
+/* Artwork in the legacy/learn discipline selector too. */
+.hd323-visual .hd222-world[data-hd220-discipline="art"]::before{background-image:url('./assets/hero-art.svg')}
+.hd323-visual .hd222-world[data-hd220-discipline="cinema"]::before{background-image:url('./assets/hero-cinema.svg')}
+.hd323-visual .hd222-world[data-hd220-discipline="science-inventions"]::before{background-image:url('./assets/hero-science-inventions.svg')}
+.hd323-visual .hd222-world[data-hd220-discipline="economy"]::before{background-image:url('./assets/hero-economy.svg')}
+.hd323-visual .hd222-world[data-hd220-discipline="geography"]::before{background-image:url('./assets/hero-geography.svg')}
+.hd323-visual .hd222-world[data-hd220-discipline="music"]::before{background-image:url('./assets/hero-music.svg')}
+.hd323-visual .hd222-world[data-hd220-discipline="literature"]::before{background-image:url('./assets/hero-literature.svg')}

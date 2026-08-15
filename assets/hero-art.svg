@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 480" role="img" aria-label="Illustration art">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2a0e1b"/><stop offset="1" stop-color="#0b1020"/></linearGradient>
+ <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fb7185"/><stop offset="1" stop-color="#ffffff" stop-opacity=".42"/></linearGradient>
+ <linearGradient id="beam"><stop stop-color="#ddd6fe" stop-opacity=".62"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></linearGradient>
+ <linearGradient id="bars" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fb7185"/><stop offset="1" stop-color="#fb7185" stop-opacity=".06"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#fb7185" stop-opacity=".22"/><stop offset="1" stop-color="#fb7185" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="840" height="480" fill="url(#bg)"/><circle cx="640" cy="180" r="280" fill="url(#glow)"/><g>
+<path d="M760 90c-80 18-155 58-226 121-95 84-152 181-215 240-52 49-108 79-179 98" fill="none" stroke="url(#stroke)" stroke-width="46" stroke-linecap="round" opacity=".84"/>
+<path d="M710 174c-44 28-69 64-87 108-23 56-25 108-72 160" fill="none" stroke="#ffd2c9" stroke-width="12" stroke-linecap="round" opacity=".48"/>
+<circle cx="808" cy="110" r="58" fill="#fb7185" opacity=".22"/><circle cx="136" cy="138" r="92" fill="#f59e0b" opacity=".1"/>
+<path d="M450 158l62 77-88 58-49-94z" fill="none" stroke="#fff" stroke-width="4" opacity=".24"/>
+</g>
+<path d="M0 420C170 370 285 460 450 422S680 367 840 398V480H0z" fill="#020617" opacity=".34"/>
+</svg>

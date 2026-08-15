@@ -1,0 +1,6 @@
+# Sources et documentation de développement : les bundles sont déjà générés.
+src/
+scripts/
+docs/
+RC*-AUDIT.json
+RC*-MANIFEST.json

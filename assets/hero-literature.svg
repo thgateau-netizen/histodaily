@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 480" role="img" aria-label="Illustration literature">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2a160b"/><stop offset="1" stop-color="#0d111b"/></linearGradient>
+ <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fb923c"/><stop offset="1" stop-color="#ffffff" stop-opacity=".42"/></linearGradient>
+ <linearGradient id="beam"><stop stop-color="#ddd6fe" stop-opacity=".62"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></linearGradient>
+ <linearGradient id="bars" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fb923c"/><stop offset="1" stop-color="#fb923c" stop-opacity=".06"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#fb923c" stop-opacity=".22"/><stop offset="1" stop-color="#fb923c" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="840" height="480" fill="url(#bg)"/><circle cx="640" cy="180" r="280" fill="url(#glow)"/><g>
+<path d="M145 114c111-30 191-12 277 37v265c-83-45-166-63-277-33z" fill="#fff7ed" opacity=".18" stroke="#fdba74" stroke-width="4"/>
+<path d="M700 114c-111-30-191-12-277 37v265c83-45 166-63 277-33z" fill="#fff7ed" opacity=".12" stroke="#fb923c" stroke-width="4"/>
+<path d="M423 151v265" stroke="#fed7aa" stroke-width="4" opacity=".28"/>
+<path d="M184 190c75-12 140 0 203 31m-203 45c75-11 140 1 203 32m-203 44c75-11 140 1 203 32M461 221c65-31 130-43 201-31m-201 108c65-31 130-43 201-32m-201 108c65-31 130-43 201-32" stroke="#fff7ed" stroke-width="5" opacity=".14" stroke-linecap="round"/>
+<circle cx="120" cy="96" r="62" fill="#f97316" opacity=".12"/>
+</g>
+<path d="M0 420C170 370 285 460 450 422S680 367 840 398V480H0z" fill="#020617" opacity=".34"/>
+</svg>

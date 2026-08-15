@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 480" role="img" aria-label="Illustration music">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#281020"/><stop offset="1" stop-color="#09101d"/></linearGradient>
+ <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fb7185"/><stop offset="1" stop-color="#ffffff" stop-opacity=".42"/></linearGradient>
+ <linearGradient id="beam"><stop stop-color="#ddd6fe" stop-opacity=".62"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></linearGradient>
+ <linearGradient id="bars" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fb7185"/><stop offset="1" stop-color="#fb7185" stop-opacity=".06"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#fb7185" stop-opacity=".22"/><stop offset="1" stop-color="#fb7185" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="840" height="480" fill="url(#bg)"/><circle cx="640" cy="180" r="280" fill="url(#glow)"/><g>
+<path d="M104 304c38 0 38-128 76-128s38 213 76 213 38-281 76-281 38 196 76 196 38-128 76-128 38 213 76 213 38-281 76-281 38 196 76 196 38-128 76-128" fill="none" stroke="url(#stroke)" stroke-width="12" stroke-linecap="round" opacity=".78"/>
+<circle cx="221" cy="121" r="72" fill="#fb7185" opacity=".13"/><circle cx="648" cy="338" r="94" fill="#f472b6" opacity=".1"/>
+<path d="M591 78v211c0 37-34 63-78 54-37-7-54-38-37-63 16-23 55-31 91-18V109l123-31v168c0 36-33 62-76 54-36-7-53-37-37-61 15-23 51-31 86-19V57z" fill="#fda4af" opacity=".45"/>
+</g>
+<path d="M0 420C170 370 285 460 450 422S680 367 840 398V480H0z" fill="#020617" opacity=".34"/>
+</svg>

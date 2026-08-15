@@ -1,0 +1,317 @@
+{
+  "version": "1.0.0-rc.20.0",
+  "feature": "interactive courses for English and Philosophy",
+  "disciplines": {
+    "english": {
+      "lessonCount": 16,
+      "completeCourseInteractionSlots": 32,
+      "audioChallenges": 15,
+      "lessons": [
+        {
+          "lessonId": "eng-connectors-concession",
+          "labId": "eng-lab-concession",
+          "skill": "Logique",
+          "difficulty": "moyen",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-connectors-logic",
+          "labId": "eng-lab-concession",
+          "skill": "Logique",
+          "difficulty": "moyen",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-context-inference",
+          "labId": "eng-lab-context",
+          "skill": "Contexte",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-context-reference",
+          "labId": "eng-lab-reference",
+          "skill": "Référence",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-false-friends-core",
+          "labId": "eng-lab-actually",
+          "skill": "Faux ami",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-false-friends-second-wave",
+          "labId": "eng-lab-actually",
+          "skill": "Faux ami",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-implicit-meaning",
+          "labId": "eng-lab-understatement",
+          "skill": "Implicite",
+          "difficulty": "difficile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-implicit-understatement",
+          "labId": "eng-lab-audio-mind",
+          "skill": "Écoute · implicite",
+          "difficulty": "difficile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-paraphrase-clarify",
+          "labId": "eng-lab-clarify",
+          "skill": "Interaction",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-paraphrase-repair",
+          "labId": "eng-lab-paraphrase",
+          "skill": "Paraphrase",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-phrasal-context",
+          "labId": "eng-lab-getby",
+          "skill": "Phrasal verb",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-phrasal-get",
+          "labId": "eng-lab-audio-endedup",
+          "skill": "Écoute · phrasal verb",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-polite-register",
+          "labId": "eng-lab-register",
+          "skill": "Registre",
+          "difficulty": "moyen",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-register-email-directness",
+          "labId": "eng-lab-audio-wondering",
+          "skill": "Écoute · intention",
+          "difficulty": "moyen",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-small-words-just-quite",
+          "labId": "eng-lab-audio-barely",
+          "skill": "Écoute · nuance",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "eng-still-yet-already-even",
+          "labId": "eng-lab-yet",
+          "skill": "Nuance",
+          "difficulty": "facile",
+          "audio": true,
+          "choices": 3,
+          "correctChoices": 1
+        }
+      ]
+    },
+    "philosophy": {
+      "lessonCount": 16,
+      "completeCourseInteractionSlots": 32,
+      "audioChallenges": 0,
+      "lessons": [
+        {
+          "lessonId": "philo-argument-thesis-objection",
+          "labId": "philo-lab-objection",
+          "skill": "Débat",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-argument-validity",
+          "labId": "philo-lab-validity",
+          "skill": "Argument",
+          "difficulty": "facile",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-descartes-cogito",
+          "labId": "philo-lab-cogito",
+          "skill": "Descartes",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-descartes-doubt",
+          "labId": "philo-lab-cogito",
+          "skill": "Descartes",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-distinction-necessary-sufficient",
+          "labId": "philo-lab-necessary",
+          "skill": "Distinction",
+          "difficulty": "facile",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-ethics-frameworks",
+          "labId": "philo-lab-consequences",
+          "skill": "Éthique",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-ethics-principles-consequences",
+          "labId": "philo-lab-ethics",
+          "skill": "Éthique",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-fact-opinion-value",
+          "labId": "philo-lab-factvalue",
+          "skill": "Distinction",
+          "difficulty": "facile",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-hume-causality",
+          "labId": "philo-lab-induction",
+          "skill": "Hume",
+          "difficulty": "difficile",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-hume-induction",
+          "labId": "philo-lab-induction",
+          "skill": "Hume",
+          "difficulty": "difficile",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-social-contract-comparison",
+          "labId": "philo-lab-generalwill",
+          "skill": "Politique",
+          "difficulty": "difficile",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-social-contract-liberty",
+          "labId": "philo-lab-contract",
+          "skill": "Politique",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-socrates-definition",
+          "labId": "philo-lab-counterexample",
+          "skill": "Concept",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-socrates-questioning",
+          "labId": "philo-lab-counterexample",
+          "skill": "Concept",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-stoic-control",
+          "labId": "philo-lab-influence",
+          "skill": "Stoïcisme",
+          "difficulty": "moyen",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        },
+        {
+          "lessonId": "philo-stoic-impressions",
+          "labId": "philo-lab-stoic",
+          "skill": "Stoïcisme",
+          "difficulty": "facile",
+          "audio": false,
+          "choices": 3,
+          "correctChoices": 1
+        }
+      ]
+    }
+  },
+  "checks": {
+    "mapped_lessons": 32,
+    "interactions_per_complete_course": 2,
+    "express_challenge_enabled": true,
+    "state_persistence": "localStorage: histodaily_rc20_course_interactions_v1",
+    "xp_reward_for_embedded_interactions": 0,
+    "service_worker_asset_registered": true,
+    "index_asset_registered": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "release": "1.0.0-rc.25.0",
+  "focus": "expedition-information-hierarchy",
+  "renderer": {
+    "missionAndContextMerged": true,
+    "freeClueIntegratedInDossier": true,
+    "paidCluesStayInDossier": true,
+    "answerZoneSimplified": true,
+    "oldMissionMarkupRemoved": true,
+    "oldContextMarkupRemoved": true
+  },
+  "validation": {
+    "javascriptFilesChecked": 60,
+    "javascriptSyntaxErrors": 0,
+    "serviceWorkerAssetReferencesChecked": 65,
+    "missingAssets": 0,
+    "cssBraceBalance": true
+  }
+}
