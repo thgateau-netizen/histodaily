@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0-rc.28.0",
+  "integrated_assets": {
+    "art": "assets/hero-art.webp",
+    "cinema": "assets/hero-cinema.webp",
+    "science-inventions": "assets/hero-science-inventions.webp",
+    "economy": "assets/hero-economy.webp",
+    "geography": "assets/hero-geography.webp",
+    "music": "assets/hero-music.webp",
+    "literature": "assets/hero-literature.webp",
+    "history": "assets/hero-history.webp",
+    "astronomy": "assets/hero-astronomy.webp",
+    "english": "assets/hero-english.webp",
+    "philosophy": "assets/hero-philosophy.webp"
+  },
+  "replaced_placeholders": [
+    "assets/hero-art.svg",
+    "assets/hero-cinema.svg",
+    "assets/hero-science-inventions.svg",
+    "assets/hero-economy.svg",
+    "assets/hero-geography.svg",
+    "assets/hero-music.svg",
+    "assets/hero-literature.svg"
+  ],
+  "screens_covered": [
+    "premium-home",
+    "expedition-cards",
+    "lesson-headers",
+    "next-action-thumbs",
+    "world-cards"
+  ],
+  "status": "all 11 disciplines now have visual hero assets"
+}

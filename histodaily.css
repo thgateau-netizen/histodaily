@@ -11008,51 +11008,51 @@ html.hd287-redesign body::before{
 :root{--hd26-radius:22px;--hd26-border:rgba(255,255,255,.085);--hd26-surface:rgba(255,255,255,.028)}
 
 /* Full artwork coverage: every public discipline now has a visual identity. */
-.hd324-premium-home .rc24-hero.art-art .rc24-hero-image{background-image:url('./assets/hero-art.svg');background-position:center}
-.hd324-premium-home .rc24-hero.art-cinema .rc24-hero-image{background-image:url('./assets/hero-cinema.svg');background-position:center}
-.hd324-premium-home .rc24-hero.art-science-inventions .rc24-hero-image{background-image:url('./assets/hero-science-inventions.svg');background-position:center}
-.hd324-premium-home .rc24-hero.art-economy .rc24-hero-image{background-image:url('./assets/hero-economy.svg');background-position:center}
-.hd324-premium-home .rc24-hero.art-geography .rc24-hero-image{background-image:url('./assets/hero-geography.svg');background-position:center}
-.hd324-premium-home .rc24-hero.art-music .rc24-hero-image{background-image:url('./assets/hero-music.svg');background-position:center}
-.hd324-premium-home .rc24-hero.art-literature .rc24-hero-image{background-image:url('./assets/hero-literature.svg');background-position:center}
-.hd324-premium-home .rc24-next-thumb.art-art{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-art.svg');background-size:cover;background-position:center;color:transparent}
-.hd324-premium-home .rc24-next-thumb.art-cinema{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-cinema.svg');background-size:cover;background-position:center;color:transparent}
-.hd324-premium-home .rc24-next-thumb.art-science-inventions{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-science-inventions.svg');background-size:cover;background-position:center;color:transparent}
-.hd324-premium-home .rc24-next-thumb.art-economy{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-economy.svg');background-size:cover;background-position:center;color:transparent}
-.hd324-premium-home .rc24-next-thumb.art-geography{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-geography.svg');background-size:cover;background-position:center;color:transparent}
-.hd324-premium-home .rc24-next-thumb.art-music{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-music.svg');background-size:cover;background-position:center;color:transparent}
-.hd324-premium-home .rc24-next-thumb.art-literature{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-literature.svg');background-size:cover;background-position:center;color:transparent}
-.hd324-premium-home .rc24-world[data-rc24-world="art"] .rc24-world-art{background-image:url('./assets/hero-art.svg')}
-.hd324-premium-home .rc24-world[data-rc24-world="cinema"] .rc24-world-art{background-image:url('./assets/hero-cinema.svg')}
-.hd324-premium-home .rc24-world[data-rc24-world="science-inventions"] .rc24-world-art{background-image:url('./assets/hero-science-inventions.svg')}
-.hd324-premium-home .rc24-world[data-rc24-world="economy"] .rc24-world-art{background-image:url('./assets/hero-economy.svg')}
-.hd324-premium-home .rc24-world[data-rc24-world="geography"] .rc24-world-art{background-image:url('./assets/hero-geography.svg')}
-.hd324-premium-home .rc24-world[data-rc24-world="music"] .rc24-world-art{background-image:url('./assets/hero-music.svg')}
-.hd324-premium-home .rc24-world[data-rc24-world="literature"] .rc24-world-art{background-image:url('./assets/hero-literature.svg')}
+.hd324-premium-home .rc24-hero.art-art .rc24-hero-image{background-image:url('./assets/hero-art.webp');background-position:center}
+.hd324-premium-home .rc24-hero.art-cinema .rc24-hero-image{background-image:url('./assets/hero-cinema.webp');background-position:center}
+.hd324-premium-home .rc24-hero.art-science-inventions .rc24-hero-image{background-image:url('./assets/hero-science-inventions.webp');background-position:center}
+.hd324-premium-home .rc24-hero.art-economy .rc24-hero-image{background-image:url('./assets/hero-economy.webp');background-position:center}
+.hd324-premium-home .rc24-hero.art-geography .rc24-hero-image{background-image:url('./assets/hero-geography.webp');background-position:center}
+.hd324-premium-home .rc24-hero.art-music .rc24-hero-image{background-image:url('./assets/hero-music.webp');background-position:center}
+.hd324-premium-home .rc24-hero.art-literature .rc24-hero-image{background-image:url('./assets/hero-literature.webp');background-position:center}
+.hd324-premium-home .rc24-next-thumb.art-art{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-art.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-cinema{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-cinema.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-science-inventions{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-science-inventions.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-economy{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-economy.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-geography{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-geography.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-music{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-music.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-next-thumb.art-literature{background-image:linear-gradient(0deg,rgba(4,10,18,.42),rgba(4,10,18,.05)),url('./assets/hero-literature.webp');background-size:cover;background-position:center;color:transparent}
+.hd324-premium-home .rc24-world[data-rc24-world="art"] .rc24-world-art{background-image:url('./assets/hero-art.webp')}
+.hd324-premium-home .rc24-world[data-rc24-world="cinema"] .rc24-world-art{background-image:url('./assets/hero-cinema.webp')}
+.hd324-premium-home .rc24-world[data-rc24-world="science-inventions"] .rc24-world-art{background-image:url('./assets/hero-science-inventions.webp')}
+.hd324-premium-home .rc24-world[data-rc24-world="economy"] .rc24-world-art{background-image:url('./assets/hero-economy.webp')}
+.hd324-premium-home .rc24-world[data-rc24-world="geography"] .rc24-world-art{background-image:url('./assets/hero-geography.webp')}
+.hd324-premium-home .rc24-world[data-rc24-world="music"] .rc24-world-art{background-image:url('./assets/hero-music.webp')}
+.hd324-premium-home .rc24-world[data-rc24-world="literature"] .rc24-world-art{background-image:url('./assets/hero-literature.webp')}
 
 /* Extend RC23 artwork treatment to every discipline. */
 .hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card{position:relative;isolation:isolate;overflow:hidden;padding-top:210px!important;border-color:color-mix(in srgb,var(--discipline-accent,var(--accent)) 38%,rgba(255,255,255,.10));background:#0b1624!important;box-shadow:0 24px 60px rgba(0,0,0,.34)!important}
 .hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card::before{content:"";position:absolute;inset:0 0 auto 0;height:232px;z-index:0;background-position:center;background-size:cover;background-repeat:no-repeat;pointer-events:none}
-.hd323-visual .tab-mystery.discipline-art .hd300-expedition-card::before{background-image:url('./assets/hero-art.svg')}
-.hd323-visual .tab-mystery.discipline-cinema .hd300-expedition-card::before{background-image:url('./assets/hero-cinema.svg')}
-.hd323-visual .tab-mystery.discipline-science-inventions .hd300-expedition-card::before{background-image:url('./assets/hero-science-inventions.svg')}
-.hd323-visual .tab-mystery.discipline-economy .hd300-expedition-card::before{background-image:url('./assets/hero-economy.svg')}
-.hd323-visual .tab-mystery.discipline-geography .hd300-expedition-card::before{background-image:url('./assets/hero-geography.svg')}
-.hd323-visual .tab-mystery.discipline-music .hd300-expedition-card::before{background-image:url('./assets/hero-music.svg')}
-.hd323-visual .tab-mystery.discipline-literature .hd300-expedition-card::before{background-image:url('./assets/hero-literature.svg')}
+.hd323-visual .tab-mystery.discipline-art .hd300-expedition-card::before{background-image:url('./assets/hero-art.webp')}
+.hd323-visual .tab-mystery.discipline-cinema .hd300-expedition-card::before{background-image:url('./assets/hero-cinema.webp')}
+.hd323-visual .tab-mystery.discipline-science-inventions .hd300-expedition-card::before{background-image:url('./assets/hero-science-inventions.webp')}
+.hd323-visual .tab-mystery.discipline-economy .hd300-expedition-card::before{background-image:url('./assets/hero-economy.webp')}
+.hd323-visual .tab-mystery.discipline-geography .hd300-expedition-card::before{background-image:url('./assets/hero-geography.webp')}
+.hd323-visual .tab-mystery.discipline-music .hd300-expedition-card::before{background-image:url('./assets/hero-music.webp')}
+.hd323-visual .tab-mystery.discipline-literature .hd300-expedition-card::before{background-image:url('./assets/hero-literature.webp')}
 .hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card::after{content:"";position:absolute;inset:0 0 auto 0;height:245px;z-index:0;background:linear-gradient(180deg,rgba(4,10,18,.04),rgba(4,10,18,.16) 40%,#0b1624 98%);pointer-events:none}
 .hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-card>*{position:relative;z-index:1}
 .hd323-visual .tab-mystery:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .hd300-expedition-status{position:absolute;top:15px;left:15px;right:15px;z-index:2}
 
 .hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar{position:relative;isolation:isolate;overflow:hidden;min-height:170px;margin:8px 10px 12px;padding:18px 18px 20px!important;border:1px solid rgba(255,255,255,.09);border-radius:24px;background:#08131f;box-shadow:0 20px 54px rgba(0,0,0,.30)}
 .hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar::before{content:"";position:absolute;inset:0;z-index:0;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:.94;pointer-events:none}
-.hd323-visual .tab-lesson.discipline-art .lesson-full-topbar::before{background-image:url('./assets/hero-art.svg')}
-.hd323-visual .tab-lesson.discipline-cinema .lesson-full-topbar::before{background-image:url('./assets/hero-cinema.svg')}
-.hd323-visual .tab-lesson.discipline-science-inventions .lesson-full-topbar::before{background-image:url('./assets/hero-science-inventions.svg')}
-.hd323-visual .tab-lesson.discipline-economy .lesson-full-topbar::before{background-image:url('./assets/hero-economy.svg')}
-.hd323-visual .tab-lesson.discipline-geography .lesson-full-topbar::before{background-image:url('./assets/hero-geography.svg')}
-.hd323-visual .tab-lesson.discipline-music .lesson-full-topbar::before{background-image:url('./assets/hero-music.svg')}
-.hd323-visual .tab-lesson.discipline-literature .lesson-full-topbar::before{background-image:url('./assets/hero-literature.svg')}
+.hd323-visual .tab-lesson.discipline-art .lesson-full-topbar::before{background-image:url('./assets/hero-art.webp')}
+.hd323-visual .tab-lesson.discipline-cinema .lesson-full-topbar::before{background-image:url('./assets/hero-cinema.webp')}
+.hd323-visual .tab-lesson.discipline-science-inventions .lesson-full-topbar::before{background-image:url('./assets/hero-science-inventions.webp')}
+.hd323-visual .tab-lesson.discipline-economy .lesson-full-topbar::before{background-image:url('./assets/hero-economy.webp')}
+.hd323-visual .tab-lesson.discipline-geography .lesson-full-topbar::before{background-image:url('./assets/hero-geography.webp')}
+.hd323-visual .tab-lesson.discipline-music .lesson-full-topbar::before{background-image:url('./assets/hero-music.webp')}
+.hd323-visual .tab-lesson.discipline-literature .lesson-full-topbar::before{background-image:url('./assets/hero-literature.webp')}
 .hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar::after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(4,10,18,.98),rgba(4,10,18,.82) 43%,rgba(4,10,18,.16) 86%),linear-gradient(0deg,rgba(4,10,18,.82),transparent 62%);pointer-events:none}
 .hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar>*{position:relative;z-index:1}
 .hd323-visual .tab-lesson:is(.discipline-art,.discipline-cinema,.discipline-science-inventions,.discipline-economy,.discipline-geography,.discipline-music,.discipline-literature) .lesson-full-topbar>div{max-width:74%}
@@ -11115,10 +11115,10 @@ html.hd287-redesign body::before{
 .hd326-coherence .hd214-reader-shell .rc26-course-toolbar{display:none!important}
 
 /* Artwork in the legacy/learn discipline selector too. */
-.hd323-visual .hd222-world[data-hd220-discipline="art"]::before{background-image:url('./assets/hero-art.svg')}
-.hd323-visual .hd222-world[data-hd220-discipline="cinema"]::before{background-image:url('./assets/hero-cinema.svg')}
-.hd323-visual .hd222-world[data-hd220-discipline="science-inventions"]::before{background-image:url('./assets/hero-science-inventions.svg')}
-.hd323-visual .hd222-world[data-hd220-discipline="economy"]::before{background-image:url('./assets/hero-economy.svg')}
-.hd323-visual .hd222-world[data-hd220-discipline="geography"]::before{background-image:url('./assets/hero-geography.svg')}
-.hd323-visual .hd222-world[data-hd220-discipline="music"]::before{background-image:url('./assets/hero-music.svg')}
-.hd323-visual .hd222-world[data-hd220-discipline="literature"]::before{background-image:url('./assets/hero-literature.svg')}
+.hd323-visual .hd222-world[data-hd220-discipline="art"]::before{background-image:url('./assets/hero-art.webp')}
+.hd323-visual .hd222-world[data-hd220-discipline="cinema"]::before{background-image:url('./assets/hero-cinema.webp')}
+.hd323-visual .hd222-world[data-hd220-discipline="science-inventions"]::before{background-image:url('./assets/hero-science-inventions.webp')}
+.hd323-visual .hd222-world[data-hd220-discipline="economy"]::before{background-image:url('./assets/hero-economy.webp')}
+.hd323-visual .hd222-world[data-hd220-discipline="geography"]::before{background-image:url('./assets/hero-geography.webp')}
+.hd323-visual .hd222-world[data-hd220-discipline="music"]::before{background-image:url('./assets/hero-music.webp')}
+.hd323-visual .hd222-world[data-hd220-discipline="literature"]::before{background-image:url('./assets/hero-literature.webp')}
