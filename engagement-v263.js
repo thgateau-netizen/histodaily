@@ -63,7 +63,9 @@
       economy: "Économie",
       geography: "Géographie",
       music: "Musique",
-      literature: "Littérature"
+      literature: "Littérature",
+      philosophy: "Philosophie",
+      english: "Anglais"
     };
     return map[id] || "Culture";
   }
@@ -78,6 +80,8 @@
       economy: "Jeton d’échange",
       geography: "Éclat de carte",
       music: "Note suspendue",
+      philosophy: "Éclat d’argument",
+      english: "Éclat de nuance",
       literature: "Page enluminée"
     };
     return map[id] || "Éclat de curiosité";

@@ -216,7 +216,7 @@
   // plus intimidant que prévu. Les valeurs de score restent strictement identiques.
   difficultyLabel = function beta272DifficultyLabel(difficulty = "moyen") {
     if (difficulty === "facile") return "accessible";
-    if (difficulty === "difficile") return "corsé";
+    if (difficulty === "difficile") return "avancé";
     if (difficulty === "expert") return "expert";
     return "intermédiaire";
   };

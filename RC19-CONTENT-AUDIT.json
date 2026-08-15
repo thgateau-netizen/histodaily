@@ -1,0 +1,344 @@
+{
+  "version": "1.0.0-rc.19.0",
+  "generatedAt": "2026-08-15T13:26:13.285Z",
+  "disciplines": {
+    "english": {
+      "worlds": 8,
+      "lessons": 16,
+      "mysteries": 14,
+      "labs": 16,
+      "lessonAudit": [
+        {
+          "id": "eng-context-inference",
+          "title": "Comprendre un mot inconnu sans sortir le dictionnaire",
+          "expressWords": 161,
+          "completeWords": 437,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-context-reference",
+          "title": "Pronoms et références : retrouver qui fait quoi",
+          "expressWords": 163,
+          "completeWords": 402,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-false-friends-core",
+          "title": "Actually, eventually, currently : les faux amis qui changent tout",
+          "expressWords": 150,
+          "completeWords": 409,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-false-friends-second-wave",
+          "title": "Sensible, sensitive, comprehensive, library : faux amis de deuxième niveau",
+          "expressWords": 140,
+          "completeWords": 390,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-still-yet-already-even",
+          "title": "Still, yet, already, even : quatre mots qui changent la nuance",
+          "expressWords": 145,
+          "completeWords": 420,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-small-words-just-quite",
+          "title": "Just, quite, rather, pretty : les adverbes qui changent le ton",
+          "expressWords": 129,
+          "completeWords": 465,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-polite-register",
+          "title": "Could you…? I’m afraid… : demander et nuancer naturellement",
+          "expressWords": 154,
+          "completeWords": 418,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-register-email-directness",
+          "title": "E-mails : direct, neutre ou diplomatique ?",
+          "expressWords": 133,
+          "completeWords": 382,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-phrasal-context",
+          "title": "Phrasal verbs : comprendre la scène avant le dictionnaire",
+          "expressWords": 149,
+          "completeWords": 396,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-phrasal-get",
+          "title": "Get en contexte : back, over, by, away with",
+          "expressWords": 130,
+          "completeWords": 473,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-paraphrase-repair",
+          "title": "Le mot te manque ? Paraphrase au lieu de passer en français",
+          "expressWords": 147,
+          "completeWords": 406,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-paraphrase-clarify",
+          "title": "Clarifier sans repasser au français",
+          "expressWords": 124,
+          "completeWords": 457,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-connectors-logic",
+          "title": "Although, however, despite, therefore : suivre la logique",
+          "expressWords": 134,
+          "completeWords": 406,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-connectors-concession",
+          "title": "Although, despite, whereas, however : organiser le contraste",
+          "expressWords": 117,
+          "completeWords": 445,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-implicit-meaning",
+          "title": "Lire entre les lignes : désaccord, prudence et sous-entendu",
+          "expressWords": 146,
+          "completeWords": 415,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "eng-implicit-understatement",
+          "title": "Understatement et hedging : quand “not ideal” veut dire beaucoup",
+          "expressWords": 131,
+          "completeWords": 480,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        }
+      ],
+      "brokenMysteryLinks": [],
+      "malformedLabs": [],
+      "duplicateLessonIds": [],
+      "duplicateMysteryIds": [],
+      "duplicateLabIds": [],
+      "rawQualityFailures": [],
+      "strictDepthFailures": [],
+      "labDifficulty": {
+        "facile": 8,
+        "moyen": 5,
+        "difficile": 3
+      },
+      "listeningLabs": 15,
+      "audioOnlyLabs": 6
+    },
+    "philosophy": {
+      "worlds": 8,
+      "lessons": 16,
+      "mysteries": 14,
+      "labs": 16,
+      "lessonAudit": [
+        {
+          "id": "philo-argument-thesis-objection",
+          "title": "Argumenter : une thèse ne suffit pas",
+          "expressWords": 167,
+          "completeWords": 453,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-argument-validity",
+          "title": "Validité et vérité : un bon raisonnement n’est pas seulement une conclusion vraie",
+          "expressWords": 121,
+          "completeWords": 385,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-fact-opinion-value",
+          "title": "Fait, opinion, valeur : ne pas tout mélanger",
+          "expressWords": 174,
+          "completeWords": 419,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-distinction-necessary-sufficient",
+          "title": "Nécessaire ou suffisant ? La distinction qui démonte beaucoup de raisonnements",
+          "expressWords": 114,
+          "completeWords": 457,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-socrates-questioning",
+          "title": "Socrate : savoir que l’on ne sait pas",
+          "expressWords": 161,
+          "completeWords": 403,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-socrates-definition",
+          "title": "Socrate : pourquoi une liste d’exemples ne suffit pas à définir",
+          "expressWords": 114,
+          "completeWords": 459,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-stoic-control",
+          "title": "Stoïcisme : ce qui dépend de nous",
+          "expressWords": 168,
+          "completeWords": 425,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-stoic-impressions",
+          "title": "Stoïcisme : impression, jugement et assentiment",
+          "expressWords": 124,
+          "completeWords": 443,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-descartes-doubt",
+          "title": "Descartes : à quoi sert le doute méthodique ?",
+          "expressWords": 157,
+          "completeWords": 411,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-descartes-cogito",
+          "title": "Descartes : le cogito, certitude minimale et non slogan magique",
+          "expressWords": 135,
+          "completeWords": 472,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-hume-causality",
+          "title": "Hume : voir une succession n’est pas voir une cause",
+          "expressWords": 145,
+          "completeWords": 412,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-hume-induction",
+          "title": "Hume : pourquoi le passé ne démontre pas logiquement le futur",
+          "expressWords": 124,
+          "completeWords": 451,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-ethics-principles-consequences",
+          "title": "Morale : faut-il juger l’acte ou ses conséquences ?",
+          "expressWords": 153,
+          "completeWords": 415,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-ethics-frameworks",
+          "title": "Conséquences, devoirs, vertus : trois questions morales différentes",
+          "expressWords": 127,
+          "completeWords": 456,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-social-contract-liberty",
+          "title": "Liberté et loi : pourquoi accepter une règle commune ?",
+          "expressWords": 148,
+          "completeWords": 408,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        },
+        {
+          "id": "philo-social-contract-comparison",
+          "title": "Hobbes, Locke, Rousseau : trois problèmes derrière le “contrat social”",
+          "expressWords": 124,
+          "completeWords": 453,
+          "quizCount": 5,
+          "rawQualityPass": true,
+          "strictDepthPass": true
+        }
+      ],
+      "brokenMysteryLinks": [],
+      "malformedLabs": [],
+      "duplicateLessonIds": [],
+      "duplicateMysteryIds": [],
+      "duplicateLabIds": [],
+      "rawQualityFailures": [],
+      "strictDepthFailures": [],
+      "labDifficulty": {
+        "facile": 6,
+        "moyen": 8,
+        "difficile": 2
+      },
+      "listeningLabs": 0,
+      "audioOnlyLabs": 0
+    }
+  },
+  "global": {
+    "duplicateLessonIds": [],
+    "duplicateMysteryIds": [],
+    "duplicateLabIds": []
+  },
+  "ok": true
+}

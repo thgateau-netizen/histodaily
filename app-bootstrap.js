@@ -3,8 +3,8 @@
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-rc.13.1",
-  assetsVersion: "1.0.0-rc.13.1",
+  version: "1.0.0-rc.22.0",
+  assetsVersion: "1.0.0-rc.22.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -154,7 +154,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-rc.13.1",
+  version: "1.0.0-rc.22.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;
@@ -203,6 +203,9 @@ window.HISTODAILY_ONBOARDING = {
     geography: 'M12 3.5a8.5 8.5 0 1 0 8.5 8.5A8.51 8.51 0 0 0 12 3.5Zm5.73 5h-2.46a12.9 12.9 0 0 0-1.11-2.85 6.54 6.54 0 0 1 3.57 2.85ZM12 5.22A10.93 10.93 0 0 1 13.29 8.5h-2.58A10.93 10.93 0 0 1 12 5.22ZM5.27 8.5a6.54 6.54 0 0 1 3.57-2.85A12.9 12.9 0 0 0 7.73 8.5H5.27Zm0 7h2.46a12.9 12.9 0 0 0 1.11 2.85A6.54 6.54 0 0 1 5.27 15.5ZM12 18.78A10.93 10.93 0 0 1 10.71 15.5h2.58A10.93 10.93 0 0 1 12 18.78Zm1.71-5.28h-3.42a11.35 11.35 0 0 1 0-3h3.42a11.35 11.35 0 0 1 0 3Zm.45 4.85a12.9 12.9 0 0 0 1.11-2.85h2.46a6.54 6.54 0 0 1-3.57 2.85Z',
     music: 'M5 9v6m4-9v12m4-9v6m4-11v16m4-9v6M3 12h4m4 0h4m4 0h4',
     astronomy: 'M12 4.5a7.5 7.5 0 0 0-6.8 4.3H3.5v2h1.16A7.5 7.5 0 0 0 12 19.5c2.74 0 5.14-1.47 6.46-3.66H21v-2h-1.84A7.49 7.49 0 0 0 12 4.5Zm0 2a5.5 5.5 0 1 1-5.5 5.5A5.51 5.51 0 0 1 12 6.5Zm0 2.5a3 3 0 1 0 3 3 3 3 0 0 0-3-3Z',
+    philosophy: 'M12 3v3m0 12v3M5 6h14M7 6 3.5 14h7L7 6Zm10 0-3.5 8h7L17 6ZM8 20h8',
+    english: 'M4 5h16v11H9l-5 4V5Zm4 5h8m-8 3h5',
+    literature: 'M5 4h6a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3V4Zm9 3a3 3 0 0 1 3-3h2v16h-5V7Z',
     search: 'M10.5 4a6.5 6.5 0 1 0 4.03 11.6l4.44 4.44 1.41-1.41-4.44-4.44A6.5 6.5 0 0 0 10.5 4Zm0 2a4.5 4.5 0 1 1-4.5 4.5A4.5 4.5 0 0 1 10.5 6Z',
     map: 'M15 4 9 6 4 4v16l5 2 6-2 5 2V6l-5-2Zm0 2.2 3 1.2v11.76l-3-1.2V6.2Zm-2 .08v11.68l-4 1.33V7.61l4-1.33ZM6 7.24l1 .4v11.72l-1-.4V7.24Z',
     catalog: 'M4 5h16v3H4V5Zm0 5h16v3H4v-3Zm0 5h16v3H4v-3Z',
@@ -218,11 +221,11 @@ window.HISTODAILY_ONBOARDING = {
     lesson: 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3V4Zm3 17h9V7a1 1 0 0 0-1-1H7v14a2.98 2.98 0 0 1 1-.17Z',
     review: 'M12 5a7 7 0 1 0 6.65 9.18l1.9.63A9 9 0 1 1 12 3v2Zm1-2 5 4-5 4V8H8V6h5V3Z'
   };
-  const disciplineMap = {history:'history', art:'art', cinema:'cinema', 'science-inventions':'science', economy:'economy', geography:'geography', music:'music', astronomy:'astronomy'};
+  const disciplineMap = {history:'history', art:'art', cinema:'cinema', 'science-inventions':'science', economy:'economy', geography:'geography', music:'music', astronomy:'astronomy', literature:'literature', philosophy:'philosophy', english:'english'};
   const titleHints = [
     ['myst', 'mystery'], ['quiz', 'spark'], ['révision', 'review'], ['recherche', 'search'], ['carte', 'map'], ['catalog', 'catalog'], ['profil', 'profile'], ['social', 'users'], ['réglage', 'settings'],
     ['galax', 'astronomy'], ['planète', 'astronomy'], ['étoile', 'astronomy'], ['univers', 'astronomy'],
-    ['art', 'art'], ['cinéma','cinema'], ['film','cinema'], ['musique','music'], ['histoire','history'], ['géo','geography'], ['carte','geography'], ['science','science'], ['économie','economy']
+    ['art', 'art'], ['cinéma','cinema'], ['film','cinema'], ['musique','music'], ['philo','philosophy'], ['socrate','philosophy'], ['anglais','english'], ['english','english'], ['histoire','history'], ['géo','geography'], ['carte','geography'], ['science','science'], ['économie','economy']
   ];
   
   function svg(name){ return PATHS[name] || PATHS.lesson; }
@@ -253,6 +256,9 @@ window.HD_ICONS = { render, discipline, world, lesson, action, rawDiscipline, fr
     geography: ['#22c55e','#84cc16'],
     music: ['#7c2d12','#fb7185'],
     astronomy: ['#0b1020','#fbbf24'],
+    literature: ['#7c2d12','#f97316'],
+    philosophy: ['#312e81','#c084fc'],
+    english: ['#075985','#38bdf8'],
     mystery: ['#7c3aed','#c084fc'],
     season: ['#f59e0b','#fb7185']
   };
@@ -313,6 +319,9 @@ window.HD_ICONS = { render, discipline, world, lesson, action, rawDiscipline, fr
         <circle cx="145" cy="78" r="2.6" fill="#fcd34d"/>
         <path d="M144 21l2.5 5 5 2.5-5 2.5-2.5 5-2.5-5-5-2.5 5-2.5 2.5-5Z" fill="#fde68a" fill-opacity=".72"/>
       `,{bgOpacity:'.30', circle1:'rgba(251,191,36,.10)', circle2:'rgba(255,255,255,.05)'});
+      case 'philosophy': return baseFrame(...THEMES.philosophy, `<path d="M45 36h90M90 36v51M63 36 43 77h40L63 36Zm54 0L97 77h40l-20-41ZM66 94h48" stroke="#fff" stroke-opacity=".86" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="90" cy="28" r="7" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-opacity=".84" stroke-width="3"/>`);
+      case 'english': return baseFrame(...THEMES.english, `<path d="M40 34h100v52H83l-25 18V86H40V34Z" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".84" stroke-width="5" stroke-linejoin="round"/><path d="M58 53h64M58 68h46" stroke="#fff" stroke-opacity=".9" stroke-width="5" stroke-linecap="round"/>`);
+      case 'literature': return baseFrame(...THEMES.literature, `<path d="M42 31h39c10 0 18 8 18 18v48c0-10-8-18-18-18H42V31Zm96 0H99v66c0-10 8-18 18-18h21V31Z" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".84" stroke-width="5" stroke-linejoin="round"/>`);
       case 'mystery': return baseFrame(...THEMES.mystery, `<path d="M90 28c-21 0-38 15-38 34 0 12 7 21 17 28v10h42V90c10-7 17-16 17-28 0-19-17-34-38-34Z" fill="rgba(255,255,255,.14)" stroke="#fff" stroke-opacity=".82" stroke-width="5"/><path d="M79 55c2-8 9-12 18-12 12 0 20 8 20 18 0 7-3 12-12 16-6 3-7 6-7 10" stroke="#fff" stroke-opacity=".92" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="98" cy="94" r="4" fill="#fff" fill-opacity=".9"/>`);
       default: return baseFrame(...THEMES.season, `<circle cx="66" cy="60" r="24" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".82" stroke-width="5"/><path d="M94 48c8-8 18-12 32-12 0 18-4 29-12 37-7 7-17 11-29 12 1-14 3-26 9-37Z" fill="rgba(255,255,255,.16)" stroke="#fff" stroke-opacity=".8" stroke-width="5"/><path d="M57 61h31" stroke="#fff" stroke-opacity=".84" stroke-width="6" stroke-linecap="round"/>`);
     }

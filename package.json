@@ -1,6 +1,6 @@
 {
   "name": "histodaily",
-  "version": "1.0.0-rc.13.1",
+  "version": "1.0.0-rc.23.0",
   "private": true,
   "description": "HistoDaily PWA",
   "engines": {

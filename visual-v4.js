@@ -3,7 +3,7 @@
    composition plus proche d'une application native et aucun effet permanent. */
 (function histodailyBeta222VisualV4(){
   "use strict";
-  const VERSION = "1.0.0-beta.271.0";
+  const VERSION = "1.0.0-rc.23.0";
   const esc = value => {
     try { return escapeHtml(String(value ?? "")); }
     catch { return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]); }
@@ -12,10 +12,10 @@
   const safe = (fn, fallback = null) => { try { const value = fn(); return value ?? fallback; } catch { return fallback; } };
   let profileMountGeneration = 0;
 
-  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual", "hd225-visual", "hd226-visual", "hd227-visual", "hd228-visual", "hd229-visual", "hd230-visual", "hd231-visual", "hd261-visual", "hd266-home");
+  document.documentElement.classList.add("hd220-visual", "hd222-visual", "hd223-visual", "hd224-visual", "hd225-visual", "hd226-visual", "hd227-visual", "hd228-visual", "hd229-visual", "hd230-visual", "hd231-visual", "hd261-visual", "hd266-home", "hd323-visual");
 
   function disciplineLabel(discipline){
-    const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", astronomy:"Astronomie", economy:"Économie", geography:"Géographie", music:"Musique", literature:"Littérature" };
+    const labels = { history:"Histoire", art:"Art", cinema:"Cinéma", "science-inventions":"Sciences & inventions", astronomy:"Astronomie", economy:"Économie", geography:"Géographie", music:"Musique", literature:"Littérature", philosophy:"Philosophie", english:"Anglais" };
     return labels[discipline?.id] || discipline?.title || "Explorer";
   }
 
@@ -284,83 +284,49 @@
     const progress = lessons.length ? Math.round(completed / lessons.length * 100) : 0;
     const unfinished = lessons.filter(lesson => !safe(() => lessonDone(lesson.id), false) && String(lesson.id) !== String(linkedLesson?.id || ""));
     const resume = unfinished[0] || lessons[0] || null;
-    const discovery = unfinished.find(lesson => String(lesson.id) !== String(resume?.id || "")) || lessons[1] || resume;
-    const astroData = disciplineId === "astronomy" ? astronomyJourneyData(resume, discovery) : null;
-    const progressTotal = astroData ? Math.max(astroData.total, lessons.length || 0) : (lessons.length || 0);
-    const progressPercentText = astroData ? astroData.progressLabel : `${progress}% exploré`;
     const pseudo = String(state.pseudo || "").trim();
     const greeting = pseudo && !/^invité$/i.test(pseudo) ? `Salut ${pseudo}` : "Bonjour";
     const homeStreak = Math.max(0, Number(safe(() => currentStreakValue(), state.streak || 0)) || 0);
-    const art = heroArtwork(disciplineId, stageView.title);
     const heroIcon = safe(() => HD_ICONS.discipline(discipline), discipline.emoji || "✦");
-    const routeDone = clamp((stageView.index || 1) - 1, 0, 3);
+    const routeIndex = Math.min(3, Math.max(1, Number(stageView.index || 1)));
+    const routeLabels = ["Expédition", "Cours", "Quiz"];
+    const actionLabel = stageView.type === "mystery" ? "Continuer l’expédition" : stageView.action;
 
-    const titleClass = String(stageView.title || "").length > 34 ? "is-long" : "";
-    renderShell(`<div class="hd220-home hd222-home" style="--world:${esc(discipline.accent)}">
-      <header class="hd220-home-head hd222-home-head">
+    document.documentElement.classList.add("hd300-clarity");
+    renderShell(`<div class="hd220-home hd222-home hd300-home" style="--world:${esc(discipline.accent)}">
+      <header class="hd220-home-head hd222-home-head hd300-home-head">
         <div class="hd220-brand"><span>HistoDaily</span><h1>${esc(greeting)}</h1></div>
         <div class="hd220-head-metrics"><button type="button" data-hd220-profile aria-label="Ouvrir le profil"><span>🔥</span><b>${homeStreak}</b></button><button type="button" data-hd220-profile aria-label="Ouvrir le profil, niveau ${level()}"><span>Niv.</span><b>${level()}</b></button></div>
       </header>
 
-      <section class="hd220-worlds hd222-worlds">
-        <div class="hd220-section-cap hd222-section-cap"><span>Ton univers</span><small>Fais glisser pour changer</small></div>
+      <section class="hd300-today" aria-labelledby="hd300-today-title">
+        <div class="hd300-today-head"><span>Aujourd’hui · 3 à 5 min</span><small>${routeIndex}/3</small></div>
+        <div class="hd300-today-copy">
+          <div class="hd300-today-icon">${heroIcon}</div>
+          <div><p>${esc(stageView.eyebrow)}</p><h2 id="hd300-today-title">${esc(stageView.title)}</h2><span>${esc(stageView.text)}</span></div>
+        </div>
+        <button type="button" class="hd300-primary" data-hd220-expedition><span>${esc(actionLabel)}</span><b>→</b></button>
+        <div class="hd300-daily-route" aria-label="Parcours du jour">
+          ${routeLabels.map((label, index) => { const step = index + 1; const status = step < routeIndex || stageView.index > 3 ? "done" : step === routeIndex ? "current" : "future"; return `<div class="${status}"><i>${status === "done" ? "✓" : step}</i><span>${label}</span></div>`; }).join("")}
+        </div>
+        ${linkedLesson && routeIndex === 1 ? `<p class="hd310-after-today"><span>Ensuite</span>${esc(lessonTitle(linkedLesson))}</p>` : ""}
+      </section>
+
+      <button type="button" class="hd310-path-card" data-hd220-catalog>
+        <div><small>Parcours ${esc(disciplineLabel(discipline))}</small><strong>${completed}/${lessons.length || 0} cours terminés</strong></div>
+        <div class="hd310-path-progress" aria-label="${progress}% du parcours"><i style="width:${clamp(progress,0,100)}%"></i></div>
+        <span aria-hidden="true">→</span>
+      </button>
+
+      <details class="hd300-universes hd310-universes">
+        <summary><span>Univers</span><b>${esc(disciplineLabel(discipline))}</b><em>Changer</em></summary>
         ${disciplineSelector(disciplineId)}
-      </section>
-
-      <section class="hd220-expedition hd222-expedition ${titleClass}" aria-labelledby="hd220-expedition-title">
-        <div class="hd220-expedition-glow" aria-hidden="true"></div>
-        <div class="hd220-expedition-top"><span>${esc(stageView.eyebrow)}</span><b><i>${routeDone}</i>/3</b></div>
-        <div class="hd222-expedition-body">
-          <div class="hd220-expedition-copy hd222-expedition-copy">
-            <div class="hd220-expedition-symbol">${heroIcon}</div>
-            <h2 id="hd220-expedition-title">${esc(stageView.title)}</h2>
-            <p>${esc(stageView.text)}</p>
-          </div>
-          <div class="hd222-expedition-art" aria-hidden="true">${art}</div>
-        </div>
-        ${expeditionRoute(stageView.index)}
-        <div class="hd220-expedition-action hd222-expedition-action">
-          <button type="button" data-hd220-expedition><span>${esc(stageView.action)}</span><b>↗</b></button>
-          <small>${esc(stageView.meta)}</small>
-        </div>
-      </section>
-
-      <section class="hd220-progress-strip hd222-progress-strip">
-        <div class="hd222-progress-title"><span>${heroIcon}</span><b>Parcours ${esc(disciplineLabel(discipline))}</b><em>${completed}/${progressTotal}</em></div>
-        <i><em style="width:${clamp(progress, 0, 100)}%"></em></i>
-        <button type="button" data-hd220-catalog>Voir la carte</button>
-      </section>
-
-      <section class="hd220-next hd222-next">
-        <div class="hd220-section-cap hd222-section-cap"><span>Prochaines escales</span><b>${progressPercentText}</b></div>
-        <div class="hd220-next-rail hd222-next-grid">
-          <article class="hd220-next-card primary" data-hd220-open-lesson="${esc(resume?.id || "")}" role="button" tabindex="0">
-            <div class="hd220-next-icon">${resume ? safe(() => HD_ICONS.lesson(resume, lessonWorld(resume), discipline), heroIcon) : heroIcon}</div>
-            <div><small>À continuer</small><h3>${esc(astroData ? astroData.resumeTitle : lessonTitle(resume))}</h3><p>${esc(astroData ? astroData.resumeMeta : lessonMeta(resume))}</p></div><span aria-hidden="true">→</span>
-          </article>
-          <article class="hd220-next-card" data-hd220-open-lesson="${esc(discovery?.id || "")}" role="button" tabindex="0">
-            <div class="hd220-next-icon">${discovery ? safe(() => HD_ICONS.lesson(discovery, lessonWorld(discovery), discipline), heroIcon) : heroIcon}</div>
-            <div><small>À découvrir</small><h3>${esc(astroData ? astroData.discoveryTitle : lessonTitle(discovery))}</h3><p>${esc(astroData ? astroData.discoveryMeta : lessonMeta(discovery))}</p></div><span aria-hidden="true">→</span>
-          </article>
-        </div>
-      </section>
+      </details>
     </div>`);
 
     const shell = document.querySelector(".app-shell.tab-home");
-    shell?.classList.add("hd220-home-shell", "hd222-home-shell");
+    shell?.classList.add("hd220-home-shell", "hd222-home-shell", "hd300-home-shell");
     if (shell) shell.dataset.hd187Enhanced = "1";
-
-    const switcher = shell?.querySelector(".hd222-world-switcher");
-    const activeWorld = switcher?.querySelector(".hd222-world.active");
-    if (switcher && activeWorld) {
-      const targetLeft = Math.max(0, activeWorld.offsetLeft);
-      const previousId = switcher.dataset.lastCentered;
-      switcher.dataset.lastCentered = disciplineId;
-      window.requestAnimationFrame?.(() => {
-        try { switcher.scrollTo({ left: targetLeft, behavior: previousId && previousId !== disciplineId ? "smooth" : "auto" }); }
-        catch { switcher.scrollLeft = targetLeft; }
-      });
-    }
 
     shell?.querySelectorAll("[data-hd220-discipline]").forEach(button => button.addEventListener("click", () => {
       const nextId = button.dataset.hd220Discipline;
@@ -368,13 +334,7 @@
       const first = disciplineLessons(nextId)[0];
       const world = first ? safe(() => lessonWorld(first), {}) : {};
       const nextMystery = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset(nextId, 0) : null;
-      setState({
-        currentDiscipline: nextId,
-        currentWorld: world?.id || state.currentWorld,
-        currentGroup: world?.group || state.currentGroup,
-        currentMysteryId: nextMystery?.id || null,
-        currentMysteryDiscipline: nextId
-      });
+      setState({ currentDiscipline: nextId, currentWorld: world?.id || state.currentWorld, currentGroup: world?.group || state.currentGroup, currentMysteryId: nextMystery?.id || null, currentMysteryDiscipline: nextId });
     }));
     shell?.querySelectorAll("[data-hd220-profile]").forEach(button => button.addEventListener("click", () => setState({ tab:"profile" })));
     shell?.querySelector("[data-hd220-catalog]")?.addEventListener("click", () => openCatalog(disciplineId));

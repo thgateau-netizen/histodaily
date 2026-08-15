@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0-rc.22.0",
+  "release": "Adaptive Path",
+  "checks": {
+    "javascript": {
+      "count": 43,
+      "allSyntaxValid": true,
+      "failures": []
+    },
+    "index": {
+      "references": 48,
+      "missing": [],
+      "adaptiveModuleLoaded": true,
+      "oldRc21Reference": false
+    },
+    "serviceWorker": {
+      "assetReferences": 59,
+      "missing": [],
+      "adaptiveModuleCached": true,
+      "cacheName": "histodaily-rc22-adaptive-path-v1",
+      "oldRc21Reference": false
+    },
+    "memoryBridge": {
+      "publicApi": true,
+      "legacyMasteryGuard": true,
+      "masteredRequiresSeed": true
+    },
+    "adaptiveUi": {
+      "singleNextAction": true,
+      "reviewPriority": true,
+      "visibleStates": true,
+      "localReviewFilter": true
+    },
+    "stateUnitTests": {
+      "passed": 5,
+      "total": 5,
+      "states": [
+        "started",
+        "validated",
+        "consolidating",
+        "due",
+        "mastered"
+      ]
+    }
+  }
+}

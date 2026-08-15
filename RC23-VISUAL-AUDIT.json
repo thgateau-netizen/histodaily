@@ -1,0 +1,96 @@
+{
+  "version": "1.0.0-rc.23.0",
+  "name": "Real Artwork",
+  "assets": [
+    {
+      "file": "assets/hero-astronomy.webp",
+      "width": 1400,
+      "height": 900,
+      "bytes": 99996
+    },
+    {
+      "file": "assets/hero-english.webp",
+      "width": 1400,
+      "height": 900,
+      "bytes": 40690
+    },
+    {
+      "file": "assets/hero-history-revolution.webp",
+      "width": 1400,
+      "height": 900,
+      "bytes": 48246
+    },
+    {
+      "file": "assets/hero-history.webp",
+      "width": 1400,
+      "height": 900,
+      "bytes": 120490
+    },
+    {
+      "file": "assets/hero-philosophy.webp",
+      "width": 1400,
+      "height": 900,
+      "bytes": 18568
+    },
+    {
+      "file": "assets/thumb-astronomy.webp",
+      "width": 420,
+      "height": 240,
+      "bytes": 18432
+    },
+    {
+      "file": "assets/thumb-english.webp",
+      "width": 420,
+      "height": 240,
+      "bytes": 10860
+    },
+    {
+      "file": "assets/thumb-history.webp",
+      "width": 420,
+      "height": 240,
+      "bytes": 25908
+    },
+    {
+      "file": "assets/thumb-philosophy.webp",
+      "width": 420,
+      "height": 240,
+      "bytes": 5334
+    }
+  ],
+  "integration": {
+    "home": [
+      "history",
+      "astronomy",
+      "philosophy",
+      "english"
+    ],
+    "expedition": [
+      "history",
+      "astronomy",
+      "philosophy",
+      "english"
+    ],
+    "lesson_header": [
+      "history",
+      "astronomy",
+      "philosophy",
+      "english"
+    ],
+    "universe_thumbnails": [
+      "history",
+      "astronomy",
+      "philosophy",
+      "english"
+    ],
+    "bottom_navigation": "restyled"
+  },
+  "checks": {
+    "javascript_files_checked": 59,
+    "asset_files": 9,
+    "all_assets_in_service_worker": true,
+    "versioned_index": true,
+    "visual_scope_enabled": true,
+    "http_smoke_test": "index.html and hero-history.webp returned HTTP 200 on local server",
+    "browser_screenshot": "blocked by organization policy before localhost navigation"
+  }
+}

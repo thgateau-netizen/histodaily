@@ -4,7 +4,7 @@
 
 /* HistoDaily beta 178 — dernier indice = cours correspondant. */
 (function histodailyBeta178CourseRescue(){
-  const VERSION = "1.0.0-beta.213.0";
+  const VERSION = "1.0.0-rc.22.0";
   const RESCUE_SCORE = 12;
   state.mysteryCourseRescue = (state.mysteryCourseRescue && typeof state.mysteryCourseRescue === "object") ? state.mysteryCourseRescue : {};
 
@@ -596,13 +596,14 @@
   const WEEKLY_REWARD_XP = 80;
   const WEEKLY_TARGETS = Object.freeze({ activeDays: 3, courses: 5, consolidation: 3 });
   const DAY_MS = 24 * 60 * 60 * 1000;
-  const REVIEW_INTERVALS = [DAY_MS, 3 * DAY_MS];
-  const REVIEW_MASTERY_STAGE = 3;
+  const REVIEW_INTERVALS = [DAY_MS, 3 * DAY_MS, 7 * DAY_MS, 21 * DAY_MS];
+  const REVIEW_MASTERY_STAGE = 5;
 
   if (typeof state !== "object" || typeof lessonById !== "function") return;
 
   state.reviewQueue = state.reviewQueue && typeof state.reviewQueue === "object" ? state.reviewQueue : {};
   state.reviewStats = state.reviewStats && typeof state.reviewStats === "object" ? state.reviewStats : { wrong: 0, corrected: 0 };
+  state.reviewSeededLessons = state.reviewSeededLessons && typeof state.reviewSeededLessons === "object" ? state.reviewSeededLessons : {};
   state.synthesisPassed = state.synthesisPassed && typeof state.synthesisPassed === "object" ? state.synthesisPassed : {};
   state.synthesisAttempts = state.synthesisAttempts && typeof state.synthesisAttempts === "object" ? state.synthesisAttempts : {};
   state.collectionUnlocks = state.collectionUnlocks && typeof state.collectionUnlocks === "object" ? state.collectionUnlocks : {};
@@ -873,6 +874,7 @@
     const key = reviewKey(lesson.id, questionIndex);
     const previous = state.reviewQueue[key] || {};
     state.reviewQueue[key] = {
+      ...previous,
       lessonId: lesson.id,
       questionIndex: Number(questionIndex),
       question: item?.q || previous.question || "Question à revoir",
@@ -881,7 +883,9 @@
       lastWrongAt: now(),
       stage: 0,
       dueAt: now(),
-      lastResult: "wrong"
+      lastResult: "wrong",
+      source: "mistake",
+      anchorKind: "quiz"
     };
     state.reviewStats = {
       ...(state.reviewStats || {}),
@@ -891,20 +895,85 @@
     persistSoon();
   }
 
+  function reviewDueAtAfterDays(days = 1) {
+    const date = new Date(now());
+    date.setDate(date.getDate() + Math.max(1, Number(days) || 1));
+    date.setHours(9, 0, 0, 0);
+    return date.getTime();
+  }
+
+  function scheduleLessonReviewAnchors(lessonId) {
+    const id = String(lessonId || "");
+    if (!id || state.reviewSeededLessons?.[id]) return 0;
+    const lesson = lessonById(id);
+    if (!lesson) return 0;
+    const content = buildLessonContent(lesson);
+    const quizItems = normalizeQuizPack(content.quiz, lesson, content);
+    if (!quizItems.length) return 0;
+    const disciplineId = lessonDisciplineId(lesson);
+    const first = quizSeed(`${id}-memory-anchor-a`) % quizItems.length;
+    let second = quizSeed(`${id}-memory-anchor-b`) % quizItems.length;
+    if (quizItems.length > 1 && second === first) second = (first + 1) % quizItems.length;
+    const indexes = [...new Set([first, second])].slice(0, 2);
+    let added = 0;
+    indexes.forEach((questionIndex, slot) => {
+      const key = reviewKey(id, questionIndex);
+      const previous = state.reviewQueue?.[key];
+      if (previous?.source === "mistake" || Number(previous?.dueAt || 0) > 0) return;
+      const item = quizItems[questionIndex];
+      state.reviewQueue[key] = {
+        lessonId: id,
+        questionIndex,
+        question: item?.q || "Notion à consolider",
+        wrongCount: 0,
+        stage: 0,
+        dueAt: reviewDueAtAfterDays(slot === 0 ? 1 : 3),
+        lastResult: "scheduled",
+        source: "course-anchor",
+        anchorKind: slot === 0 && ["english", "philosophy"].includes(disciplineId) ? "lab" : "quiz",
+        firstScheduledAt: now()
+      };
+      added += 1;
+    });
+    state.reviewSeededLessons = { ...(state.reviewSeededLessons || {}), [id]: { at: now(), anchors: added } };
+    persistSoon();
+    return added;
+  }
+
+  function backfillReviewAnchors({ lessonLimit = 2, memoryCap = 12 } = {}) {
+    if (allReviewEntries().length >= memoryCap) return 0;
+    const completed = Object.keys(state.completedLessons || {}).reverse();
+    let seeded = 0;
+    for (const lessonId of completed) {
+      if (seeded >= lessonLimit || allReviewEntries().length >= memoryCap) break;
+      if (state.reviewSeededLessons?.[lessonId]) continue;
+      if (scheduleLessonReviewAnchors(lessonId) > 0) seeded += 1;
+    }
+    return seeded;
+  }
+
   function unresolvedForLesson(lessonId) {
     return allReviewEntries().filter(entry => entry?.lessonId === lessonId).length;
   }
 
   function lessonMastery(lesson) {
     if (!lessonDone(lesson.id)) return 0;
-    const unresolved = unresolvedForLesson(lesson.id);
-    return Math.max(60, 100 - Math.min(40, unresolved * 10));
+    const seed = state.reviewSeededLessons?.[lesson.id];
+    // A course read and quizzed is learned, not automatically mastered.
+    if (!seed) return 60;
+    const entries = allReviewEntries().filter(entry => String(entry?.lessonId || "") === String(lesson.id));
+    if (!entries.length) return 100;
+    const anchorCount = Math.max(1, Number(seed?.anchors || 2));
+    const resolved = Math.max(0, anchorCount - entries.length);
+    const stageCredit = entries.reduce((sum, entry) => sum + Math.min(REVIEW_MASTERY_STAGE, Math.max(0, Number(entry.stage || 0))) / REVIEW_MASTERY_STAGE, 0);
+    const memoryProgress = Math.max(0, Math.min(1, (resolved + stageCredit) / anchorCount));
+    return Math.round(60 + 40 * memoryProgress);
   }
 
   function disciplineMastery(disciplineId) {
     const lessons = disciplineLessons(disciplineId);
     const done = lessons.filter(lesson => lessonDone(lesson.id)).length;
-    const mastered = lessons.filter(lesson => lessonDone(lesson.id) && unresolvedForLesson(lesson.id) === 0).length;
+    const mastered = lessons.filter(lesson => lessonDone(lesson.id) && state.reviewSeededLessons?.[lesson.id] && unresolvedForLesson(lesson.id) === 0).length;
     const score = lessons.length ? Math.round(lessons.reduce((sum, lesson) => sum + lessonMastery(lesson), 0) / lessons.length) : 0;
     return {
       disciplineId,
@@ -1107,8 +1176,30 @@
     return { modal, content: modal.querySelector(".beta179-modal-content") };
   }
 
+  function adaptiveReviewRecord(entry) {
+    const base = questionRecord(entry?.lesson, Number(entry?.questionIndex));
+    if (!base || entry?.source !== "course-anchor" || entry?.anchorKind !== "lab") return base ? { ...base, reviewMode: "quiz" } : null;
+    const disciplineId = lessonDisciplineId(entry.lesson);
+    if (!["english", "philosophy"].includes(disciplineId)) return { ...base, reviewMode: "quiz" };
+    try {
+      const api = window.HistoDaily?.courseInteractionsRC20;
+      const lab = api?.labForLesson?.(entry.lesson.id, disciplineId);
+      if (!lab || !Array.isArray(lab.choices) || !lab.choices.length) return { ...base, reviewMode: "quiz" };
+      const correct = lab.choices.find(choice => choice?.correct);
+      return {
+        ...base,
+        reviewMode: "lab",
+        lab,
+        context: lab.context || "",
+        speak: disciplineId === "english" ? (lab.speak || "") : "",
+        item: { q: lab.prompt || base.item.q, a: correct?.text || base.item.a, why: lab.takeaway || base.item.why },
+        choices: lab.choices.map(choice => ({ text: choice.text, correct: Boolean(choice.correct), feedback: choice.feedback || "" }))
+      };
+    } catch { return { ...base, reviewMode: "quiz" }; }
+  }
+
   function openReviewSession(disciplineId = "") {
-    const entries = validReviewEntries(disciplineId).slice(0, 10);
+    const entries = validReviewEntries(disciplineId).slice(0, 5);
     const discipline = disciplineId ? disciplineById(disciplineId) : null;
     const dialog = createProgressionModal("Révisions intelligentes", discipline ? `Consolider ta mémoire en ${discipline.title}` : "Consolider ta mémoire");
     if (!entries.length) {
@@ -1116,7 +1207,7 @@
       const next = nextScheduledReview(disciplineId);
       dialog.content.innerHTML = scheduled.length
         ? `<div class="beta179-empty-state"><b>Rien à revoir maintenant</b><p>${scheduled.length} question${scheduled.length > 1 ? "s sont programmées" : " est programmée"}. La prochaine reviendra ${next ? dueLabel(next.dueAt) : "plus tard"} afin de vérifier que l’idée reste en mémoire.</p><button type="button" data-beta179-finish>Fermer</button></div>`
-        : `<div class="beta179-empty-state"><b>Mémoire à jour</b><p>Les questions ratées seront ajoutées ici. Elles reviendront ensuite à intervalles espacés jusqu’à être réellement maîtrisées.</p><button type="button" data-beta179-finish>Fermer</button></div>`;
+        : `<div class="beta179-empty-state"><b>Mémoire à jour</b><p>Les notions importantes et les questions ratées sont ajoutées ici. Elles reviennent ensuite à intervalles espacés jusqu’à être réellement maîtrisées.</p><button type="button" data-beta179-finish>Fermer</button></div>`;
       dialog.content.querySelector("[data-beta179-finish]")?.addEventListener("click", () => closeProgressionModal({ rerender: true }));
       return;
     }
@@ -1129,7 +1220,7 @@
     function renderQuestion() {
       if (cursor >= entries.length) return renderSummary();
       const entry = entries[cursor];
-      const record = questionRecord(entry.lesson, Number(entry.questionIndex));
+      const record = adaptiveReviewRecord(entry);
       if (!record) {
         delete state.reviewQueue[entry.key];
         persistSoon();
@@ -1137,14 +1228,19 @@
         return renderQuestion();
       }
       answered = false;
-      const stageLabel = Number(entry.stage || 0) === 0 ? "à corriger" : `niveau mémoire ${Number(entry.stage || 0)}/3`;
+      const stageLabel = Number(entry.stage || 0) === 0 ? (entry.source === "course-anchor" ? "premier rappel" : "à corriger") : `niveau mémoire ${Number(entry.stage || 0)}/${REVIEW_MASTERY_STAGE}`;
       dialog.content.innerHTML = `<div class="beta179-session-progress"><span>Question ${cursor + 1}/${entries.length}</span><div><i style="width:${pct(cursor, entries.length)}%"></i></div><b>${validReviewEntries(disciplineId).length} dues</b></div>
         <article class="beta179-question-card">
           <small>${HD_ICONS.lesson(entry.lesson)} ${esc(entry.lesson.title)} · ${stageLabel}</small>
-          <h3>${esc(record.item.q)}</h3>
+          ${record.context ? `<p class="hd21-review-context">${esc(record.context)}</p>` : ""}
+          <div class="hd21-review-prompt"><h3>${esc(record.item.q)}</h3>${record.speak ? `<button type="button" class="hd21-review-listen" data-hd21-review-speak="${esc(record.speak)}">▶ Écouter</button>` : ""}</div>
           <div class="beta179-answer-grid">${record.choices.map((choice, index) => `<button type="button" data-beta179-answer="${index}"><span>${String.fromCharCode(65 + index)}</span>${esc(choice.text)}</button>`).join("")}</div>
           <div class="beta179-answer-feedback" aria-live="polite"></div>
         </article>`;
+      const reviewListen = dialog.content.querySelector("[data-hd21-review-speak]");
+      if (reviewListen) reviewListen.addEventListener("click", () => {
+        try { window.HistoDaily?.courseInteractionsRC20?.speakEnglish?.(reviewListen.dataset.hd21ReviewSpeak || "", reviewListen); } catch {}
+      });
       dialog.content.querySelectorAll("[data-beta179-answer]").forEach(button => button.addEventListener("click", () => {
         if (answered) return;
         answered = true;
@@ -1156,10 +1252,10 @@
           if (outcome.mastered) mastered += 1;
           reinforced += 1;
           button.classList.add("correct");
-          feedback.innerHTML = `<p class="good"><b>Bonne réponse.</b> ${esc(record.item.why || record.item.a)} ${esc(outcome.memoryText)} <span>+${REVIEW_XP} XP</span></p><button type="button" data-beta179-next>Question suivante</button>`;
+          feedback.innerHTML = `<p class="good"><b>Bonne réponse.</b> ${esc(choice?.feedback || record.item.why || record.item.a)} ${esc(outcome.memoryText)} <span>+${REVIEW_XP} XP</span></p><button type="button" data-beta179-next>Question suivante</button>`;
         } else {
           button.classList.add("wrong");
-          feedback.innerHTML = `<p class="bad"><b>À reprendre.</b> La bonne réponse est : ${esc(record.item.a)}. ${esc(record.item.why || "La correction reprend l’idée expliquée dans le cours.")}</p><button type="button" data-beta179-next>Continuer</button>`;
+          feedback.innerHTML = `<p class="bad"><b>À reprendre.</b> La bonne réponse est : ${esc(record.item.a)}. ${esc(choice?.feedback || record.item.why || "La correction reprend l’idée expliquée dans le cours.")}</p><button type="button" data-beta179-next>Continuer</button>`;
         }
         feedback.querySelector("[data-beta179-next]")?.addEventListener("click", () => { cursor += 1; renderQuestion(); });
       }));
@@ -1393,7 +1489,7 @@
     const reviewCount = (log.reviewKeys || []).length;
     const courseTarget = 1;
     const reviewTarget = Math.max(1, Number(log.reviewTarget || 1));
-    const practiceLabel = log.planType === "review" ? `Consolider ${reviewTarget} erreur${reviewTarget > 1 ? "s" : ""}` : "Valider un deuxième cours";
+    const practiceLabel = log.planType === "review" ? `Consolider ${reviewTarget} notion${reviewTarget > 1 ? "s" : ""}` : "Valider un deuxième cours";
     const practiceMeta = log.planType === "review" ? `${Math.min(reviewCount, reviewTarget)}/${reviewTarget} bonne${reviewTarget > 1 ? "s" : ""} réponse${reviewTarget > 1 ? "s" : ""}` : `${Math.min(courseCount, 2)}/2 cours`;
     const nextTask = !status.mysteryDone ? "mystery" : !status.courseDone ? "course" : !status.practiceDone ? (log.planType === "review" ? "review" : "course") : "done";
     return `<section class="card beta179-home-progress beta180-daily-plan"><div class="beta180-plan-head"><div><span class="card-label">Programme du jour</span><h2>${status.done}/3 étapes accomplies</h2><p>Une courte boucle pour jouer, apprendre puis consolider.</p></div><strong>+${DAILY_PLAN_XP} XP</strong></div><div class="beta180-plan-meter"><i style="width:${pct(status.done, 3)}%"></i></div><div class="beta180-plan-steps"><button type="button" data-beta180-task="mystery" class="${status.mysteryDone ? "done" : nextTask === "mystery" ? "current" : ""}"><b>${status.mysteryDone ? HD_ICONS.action("check") : "1"}</b><span>Résoudre le mystère<small>${status.mysteryDone ? "Rendez-vous quotidien validé" : "Jouer le dossier du jour"}</small></span></button><button type="button" data-beta180-task="course" class="${status.courseDone ? "done" : nextTask === "course" ? "current" : ""}"><b>${status.courseDone ? HD_ICONS.action("check") : "2"}</b><span>Valider un cours<small>${Math.min(courseCount, courseTarget)}/${courseTarget} cours aujourd’hui</small></span></button><button type="button" data-beta180-task="${log.planType === "review" ? "review" : "course"}" class="${status.practiceDone ? "done" : nextTask === (log.planType === "review" ? "review" : "course") ? "current" : ""}"><b>${status.practiceDone ? HD_ICONS.action("check") : "3"}</b><span>${practiceLabel}<small>${practiceMeta}</small></span></button></div><div class="beta180-plan-footer">${status.complete ? `<span>${log.bonusClaimed ? "Bonus quotidien récupéré" : "Bonus prêt"}</span>` : `<span>Prochaine étape : ${nextTask === "mystery" ? "le mystère" : nextTask === "review" ? "une révision" : "un cours"}</span>`}<button type="button" data-beta180-task="${nextTask}" ${nextTask === "done" ? "disabled" : ""}>${nextTask === "mystery" ? "Jouer" : nextTask === "review" ? "Réviser" : nextTask === "course" ? "Continuer" : "Terminé"}</button></div>${weeklyProgressMarkup({ compact: true })}</section>`;
@@ -1444,6 +1540,23 @@
     });
   }
 
+  // RC22 public bridge: expose the memory engine to late UI modules without duplicating logic.
+  try {
+    window.HistoDaily = {
+      ...(window.HistoDaily || {}),
+      memory: {
+        validReviewEntries,
+        allReviewEntries,
+        nextScheduledReview,
+        dueLabel,
+        disciplineMastery,
+        lessonMastery,
+        unresolvedForLesson,
+        openReviewSession
+      }
+    };
+  } catch {}
+
   function injectLearnProgression() {
     const root = document.getElementById("app");
     if (!root || root.querySelector(".beta179-learning-hub")) return;
@@ -1476,7 +1589,7 @@
     masterySection.className = "card beta179-profile-mastery";
     const dueReviews = validReviewEntries().length;
     const memoryReviews = allReviewEntries().length;
-    masterySection.innerHTML = `<div class="section-title-row"><div><span class="card-label">Maîtrise par domaine</span><h2>Ce que tu sais vraiment</h2><p>Une erreur revient demain, puis quelques jours plus tard : la maîtrise mesure désormais la mémorisation, pas seulement le quiz réussi une fois.</p></div><button type="button" class="ghost" data-beta179-review="">${dueReviews ? `Réviser (${dueReviews})` : memoryReviews ? `${memoryReviews} programmée${memoryReviews > 1 ? "s" : ""}` : "Mémoire à jour"}</button></div><div class="beta179-mastery-list">${masteryBarsMarkup()}</div>`;
+    masterySection.innerHTML = `<div class="section-title-row"><div><span class="card-label">Maîtrise par domaine</span><h2>Ce que tu sais vraiment</h2><p>Les notions importantes et les erreurs reviennent à intervalles espacés : la maîtrise mesure ce qui tient vraiment en mémoire, pas seulement un quiz réussi une fois.</p></div><button type="button" class="ghost" data-beta179-review="">${dueReviews ? `Réviser (${dueReviews})` : memoryReviews ? `${memoryReviews} programmée${memoryReviews > 1 ? "s" : ""}` : "Mémoire à jour"}</button></div><div class="beta179-mastery-list">${masteryBarsMarkup()}</div>`;
 
     const collections = prioritizedCollections();
     const unlockedCount = collections.filter(definition => state.collectionUnlocks?.[definition.id] || collectionProgress(definition).complete).length;
@@ -1557,7 +1670,7 @@
     } catch {}
     const result = previousHandleQuizChoice(lessonId, questionIndex, choiceIndex);
     if (tracking && !tracking.correct) queueWrongAnswer(tracking.lesson, tracking.questionIndex, tracking.item);
-    if ((!wasCompleted && lessonDone(lessonId)) || (rescueValidation && lessonQuizPassed(lessonId))) trackDailyActivity("course", { lessonId });
+    if ((!wasCompleted && lessonDone(lessonId)) || (rescueValidation && lessonQuizPassed(lessonId))) { trackDailyActivity("course", { lessonId }); scheduleLessonReviewAnchors(lessonId); }
     window.setTimeout(() => { reconcileCollections({ notify: true }); reconcileDailyPlanBonus({ notify: true }); reconcileWeeklyReward({ notify: true }); }, 0);
     return result;
   };
@@ -1566,7 +1679,7 @@
   completeLesson = function beta180CompleteLesson(lessonId) {
     const wasCompleted = Boolean(lessonDone(lessonId));
     const result = previousCompleteLesson(lessonId);
-    if (!wasCompleted && lessonDone(lessonId)) trackDailyActivity("course", { lessonId });
+    if (!wasCompleted && lessonDone(lessonId)) { trackDailyActivity("course", { lessonId }); scheduleLessonReviewAnchors(lessonId); }
     window.setTimeout(() => { reconcileCollections({ notify: true }); reconcileDailyPlanBonus({ notify: true }); reconcileWeeklyReward({ notify: true }); }, 0);
     return result;
   };
@@ -1627,8 +1740,14 @@
       } catch {}
     }
   };
-  if (typeof requestIdleCallback === "function") requestIdleCallback(runStartupReconciliation, { timeout: 2200 });
-  else window.setTimeout(runStartupReconciliation, 900);
+  const runMemoryBackfill = () => { try { backfillReviewAnchors({ lessonLimit: 2, memoryCap: 12 }); } catch {} };
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(runStartupReconciliation, { timeout: 2200 });
+    requestIdleCallback(runMemoryBackfill, { timeout: 2800 });
+  } else {
+    window.setTimeout(runStartupReconciliation, 900);
+    window.setTimeout(runMemoryBackfill, 1400);
+  }
 
   try {
     window.HistoDaily = {
@@ -1649,6 +1768,8 @@
         activePathProgress,
         allReviewEntries,
         openReviewSession,
+        scheduleLessonReviewAnchors,
+        backfillReviewAnchors,
         openDailyCourse,
         relatedLessonsFor
       },
@@ -2865,57 +2986,14 @@
   }
 
   function openCompletionCelebration(){
+    // RC16: no forced multi-screen delivery. Completion is acknowledged inline/toast only.
     const info = expeditionData();
     const reward = rewardData(info);
     const performance = expeditionPerformance(info);
-    const elapsed = expeditionElapsedMinutes();
-    const screens = [
-      {
-        title: "Mission accomplie",
-        subtitle: "Le parcours est terminé. On te livre le résultat étape par étape.",
-        markup: `<section class="hd276-finish-screen mission"><div class="hd276-finish-trophy" aria-hidden="true">${HD_ICONS.action("trophy")}</div><span class="hd276-delivery-kicker">Expédition terminée</span><h3>Tu as fermé la boucle.</h3><p>Enquête, compréhension, connexion et rappel : les quatre gestes sont validés.</p><button type="button" class="hd276-delivery-primary" data-hd276-finish-next>Voir ce que j’ai relié <b aria-hidden="true">→</b></button></section>`
-      },
-      {
-        title: "La connexion du jour",
-        subtitle: "Une idée principale, puis une ouverture vers une autre notion.",
-        markup: `<section class="hd276-finish-screen connection"><span class="hd276-delivery-kicker">Ce que tu retiens</span><h3>Deux sujets, une même carte mentale.</h3><div class="hd276-finish-link"><article><small>Point de départ</small><b>${esc(info.lesson?.title || "Le cours du jour")}</b></article><span aria-hidden="true">→</span><article><small>Connexion créée</small><b>${esc(info.connection?.title || "Une nouvelle notion")}</b></article></div><div class="hd276-finish-actions"><button type="button" class="ghost" data-hd276-finish-prev>Retour</button><button type="button" class="hd276-delivery-primary" data-hd276-finish-next>Voir mes récompenses <b aria-hidden="true">→</b></button></div></section>`
-      },
-      {
-        title: "Récompenses obtenues",
-        subtitle: "Le bilan final reste lisible et les actions viennent seulement après.",
-        markup: `<section class="hd276-finish-screen rewards"><span class="hd276-delivery-kicker">Bilan du jour</span><h3>Expédition livrée.</h3><div class="hd276-finish-stats"><span><b>${elapsed || 1} min</b><small>durée</small></span><span><b>${performance.precision ? "0 indice" : `${performance.hints} indice${performance.hints > 1 ? "s" : ""}`}</b><small>enquête</small></span><span><b>+10 XP</b><small>mémoire</small></span><span><b>+${reward.gems}</b><small>gemme${reward.gems > 1 ? "s" : ""}</small></span></div><div class="hd276-finish-actions"><button type="button" data-hd213-share-expedition>Partager</button><button type="button" class="primary" data-hd187-action="surprise">Sujet bonus</button><button type="button" class="ghost wide" data-hd276-finish-home>Retour à l’accueil</button></div><button type="button" class="hd276-delivery-backlink" data-hd276-finish-prev>← Revoir la connexion</button></section>`
-      }
-    ];
-    let step = 0;
-    const overlay = layer(screens[0].title, screens[0].subtitle, `<div class="hd276-finish-flow"></div><div class="hd276-delivery-progress" aria-label="Étape 1 sur 3"><i class="current"></i><i></i><i></i></div>`, "hd276-finish-layer");
-    const panelTitle = overlay.querySelector("#hd187-layer-title");
-    const panelSubtitle = panelTitle?.nextElementSibling;
-    const flow = overlay.querySelector(".hd276-finish-flow");
-    const progress = overlay.querySelector(".hd276-delivery-progress");
-    const closeHome = () => {
-      closeLayer();
-      try { setState({ tab: "home" }, { renderImmediate: true, save: true }); } catch {}
-    };
-    const show = nextStep => {
-      step = Math.max(0, Math.min(2, Number(nextStep) || 0));
-      const screen = screens[step];
-      if (panelTitle) panelTitle.textContent = screen.title;
-      if (panelSubtitle) panelSubtitle.textContent = screen.subtitle;
-      if (flow) flow.innerHTML = screen.markup;
-      if (progress) progress.innerHTML = [0,1,2].map(index => `<i class="${index < step ? "done" : index === step ? "current" : ""}"></i>`).join("");
-      flow?.querySelectorAll("[data-hd276-finish-next]").forEach(button => button.addEventListener("click", () => show(step + 1)));
-      flow?.querySelectorAll("[data-hd276-finish-prev]").forEach(button => button.addEventListener("click", () => show(step - 1)));
-      flow?.querySelector("[data-hd276-finish-home]")?.addEventListener("click", closeHome);
-      bindShellActions(flow || overlay);
-      window.requestAnimationFrame(() => flow?.querySelector("button")?.focus?.({ preventScroll: true }));
-    };
-    overlay.addEventListener("keydown", event => {
-      if (event.key === "ArrowRight" && step < 2) show(step + 1);
-      if (event.key === "ArrowLeft" && step > 0) show(step - 1);
-    });
-    show(0);
-    try { navigator.vibrate?.([20, 45, 28, 45, 40]); } catch {}
-    return overlay;
+    const detail = `${performance.score ? `${performance.score} XP · ` : ""}+${reward.gems} gemme${reward.gems > 1 ? "s" : ""}`;
+    stageToast("Expédition terminée", detail);
+    try { navigator.vibrate?.([18, 35, 24]); } catch {}
+    return null;
   }
 
   function expeditionMarkup(){

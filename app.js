@@ -1,6 +1,6 @@
 const HISTODAILY_CORE = window.HISTODAILY_CORE || {};
 const HISTODAILY_ONBOARDING = window.HISTODAILY_ONBOARDING || {};
-const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-rc.13.1";
+const APP_VERSION = HISTODAILY_CORE.version || "1.0.0-rc.22.0";
 const STORAGE_KEY = HISTODAILY_CORE.storageKey || "histodaily_state";
 const LEGACY_STORAGE_KEY = "histodaily_state_legacy";
 
@@ -261,7 +261,10 @@ const defaultState = {
   dismissedReleaseVersion: "",
   dismissedCoachVersion: "",
   achievements: { firstLesson: false, firstMystery: false, streak3: false, streak7: false, noHint: false, expertMystery: false, firstArchive: false },
-  discoverOffset: 0
+  discoverOffset: 0,
+  disciplineLabProgress: {},
+  disciplineLabClaims: {},
+  disciplineLabOffset: {}
 };
 
 const TRANSIENT_STATE_KEYS = new Set([
@@ -977,17 +980,19 @@ function revealHint(mysteryId) {
 
 function mysteryScoreBreakdown(mysteryId) {
   const mystery = data.mysteries.find(m => m.id === mysteryId) || {};
-  const hints = state.seenHints[mysteryId] || 0;
+  const visibleHints = state.seenHints[mysteryId] || 0;
+  // RC16 : le premier indice sert de point de départ et ne coûte plus de score.
+  const hints = Math.max(0, visibleHints - 1);
   const tries = state.mysteryTries[mysteryId] || 0;
   if (typeof HISTODAILY_CORE.scoreBreakdown === "function") {
-    return HISTODAILY_CORE.scoreBreakdown({ difficulty: mystery.difficulty, hints, tries });
+    return { ...HISTODAILY_CORE.scoreBreakdown({ difficulty: mystery.difficulty, hints, tries }), visibleHints, hints };
   }
   const base = SCORE_BASE[mystery.difficulty] || SCORE_BASE.moyen;
   const floor = SCORE_FLOOR[mystery.difficulty] || SCORE_FLOOR.moyen;
   const hintPenalty = hints * SCORE_PENALTY_HINT;
   const extraTries = Math.max(0, tries - 1);
   const tryPenalty = extraTries * SCORE_PENALTY_EXTRA_TRY;
-  return { base, floor, hints, extraTries, hintPenalty, tryPenalty, score: Math.max(floor, base - hintPenalty - tryPenalty) };
+  return { base, floor, visibleHints, hints, extraTries, hintPenalty, tryPenalty, score: Math.max(floor, base - hintPenalty - tryPenalty) };
 }
 function mysteryScore(mysteryId) {
   return mysteryScoreBreakdown(mysteryId).score;
@@ -1004,7 +1009,7 @@ function resultShareText(mysteryId) {
   const label = daily ? "mystère du jour" : "mystère d’archive";
   const score = solvedData.score || mysteryScore(mysteryId);
   const tries = solvedData.tries || state.mysteryTries?.[mysteryId] || 1;
-  const hints = solvedData.hints || state.seenHints?.[mysteryId] || 0;
+  const hints = solvedData.hints ?? Math.max(0, (state.seenHints?.[mysteryId] || 0) - 1);
   const precision = hints === 0 ? "sans indice" : `${hints} indice${hints > 1 ? "s" : ""}`;
   return `J’ai résolu le ${label} HistoDaily (${difficultyLabel(mystery.difficulty)}) : ${score} XP, ${tries} essai${tries > 1 ? "s" : ""}, ${precision}. À toi de jouer demain.`;
 }
@@ -1051,8 +1056,8 @@ function guessFeedback(rawGuess, mystery) {
   const overlap = candidates.some(candidate => tokens.some(token => candidate.includes(token)));
   if (overlap) return "Tu chauffes, mais ta réponse est encore incomplète ou mal ciblée.";
   const tries = state.mysteryTries[mystery.id] || 0;
-  if (tries >= 2 && canShowNextHint(mystery.id)) return "Pas ça. Tu peux choisir un indice, mais rien n’est donné automatiquement : sans indice, le score reste meilleur.";
-  return "Non. Aucun indice automatique : cherche plutôt ce que toutes les traces du dossier ont en commun.";
+  if (tries >= 2 && canShowNextHint(mystery.id)) return "Pas encore. Ouvre un indice supplémentaire si tu veux resserrer la piste.";
+  return "Pas encore. Repars du point de départ et cherche ce que les éléments ont en commun.";
 }
 function submitGuess(event) {
   event?.preventDefault?.();
@@ -1082,10 +1087,10 @@ function submitGuess(event) {
     const score = mysteryScore(mystery.id);
     const dailyReward = applyDailyReward(mystery.id, score);
     const isArchive = !isTodayMystery(mystery.id);
-    state.solvedMysteries[mystery.id] = { at: Date.now(), tries: state.mysteryTries[mystery.id], hints: state.seenHints[mystery.id] || 0, score, difficulty: mystery.difficulty, daily: isTodayMystery(mystery.id), archive: isArchive };
+    state.solvedMysteries[mystery.id] = { at: Date.now(), tries: state.mysteryTries[mystery.id], hints: Math.max(0, (state.seenHints[mystery.id] || 0) - 1), visibleHints: state.seenHints[mystery.id] || 0, score, difficulty: mystery.difficulty, daily: isTodayMystery(mystery.id), archive: isArchive, guided: rc17GuidedMysteryMode(mystery) };
     state.achievements.firstMystery = true;
     if (mystery.difficulty === "expert") state.achievements.expertMystery = true;
-    if ((state.seenHints[mystery.id] || 0) === 0) state.achievements.noHint = true;
+    if ((state.seenHints[mystery.id] || 0) <= 1) state.achievements.noHint = true;
     if (isArchive) state.achievements.firstArchive = true;
     state.rewardFeedback = { ...(state.rewardFeedback || {}), [mystery.id]: dailyReward || (isArchive ? "Archive résolue : XP gagné, mais les gemmes restent réservées au rendez-vous quotidien." : "") };
     if (state.mysteryFeedback) delete state.mysteryFeedback[mystery.id];
@@ -7619,61 +7624,168 @@ function renderLessonText(lesson, content) {
     <section class="lesson-next-choice"><button type="button" data-lesson-view="complete" class="ghost">Passer au cours complet</button><button type="button" data-lesson-view="quiz">Continuer vers le quiz</button></section>`;
 }
 
+/* RC17 — Expédition progressive : choix guidés au début, réponse libre ensuite. */
+function rc17SolvedMysteryCount(target = null) {
+  const disciplineId = typeof target === "string"
+    ? disciplineById(target).id
+    : (target?.id ? mysteryDisciplineId(target) : activeDisciplineId());
+  return Object.keys(state.solvedMysteries || {}).filter(id => {
+    const mystery = (data.mysteries || []).find(item => item?.id === id);
+    return mystery && mysteryDisciplineId(mystery) === disciplineId;
+  }).length;
+}
+function rc17GuidedMysteryMode(mystery) {
+  if (!mystery?.id) return false;
+  if (state.mysteryGuided?.[mystery.id]) return true;
+  return rc17SolvedMysteryCount(mystery) < 20;
+}
+function rc17ChoiceLabel(value = "") {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  return text.charAt(0).toLocaleUpperCase("fr-FR") + text.slice(1);
+}
+function rc17StableHash(value = "") {
+  let hash = 2166136261;
+  for (const char of String(value)) {
+    hash ^= char.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+function rc17GuidedChoices(mystery) {
+  if (!mystery) return [];
+  const correct = String(mystery.answer || "").trim();
+  const accepted = new Set([mystery.answer, ...(mystery.aliases || [])].map(normalize).filter(Boolean));
+  const answerTokens = new Set(normalize(correct).split(" ").filter(token => token.length >= 4));
+  const wrong = [];
+  const addWrong = value => {
+    const raw = String(value || "").trim();
+    const keyValue = normalize(raw);
+    const wrongTokens = keyValue.split(" ").filter(token => token.length >= 4);
+    const overlapsAnswer = wrongTokens.some(token => answerTokens.has(token));
+    if (!raw || raw.length < 3 || accepted.has(keyValue) || overlapsAnswer || wrong.some(item => normalize(item) === keyValue)) return;
+    wrong.push(raw);
+  };
+  const starterChoices = rc17SolvedMysteryCount(mystery) < 8;
+  if (!starterChoices) (mystery.blockedGuesses || []).forEach(addWrong);
+  if (wrong.length < 2) {
+    const sameDiscipline = (data.mysteries || [])
+      .filter(item => item?.id !== mystery.id && mysteryDisciplineId(item) === mysteryDisciplineId(mystery))
+      .sort((a, b) => {
+        const aSame = normalize(a.subjectType || "") === normalize(mystery.subjectType || "") ? 0 : 1;
+        const bSame = normalize(b.subjectType || "") === normalize(mystery.subjectType || "") ? 0 : 1;
+        return aSame - bSame || rc17StableHash(`${mystery.id}:${a.id}`) - rc17StableHash(`${mystery.id}:${b.id}`);
+      });
+    sameDiscipline.forEach(item => { if (wrong.length < 4) addWrong(item.answer); });
+  }
+  if (wrong.length < 2) (mystery.blockedGuesses || []).forEach(addWrong);
+  const picked = wrong
+    .sort((a, b) => rc17StableHash(`${mystery.id}:${a}`) - rc17StableHash(`${mystery.id}:${b}`))
+    .slice(0, 2);
+  const choices = [correct, ...picked].filter(Boolean);
+  return choices
+    .sort((a, b) => rc17StableHash(`${todayIndex()}:${mystery.id}:${a}`) - rc17StableHash(`${todayIndex()}:${mystery.id}:${b}`))
+    .map(rc17ChoiceLabel);
+}
+
 function renderMystery() {
   const mystery = currentMystery();
-  if (!mystery) return renderShell(`<div class="card"><p>Aucun mystère chargé.</p></div>`);
+  if (!mystery) return renderShell(`<div class="card"><p>Aucune expédition chargée.</p></div>`);
   const lesson = mystery?.lessonId ? curatedLessonById(mystery.lessonId) : null;
-  const hints = Math.min(state.seenHints[mystery.id] || 0, (mystery.clues || []).length);
-  const tries = state.mysteryTries[mystery.id] || 0;
+  const maxHints = Math.min(3, (mystery.clues || []).length);
+  let hints = Math.min(state.seenHints[mystery.id] || 0, maxHints);
   const solved = mysterySolved(mystery.id);
+
+  // RC16 : une expédition doit commencer avec une vraie piste, pas avec une page vide.
+  // Le premier indice est donc affiché automatiquement et offert.
+  if (!solved && maxHints > 0 && hints === 0) {
+    state.seenHints[mystery.id] = 1;
+    hints = 1;
+    saveState();
+  }
+
+  const tries = state.mysteryTries[mystery.id] || 0;
   const solvedData = state.solvedMysteries[mystery.id] || {};
   const feedback = state.mysteryFeedback?.[mystery.id];
   const rewardLine = state.rewardFeedback?.[mystery.id] || "";
   const stats = mysteryStats();
   const today = isTodayMystery(mystery.id);
-  const claim = todayClaim();
-  const reward = dailyRewardPreview();
   const archives = archiveEntries();
+  const paidHints = solved ? Number(solvedData.hints || 0) : Math.max(0, hints - 1);
+  const clues = (mystery.clues || []).slice(0, hints);
+  const remainingHints = Math.max(0, maxHints - hints);
+  const difficulty = today && rc17SolvedMysteryCount(mystery) < 8 ? "découverte" : difficultyLabel(mystery.difficulty);
+  const missionQuestion = mystery.missionQuestion || `Quel sujet historique est décrit dans ce dossier ?`;
+  const answerInstruction = mystery.answerInstruction || "Réponds par le nom précis du sujet.";
+  const answerFormat = mystery.answerFormat || mysterySubjectTypeLabel(mystery, lesson || {});
+  const periodLabel = mysteryPeriodLabel(mystery, lesson || {});
+  const guidedRequested = !solved && rc17GuidedMysteryMode(mystery);
+  const guidedChoices = guidedRequested ? rc17GuidedChoices(mystery) : [];
+  const guidedMode = guidedRequested && guidedChoices.length >= 3;
+  const solvedCount = rc17SolvedMysteryCount(mystery);
+
   renderShell(`
-    <header class="topbar"><button data-home>←</button><div><p class="eyebrow">Mystère ${today ? "du jour" : "d’archive"} · ${stats.solved}/${stats.total} résolus</p><h1>${escapeHtml(mysteryDisplayTitle(mystery))}</h1></div></header>
-    <section class="card mystery-card big quick-mystery case-file-card">
-      <div class="card-label">${difficultyStars(mystery.difficulty)} · ${difficultyLabel(mystery.difficulty)} · ${today ? (solved ? "quotidien terminé" : `quotidien · +${reward.gems} gemme${reward.gems > 1 ? "s" : ""}`) : "archive débloquée"}</div>
-      ${mysteryBriefMarkup(mystery, lesson)}
-      <p class="case-title-hidden">${escapeHtml(mystery.caseTitle || "Sujet du jour")}</p>
-      <p class="prompt">${escapeHtml(mysteryPublicPrompt(mystery))}</p>
-      <div class="mystery-meter"><span>Réponse précise</span><span>${hints}/${Math.min(3, (mystery.clues || []).length)} indices choisis</span><span>${tries} essai${tries > 1 ? "s" : ""}</span><span>${mysteryScore(mystery.id)} XP possible</span></div>
-      ${!solved ? `<div class="score-explain"><b>Barème clair</b><span>indice choisi : -${SCORE_PENALTY_HINT} XP potentiel · essai supplémentaire : -${SCORE_PENALTY_EXTRA_TRY} XP · aucune aide donnée automatiquement</span></div>${scoreBreakdownMarkup(mystery.id)}` : ""}
-      <div class="hints">${(mystery.clues || []).slice(0, hints).map((c, index) => `<p><b>${escapeHtml(mysteryHintLabels()[index] || `Indice ${index + 1}`)}</b> · ${escapeHtml(c)}</p>`).join("")}</div>
-      ${feedback && !solved ? `<p class="guess-feedback">${escapeHtml(feedback)}</p>` : ""}
-      ${solved ? `<div class="solution"><strong>${escapeHtml(mystery.answer)}</strong>${mysterySolvedTitleLine(mystery)}<p>${escapeHtml(mystery.explanation || "")}</p><div class="score-pill">Score : ${solvedData.score || 90} XP · ${solvedData.hints || 0} indice(s) · ${solvedData.tries || tries || 1} essai(s)</div>${scoreBreakdownMarkup(mystery.id)}${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}${shareResultMarkup(mystery.id)}${scoreSyncMarkup(mystery.id)}<div class="after-actions"><button data-go-rank>Voir le classement</button><button class="ghost" data-open-profile-after>Profil</button></div></div>` : `<form class="guess" data-guess><label class="sr-only" for="mystery-guess">Réponse au mystère</label><input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" required aria-required="true" /><button type="submit" data-guess-submit>Valider</button></form><button type="button" class="ghost wide mystery-action-button" data-hint data-mystery-action="hint">${hints ? "Indice suivant (-20 XP potentiel)" : "Choisir un indice (-20 XP potentiel)"}</button><p class="microcopy">Une mauvaise réponse ne donne jamais d’indice. Tu peux tenter plusieurs fois, ou choisir toi-même d’en prendre un en sacrifiant du score. Les gemmes viennent du mystère quotidien, pas des archives.</p>`}
+    <header class="topbar hd300-expedition-topbar"><button data-home aria-label="Retour à l’accueil">←</button><div><p class="eyebrow">${today ? "Expédition du jour" : "Expédition d’archive"}</p><h1>${escapeHtml(mysteryDisplayTitle(mystery))}</h1></div></header>
+
+    <section class="card mystery-card big quick-mystery case-file-card hd300-expedition-card ${solved ? "is-solved" : "is-active"}">
+      <div class="hd300-expedition-status"><span>${solved ? "✓ Résolue" : "À résoudre"}</span><small>${escapeHtml(difficulty)}</small></div>
+      <section class="hd300-mission" aria-label="Mission de l’expédition">
+        <span>Ta mission</span>
+        <h2>${escapeHtml(missionQuestion)}</h2>
+        <p>${escapeHtml(answerInstruction)} <strong>Les variantes courantes sont acceptées.</strong></p>
+        <div class="hd300-mission-meta"><small>${escapeHtml(answerFormat)}</small>${periodLabel ? `<small>${escapeHtml(periodLabel)}</small>` : ""}</div>
+      </section>
+      <p class="prompt hd300-expedition-prompt"><b>Contexte</b>${escapeHtml(mysteryPublicPrompt(mystery))}</p>
+
+      ${!solved ? `<section class="hd300-clues" aria-label="Indices de l’expédition">
+        ${clues.map((clue, index) => `<div class="hd300-clue ${index === 0 ? "free" : "paid"}"><span>${index === 0 ? "Départ" : `Indice ${index + 1}`}</span><p>${escapeHtml(clue)}</p>${index === 0 ? "<small>offert</small>" : ""}</div>`).join("")}
+      </section>` : ""}
+
+      ${feedback && !solved ? `<p class="guess-feedback hd300-feedback">${escapeHtml(feedback)}</p>` : ""}
+
+      ${solved ? `<div class="solution hd300-solution">
+        <span class="card-label">Dossier résolu</span>
+        <strong>${escapeHtml(mystery.answer)}</strong>
+        ${mysterySolvedTitleLine(mystery)}
+        <p>${escapeHtml(mystery.explanation || "")}</p>
+        <div class="hd300-result-line"><b>${solvedData.score || mysteryScore(mystery.id)} XP</b><span>${paidHints ? `${paidHints} indice${paidHints > 1 ? "s" : ""} payant${paidHints > 1 ? "s" : ""}` : "indice de départ offert"}</span><span>${solvedData.tries || tries || 1} essai${(solvedData.tries || tries || 1) > 1 ? "s" : ""}</span>${solvedData.guided ? "<span>mode guidé</span>" : ""}</div>
+        ${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}
+      </div>` : `<section class="hd300-answer-zone ${guidedMode ? "is-guided" : "is-free"}">
+        <div><span class="card-label">${guidedMode ? "Choisis ta piste" : "Ta réponse"}</span><h2>${guidedMode ? "Laquelle correspond au dossier ?" : "Qu’est-ce que tu identifies ?"}</h2>${guidedMode ? `<p class="hd310-guided-note">Pas besoin de connaître la réponse par cœur : lis, déduis, choisis.</p>` : ""}</div>
+        ${guidedMode && guidedChoices.length >= 3 ? `<div class="hd310-choice-grid" role="group" aria-label="Propositions de réponse">${guidedChoices.map((choice, index) => `<button type="button" class="hd310-answer-choice" data-guided-answer="${escapeHtml(choice)}"><i>${String.fromCharCode(65 + index)}</i><span>${escapeHtml(choice)}</span></button>`).join("")}</div>` : ""}
+        <form class="guess hd300-guess ${guidedMode ? "hd310-guided-form" : ""}" data-guess>
+          <label class="sr-only" for="mystery-guess">Réponse à l’expédition</label>
+          <input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Écris ta réponse…" required aria-required="true" />
+          <button type="submit" data-guess-submit>Valider</button>
+        </form>
+        ${!guidedMode ? `<button type="button" class="ghost wide hd310-guided-toggle" data-guided-mode><span>Afficher 3 propositions</span><small>aide gratuite</small></button>` : (solvedCount >= 20 ? `<button type="button" class="ghost hd310-free-toggle" data-free-mode>Je préfère répondre librement</button>` : "")}
+        ${remainingHints ? `<button type="button" class="ghost wide hd300-hint-button" data-hint data-mystery-action="hint"><span>${hints <= 1 ? "Un indice de plus" : "Indice suivant"}</span><small>−${SCORE_PENALTY_HINT} XP potentiel</small></button>` : `<p class="hd300-no-more-hints">Tous les indices sont affichés.</p>`}
+        <details class="hd300-rules"><summary>Règles et score</summary><p>Le premier indice et le mode guidé sont gratuits. Seuls les indices supplémentaires réduisent le score potentiel. Les premières expéditions privilégient volontairement la réussite.</p></details>
+      </section>`}
     </section>
-    ${solved && lesson ? `<section class="card after-mystery">
-      <div class="card-label">Après le mystère</div>
-      <h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(lesson.title)}</h2>
-      <p>Le dossier est résolu. Poursuis avec le résumé express ou le cours complet.</p>
+
+    ${solved && lesson ? `<section class="card after-mystery hd300-next-step">
+      <div><span class="card-label">Étape suivante</span><h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} Comprendre la réponse</h2><p>${escapeHtml(lesson.title)}</p></div>
       <div class="after-actions">
-        <button class="ghost" data-home-stop>Je m’arrête là</button>
-        <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="express">Résumé 1 min</button>
-        <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="complete">Cours complet</button>
+        <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="express">Continuer avec le résumé</button>
+        <button class="ghost" data-home-stop>Retour à l’accueil</button>
       </div>
     </section>` : ""}
-    <section class="card mystery-progress-card daily-loop-card">
-      <div class="card-label">Rendez-vous quotidien</div>
-      <h2>${solved && today ? "Dossier du jour terminé" : today ? "Un dossier par jour" : "Archive ouverte"}</h2>
-      <p>${solved && today ? `Nouveau dossier dans ${timeToNextDaily()}. Reviens demain pour poursuivre ta série.` : "Le dossier du jour reste prioritaire. Les archives récentes sont accessibles avec des gemmes."}</p>
-      <div class="mystery-progress-grid">
-        <div><strong>${stats.solved}/${stats.total}</strong><span>mystères résolus</span></div>
-        <div><strong>${state.gems || 0}</strong><span>gemmes dispo</span></div>
-        <div><strong>${currentStreakValue()}</strong><span>série quotidienne</span></div>
+
+    <details class="hd300-expedition-more">
+      <summary>Archives et classement</summary>
+      <div class="hd300-expedition-more-body">
+        ${archiveBacklogMarkup()}
+        <section class="mystery-shelf archive-shelf" data-archive-shelf>
+          <div class="section-title-row"><h2>Archives récentes</h2><small>${archiveUnlockedCount()} ouverte(s)</small></div>
+          ${state.archiveFeedback ? `<p class="archive-feedback">${escapeHtml(state.archiveFeedback)}</p>` : ""}
+          ${archives.map(entry => archiveCard(entry)).join("")}
+        </section>
+        <section class="card small-leader social-teaser"><div class="section-title-row"><h2>Classement du jour</h2><button class="ghost mini-button" data-go-rank>Voir</button></div>${leaderboardRows("daily").slice(0,5).map(row => `<div><span>${row.rank}. ${escapeHtml(row.name)}</span><strong>${row.score}</strong></div>`).join("")}</section>
+        ${solved ? shareResultMarkup(mystery.id) : ""}
       </div>
-    </section>
-    ${archiveBacklogMarkup()}
-    <section class="mystery-shelf archive-shelf" data-archive-shelf>
-      <div class="section-title-row"><h2>Archives récentes</h2><small>${archiveUnlockedCount()} ouverte(s) · ${ARCHIVE_UNLOCK_COST} gemme${ARCHIVE_UNLOCK_COST > 1 ? "s" : ""} par dossier</small></div>
-      ${state.archiveFeedback ? `<p class="archive-feedback">${escapeHtml(state.archiveFeedback)}</p>` : ""}
-      ${archives.map(entry => archiveCard(entry)).join("")}
-    </section>
-    <section class="card small-leader social-teaser"><div class="section-title-row"><h2>Classement du jour</h2><button class="ghost mini-button" data-go-rank>Voir</button></div>${leaderboardRows("daily").slice(0,5).map(row => `<div><span>${row.rank}. ${escapeHtml(row.name)}</span><strong>${row.score}</strong></div>`).join("")}</section>`);
+    </details>`);
+
   $("[data-home]")?.addEventListener("click", () => setState({ tab: "home" }));
   $("[data-home-stop]")?.addEventListener("click", () => setState({ tab: "home" }));
   const guessForm = $("[data-guess]");
@@ -7683,9 +7795,25 @@ function renderMystery() {
     ["pointerdown", "mousedown", "click", "touchstart"].forEach(type => guessInput.addEventListener(type, event => event.stopPropagation(), { passive: true }));
     guessInput.addEventListener("click", event => { event.currentTarget.focus(); });
     guessInput.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); guessForm?.requestSubmit ? guessForm.requestSubmit() : submitGuess({ preventDefault() {}, stopPropagation() {}, currentTarget: guessForm }); } });
-    if (window.matchMedia && window.matchMedia("(pointer: fine)").matches) setTimeout(() => guessInput.focus({ preventScroll: true }), 90);
   }
   $("[data-hint]")?.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); revealHint(mystery.id); });
+  document.querySelectorAll("[data-guided-answer]").forEach(button => button.addEventListener("click", () => {
+    const form = document.querySelector("[data-guess]");
+    const input = form?.querySelector("[data-guess-input]");
+    if (!form || !input) return;
+    input.value = button.dataset.guidedAnswer || "";
+    form.requestSubmit ? form.requestSubmit() : submitGuess({ preventDefault() {}, stopPropagation() {}, currentTarget: form });
+  }));
+  $("[data-guided-mode]")?.addEventListener("click", () => {
+    state.mysteryGuided = { ...(state.mysteryGuided || {}), [mystery.id]: true };
+    saveState();
+    render();
+  });
+  $("[data-free-mode]")?.addEventListener("click", () => {
+    if (state.mysteryGuided) delete state.mysteryGuided[mystery.id];
+    saveState();
+    render();
+  });
   document.querySelectorAll("[data-share-result]").forEach(btn => btn.addEventListener("click", () => shareMysteryResult(btn.dataset.shareResult)));
   document.querySelectorAll("[data-open-lesson]").forEach(btn => btn.addEventListener("click", () => setState({
     tab: "lesson",
@@ -7695,9 +7823,8 @@ function renderMystery() {
   })));
   document.querySelectorAll("[data-open-mystery-id]").forEach(btn => btn.addEventListener("click", () => setState({ currentMysteryId: btn.dataset.openMysteryId, currentMysteryDiscipline: mysteryById(btn.dataset.openMysteryId) ? mysteryDisciplineId(mysteryById(btn.dataset.openMysteryId)) : activeDisciplineId(), archiveFeedback: "" })));
   document.querySelectorAll("[data-unlock-mystery]").forEach(btn => btn.addEventListener("click", () => unlockPastMystery(btn.dataset.unlockMystery)));
-  $(`[data-scroll-archives]`)?.addEventListener("click", () => $(`[data-archive-shelf]`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
-  $(`[data-go-rank]`)?.addEventListener("click", () => setState({ tab: "rank", rankScope: "daily" }));
-  $(`[data-open-profile-after]`)?.addEventListener("click", () => setState({ tab: "profile" }));
+  $("[data-scroll-archives]")?.addEventListener("click", () => $("[data-archive-shelf]")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  $("[data-go-rank]")?.addEventListener("click", () => setState({ tab: "rank", rankScope: "daily" }));
 }
 function archiveCard({ mystery, offset }) {
   const solved = mysterySolved(mystery.id);
@@ -7956,7 +8083,7 @@ function difficultyLabel(difficulty = "moyen") {
   if (difficulty === "facile") return "accessible";
   if (difficulty === "difficile") return "difficile";
   if (difficulty === "expert") return "expert";
-  return "corsé";
+  return "intermédiaire";
 }
 /* LTS: fonction morte supprimée (unlockedAchievements). */
 
@@ -8716,7 +8843,7 @@ function disciplineCard(discipline, active) {
 function disciplineSelectorMarkup(selectedId = activeDisciplineId()) {
   return `<section class="discipline-picker card">
     <div class="section-title-row">
-      <div><span class="card-label">Disciplines</span><h2>Choisis ce que tu veux apprendre</h2><p>Comme une langue dans Duolingo : tu choisis le domaine, puis tu avances dans ses cours.</p></div>
+      <div><span class="card-label">Disciplines</span><h2>Choisis ce que tu veux apprendre</h2><p>Choisis un domaine, puis avance dans un parcours structuré avec cours, quiz, mystères et ateliers.</p></div>
       <small>${DISCIPLINES.length} domaines</small>
     </div>
     <div class="discipline-grid">${DISCIPLINES.map(item => disciplineCard(item, item.id === selectedId)).join("")}</div>
@@ -8816,7 +8943,7 @@ function renderLearn() {
   const discipline = disciplineById(disciplineId);
   const groups = treeGroups(disciplineId);
   if (!groups.length) {
-    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>Choisis une discipline</h1><p class="tree-subtitle">Histoire, sciences, astronomie, arts et culture générale.</p></div></header>
+    renderShell(`<header class="topbar tree-topbar"><button data-back-home>←</button><div><p class="eyebrow">Cours</p><h1>Choisis une discipline</h1><p class="tree-subtitle">Histoire, sciences, philosophie, anglais, arts et culture générale.</p></div></header>
       ${disciplineSelectorMarkup(disciplineId)}
       ${disciplineEmptyMarkup(discipline)}`);
     $(`[data-back-home]`)?.addEventListener("click", () => setState({ tab: "home" }));
@@ -12003,6 +12130,125 @@ function modeRecommendationItems(disciplineId = activeDisciplineId()) {
   return selected.slice(0, 3);
 }
 /* LTS: ancienne implémentation de modeRecommendationsMarkup supprimée (12254-12278). */
+
+function disciplineLabPool(disciplineId = activeDisciplineId()) {
+  const pool = window.HD_DISCIPLINE_LABS?.[disciplineId];
+  return Array.isArray(pool) ? pool : [];
+}
+function disciplineLabOffsetValue(disciplineId = activeDisciplineId()) {
+  return Math.max(0, Number(state.disciplineLabOffset?.[disciplineId] || 0));
+}
+function disciplineLabForToday(disciplineId = activeDisciplineId()) {
+  const rawPool = disciplineLabPool(disciplineId);
+  if (!rawPool.length) return null;
+  const lessonExperience = Math.max(0, Number(disciplineProgress(disciplineId)?.done || 0));
+  const mysteryExperience = Math.max(0, Number(rc17SolvedMysteryCount(disciplineId) || 0));
+  const experience = Math.max(lessonExperience, mysteryExperience);
+  const allowed = experience < 4
+    ? new Set(["facile"])
+    : experience < 12
+      ? new Set(["facile", "moyen"])
+      : new Set(["facile", "moyen", "difficile"]);
+  const adapted = rawPool.filter(item => allowed.has(item.difficulty || "moyen"));
+  const pool = adapted.length ? adapted : rawPool;
+  const seed = seededHash(`${disciplineId}:${localDayKey()}`);
+  return pool[(seed + disciplineLabOffsetValue(disciplineId)) % pool.length] || pool[0];
+}
+function disciplineLabRecordKey(disciplineId, exerciseId) {
+  return `${disciplineId}:${localDayKey()}:${exerciseId}`;
+}
+function disciplineLabClaimKey(disciplineId) {
+  return `${disciplineId}:${localDayKey()}`;
+}
+function speakDisciplineLab(disciplineId = activeDisciplineId()) {
+  const exercise = disciplineLabForToday(disciplineId);
+  const text = String(exercise?.speak || "").trim();
+  if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) return false;
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-GB";
+    utterance.rate = 0.88;
+    utterance.pitch = 1;
+    const voices = window.speechSynthesis.getVoices?.() || [];
+    const preferred = voices.find(v => /^en-GB/i.test(v.lang || "")) || voices.find(v => /^en-/i.test(v.lang || ""));
+    if (preferred) utterance.voice = preferred;
+    window.speechSynthesis.speak(utterance);
+    return true;
+  } catch { return false; }
+}
+function disciplineLabMarkup(disciplineId = activeDisciplineId()) {
+  if (!["english", "philosophy"].includes(disciplineId)) return "";
+  const discipline = disciplineById(disciplineId);
+  const exercise = disciplineLabForToday(disciplineId);
+  if (!exercise) return "";
+  const recordKey = disciplineLabRecordKey(disciplineId, exercise.id);
+  const record = state.disciplineLabProgress?.[recordKey] || {};
+  const completed = Boolean(record.correct);
+  const selected = Number.isInteger(record.lastChoice) ? record.lastChoice : null;
+  const claimed = Boolean(state.disciplineLabClaims?.[disciplineLabClaimKey(disciplineId)]);
+  const canSpeak = Boolean(exercise.speak && ("speechSynthesis" in window) && ("SpeechSynthesisUtterance" in window));
+  const rewardText = claimed ? "entraînement libre" : "+10 XP au premier atelier réussi aujourd’hui";
+  const choiceMarkup = (exercise.choices || []).map((choice, index) => {
+    const wasSelected = selected === index;
+    const klass = completed
+      ? (choice.correct ? "correct" : "")
+      : (wasSelected ? (choice.correct ? "correct" : "wrong") : "");
+    return `<button type="button" class="discipline-lab-choice ${klass}" data-lab-choice="${index}" data-lab-discipline="${escapeHtml(disciplineId)}" ${completed ? "disabled" : ""}><span>${String.fromCharCode(65 + index)}</span><strong>${escapeHtml(choice.text)}</strong></button>`;
+  }).join("");
+  let feedback = "";
+  if (selected !== null) {
+    const picked = exercise.choices?.[selected];
+    if (picked) feedback = `<div class="discipline-lab-feedback ${picked.correct ? "good" : "bad"}"><b>${picked.correct ? "Bien vu." : "Pas encore."}</b><p>${escapeHtml(picked.feedback || "")}</p>${exercise.audioOnly && exercise.speak ? `<span class="discipline-lab-transcript"><strong>Phrase entendue :</strong> ${escapeHtml(exercise.speak)}</span>` : ""}${picked.correct ? `<small>${escapeHtml(exercise.takeaway || "")}</small>` : ""}</div>`;
+  }
+  return `<section class="card home-main-card discipline-lab-card ${completed ? "complete" : ""}" style="--discipline-accent:${escapeHtml(discipline.accent)}">
+    <div class="section-title-row">
+      <div><span class="card-label">Atelier ${escapeHtml(discipline.title)} · ${escapeHtml(exercise.skill || "pratique")} · ${escapeHtml(exercise.difficulty === "facile" ? "découverte" : (exercise.difficulty || "moyen"))}</span><h2>${escapeHtml(exercise.title || "Exercice du jour")}</h2></div>
+      <small>${completed ? "réussi" : rewardText}</small>
+    </div>
+    ${exercise.context ? `<p class="discipline-lab-context">${escapeHtml(exercise.context)}</p>` : ""}
+    ${exercise.speak ? `<div class="discipline-lab-audio">${canSpeak ? `<button type="button" class="ghost" data-lab-speak="${escapeHtml(disciplineId)}">🔊 Écouter la phrase</button>` : ""}<small>${exercise.audioOnly ? (canSpeak ? "La phrase n’est pas affichée avant ta première réponse." : `Audio indisponible sur cet appareil · <span lang="en">${escapeHtml(exercise.speak)}</span>`) : "Écoute le rythme et l’intention, pas seulement les mots."}</small></div>` : ""}
+    <h3 class="discipline-lab-prompt">${escapeHtml(exercise.prompt || "")}</h3>
+    <div class="discipline-lab-choices" role="group" aria-label="Atelier ${escapeHtml(discipline.title)}">${choiceMarkup}</div>
+    ${feedback}
+    ${completed ? `<div class="home-card-footer"><span>${claimed ? "Tu peux continuer sans limite." : "Atelier validé."}</span><button type="button" class="ghost" data-lab-next="${escapeHtml(disciplineId)}">Autre exercice</button></div>` : `<p class="discipline-lab-hint">Ici, on entraîne une compétence : pas besoin d’avoir mémorisé le cours avant.</p>`}
+  </section>`;
+}
+function answerDisciplineLab(disciplineId, choiceIndex) {
+  const exercise = disciplineLabForToday(disciplineId);
+  if (!exercise || !Array.isArray(exercise.choices)) return;
+  const index = Number(choiceIndex);
+  const choice = exercise.choices[index];
+  if (!choice) return;
+  const recordKey = disciplineLabRecordKey(disciplineId, exercise.id);
+  const previousRecord = state.disciplineLabProgress?.[recordKey] || {};
+  if (previousRecord.correct) return;
+  const progress = {
+    ...(state.disciplineLabProgress || {}),
+    [recordKey]: {
+      lastChoice: index,
+      correct: Boolean(choice.correct),
+      attempts: Math.max(0, Number(previousRecord.attempts || 0)) + 1,
+      updatedAt: Date.now()
+    }
+  };
+  const claimKey = disciplineLabClaimKey(disciplineId);
+  const firstDailySuccess = Boolean(choice.correct) && !state.disciplineLabClaims?.[claimKey];
+  const claims = firstDailySuccess
+    ? { ...(state.disciplineLabClaims || {}), [claimKey]: { exerciseId: exercise.id, claimedAt: Date.now(), xp: 10 } }
+    : (state.disciplineLabClaims || {});
+  try { window.HDSound?.play?.(choice.correct ? "correct" : "wrong", { force: true }); } catch {}
+  setState({
+    disciplineLabProgress: progress,
+    disciplineLabClaims: claims,
+    xp: Math.max(0, Number(state.xp || 0)) + (firstDailySuccess ? 10 : 0)
+  });
+  if (firstDailySuccess) try { showXPToast?.(10, `atelier ${disciplineById(disciplineId).title}`); } catch {}
+}
+function nextDisciplineLab(disciplineId) {
+  const current = Math.max(0, Number(state.disciplineLabOffset?.[disciplineId] || 0));
+  setState({ disciplineLabOffset: { ...(state.disciplineLabOffset || {}), [disciplineId]: current + 1 } });
+}
 function renderHome() {
   const disciplineId = activeDisciplineId();
   const discipline = disciplineById(disciplineId);
@@ -12034,8 +12280,9 @@ function renderHome() {
       <div class="home-card-footer"><span>${escapeHtml(nextLabel)}</span><button>${solvedToday ? "Revoir" : "Jouer"}</button></div>
     </section>` : `<section class="card home-main-card"><h2>Aucun mystère chargé</h2><p>La donnée mystère est vide ou inaccessible.</p></section>`}
 
+    ${disciplineLabMarkup(disciplineId)}
     ${modeContinueMarkup(disciplineId)}
-    ${modeRecommendationsMarkup(disciplineId)}
+    ${["english", "philosophy"].includes(disciplineId) ? "" : modeRecommendationsMarkup(disciplineId)}
 
     ${releaseNotesMarkup({ home: true })}
 
@@ -12082,6 +12329,9 @@ function renderHome() {
   }));
   $(`[data-home-rank]`)?.addEventListener("click", () => setState({ tab: "rank" }));
   $(`[data-home-profile]`)?.addEventListener("click", () => setState({ tab: "profile" }));
+  document.querySelectorAll("[data-lab-choice]").forEach(btn => btn.addEventListener("click", () => answerDisciplineLab(btn.dataset.labDiscipline, btn.dataset.labChoice)));
+  document.querySelectorAll("[data-lab-speak]").forEach(btn => btn.addEventListener("click", () => speakDisciplineLab(btn.dataset.labSpeak)));
+  document.querySelectorAll("[data-lab-next]").forEach(btn => btn.addEventListener("click", () => nextDisciplineLab(btn.dataset.labNext)));
   $(`[data-dismiss-release]`)?.addEventListener("click", () => setState({ dismissedReleaseVersion: APP_VERSION }));
 }
 
@@ -18314,8 +18564,30 @@ publicMysteries = function beta139PublicMysteries(disciplineId = activeDisciplin
 
 mysteryForDisciplineDayOffset = function beta139MysteryForDisciplineDayOffset(disciplineId = activeDisciplineId(), offset = 0) {
   const id = disciplineById(disciplineId || "history").id;
-  const pool = publicMysteries(id);
-  if (!pool.length) return id === "history" ? null : (publicMysteries("history")[0] || null);
+  const rawPool = publicMysteries(id);
+  if (!rawPool.length) return id === "history" ? null : (publicMysteries("history")[0] || null);
+
+  // RC16 : la difficulté monte avec l’expérience au lieu de tomber au hasard sur un dossier difficile.
+  const solvedCount = rc17SolvedMysteryCount(id);
+  // RC19 : la rampe d'apprentissage est propre à chaque discipline. Un joueur avancé en Histoire
+  // reste donc débutant lors de ses premières expéditions d'Anglais ou de Philosophie.
+  // RC17 : vraie rampe d'apprentissage. Pour l'Histoire, les huit premiers rendez-vous
+  // utilisent volontairement des sujets immédiatement reconnaissables ; ailleurs, on privilégie
+  // facile puis moyen. L'expert ne tombe jamais automatiquement sur un débutant.
+  const historyStarterIds = new Set([
+    "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
+    "mystery-neolithic-agriculture", "mystery-nile", "mystery-minoens", "mystery-1789-rc39"
+  ]);
+  const starterPool = solvedCount < 8 && id === "history" ? rawPool.filter(mystery => historyStarterIds.has(mystery.id)) : [];
+  const allowed = solvedCount < 4
+    ? new Set(["facile"])
+    : solvedCount < 30
+      ? new Set(["facile", "moyen"])
+      : new Set(["facile", "moyen", "difficile"]);
+  const adaptedPool = rawPool.filter(mystery => allowed.has(mystery.difficulty || "moyen"));
+  const nonExpertPool = rawPool.filter(mystery => (mystery.difficulty || "moyen") !== "expert");
+  const pool = starterPool.length ? starterPool : (adaptedPool.length ? adaptedPool : (nonExpertPool.length ? nonExpertPool : rawPool));
+
   const shiftMap = (typeof beta117MysteryShift === "function") ? beta117MysteryShift(id) : 0;
   const shift = offset === 0 ? shiftMap : 0;
   const index = ((todayIndex() - offset + shift) % pool.length + pool.length) % pool.length;

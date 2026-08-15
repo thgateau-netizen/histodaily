@@ -1,44 +1,51 @@
-const CACHE_NAME = "histodaily-rc13-1-push-v1";
-const APP_VERSION = "1.0.0-rc.13.1";
+const CACHE_NAME = "histodaily-rc23-real-artwork-v1";
+const APP_VERSION = "1.0.0-rc.23.0";
 const CRITICAL_ASSETS = [
   "/",
   "/index.html",
-  "/histodaily.css?v=1.0.0-rc.13.1",
-  "/lessons-lite.js?v=1.0.0-rc.13.1",
-  "/app-bootstrap.js?v=1.0.0-rc.13.1",
-  "/sound-ui.js?v=1.0.0-rc.13.1",
-  "/app.js?v=1.0.0-rc.13.1",
-  "/content-library.js?v=1.0.0-rc.13.1",
-  "/content-literature.js?v=1.0.0-rc.13.1",
-  "/content-premium-233.js?v=1.0.0-rc.13.1",
-  "/content-premium-234.js?v=1.0.0-rc.13.1",
-  "/content-premium-235.js?v=1.0.0-rc.13.1",
-  "/content-premium-236.js?v=1.0.0-rc.13.1",
-  "/content-premium-237.js?v=1.0.0-rc.13.1",
-  "/content-coherence-239.js?v=1.0.0-rc.13.1",
-  "/content-humanize-240.js?v=1.0.0-rc.13.1",
-  "/content-cleanup-241.js?v=1.0.0-rc.13.1",
-  "/content-audit-v267.js?v=1.0.0-rc.13.1",
-  "/mystery-clarity-v272.js?v=1.0.0-rc.13.1",
-  "/app-runtime.js?v=1.0.0-rc.13.1",
-  "/visual-v4.js?v=1.0.0-rc.13.1",
-  "/engagement-v263.js?v=1.0.0-rc.13.1",
-  "/mobile-layout.js?v=1.0.0-rc.13.1",
-  "/social-v2.js?v=1.0.0-rc.13.1",
-  "/expedition-v264.js?v=1.0.0-rc.13.1",
-  "/streak-v265.js?v=1.0.0-rc.13.1",
-  "/archive-mobile-v268.js?v=1.0.0-rc.13.1",
-  "/course-mobile-v269.js?v=1.0.0-rc.13.1",
-  "/onboarding-v275.js?v=1.0.0-rc.13.1",
-  "/expedition-delivery-v276.js?v=1.0.0-rc.13.1",
-  "/release-polish-v278.js?v=1.0.0-rc.13.1",
-  "/release-center-v279.js?v=1.0.0-rc.13.1",
-  "/polish-v280.js?v=1.0.0-rc.13.1",
-  "/course-polish-v283.js?v=1.0.0-rc.13.1",
-  "/launch-readiness-v284.js?v=1.0.0-rc.13.1",
-  "/performance-accessibility-v285.js?v=1.0.0-rc.13.1",
-  "/stability-v286.js?v=1.0.0-rc.13.1",
-  "/notifications-v288.js?v=1.0.0-rc.13.1",
+  "/histodaily.css?v=1.0.0-rc.23.0",
+  "/lessons-lite.js?v=1.0.0-rc.23.0",
+  "/app-bootstrap.js?v=1.0.0-rc.23.0",
+  "/sound-ui.js?v=1.0.0-rc.23.0",
+  "/app.js?v=1.0.0-rc.23.0",
+  "/content-library.js?v=1.0.0-rc.23.0",
+  "/content-literature.js?v=1.0.0-rc.23.0",
+  "/content-philosophy.js?v=1.0.0-rc.23.0",
+  "/content-english.js?v=1.0.0-rc.23.0",
+  "/content-english-rc19.js?v=1.0.0-rc.23.0",
+  "/content-philosophy-rc19.js?v=1.0.0-rc.23.0",
+  "/content-foundations-depth-rc19.js?v=1.0.0-rc.23.0",
+  "/discipline-labs-rc19.js?v=1.0.0-rc.23.0",
+  "/discipline-mysteries-rc19.js?v=1.0.0-rc.23.0",
+  "/content-premium-233.js?v=1.0.0-rc.23.0",
+  "/content-premium-234.js?v=1.0.0-rc.23.0",
+  "/content-premium-235.js?v=1.0.0-rc.23.0",
+  "/content-premium-236.js?v=1.0.0-rc.23.0",
+  "/content-premium-237.js?v=1.0.0-rc.23.0",
+  "/content-coherence-239.js?v=1.0.0-rc.23.0",
+  "/content-humanize-240.js?v=1.0.0-rc.23.0",
+  "/content-cleanup-241.js?v=1.0.0-rc.23.0",
+  "/content-audit-v267.js?v=1.0.0-rc.23.0",
+  "/mystery-clarity-v272.js?v=1.0.0-rc.23.0",
+  "/app-runtime.js?v=1.0.0-rc.23.0",
+  "/visual-v4.js?v=1.0.0-rc.23.0",
+  "/engagement-v263.js?v=1.0.0-rc.23.0",
+  "/mobile-layout.js?v=1.0.0-rc.23.0",
+  "/social-v2.js?v=1.0.0-rc.23.0",
+  "/streak-v265.js?v=1.0.0-rc.23.0",
+  "/archive-mobile-v268.js?v=1.0.0-rc.23.0",
+  "/course-mobile-v269.js?v=1.0.0-rc.23.0",
+  "/onboarding-v275.js?v=1.0.0-rc.23.0",
+  "/release-polish-v278.js?v=1.0.0-rc.23.0",
+  "/release-center-v279.js?v=1.0.0-rc.23.0",
+  "/polish-v280.js?v=1.0.0-rc.23.0",
+  "/course-polish-v283.js?v=1.0.0-rc.23.0",
+  "/course-interactions-rc20.js?v=1.0.0-rc.23.0",
+  "/launch-readiness-v284.js?v=1.0.0-rc.23.0",
+  "/performance-accessibility-v285.js?v=1.0.0-rc.23.0",
+  "/stability-v286.js?v=1.0.0-rc.23.0",
+  "/notifications-v288.js?v=1.0.0-rc.23.0",
+  "/adaptive-path-rc22.js?v=1.0.0-rc.23.0",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
@@ -51,7 +58,16 @@ const OPTIONAL_ASSETS = [
   "/robots.txt",
   "/hero-astronomy-art-v2.png",
   "/hero-astronomy-art-v3-faded.png",
-  "/hero-astronomy-blackhole.png"
+  "/hero-astronomy-blackhole.png",
+  "/assets/hero-history.webp",
+  "/assets/hero-history-revolution.webp",
+  "/assets/hero-astronomy.webp",
+  "/assets/hero-philosophy.webp",
+  "/assets/hero-english.webp",
+  "/assets/thumb-history.webp",
+  "/assets/thumb-astronomy.webp",
+  "/assets/thumb-philosophy.webp",
+  "/assets/thumb-english.webp"
 ];
 const ASSETS = [...CRITICAL_ASSETS, ...OPTIONAL_ASSETS];
 
@@ -175,8 +191,6 @@ self.addEventListener("message", event => {
   if (event.data?.type === "HISTODAILY_SKIP_WAITING") self.skipWaiting();
 });
 
-
-/* Web Push notifications — RC13.1 */
 self.addEventListener("push", event => {
   event.waitUntil((async () => {
     let payload = {};
@@ -211,7 +225,7 @@ self.addEventListener("notificationclick", event => {
     });
     if (sameOrigin) {
       await sameOrigin.focus();
-      if (typeof sameOrigin.navigate === "function") await sameOrigin.navigate(targetUrl);
+      sameOrigin.navigate?.(targetUrl);
       return;
     }
     await self.clients.openWindow(targetUrl);

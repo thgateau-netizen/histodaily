@@ -1,7 +1,7 @@
 /* HistoDaily 1.0 RC9 — performance sûre et accessibilité mobile. */
 (function histodailyRc9PerformanceAccessibility(){
   "use strict";
-  const VERSION = "1.0.0-rc.13.1";
+  const VERSION = "1.0.0-rc.18.0";
   const startedAt = performance.now();
   const longTasks = [];
   let scheduled = false;

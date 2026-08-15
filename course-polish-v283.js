@@ -2,7 +2,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.0.0-rc.13.1';
+  const VERSION = '1.0.0-rc.18.0';
   let activeShell = null;
   let sectionObserver = null;
   let scrollFrame = 0;

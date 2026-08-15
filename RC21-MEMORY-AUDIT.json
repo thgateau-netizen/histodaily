@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0-rc.21.0",
+  "js_files": 42,
+  "syntax": "ok",
+  "index_missing_assets": [],
+  "service_worker_missing_assets": [],
+  "memory": {
+    "anchors_per_new_course": 2,
+    "interval_days": [
+      1,
+      3,
+      7,
+      21
+    ],
+    "mastery_stage": 5,
+    "max_session_cards": 5,
+    "legacy_backfill_lessons_per_launch": 2,
+    "legacy_memory_cap": 12,
+    "adaptive_disciplines": [
+      "english",
+      "philosophy"
+    ],
+    "english_audio_review": true,
+    "course_completion_hook_count": 2,
+    "mistake_source_tag": true,
+    "course_anchor_source_tag": true
+  },
+  "reactivated_modules": {
+    "content-foundations-depth-rc19.js": true,
+    "discipline-mysteries-rc19.js": true,
+    "notifications-v288.js": true
+  },
+  "version_refs": {
+    "index_rc21": 42,
+    "service_worker_rc21": 43,
+    "old_rc20_runtime_refs": 0
+  }
+}
