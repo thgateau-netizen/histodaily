@@ -14,8 +14,8 @@ const pass = (condition, message) => { if (!condition) errors.push(message); };
 for (const rel of ['index.html','manifest.webmanifest','service-worker.js']) {
   pass(read(rel).includes(version), `${rel}: version ${version} absente`);
 }
-pass(read('service-worker.js').includes('histodaily-rc35-product-polish-v1'), 'service-worker: cache RC35 absent');
-pass(read('RC35-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js'), 'bundle manifest: content-editorial-rc33.js absent');
+pass(read('service-worker.js').includes('histodaily-rc36-lean-flow-v1'), 'service-worker: cache RC35 absent');
+pass(read('RC36-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js'), 'bundle manifest: content-editorial-rc33.js absent');
 pass(read('bundles/content-rc27.js').includes('SOURCE: content-editorial-rc33.js'), 'bundle réel: content-editorial-rc33.js absent');
 
 const css = read('histodaily.css');
@@ -47,17 +47,17 @@ const result = {
   status: errors.length ? 'failed' : 'passed',
   checks: {
     runtimeVersionAligned: !errors.some(e => e.includes('version')),
-    cacheVersionAligned: sw.includes('histodaily-rc35-product-polish-v1'),
+    cacheVersionAligned: sw.includes('histodaily-rc36-lean-flow-v1'),
     cssAssetsChecked: new Set(cssUrls).size,
     pwaAssetsChecked: new Set(swAssets).size,
     activeSvgPlaceholders: placeholderRefs.filter(ref => css.includes(ref) || sw.includes(ref)),
     genericQuizQuestions: generic,
-    qualityModuleBundled: read('RC35-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js') && read('bundles/content-rc27.js').includes('SOURCE: content-editorial-rc33.js')
+    qualityModuleBundled: read('RC36-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js') && read('bundles/content-rc27.js').includes('SOURCE: content-editorial-rc33.js')
   },
   warnings,
   errors
 };
-fs.writeFileSync(path.join(root,'RC35-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
+fs.writeFileSync(path.join(root,'RC36-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

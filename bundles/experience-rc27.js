@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.35.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.36.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -198,7 +198,7 @@
     }
     return `<section class="mystery-rescue-panel beta178-course-rescue active">
       <div class="mystery-rescue-head"><span>Cours de secours en cours</span><strong>${escapeHtml(lesson.title)}</strong></div>
-      <p>Lis le cours complet puis réussis à nouveau son quiz, même si tu l’avais déjà validé auparavant. Le mystère sera alors sauvé automatiquement.</p>
+      <p>Lis le cours puis réussis à nouveau son quiz, même si tu l’avais déjà validé auparavant. Le mystère sera alors sauvé automatiquement.</p>
       <button type="button" class="wide" data-resume-course-rescue>Reprendre le cours</button>
       <p class="microcopy rescue-note">Tant que ce nouveau quiz n’est pas réussi, la réponse directe est désactivée.</p>
     </section>`;
@@ -1460,7 +1460,7 @@
     const lesson = recommendedDailyLesson(status.log.courses || []);
     if (!lesson) return setState({ tab: "learn", currentDiscipline: activeDisciplineId(), learnDrill: "chapters" });
     const world = lessonWorld(lesson);
-    setState({ tab: "lesson", currentLessonId: lesson.id, currentDiscipline: lessonDisciplineId(lesson), currentWorld: world.id, currentGroup: world.group, lessonView: "express", lessonFocus: "express" });
+    setState({ tab: "lesson", currentLessonId: lesson.id, currentDiscipline: lessonDisciplineId(lesson), currentWorld: world.id, currentGroup: world.group, lessonView: "complete", lessonFocus: "complete" });
   }
 
   function weeklyGoalLine(label, icon, goal) {
@@ -1507,7 +1507,7 @@
         const lesson = lessonById(id);
         if (!lesson) return;
         const world = lessonWorld(lesson);
-        setState({ tab: "lesson", currentLessonId: lesson.id, currentDiscipline: lessonDisciplineId(lesson), currentWorld: world.id, currentGroup: world.group, lessonView: "express", lessonFocus: "express" });
+        setState({ tab: "lesson", currentLessonId: lesson.id, currentDiscipline: lessonDisciplineId(lesson), currentWorld: world.id, currentGroup: world.group, lessonView: "complete", lessonFocus: "complete" });
       };
     });
     root.querySelectorAll("[data-beta180-task]").forEach(button => {
@@ -1537,7 +1537,7 @@
         if (!lesson) return;
         const world = lessonWorld(lesson);
         const disciplineId = worldDisciplineId(world);
-        setState({ tab: "lesson", currentLessonId: lesson.id, currentDiscipline: disciplineId, currentWorld: world.id, currentGroup: world.group, lessonView: "express", lessonFocus: null });
+        setState({ tab: "lesson", currentLessonId: lesson.id, currentDiscipline: disciplineId, currentWorld: world.id, currentGroup: world.group, lessonView: "complete", lessonFocus: null });
       };
     });
   }
@@ -2566,8 +2566,8 @@
       currentDiscipline: disciplineId,
       currentWorld: world?.id || state.currentWorld,
       currentGroup: world?.group || state.currentGroup,
-      lessonView: "express",
-      lessonFocus: "express",
+      lessonView: "complete",
+      lessonFocus: "complete",
       learnDrill: "courses"
     }, { renderImmediate: true });
     return true;
@@ -4015,7 +4015,7 @@
     document.querySelectorAll("[data-hd214-open-lesson]").forEach(button => button.addEventListener("click", () => {
       const lessonId = button.dataset.hd214OpenLesson;
       if (typeof beta118OpenLessonById === "function") beta118OpenLessonById(lessonId, { source: "beta214-library" });
-      else setState({ tab: "lesson", currentLessonId: lessonId, lessonView: "express", lessonFocus: "express" });
+      else setState({ tab: "lesson", currentLessonId: lessonId, lessonView: "complete", lessonFocus: "complete" });
     }));
   }
 
@@ -4056,18 +4056,18 @@
     return { total, answered, correct, remaining: Math.max(0, total - answered), passed, finished };
   }
   function readerModeCopy(view, lesson){
-    if (view === "complete") return { label: "Cours complet", meta: "Lecture approfondie", progress: 67, stage: "2/3" };
+    if (view === "complete") return { label: "Cours", meta: "Lecture", progress: 50, stage: "1/2" };
     if (view === "quiz") {
       const quiz = readerQuizStatus(lesson);
-      const progress = quiz.total ? Math.round(67 + 33 * (quiz.answered / quiz.total)) : 67;
+      const progress = quiz.total ? Math.round(50 + 50 * (quiz.answered / quiz.total)) : 50;
       const meta = quiz.finished ? `Bilan ${quiz.correct}/${quiz.total}` : `${quiz.answered}/${quiz.total} réponse${quiz.answered > 1 ? "s" : ""}`;
       const stage = quiz.finished ? "Terminé" : `Quiz ${quiz.answered}/${quiz.total}`;
       return { label: "Quiz final", meta, progress: Math.min(100, progress), stage };
     }
-    return { label: "Cours express", meta: "L’essentiel en 90 secondes", progress: 34, stage: "1/3" };
+    return { label: "Cours", meta: "Lecture", progress: 50, stage: "1/2" };
   }
   function readerTabsMarkup(view){
-    return `<nav class="hd214-reader-tabs hd34-reader-tabs" aria-label="Format du cours"><button type="button" data-hd214-reader-view="express" class="${view === "express" ? "active" : ""}"><b>Express</b><small>2 min</small></button><button type="button" data-hd214-reader-view="complete" class="${view === "complete" ? "active" : ""}"><b>Complet</b><small>5 min</small></button><button type="button" data-hd214-reader-view="quiz" class="${view === "quiz" ? "active" : ""}"><b>Quiz</b><small>5 questions</small></button></nav>`;
+    return `<nav class="hd214-reader-tabs hd34-reader-tabs" aria-label="Cours et quiz"><button type="button" data-hd214-reader-view="complete" class="${view === "complete" ? "active" : ""}"><b>Cours</b><small>5 min</small></button><button type="button" data-hd214-reader-view="quiz" class="${view === "quiz" ? "active" : ""}"><b>Quiz</b><small>5 questions</small></button></nav>`;
   }
   function readerFooterMarkup(lesson, view){
     const world = lessonWorld(lesson) || {};
@@ -4076,7 +4076,7 @@
     const quiz = readerQuizStatus(lesson);
 
     if (view === "express") {
-      return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-reading"><button type="button" data-hd214-footer-view="complete"><span>Continuer</span><b>Lire le cours complet</b><em>→</em></button></footer>`;
+      return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-reading"><button type="button" data-hd214-footer-view="complete"><span>Continuer</span><b>Lire le cours</b><em>→</em></button></footer>`;
     }
     if (view === "complete") {
       return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-reading"><button type="button" data-hd214-footer-view="quiz"><span>Continuer</span><b>Passer au quiz</b><em>→</em></button></footer>`;
@@ -4123,7 +4123,7 @@
     if (!lesson) return;
     shell.dataset.hd214Reader = "1";
     shell.classList.add("hd214-reader-shell");
-    const view = ["express", "complete", "quiz"].includes(state.lessonView) ? state.lessonView : "express";
+    const view = ["complete", "quiz"].includes(state.lessonView) ? state.lessonView : "complete";
     const mode = readerModeCopy(view, lesson);
     const content = contentFor(lesson);
     const world = lessonWorld(lesson) || {};
@@ -4168,7 +4168,7 @@
     }
     shell.querySelectorAll("[data-hd214-footer-view]").forEach(button => button.addEventListener("click", () => {
       const nextView = button.dataset.hd214FooterView;
-      if (!["express", "complete", "quiz"].includes(nextView)) return;
+      if (!["complete", "quiz"].includes(nextView)) return;
       setState({ lessonView: nextView, lessonFocus: null });
       window.setTimeout(() => window.scrollTo({ top: 0, behavior: "auto" }), 0);
     }));
@@ -4180,11 +4180,11 @@
       try { resetLessonQuiz(lesson.id); } catch {}
       window.setTimeout(() => window.scrollTo({ top: 0, behavior: "auto" }), 0);
     }));
-    shell.querySelectorAll("[data-hd214-back-theme]").forEach(button => button.addEventListener("click", () => setState({ tab: "learn", learnDrill: "courses", currentGroup: world.group || state.currentGroup, currentWorld: world.id || state.currentWorld, lessonView: "express", lessonFocus: null })));
+    shell.querySelectorAll("[data-hd214-back-theme]").forEach(button => button.addEventListener("click", () => setState({ tab: "learn", learnDrill: "courses", currentGroup: world.group || state.currentGroup, currentWorld: world.id || state.currentWorld, lessonView: "complete", lessonFocus: null })));
     shell.querySelectorAll("[data-hd214-next-lesson]").forEach(button => button.addEventListener("click", () => {
       const id = button.dataset.hd214NextLesson;
       if (typeof beta118OpenLessonById === "function") beta118OpenLessonById(id, { source: "beta214-reader-next" });
-      else setState({ tab: "lesson", currentLessonId: id, lessonView: "express", lessonFocus: "express" });
+      else setState({ tab: "lesson", currentLessonId: id, lessonView: "complete", lessonFocus: "complete" });
       window.setTimeout(() => window.scrollTo({ top: 0, behavior: "auto" }), 0);
     }));
   }
@@ -5053,7 +5053,7 @@
       return {
         stage: 2,
         kind: "lesson",
-        view: "express",
+        view: "complete",
         title: content?.title || lesson.title,
         subtitle: "Le mystère est résolu. Lis maintenant le cours associé pour comprendre pourquoi la réponse était juste.",
         button: "Lire le cours",
@@ -5168,7 +5168,7 @@
         <header><div><span>À découvrir</span><h2>Une seule suggestion, pas une liste</h2></div><button type="button" class="ghost" data-hd218-catalog>Tout voir</button></header>
         ${discovery ? `<article class="hd218-compact-card" data-hd218-discovery-card tabindex="0" role="button">
           <div class="hd218-card-icon">${HD_ICONS.lesson(discovery, lessonWorld(discovery), disciplineForLessonObject(discovery))}</div>
-          <div><small>${esc(lessonMeta(discovery))}</small><h3>${esc(discoveryContent?.title || discovery.title)}</h3><span>Express · cours complet · quiz</span></div>
+          <div><small>${esc(lessonMeta(discovery))}</small><h3>${esc(discoveryContent?.title || discovery.title)}</h3><span>Cours · quiz</span></div>
           <button type="button" data-hd218-discovery>Découvrir</button>
         </article>` : `<article class="hd218-compact-card hd218-empty-card"><div class="hd218-card-icon">${HD_ICONS.action("courses")}</div><div><small>Catalogue</small><h3>Explore les chapitres disponibles</h3><span>Choisis une époque ou un thème</span></div><button type="button" data-hd218-catalog>Ouvrir</button></article>`}
       </section>
@@ -5183,16 +5183,16 @@
 
     document.querySelector("[data-hd218-expedition]")?.addEventListener("click", () => {
       if (stage.kind === "mystery") return openMystery(mystery, disciplineId);
-      if (stage.kind === "lesson" && linkedLesson) return openLessonFromHome(linkedLesson.id, stage.view || "express");
+      if (stage.kind === "lesson" && linkedLesson) return openLessonFromHome(linkedLesson.id, stage.view || "complete");
       openModeLearn(disciplineId);
     });
 
-    const openResume = () => resume ? openLessonFromHome(resume.id, "express") : openModeLearn(disciplineId);
+    const openResume = () => resume ? openLessonFromHome(resume.id, "complete") : openModeLearn(disciplineId);
     document.querySelector("[data-hd218-resume]")?.addEventListener("click", event => { event.stopPropagation(); openResume(); });
     document.querySelector("[data-hd218-resume-card]")?.addEventListener("click", openResume);
     document.querySelector("[data-hd218-resume-card]")?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openResume(); } });
 
-    const openDiscovery = () => discovery ? openLessonFromHome(discovery.id, "express") : openModeLearn(disciplineId);
+    const openDiscovery = () => discovery ? openLessonFromHome(discovery.id, "complete") : openModeLearn(disciplineId);
     document.querySelector("[data-hd218-discovery]")?.addEventListener("click", event => { event.stopPropagation(); openDiscovery(); });
     document.querySelector("[data-hd218-discovery-card]")?.addEventListener("click", openDiscovery);
     document.querySelector("[data-hd218-discovery-card]")?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDiscovery(); } });
@@ -5444,16 +5444,16 @@
 
     document.querySelector("[data-hd219-expedition]")?.addEventListener("click", () => {
       if (stage.kind === "mystery") return setState({ tab: "mystery", currentMysteryId: mystery?.id || null, currentMysteryDiscipline: disciplineId, currentDiscipline: disciplineId });
-      if (stage.kind === "lesson" && linkedLesson) return openLessonFromHome(linkedLesson.id, stage.view || "express");
+      if (stage.kind === "lesson" && linkedLesson) return openLessonFromHome(linkedLesson.id, stage.view || "complete");
       openModeLearn(disciplineId);
     });
 
-    const openResume = () => resume ? openLessonFromHome(resume.id, "express") : openModeLearn(disciplineId);
+    const openResume = () => resume ? openLessonFromHome(resume.id, "complete") : openModeLearn(disciplineId);
     document.querySelector("[data-hd219-resume]")?.addEventListener("click", event => { event.stopPropagation(); openResume(); });
     document.querySelector("[data-hd219-resume-card]")?.addEventListener("click", openResume);
     document.querySelector("[data-hd219-resume-card]")?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openResume(); } });
 
-    const openDiscovery = () => discovery ? openLessonFromHome(discovery.id, "express") : openModeLearn(disciplineId);
+    const openDiscovery = () => discovery ? openLessonFromHome(discovery.id, "complete") : openModeLearn(disciplineId);
     document.querySelector("[data-hd219-discovery]")?.addEventListener("click", event => { event.stopPropagation(); openDiscovery(); });
     document.querySelector("[data-hd219-discovery-card]")?.addEventListener("click", openDiscovery);
     document.querySelector("[data-hd219-discovery-card]")?.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDiscovery(); } });
@@ -6129,7 +6129,7 @@
     return [world?.title, lesson.period || lesson.location].filter(Boolean).slice(0, 2).join(" · ") || "3 min de lecture";
   }
 
-  function openLesson(lesson, view = "express"){
+  function openLesson(lesson, view = "complete"){
     if (!lesson) return;
     const world = safe(() => lessonWorld(lesson), {}) || {};
     const disciplineId = safe(() => lessonDisciplineId(lesson), activeDisciplineId()) || activeDisciplineId();
@@ -6433,7 +6433,7 @@
     shell?.querySelector("[data-hd220-catalog]")?.addEventListener("click", () => openCatalog(disciplineId));
     shell?.querySelector("[data-hd220-expedition]")?.addEventListener("click", () => {
       if (stageView.type === "mystery") return setState({ tab:"mystery", currentMysteryId:mystery?.id || null, currentMysteryDiscipline:disciplineId, currentDiscipline:disciplineId });
-      if (stageView.type === "lesson" && linkedLesson) return openLesson(linkedLesson, stageView.view || "express");
+      if (stageView.type === "lesson" && linkedLesson) return openLesson(linkedLesson, stageView.view || "complete");
       if (stageView.type === "catalog") return openCatalog(disciplineId);
       if (linkedLesson) return openLesson(linkedLesson, stageView.view || "complete");
       return setState({ tab:"mystery" });
@@ -6442,7 +6442,7 @@
       const launch = () => {
         const id = card.dataset.hd220OpenLesson;
         const lesson = id ? safe(() => lessonById(id), null) : null;
-        lesson ? openLesson(lesson, "express") : openCatalog(disciplineId);
+        lesson ? openLesson(lesson, "complete") : openCatalog(disciplineId);
       };
       card.addEventListener("click", launch);
       card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); launch(); } });
@@ -11127,7 +11127,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.35.0";
+  const VERSION = "1.0.0-rc.36.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11151,7 +11151,7 @@
     const world = safe(() => lessonWorld(lesson), null);
     return [world?.title, lesson.period || lesson.location || "3 min"].filter(Boolean).slice(0,2).join(" · ");
   }
-  function openLesson(lesson, view="express"){
+  function openLesson(lesson, view="complete"){
     if (!lesson) return;
     const world = safe(() => lessonWorld(lesson), {}) || {};
     const did = safe(() => lessonDisciplineId(lesson), activeId());
@@ -11176,7 +11176,7 @@
     const quiz = Boolean(lesson?.id && safe(() => lessonQuizPassed(lesson.id), false));
     if (!mystery) return {index:1,type:"catalog",kicker:"Exploration libre",title:"Choisis ta prochaine destination",text:"Le catalogue est ouvert : pioche un cours qui t’attire.",action:"Explorer les cours"};
     if (!solved) return {index:1,type:"mystery",kicker:"Expédition du jour",title:mysteryTitle(mystery),text:mysteryTeaserText(mystery),action:"Commencer l’expédition"};
-    if (lesson && !read) return {index:2,type:"lesson",view:"express",kicker:"Étape 2 · Comprendre",title:titleOf(lesson),text:"Trouvé. Comprends maintenant pourquoi cette réponse tient.",action:"Lire le cours"};
+    if (lesson && !read) return {index:2,type:"lesson",view:"complete",kicker:"Étape 2 · Comprendre",title:titleOf(lesson),text:"Trouvé. Comprends maintenant pourquoi cette réponse tient.",action:"Comprendre"};
     if (lesson && !quiz) return {index:3,type:"lesson",view:"quiz",kicker:"Étape 3 · Vérifier",title:"Ancre ce que tu viens d’apprendre",text:`5 questions pour ancrer l’essentiel de « ${titleOf(lesson)} ».`,action:"Faire le quiz"};
     return {index:4,type:lesson?"lesson":"mystery",view:"complete",kicker:"Parcours du jour terminé",title:"Bien joué — la boucle est complète",text:"Expédition, cours et quiz : rituel terminé.",action:lesson?"Revoir le cours":"Revoir l’expédition"};
   }
@@ -11208,7 +11208,7 @@
       const art = artIds.has(item.id) ? " has-art" : "";
       return `<button type="button" class="rc24-world${isActive?" active":""}${art}" data-rc24-world="${esc(item.id)}" style="--world:${esc(item.accent||"#f5c451")}" aria-pressed="${isActive}">
         <span class="rc24-world-art" aria-hidden="true"></span><span class="rc24-world-icon">${icon(item)}</span>
-        <span class="rc24-world-copy"><b>${esc(disciplineName(item))}</b><small>${Number(m.score||0)}% maîtrisé</small></span>
+        <span class="rc24-world-copy"><b>${esc(disciplineName(item))}</b><small>${Number(m.total||0)} cours disponibles</small></span>
       </button>`;
     }).join("");
     return `<div class="rc24-world-grid">${list}</div>`;
@@ -11221,7 +11221,6 @@
     const linked = mystery?.lessonId ? safe(() => lessonById(mystery.lessonId), null) : null;
     const s = stage(mystery, linked);
     const next = nextAction(id, linked);
-    const m = mastery(id);
     const streak = Math.max(0, Number(safe(() => currentStreakValue(), state?.streak || 0)) || 0);
     const lvl = Number(safe(() => level(), 1)) || 1;
     const greeting = String(state?.pseudo||"").trim() && !/^invité$/i.test(String(state.pseudo)) ? `Bonjour ${String(state.pseudo).trim()}` : "Bonjour";
@@ -11256,10 +11255,6 @@
           <span class="rc24-next-copy"><small>${esc(next.eyebrow)}</small><b>${esc(next.title)}</b><em>${esc(next.meta)}</em></span>
           <span class="rc24-next-arrow">→</span>
         </button>
-        <button type="button" class="rc24-mastery" data-rc24-catalog aria-label="Voir le parcours ${esc(disciplineName(d))}">
-          <span class="rc24-ring" style="--p:${clamp(m.score,0,100)}"><i>${Number(m.score||0)}%</i></span>
-          <span><small>Maîtrise</small><b>${Number(m.mastered||0)} maîtrisé${Number(m.mastered||0)>1?"s":""}</b><em>${Number(m.done||0)}/${Number(m.total||0)} cours validés</em></span>
-        </button>
       </section>
 
       <details class="rc24-universes">
@@ -11274,14 +11269,14 @@
     shell?.querySelector("[data-rc24-catalog]")?.addEventListener("click",()=>openCatalog(id));
     shell?.querySelector("[data-rc24-primary]")?.addEventListener("click",()=>{
       if (s.type==="mystery") return setState({tab:"mystery",currentMysteryId:mystery?.id||null,currentMysteryDiscipline:id,currentDiscipline:id});
-      if (s.type==="lesson" && linked) return openLesson(linked,s.view||"express");
+      if (s.type==="lesson" && linked) return openLesson(linked,s.view||"complete");
       if (s.type==="catalog") return openCatalog(id);
       if (linked) return openLesson(linked,s.view||"complete");
       return setState({tab:"mystery"});
     });
     shell?.querySelector("[data-rc24-next]")?.addEventListener("click",()=>{
       if (next.kind==="review") return safe(()=>memoryApi()?.openReviewSession?.(id),null);
-      if (next.kind==="lesson" && next.lesson) return openLesson(next.lesson,"express");
+      if (next.kind==="lesson" && next.lesson) return openLesson(next.lesson,"complete");
       return openCatalog(id);
     });
     shell?.querySelectorAll("[data-rc24-world]").forEach(button=>button.addEventListener("click",()=>{
@@ -11442,7 +11437,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.35.0";
+  const VERSION = "1.0.0-rc.36.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -11530,7 +11525,7 @@
   if (previousRenderLessonText) {
     renderLessonText = function rc31RenderLessonText(lesson, content){
       let html = String(previousRenderLessonText(lesson, content) || "");
-      const view = safe(() => lessonView(), String(state?.lessonView || "express"));
+      const view = safe(() => lessonView(), String(state?.lessonView || "complete"));
       if (view !== "quiz") return html;
       const snapshot = quizSnapshot(lesson, content);
       if (!snapshot.finished) return html;
@@ -11554,7 +11549,7 @@
         if (snapshot.passed) {
           quiz.innerHTML = completionMarkup(lesson, snapshot);
         } else {
-          quiz.innerHTML = `<section class="rc31-retry"><span class="card-label">À consolider</span><h3>${snapshot.correct}/${snapshot.total} bonnes réponses</h3><p>Il en faut ${snapshot.threshold}. Relis seulement les points qui t’ont posé problème, puis retente : inutile de repartir de zéro.</p><div class="rc31-completion-actions"><button type="button" data-lesson-view="express">Relire l’essentiel</button><button type="button" class="ghost" data-reset-quiz>Retenter le quiz</button></div></section>`;
+          quiz.innerHTML = `<section class="rc31-retry"><span class="card-label">À consolider</span><h3>${snapshot.correct}/${snapshot.total} bonnes réponses</h3><p>Il en faut ${snapshot.threshold}. Relis seulement les points qui t’ont posé problème, puis retente : inutile de repartir de zéro.</p><div class="rc31-completion-actions"><button type="button" data-lesson-view="complete">Relire le cours</button><button type="button" class="ghost" data-reset-quiz>Retenter le quiz</button></div></section>`;
         }
       }
       return template.innerHTML;
@@ -11565,7 +11560,7 @@
     const lesson = safe(() => lessonById(id), null);
     if (!lesson) return;
     const world = safe(() => lessonWorld(lesson), {}) || {};
-    setState({ tab:"lesson", currentLessonId:lesson.id, currentDiscipline:lessonDiscipline(lesson), currentWorld:world.id || state.currentWorld, currentGroup:world.group || state.currentGroup, lessonView:"express", lessonFocus:null });
+    setState({ tab:"lesson", currentLessonId:lesson.id, currentDiscipline:lessonDiscipline(lesson), currentWorld:world.id || state.currentWorld, currentGroup:world.group || state.currentGroup, lessonView:"complete", lessonFocus:null });
     window.scrollTo?.({ top:0, behavior:"smooth" });
   }
 
@@ -11598,7 +11593,7 @@
 /* HistoDaily RC35 — product polish: coherent mobile interaction without new feature layers. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.35.0";
+  const VERSION = "1.0.0-rc.36.0";
   const root = document.documentElement;
   const app = document.getElementById("app");
   let scheduled = false;
@@ -11683,6 +11678,23 @@
       productPolishVersion: VERSION,
       productPolish: true
     };
+  } catch {}
+})();
+
+;
+
+/* ===== SOURCE: lean-flow-rc36.js ===== */
+/* HistoDaily RC36 — lean learning flow. Express remains in data/code, dormant in the current UI. */
+(() => {
+  "use strict";
+  const VERSION = "1.0.0-rc.36.0";
+  document.documentElement.classList.add("hd36-lean-flow");
+  try {
+    if (typeof state === "object" && state) {
+      if (state.lessonView === "express") state.lessonView = "complete";
+      if (state.lessonFocus === "express") state.lessonFocus = "complete";
+    }
+    window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, expressDormant: true, leanLearningFlow: true };
   } catch {}
 })();
 

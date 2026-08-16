@@ -228,7 +228,7 @@ const defaultState = {
   currentMysteryDiscipline: "history",
   currentMysteryOpenedDay: null,
   lessonFocus: null,
-  lessonView: "express",
+  lessonView: "complete",
   seenHints: {},
   mysteryTries: {},
   mysteryFeedback: {},
@@ -623,7 +623,7 @@ function completeLesson(id) {
 /* LTS: fonction morte supprimée (readingModeHint). */
 function setReadingMode(mode) {
   if (!["express", "complete"].includes(mode)) return;
-  setState({ readingMode: mode, lessonView: mode === "complete" ? "complete" : "express" });
+  setState({ readingMode: mode, lessonView: mode === "complete" ? "complete" : "complete" });
 }
 function lessonSpoilsMystery(lesson, mystery) {
   if (!lesson || !mystery) return false;
@@ -791,10 +791,10 @@ function homeDiscoveryMarkup(lessons = homeDiscoveryLessons()) {
     <div class="home-card-footer"><span>Tu peux changer les propositions quand rien ne t’accroche.</span><button class="ghost" type="button" data-refresh-discovery>Voir 3 autres cours</button></div>
   </section>`;
 }
-function openLessonFromHome(lessonId, view = "express") {
+function openLessonFromHome(lessonId, view = "complete") {
   const lesson = curatedLessonById(lessonId);
   if (!lesson || lessonLockedByDailyMystery(lesson)) {
-    setState({ tab: "learn", lessonFocus: null, lessonView: "express" });
+    setState({ tab: "learn", lessonFocus: null, lessonView: "complete" });
     return;
   }
   const worldId = lessonWorldId(lesson.id);
@@ -811,7 +811,7 @@ function openLessonFromHome(lessonId, view = "express") {
   });
 }
 function openDiscoveredLesson(lessonId) {
-  openLessonFromHome(lessonId, "express");
+  openLessonFromHome(lessonId, "complete");
 }
 function homeContinueLesson() {
   const current = allLessons().find(item => item.id === state.currentLessonId);
@@ -850,7 +850,7 @@ function homeContinueMarkup() {
   const progress = quizProgressForLesson(lesson.id, quizItems.length);
   const started = progress.answeredCount > 0;
   const action = started ? `Reprendre le quiz (${progress.answeredCount}/${progress.total})` : "Reprendre le cours";
-  const view = started && !progress.passed ? "quiz" : "express";
+  const view = started && !progress.passed ? "quiz" : "complete";
   const detail = started
     ? `${progress.correctCount}/${progress.total} bonnes réponses · validation à ${progress.threshold}/${progress.total}`
     : `${lessonEpochLabel(world)} · ${world.title || "Parcours"} · Express ou complet avant quiz`;
@@ -7150,7 +7150,7 @@ function renderCourseUnavailable(lesson = {}) {
   const world = lessonWorld(lesson);
   renderShell(`<header class="topbar"><button data-back-learn>←</button><div><p class="eyebrow">${escapeHtml(world.title || "Parcours")}</p><h1>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} ${escapeHtml(lesson.title || "Cours")}</h1></div></header>
     <section class="card locked-course-card"><span class="card-label">À venir</span><h2>Ce parcours sera ajouté plus tard.</h2><p>Reviens au chapitre pour choisir un cours disponible dès maintenant.</p><div class="after-actions"><button data-back-learn>Retour au parcours</button><button class="ghost" data-go-home>Accueil</button></div></section>`);
-  document.querySelectorAll("[data-back-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn", currentWorld: lessonWorldId(lesson.id), lessonFocus: null, lessonView: "express" })));
+  document.querySelectorAll("[data-back-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn", currentWorld: lessonWorldId(lesson.id), lessonFocus: null, lessonView: "complete" })));
   document.querySelectorAll("[data-go-home]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "home" })));
 }
 function renderLesson() {
@@ -7159,17 +7159,17 @@ function renderLesson() {
   if (!isCuratedLesson(lesson)) return renderCourseUnavailable(lesson);
   if (lessonLockedByDailyMystery(lesson)) {
     renderShell(lessonLockMarkup(lesson));
-    document.querySelectorAll("[data-back-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "express" })));
+    document.querySelectorAll("[data-back-learn]").forEach(btn => btn.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "complete" })));
     $(`[data-open-daily-mystery]`)?.addEventListener("click", () => setState({ tab: "mystery", currentMysteryId: dailyMystery()?.id || null, currentMysteryDiscipline: activeDisciplineId() }));
     return;
   }
   const requestedLessonFocus = state.lessonFocus;
   if (requestedLessonFocus) {
-    state.lessonView = ["express", "complete", "quiz"].includes(requestedLessonFocus) ? requestedLessonFocus : "express";
+    state.lessonView = ["complete", "quiz"].includes(requestedLessonFocus) ? requestedLessonFocus : "complete";
     state.lessonFocus = null;
     saveState();
   }
-  if (!["express", "complete", "quiz"].includes(state.lessonView)) state.lessonView = "express";
+  if (!["complete", "quiz"].includes(state.lessonView)) state.lessonView = "complete";
   const content = buildLessonContent(lesson);
   if (content.unavailable) return renderCourseUnavailable(lesson);
   const quizPassed = lessonQuizPassed(lesson.id);
@@ -7183,7 +7183,7 @@ function renderLesson() {
       ${renderLessonText(lesson, content)}
       ${footer}
     </article>`);
-  $("[data-back-learn]")?.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "express" }));
+  $("[data-back-learn]")?.addEventListener("click", () => setState({ tab: "learn", lessonFocus: null, lessonView: "complete" }));
   $("[data-complete]")?.addEventListener("click", () => completeLesson(lesson.id));
   document.querySelectorAll("[data-quiz-choice]").forEach(btn => btn.addEventListener("click", event => {
     event.preventDefault();
@@ -7230,7 +7230,7 @@ function bindLessonDisclosureControls() {
 /* LTS: fonction morte supprimée (lessonMemoMarkup). */
 
 function lessonView() {
-  return ["express", "complete", "quiz"].includes(state.lessonView) ? state.lessonView : "express";
+  return ["complete", "quiz"].includes(state.lessonView) ? state.lessonView : "complete";
 }
 function lessonTabButton(view, label, sub) {
   const active = lessonView() === view ? "active" : "";
@@ -7483,7 +7483,7 @@ function quizItemMarkup(item, index, quizItems, lesson, content) {
         return `<button type="button" class="quiz-choice ${cls}" data-quiz-choice="${index}" data-choice-index="${choiceIndex}" ${isLocked ? "disabled" : ""}><span>${String.fromCharCode(65 + choiceIndex)}</span>${escapeHtml(choice.text)}</button>`;
       }).join("")}
     </div>
-    ${isCorrect ? `<p class="quiz-result good"><b>Correct.</b> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Explication :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : wrongSelected ? `<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${escapeHtml(item.a)}</strong></p>${item.why ? `<p class="quiz-explain"><strong>Explication :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>À ne pas confondre :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Dans le cours :</strong> ${escapeHtml(item.evidence)}</p>` : ""}` : `<p class="quiz-result neutral">Choisis la réponse la plus précise. La correction apparaîtra après ton choix.</p>`}
+    ${isCorrect ? `<p class="quiz-result good"><b>Correct.</b> ${escapeHtml(item.a)}</p>${item.why ? `<p class="quiz-explain"><strong>Explication :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Dans le cours :</strong> ${escapeHtml(String(item.evidence).replace(/\bExpress(?:\s+\d+)?\b/gi, "le cours"))}</p>` : ""}` : wrongSelected ? `<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${escapeHtml(item.a)}</strong></p>${item.why ? `<p class="quiz-explain"><strong>Explication :</strong> ${escapeHtml(item.why)}</p>` : ""}${item.trap ? `<p class="quiz-trap"><strong>À ne pas confondre :</strong> ${escapeHtml(item.trap)}</p>` : ""}${item.evidence ? `<p class="quiz-evidence"><strong>Dans le cours :</strong> ${escapeHtml(String(item.evidence).replace(/\bExpress(?:\s+\d+)?\b/gi, "le cours"))}</p>` : ""}` : `<p class="quiz-result neutral">Choisis la réponse la plus précise. La correction apparaîtra après ton choix.</p>`}
   </article>`;
 }
 function handleQuizChoice(lessonId, questionIndex, choiceIndex) {
@@ -7559,8 +7559,7 @@ function renderLessonText(lesson, content) {
   const progressForHeader = quizProgressForLesson(lesson.id, quizItems.length);
   const toolbar = `<section class="rc26-course-toolbar" aria-label="Format du cours">
     <div class="rc26-course-tabs">
-      ${lessonTabButton("express", "Express", "2 min")}
-      ${lessonTabButton("complete", "Complet", "5 min")}
+      ${lessonTabButton("complete", "Cours", "5 min")}
       ${lessonTabButton("quiz", "Quiz", `${progressForHeader.correctCount}/${quizItems.length}`)}
     </div>
   </section>`;
@@ -7572,7 +7571,7 @@ function renderLessonText(lesson, content) {
     return `${toolbar}${lead}
       ${keyFactsMarkup}
       <section class="complete-course-panel rc26-complete" data-focus-target="complete">
-        <div class="section-title-row rc26-section-head"><h2>${HD_ICONS.action("lesson")} Cours complet</h2><small>${estimatedMinutes} min</small></div>
+        <div class="section-title-row rc26-section-head"><h2>${HD_ICONS.action("lesson")} Le cours</h2><small>${estimatedMinutes} min</small></div>
         ${completeBlocks.map(block => `<section class="text-block deep-reading-block"><h2>${escapeHtml(block.title)}</h2><div class="deep-reading-text">${paragraphMarkup(block.text)}</div></section>`).join("")}
       </section>
       ${lessonTakeawayMarkup(takeaways)}
@@ -7729,7 +7728,7 @@ function renderMystery() {
         <p>${escapeHtml(mystery.explanation || "")}</p>
         <div class="hd300-result-line"><b>${solvedData.score || mysteryScore(mystery.id)} XP</b><span>${paidHints ? `${paidHints} indice${paidHints > 1 ? "s" : ""} payant${paidHints > 1 ? "s" : ""}` : "indice de départ offert"}</span><span>${solvedData.tries || tries || 1} essai${(solvedData.tries || tries || 1) > 1 ? "s" : ""}</span>${solvedData.guided ? "<span>mode guidé</span>" : ""}</div>
         ${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}
-        ${lesson ? `<div class="hd34-solved-next"><button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="express">Comprendre la réponse →</button><button class="ghost" data-home-stop>Retour à l’accueil</button></div>` : `<div class="hd34-solved-next"><button data-home-stop>Retour à l’accueil</button></div>`}
+        ${lesson ? `<div class="hd34-solved-next"><button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="complete">Comprendre →</button><button class="ghost" data-home-stop>Retour à l’accueil</button></div>` : `<div class="hd34-solved-next"><button data-home-stop>Retour à l’accueil</button></div>`}
       </div>` : `<section class="hd300-answer-zone hd325-answer-zone rc26-answer-zone ${guidedMode ? "is-guided" : "is-free"}">
         <span class="rc26-your-turn">${guidedMode ? "Choisis ta réponse" : "Ta réponse"}</span>
         ${guidedMode && guidedChoices.length >= 3 ? `<div class="hd310-choice-grid rc26-choice-grid" role="group" aria-label="Propositions de réponse">${guidedChoices.map((choice, index) => `<button type="button" class="hd310-answer-choice" data-guided-answer="${escapeHtml(choice)}"><i>${String.fromCharCode(65 + index)}</i><span>${escapeHtml(choice)}</span></button>`).join("")}</div><form class="sr-only hd34-guided-submit-bridge" data-guess aria-hidden="true"><input name="mysteryGuess" data-guess-input type="text" tabindex="-1"/><button type="submit" tabindex="-1">Valider</button></form>` : `<form class="guess hd300-guess rc26-guess" data-guess>
@@ -7793,8 +7792,8 @@ function renderMystery() {
   document.querySelectorAll("[data-open-lesson]").forEach(btn => btn.addEventListener("click", () => setState({
     tab: "lesson",
     currentLessonId: btn.dataset.openLesson,
-    lessonFocus: btn.dataset.focus || "express",
-    lessonView: btn.dataset.focus || "express"
+    lessonFocus: btn.dataset.focus || "complete",
+    lessonView: btn.dataset.focus || "complete"
   })));
   document.querySelectorAll("[data-open-mystery-id]").forEach(btn => btn.addEventListener("click", () => setState({ currentMysteryId: btn.dataset.openMysteryId, currentMysteryDiscipline: mysteryById(btn.dataset.openMysteryId) ? mysteryDisciplineId(mysteryById(btn.dataset.openMysteryId)) : activeDisciplineId(), archiveFeedback: "" })));
   document.querySelectorAll("[data-unlock-mystery]").forEach(btn => btn.addEventListener("click", () => unlockPastMystery(btn.dataset.unlockMystery)));
@@ -8838,7 +8837,7 @@ function selectDiscipline(disciplineId) {
 function disciplineEmptyMarkup(discipline) {
   return `<section class="card discipline-empty-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
     <div class="discipline-empty-icon">${HD_ICONS.discipline(discipline)}</div>
-    <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>La discipline est prête dans l’interface, pas encore remplie.</h2><p>On garde l’app légère : pas besoin d’ajouter cinquante cours vides. Dès qu’on écrira les contenus, ils apparaîtront ici avec le même système express, cours complet et quiz.</p></div>
+    <div><span class="card-label">${escapeHtml(discipline.title)}</span><h2>La discipline est prête dans l’interface, pas encore remplie.</h2><p>On garde l’app légère : pas besoin d’ajouter cinquante cours vides. Dès qu’on écrira les contenus, ils apparaîtront ici avec le même parcours : cours puis quiz.</p></div>
   </section>`;
 }
 function chapterDisplayTitle(value, fallback = "Chapitre") {
@@ -8891,7 +8890,7 @@ function treeLessonCard(lesson, index, world) {
   const status = done ? "Validé" : progress.passed ? "Quiz réussi" : progress.correctCount ? `${progress.correctCount}/5 quiz` : "À faire";
   return `<article class="tree-lesson ${done ? "done" : ""}" data-lesson="${escapeHtml(lesson.id)}" tabindex="0" role="button">
     <span class="tree-lesson-number">${done ? "✓" : index + 1}</span>
-    <div><h3>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.period || lesson.location || world.title)}</p><small>${escapeHtml(world.title)} · Express · Complet · Quiz${mystery ? " · Mystère lié" : ""}</small></div>
+    <div><h3>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.period || lesson.location || world.title)}</p><small>${escapeHtml(world.title)} · Cours · Quiz${mystery ? " · Mystère lié" : ""}</small></div>
     <strong>${status}</strong>
   </article>`;
 }
@@ -8969,7 +8968,7 @@ function renderLearn() {
     setState({ learnSearch: String(input?.value || "").trim() });
   });
   $(`[data-clear-learn-search]`)?.addEventListener("click", () => setState({ learnSearch: "" }));
-  const openLesson = id => openLessonFromHome(id, "express");
+  const openLesson = id => openLessonFromHome(id, "complete");
   document.querySelectorAll("[data-lesson]").forEach(card => {
     const open = () => openLesson(card.dataset.lesson);
     card.addEventListener("click", open);
@@ -11489,7 +11488,7 @@ function applyVisibleStateGuard({ save = true } = {}) {
     state.currentLessonId = null;
     if (state.tab === "lesson") state.tab = "learn";
     state.lessonFocus = null;
-    state.lessonView = "express";
+    state.lessonView = "complete";
     changed = true;
   }
   if (state.currentMysteryId && !mysteryIds.has(state.currentMysteryId)) {
@@ -11502,7 +11501,7 @@ function applyVisibleStateGuard({ save = true } = {}) {
   }
   const allowedTabs = new Set(["home", "learn", "lesson", "mystery", "rank", "profile", "publicProfile"]);
   if (!allowedTabs.has(state.tab)) { state.tab = "home"; changed = true; }
-  if (!["express", "complete", "quiz"].includes(state.lessonView)) { state.lessonView = "express"; changed = true; }
+  if (!["express", "complete", "quiz"].includes(state.lessonView)) { state.lessonView = "complete"; changed = true; }
   if (!["all", "ready", "done", "todo"].includes(state.learnFilter)) { state.learnFilter = "all"; changed = true; }
   if (changed && save) saveState();
 }
@@ -12275,7 +12274,7 @@ function renderHome() {
   document.querySelectorAll("[data-home-continue]").forEach(btn => btn.addEventListener("click", event => {
     event.preventDefault();
     event.stopPropagation();
-    openLessonFromHome(btn.dataset.homeContinue, btn.dataset.homeContinueView || "express");
+    openLessonFromHome(btn.dataset.homeContinue, btn.dataset.homeContinueView || "complete");
   }));
   document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("click", event => {
     event.stopPropagation();
@@ -16076,7 +16075,7 @@ function modeContinueMarkup(disciplineId = activeDisciplineId()) {
   const ratio = percent(done, lessons.length);
   const progress = quizProgressForLesson(lesson.id, normalizeQuizPack(content.quiz, lesson, content).length);
   const action = progress.answeredCount && !progress.passed ? `Reprendre le quiz (${progress.answeredCount}/${progress.total})` : (lessonDone(lesson.id) ? "Revoir" : "Commencer");
-  const view = progress.answeredCount && !progress.passed ? "quiz" : "express";
+  const view = progress.answeredCount && !progress.passed ? "quiz" : "complete";
   return `<section class="card home-main-card home-continue-card mode-continue-card mode-course-card" style="--discipline-accent:${escapeHtml(discipline.accent)}">
     <div class="section-title-row"><div><span class="card-label">Continuer en ${escapeHtml(discipline.title)}</span><h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), discipline)} ${escapeHtml(content.title || lesson.title)}</h2></div><small>${ratio}%</small></div>
     <p>${escapeHtml(short(content.hook || content.express?.[0] || discipline.description, 190))}</p>
@@ -16108,7 +16107,7 @@ function modeRecommendationsMarkup(disciplineId = activeDisciplineId()) {
             <span class="home-discovery-kicker">${escapeHtml(world.title || discipline.title)} · cours ${index + 1}</span>
             <h3>${HD_ICONS.lesson(lesson, world, discipline)} ${escapeHtml(content.title || lesson.title)}</h3>
             <p>${escapeHtml(short(content.hook || content.express?.[0] || "Un sujet à découvrir avant le quiz.", 165))}</p>
-            <small>Express · Complet · Quiz</small>
+            <small>Cours · Quiz</small>
             <button type="button" data-home-discovery-open="${escapeHtml(lesson.id)}">${done ? "Revoir" : "Commencer"}</button>
           </article>`;
         }).join("")}
@@ -16303,7 +16302,7 @@ function beta114NormalizeState() {
     if (!lesson) {
       state.tab = "learn";
       state.currentLessonId = null;
-      state.lessonView = "express";
+      state.lessonView = "complete";
       state.lessonFocus = null;
     } else {
       const world = typeof lessonWorld === "function" ? lessonWorld(lesson) : null;
@@ -16469,7 +16468,7 @@ try { beta114NormalizeState(); } catch {}
    ========================================================= */
 const BETA115_VERSION = "1.0.0-beta.207";
 const BETA115_SESSION_KEY = `${STORAGE_KEY}_session_health`;
-const BETA115_ALLOWED_LESSON_VIEWS = new Set(["express", "complete", "quiz"]);
+const BETA115_ALLOWED_LESSON_VIEWS = new Set(["complete", "quiz"]);
 const BETA115_ALLOWED_PERFORMANCE = new Set(["smart", "static", "balanced", "light"]);
 const beta115PreviousNormalizeState = beta114NormalizeState;
 let beta115LastHealthyRender = 0;
@@ -16524,8 +16523,8 @@ function beta115NormalizeDeepState() {
   state.streak = beta115CoerceNumber(state.streak, 0, 0, 3650);
   if (!BETA115_ALLOWED_PERFORMANCE.has(state.performanceMode)) state.performanceMode = "smart";
   if (state.performanceMode === "light") state.performanceMode = "smart";
-  if (!BETA115_ALLOWED_LESSON_VIEWS.has(state.lessonView)) state.lessonView = "express";
-  if (!BETA115_ALLOWED_LESSON_VIEWS.has(state.lessonFocus)) state.lessonFocus = state.lessonView || "express";
+  if (!BETA115_ALLOWED_LESSON_VIEWS.has(state.lessonView)) state.lessonView = "complete";
+  if (!BETA115_ALLOWED_LESSON_VIEWS.has(state.lessonFocus)) state.lessonFocus = state.lessonView || "complete";
 
   const savedPseudo = beta114SavedPseudo();
   if ((!state.pseudo || /^invité$/i.test(state.pseudo)) && savedPseudo) state.pseudo = savedPseudo;
@@ -16543,8 +16542,8 @@ function beta115NormalizeDeepState() {
     if (first) {
       state.currentLessonId = first.id;
       state.currentWorld = lessonWorldId(first.id) || state.currentWorld;
-      state.lessonView = "express";
-      state.lessonFocus = "express";
+      state.lessonView = "complete";
+      state.lessonFocus = "complete";
     } else {
       state.tab = "learn";
     }
@@ -16849,7 +16848,7 @@ renderHome = function beta117RenderHome() {
   document.querySelectorAll("[data-home-mystery-button]").forEach(btn => btn.addEventListener("click", event => { event.stopPropagation(); openMystery(); }));
   document.querySelectorAll("[data-beta-refresh-mystery]").forEach(btn => btn.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); beta117RefreshMystery(disciplineId); }));
   document.querySelectorAll("[data-home-continue]").forEach(btn => btn.addEventListener("click", event => {
-    event.preventDefault(); event.stopPropagation(); openLessonFromHome(btn.dataset.homeContinue, btn.dataset.homeContinueView || "express");
+    event.preventDefault(); event.stopPropagation(); openLessonFromHome(btn.dataset.homeContinue, btn.dataset.homeContinueView || "complete");
   }));
   document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("click", event => { event.stopPropagation(); openDiscoveredLesson(card.dataset.homeDiscovery); }));
   document.querySelectorAll("[data-home-discovery]").forEach(card => card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDiscoveredLesson(card.dataset.homeDiscovery); } }));
@@ -16929,8 +16928,8 @@ function beta118OpenLessonById(lessonId, { source = "course-card" } = {}) {
     currentGroup: groupId,
     currentWorld: world?.id || state.currentWorld,
     currentLessonId: lesson.id,
-    lessonFocus: "express",
-    lessonView: "express",
+    lessonFocus: "complete",
+    lessonView: "complete",
     learnDrill: "courses",
     betaLastCourseOpen: { id: lesson.id, source, at: Date.now() }
   }, { renderImmediate: true });
@@ -19764,7 +19763,7 @@ try {
   handleQuizChoice = function beta165HandleQuizChoice(lessonId, qi, ci){ const lesson=allLessons().find(l=>key(l.id)===key(lessonId)); if(!lesson) return false; const content=buildLessonContent(lesson), items=normalizeQuizPack(content.quiz,lesson,content), item=items[qi]; if(!item) return false; const k=key(lesson.id), p=lessonQuizState(k); if(Number.isInteger(p.answers?.[qi])||Number.isInteger(p.answers?.[String(qi)])||p.passed) return false; const choices=quizChoicesFor(item,items,lesson,content,qi), choice=choices[ci]; if(!choice) return false; const answers={...(p.answers||{}),[qi]:ci}, correct={...(p.correct||{}),[qi]:Boolean(choice.correct)}; const ccount=Object.values(correct).filter(Boolean).length, acount=Object.keys(answers).length, threshold=lessonQuizPassThreshold(items.length), passed=acount>=items.length&&ccount>=threshold, failed=acount>=items.length&&!passed; const quizProgress={...(state.quizProgress||{}),[k]:{...p,answers,correct,attempts:Number(p.attempts||0)+1,passed}}; const newly=passed&&!lessonDone(lesson.id), completedLessons=newly?{...(state.completedLessons||{}),[lesson.id]:true}:state.completedLessons, achievements=newly?{...(state.achievements||{}),firstLesson:true}:state.achievements, gain=newly?Number(lesson.xp||55):0; const quizFeedback={...(state.quizFeedback||{}),[k]:passed?`Quiz réussi : ${ccount}/${items.length}. Cours validé automatiquement.`:failed?`Score : ${ccount}/${items.length}. Il faut au moins ${threshold}/${items.length}.`:choice.correct?`Correct. ${ccount}/${items.length} bonne(s).`:`Réponse fausse. Continue : validation à ${threshold}/${items.length}.`}; window.HDSound?.play?.(passed?"complete":(choice.correct?"correct":"wrong"),{force:true}); setSafe({quizProgress,quizFeedback,quizStep:{...qmap("quizStep"),[k]:qi},completedLessons,achievements,xp:xpTotal()+gain,lessonView:"quiz",lessonFocus:null}); if(gain) try{showXPToast?.(gain,"leçon validée")}catch{}; return true; };
   resetLessonQuiz = function beta165ResetLessonQuiz(lessonId){ const k=key(lessonId), qp={...(state.quizProgress||{})}, qf={...(state.quizFeedback||{})}, qs={...qmap("quizStep")}; delete qp[k]; delete qf[k]; delete qs[k]; setSafe({quizProgress:qp,quizFeedback:qf,quizStep:qs,lessonView:"quiz",lessonFocus:null}); };
   const prevLessonText = typeof renderLessonText === "function" ? renderLessonText : null;
-  if (prevLessonText) renderLessonText = function beta165RenderLessonText(lesson,content){ if(typeof lessonView==="function"&&lessonView()!=="quiz") return prevLessonText(lesson,content); const items=normalizeQuizPack(content.quiz,lesson,content), rt=quizRuntime(lesson.id,items.length), facts=(typeof lessonKeyFacts==="function"?lessonKeyFacts(lesson,content):[]), feedback=state.quizFeedback?.[key(lesson.id)]||""; const intro=`<section class="lesson-hook beta165-lesson-hook"><span class="card-label">Quiz final</span><p>${esc(content.hook||lesson.title||"Réponds aux questions.")}</p></section>`, tabs=`<section class="lesson-choice-panel quiz-flow-panel beta165-quiz-tabs"><div><span class="card-label">Étape finale</span><h2>Quiz en ${items.length} étapes</h2><p>Une question à la fois : moins lourd, plus lisible.</p></div><div class="lesson-view-tabs">${lessonTabButton("express","Relire express","court")}${lessonTabButton("complete","Relire complet","5 min")}</div><small>${rt.correct}/${items.length} bonnes · seuil ${rt.threshold}/${items.length}</small></section>`, factsHtml=facts.length?`<div class="key-facts beta165-quiz-facts"><b>Repères utiles</b>${facts.slice(0,4).map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:""; if(rt.finished||rt.passed) return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${rt.correct}/${items.length}</small></div><div class="beta165-score-panel ${rt.passed?"good":"bad"}"><b>${rt.passed?"Cours validé":"Score insuffisant"}</b><span>${rt.passed?"L’XP du cours est prise en compte dans le classement total.":`Il faut ${rt.threshold}/${items.length}. Recommence pour valider.`}</span></div>${feedback?`<p class="quiz-global-feedback ${rt.passed?"good":""}">${esc(feedback)}</p>`:""}<div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="express">Relire le cours</button></div></section>`; const i=rt.step,item=items[i],choices=quizChoicesFor(item,items,lesson,content,i), selectedRaw=rt.p.answers?.[i]??rt.p.answers?.[String(i)], selected=Number.isInteger(selectedRaw)?selectedRaw:null, answered=Number.isInteger(selected), ok=Boolean(rt.p.correct?.[i]||rt.p.correct?.[String(i)]), selectedChoice=answered?choices[selected]:null; return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${i+1}/${items.length}</h2></div><small>${rt.correct}/${items.length} bonnes</small></div><div class="beta165-quiz-progress" aria-hidden="true">${items.map((_,n)=>`<i class="${Number.isInteger(rt.p.answers?.[n])||Number.isInteger(rt.p.answers?.[String(n)])?(rt.p.correct?.[n]||rt.p.correct?.[String(n)]?"ok":"ko"):n===i?"current":""}"></i>`).join("")}</div>${feedback?`<p class="quiz-global-feedback">${esc(feedback)}</p>`:""}<article class="quiz-card beta165-single-question ${answered?(ok?"correct":"wrong"):"open"}"><div class="quiz-question-head"><b>${i+1}</b><div>${item.kind?`<em>${esc(item.kind)}</em>`:""}<h3>${esc(item.q)}</h3></div></div><div class="quiz-choices" role="group" aria-label="Question ${i+1}">${choices.map((ch,n)=>`<button type="button" class="quiz-choice ${selected===n?(ch.correct?"selected correct":"selected wrong"):""}" data-quiz-choice="${i}" data-choice-index="${n}" ${answered?"disabled":""}><span>${String.fromCharCode(65+n)}</span>${esc(ch.text)}</button>`).join("")}</div>${answered?(ok?`<p class="quiz-result good"><b>Correct.</b> ${esc(item.a||"")}</p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"Cette réponse reprend précisément l’idée expliquée dans le cours.")}</p>${item.evidence?`<p class="quiz-evidence"><strong>À retrouver dans le cours :</strong> ${esc(item.evidence)}</p>`:""}`:`<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${esc(item.a||"")}</strong></p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"La correction reprend l’idée explicitement expliquée dans le cours.")}</p>${item.trap?`<p class="quiz-trap"><strong>Le piège :</strong> ${esc(item.trap)}</p>`:""}${item.evidence?`<p class="quiz-evidence"><strong>À revoir dans le cours :</strong> ${esc(item.evidence)}</p>`:""}`):`<p class="quiz-result neutral">Choisis la réponse la plus précise. La correction apparaîtra après ton choix.</p>`}</article><div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Recommencer</button>${answered?`<button type="button" data-quiz-next="${esc(lesson.id)}">${rt.answered>=items.length?"Voir le bilan":"Continuer"}</button>`:`<span>Réponds pour continuer.</span>`}</div></section>`; };
+  if (prevLessonText) renderLessonText = function beta165RenderLessonText(lesson,content){ if(typeof lessonView==="function"&&lessonView()!=="quiz") return prevLessonText(lesson,content); const items=normalizeQuizPack(content.quiz,lesson,content), rt=quizRuntime(lesson.id,items.length), facts=(typeof lessonKeyFacts==="function"?lessonKeyFacts(lesson,content):[]), feedback=state.quizFeedback?.[key(lesson.id)]||""; const intro=`<section class="lesson-hook beta165-lesson-hook"><span class="card-label">Quiz final</span><p>${esc(content.hook||lesson.title||"Réponds aux questions.")}</p></section>`, tabs=`<section class="lesson-choice-panel quiz-flow-panel beta165-quiz-tabs"><div><span class="card-label">Étape finale</span><h2>Quiz en ${items.length} étapes</h2><p>Une question à la fois : moins lourd, plus lisible.</p></div><div class="lesson-view-tabs">${lessonTabButton("complete","Relire le cours","5 min")}</div><small>${rt.correct}/${items.length} bonnes · seuil ${rt.threshold}/${items.length}</small></section>`, factsHtml=facts.length?`<div class="key-facts beta165-quiz-facts"><b>Repères utiles</b>${facts.slice(0,4).map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:""; if(rt.finished||rt.passed) return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Bilan</span><h2>Quiz terminé</h2></div><small>${rt.correct}/${items.length}</small></div><div class="beta165-score-panel ${rt.passed?"good":"bad"}"><b>${rt.passed?"Cours validé":"Score insuffisant"}</b><span>${rt.passed?"L’XP du cours est prise en compte dans le classement total.":`Il faut ${rt.threshold}/${items.length}. Recommence pour valider.`}</span></div>${feedback?`<p class="quiz-global-feedback ${rt.passed?"good":""}">${esc(feedback)}</p>`:""}<div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Refaire le quiz</button><button type="button" data-lesson-view="complete">Relire le cours</button></div></section>`; const i=rt.step,item=items[i],choices=quizChoicesFor(item,items,lesson,content,i), selectedRaw=rt.p.answers?.[i]??rt.p.answers?.[String(i)], selected=Number.isInteger(selectedRaw)?selectedRaw:null, answered=Number.isInteger(selected), ok=Boolean(rt.p.correct?.[i]||rt.p.correct?.[String(i)]), selectedChoice=answered?choices[selected]:null; return `${intro}${tabs}${factsHtml}<section class="quiz-section isolated-quiz final-quiz beta165-quiz-runner" data-beta165-current-question><div class="section-title-row"><div><span class="card-label">Quiz final</span><h2>Question ${i+1}/${items.length}</h2></div><small>${rt.correct}/${items.length} bonnes</small></div><div class="beta165-quiz-progress" aria-hidden="true">${items.map((_,n)=>`<i class="${Number.isInteger(rt.p.answers?.[n])||Number.isInteger(rt.p.answers?.[String(n)])?(rt.p.correct?.[n]||rt.p.correct?.[String(n)]?"ok":"ko"):n===i?"current":""}"></i>`).join("")}</div>${feedback?`<p class="quiz-global-feedback">${esc(feedback)}</p>`:""}<article class="quiz-card beta165-single-question ${answered?(ok?"correct":"wrong"):"open"}"><div class="quiz-question-head"><b>${i+1}</b><div>${item.kind?`<em>${esc(item.kind)}</em>`:""}<h3>${esc(item.q)}</h3></div></div><div class="quiz-choices" role="group" aria-label="Question ${i+1}">${choices.map((ch,n)=>`<button type="button" class="quiz-choice ${selected===n?(ch.correct?"selected correct":"selected wrong"):""}" data-quiz-choice="${i}" data-choice-index="${n}" ${answered?"disabled":""}><span>${String.fromCharCode(65+n)}</span>${esc(ch.text)}</button>`).join("")}</div>${answered?(ok?`<p class="quiz-result good"><b>Correct.</b> ${esc(item.a||"")}</p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"Cette réponse reprend précisément l’idée expliquée dans le cours.")}</p>${item.evidence?`<p class="quiz-evidence"><strong>À retrouver dans le cours :</strong> ${esc(String(item.evidence).replace(/\bExpress(?:\s+\d+)?\b/gi, "le cours"))}</p>`:""}`:`<p class="quiz-result bad"><b>Pas tout à fait.</b> La bonne réponse était : <strong>${esc(item.a||"")}</strong></p><p class="quiz-explain"><strong>Pourquoi :</strong> ${esc(item.why||"La correction reprend l’idée explicitement expliquée dans le cours.")}</p>${item.trap?`<p class="quiz-trap"><strong>Le piège :</strong> ${esc(item.trap)}</p>`:""}${item.evidence?`<p class="quiz-evidence"><strong>À revoir dans le cours :</strong> ${esc(String(item.evidence).replace(/\bExpress(?:\s+\d+)?\b/gi, "le cours"))}</p>`:""}`):`<p class="quiz-result neutral">Choisis la réponse la plus précise. La correction apparaîtra après ton choix.</p>`}</article><div class="quiz-footer beta165-quiz-footer"><button type="button" class="ghost" data-reset-quiz>Recommencer</button>${answered?`<button type="button" data-quiz-next="${esc(lesson.id)}">${rt.answered>=items.length?"Voir le bilan":"Continuer"}</button>`:`<span>Réponds pour continuer.</span>`}</div></section>`; };
 
   function findMystery(id){ try { return mysteryById?.(id) || null; } catch { return null; } }
   function openMystery(id, feedback=""){ const m=findMystery(id); if(!m) return setSafe({tab:"mystery",archiveFeedback:"Mystère introuvable."}); let d="history"; try{d=mysteryDisciplineId?.(m)||activeDisciplineId?.()||"history"}catch{} setSafe({tab:"mystery",currentMysteryId:m.id,currentMysteryDiscipline:d,currentDiscipline:d,archiveFeedback:feedback}); topSoon(); }
@@ -20299,7 +20298,7 @@ document.addEventListener("visibilitychange", () => {
         .replace(/Choisis ton format/g, "2 · Cours")
         .replace(/Choisis la profondeur du cours/g, "2 · Cours")
         .replace(/Le format court : dates, lieux, acteurs et exemple concret\. Tu peux basculer vers le complet si tu veux plus d’infos\./g, "Lis l’essentiel ou approfondis : les deux formats répondent au même problème de départ.")
-        .replace(/Une vraie lecture d’environ 5 minutes, avec contexte, acteurs, traces, pièges et synthèse\./g, "Le cours complet développe le mécanisme, les preuves et les nuances utiles.")
+        .replace(/Une vraie lecture d’environ 5 minutes, avec contexte, acteurs, traces, pièges et synthèse\./g, "Le cours développe le mécanisme, les preuves et les nuances utiles.")
         .replace(/Étape finale/g, "3 · Révision")
         .replace(/Quiz final/g, "Révision")
         .replace(/Quiz en (\d+) étapes/g, "Révision en $1 questions")

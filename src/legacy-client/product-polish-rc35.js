@@ -1,7 +1,7 @@
 /* HistoDaily RC35 — product polish: coherent mobile interaction without new feature layers. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.35.0";
+  const VERSION = "1.0.0-rc.36.0";
   const root = document.documentElement;
   const app = document.getElementById("app");
   let scheduled = false;

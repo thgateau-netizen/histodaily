@@ -10886,7 +10886,7 @@ html.hd287-redesign body::before{
 .hd324-premium-home .rc24-route i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid currentColor;font-style:normal;font-size:.68rem;font-weight:950}.hd324-premium-home .rc24-route span{font-size:.64rem;font-weight:900}
 .hd324-premium-home .rc24-route .current{color:#fff;border-color:color-mix(in srgb,var(--world) 48%,rgba(255,255,255,.12));background:color-mix(in srgb,var(--world) 11%,rgba(6,14,24,.82))}.hd324-premium-home .rc24-route .current i{background:var(--world);border-color:var(--world);color:#07111b}.hd324-premium-home .rc24-route .done{color:#79dfb0}
 
-.hd324-premium-home .rc24-dashboard{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(150px,.75fr);gap:10px}
+.hd324-premium-home .rc24-dashboard{display:grid;grid-template-columns:1fr;gap:10px}
 .hd324-premium-home .rc24-next,.hd324-premium-home .rc24-mastery{border:1px solid rgba(255,255,255,.085);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.048),rgba(255,255,255,.018));box-shadow:0 16px 38px rgba(0,0,0,.17);color:#fff}
 .hd324-premium-home .rc24-next{min-height:112px;padding:13px;display:grid;grid-template-columns:70px minmax(0,1fr) 30px;align-items:center;gap:12px;text-align:left}
 .hd324-premium-home .rc24-next-thumb{position:relative;overflow:hidden;display:grid;place-items:center;width:70px;height:76px;border-radius:17px;border:1px solid color-mix(in srgb,var(--world) 30%,rgba(255,255,255,.08));background:color-mix(in srgb,var(--world) 10%,#0a1623);font-size:1.5rem;color:var(--world)}
@@ -11369,3 +11369,8 @@ html.hd35-polish .hd35-onboarding-one h1{margin-bottom:2px!important}
 html.hd35-polish .hd35-onboarding-one .hd275-disciplines{margin-top:3px!important}
 html.hd35-polish .hd35-onboarding-one .hd275-actions{grid-template-columns:1fr!important;margin-top:4px!important}
 html.hd35-polish .hd35-onboarding-one .hd275-next{width:100%!important;min-height:54px!important}
+
+/* RC36 — lean learning flow. Express remains in the content model but is dormant in the current interface. */
+.hd36-lean-flow .rc24-mastery{display:none!important}
+.hd36-lean-flow [data-lesson-view="express"],
+.hd36-lean-flow [data-hd214-reader-view="express"]{display:none!important}

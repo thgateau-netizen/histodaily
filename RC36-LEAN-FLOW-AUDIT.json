@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0-rc.36.0",
+  "status": "passed",
+  "principle": "Expédition → Comprendre → Cours → Quiz; aucune métrique abstraite inutile sur l’accueil",
+  "checks": {
+    "homeMasteryCardRemoved": {
+      "pass": true,
+      "detail": "Le pourcentage de maîtrise ne doit plus occuper une carte sur l’accueil."
+    },
+    "homeNoMasteryPercent": {
+      "pass": true,
+      "detail": "Aucun pourcentage de maîtrise ne doit être présenté sur l’accueil."
+    },
+    "homeKeepsUsefulCatalogSignal": {
+      "pass": true,
+      "detail": "Le sélecteur d’univers peut indiquer le volume de contenu sans score abstrait."
+    },
+    "mysteryGoesToCourse": {
+      "pass": true,
+      "detail": "Après une expédition résolue, Comprendre doit ouvrir directement le cours."
+    },
+    "homeGoesToCourse": {
+      "pass": true,
+      "detail": "Le parcours d’accueil doit sauter le résumé Express."
+    },
+    "baseReaderTwoStates": {
+      "pass": true,
+      "detail": "Le lecteur de base ne doit afficher que Cours et Quiz."
+    },
+    "enhancedReaderTwoStates": {
+      "pass": true,
+      "detail": "Le lecteur amélioré ne doit pas réintroduire Express."
+    },
+    "storedExpressStateMigrated": {
+      "pass": true,
+      "detail": "Un ancien état Express sauvegardé doit être remappé vers le cours."
+    },
+    "expressDataPreserved": {
+      "pass": true,
+      "detail": "Le contenu Express doit rester stocké pour une éventuelle réactivation future."
+    },
+    "onboardingNoExpress": {
+      "pass": true,
+      "detail": "Le texte d’aide ne doit plus expliquer une fonctionnalité dormante."
+    },
+    "dashboardUsesFreedSpace": {
+      "pass": true,
+      "detail": "La suppression de la carte de maîtrise doit libérer toute la largeur de la prochaine action."
+    },
+    "leanLayerLast": {
+      "pass": true,
+      "detail": "La normalisation RC36 doit être la dernière source du bundle expérience."
+    },
+    "leanLayerBundled": {
+      "pass": true,
+      "detail": "La normalisation RC36 doit être réellement servie dans le bundle."
+    }
+  },
+  "errors": []
+}

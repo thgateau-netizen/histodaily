@@ -1,7 +1,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.35.0";
+  const VERSION = "1.0.0-rc.36.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -25,7 +25,7 @@
     const world = safe(() => lessonWorld(lesson), null);
     return [world?.title, lesson.period || lesson.location || "3 min"].filter(Boolean).slice(0,2).join(" · ");
   }
-  function openLesson(lesson, view="express"){
+  function openLesson(lesson, view="complete"){
     if (!lesson) return;
     const world = safe(() => lessonWorld(lesson), {}) || {};
     const did = safe(() => lessonDisciplineId(lesson), activeId());
@@ -50,7 +50,7 @@
     const quiz = Boolean(lesson?.id && safe(() => lessonQuizPassed(lesson.id), false));
     if (!mystery) return {index:1,type:"catalog",kicker:"Exploration libre",title:"Choisis ta prochaine destination",text:"Le catalogue est ouvert : pioche un cours qui t’attire.",action:"Explorer les cours"};
     if (!solved) return {index:1,type:"mystery",kicker:"Expédition du jour",title:mysteryTitle(mystery),text:mysteryTeaserText(mystery),action:"Commencer l’expédition"};
-    if (lesson && !read) return {index:2,type:"lesson",view:"express",kicker:"Étape 2 · Comprendre",title:titleOf(lesson),text:"Trouvé. Comprends maintenant pourquoi cette réponse tient.",action:"Lire le cours"};
+    if (lesson && !read) return {index:2,type:"lesson",view:"complete",kicker:"Étape 2 · Comprendre",title:titleOf(lesson),text:"Trouvé. Comprends maintenant pourquoi cette réponse tient.",action:"Comprendre"};
     if (lesson && !quiz) return {index:3,type:"lesson",view:"quiz",kicker:"Étape 3 · Vérifier",title:"Ancre ce que tu viens d’apprendre",text:`5 questions pour ancrer l’essentiel de « ${titleOf(lesson)} ».`,action:"Faire le quiz"};
     return {index:4,type:lesson?"lesson":"mystery",view:"complete",kicker:"Parcours du jour terminé",title:"Bien joué — la boucle est complète",text:"Expédition, cours et quiz : rituel terminé.",action:lesson?"Revoir le cours":"Revoir l’expédition"};
   }
@@ -82,7 +82,7 @@
       const art = artIds.has(item.id) ? " has-art" : "";
       return `<button type="button" class="rc24-world${isActive?" active":""}${art}" data-rc24-world="${esc(item.id)}" style="--world:${esc(item.accent||"#f5c451")}" aria-pressed="${isActive}">
         <span class="rc24-world-art" aria-hidden="true"></span><span class="rc24-world-icon">${icon(item)}</span>
-        <span class="rc24-world-copy"><b>${esc(disciplineName(item))}</b><small>${Number(m.score||0)}% maîtrisé</small></span>
+        <span class="rc24-world-copy"><b>${esc(disciplineName(item))}</b><small>${Number(m.total||0)} cours disponibles</small></span>
       </button>`;
     }).join("");
     return `<div class="rc24-world-grid">${list}</div>`;
@@ -95,7 +95,6 @@
     const linked = mystery?.lessonId ? safe(() => lessonById(mystery.lessonId), null) : null;
     const s = stage(mystery, linked);
     const next = nextAction(id, linked);
-    const m = mastery(id);
     const streak = Math.max(0, Number(safe(() => currentStreakValue(), state?.streak || 0)) || 0);
     const lvl = Number(safe(() => level(), 1)) || 1;
     const greeting = String(state?.pseudo||"").trim() && !/^invité$/i.test(String(state.pseudo)) ? `Bonjour ${String(state.pseudo).trim()}` : "Bonjour";
@@ -130,10 +129,6 @@
           <span class="rc24-next-copy"><small>${esc(next.eyebrow)}</small><b>${esc(next.title)}</b><em>${esc(next.meta)}</em></span>
           <span class="rc24-next-arrow">→</span>
         </button>
-        <button type="button" class="rc24-mastery" data-rc24-catalog aria-label="Voir le parcours ${esc(disciplineName(d))}">
-          <span class="rc24-ring" style="--p:${clamp(m.score,0,100)}"><i>${Number(m.score||0)}%</i></span>
-          <span><small>Maîtrise</small><b>${Number(m.mastered||0)} maîtrisé${Number(m.mastered||0)>1?"s":""}</b><em>${Number(m.done||0)}/${Number(m.total||0)} cours validés</em></span>
-        </button>
       </section>
 
       <details class="rc24-universes">
@@ -148,14 +143,14 @@
     shell?.querySelector("[data-rc24-catalog]")?.addEventListener("click",()=>openCatalog(id));
     shell?.querySelector("[data-rc24-primary]")?.addEventListener("click",()=>{
       if (s.type==="mystery") return setState({tab:"mystery",currentMysteryId:mystery?.id||null,currentMysteryDiscipline:id,currentDiscipline:id});
-      if (s.type==="lesson" && linked) return openLesson(linked,s.view||"express");
+      if (s.type==="lesson" && linked) return openLesson(linked,s.view||"complete");
       if (s.type==="catalog") return openCatalog(id);
       if (linked) return openLesson(linked,s.view||"complete");
       return setState({tab:"mystery"});
     });
     shell?.querySelector("[data-rc24-next]")?.addEventListener("click",()=>{
       if (next.kind==="review") return safe(()=>memoryApi()?.openReviewSession?.(id),null);
-      if (next.kind==="lesson" && next.lesson) return openLesson(next.lesson,"express");
+      if (next.kind==="lesson" && next.lesson) return openLesson(next.lesson,"complete");
       return openCatalog(id);
     });
     shell?.querySelectorAll("[data-rc24-world]").forEach(button=>button.addEventListener("click",()=>{

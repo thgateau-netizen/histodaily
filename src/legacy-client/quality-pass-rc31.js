@@ -2,7 +2,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.35.0";
+  const VERSION = "1.0.0-rc.36.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -90,7 +90,7 @@
   if (previousRenderLessonText) {
     renderLessonText = function rc31RenderLessonText(lesson, content){
       let html = String(previousRenderLessonText(lesson, content) || "");
-      const view = safe(() => lessonView(), String(state?.lessonView || "express"));
+      const view = safe(() => lessonView(), String(state?.lessonView || "complete"));
       if (view !== "quiz") return html;
       const snapshot = quizSnapshot(lesson, content);
       if (!snapshot.finished) return html;
@@ -114,7 +114,7 @@
         if (snapshot.passed) {
           quiz.innerHTML = completionMarkup(lesson, snapshot);
         } else {
-          quiz.innerHTML = `<section class="rc31-retry"><span class="card-label">À consolider</span><h3>${snapshot.correct}/${snapshot.total} bonnes réponses</h3><p>Il en faut ${snapshot.threshold}. Relis seulement les points qui t’ont posé problème, puis retente : inutile de repartir de zéro.</p><div class="rc31-completion-actions"><button type="button" data-lesson-view="express">Relire l’essentiel</button><button type="button" class="ghost" data-reset-quiz>Retenter le quiz</button></div></section>`;
+          quiz.innerHTML = `<section class="rc31-retry"><span class="card-label">À consolider</span><h3>${snapshot.correct}/${snapshot.total} bonnes réponses</h3><p>Il en faut ${snapshot.threshold}. Relis seulement les points qui t’ont posé problème, puis retente : inutile de repartir de zéro.</p><div class="rc31-completion-actions"><button type="button" data-lesson-view="complete">Relire le cours</button><button type="button" class="ghost" data-reset-quiz>Retenter le quiz</button></div></section>`;
         }
       }
       return template.innerHTML;
@@ -125,7 +125,7 @@
     const lesson = safe(() => lessonById(id), null);
     if (!lesson) return;
     const world = safe(() => lessonWorld(lesson), {}) || {};
-    setState({ tab:"lesson", currentLessonId:lesson.id, currentDiscipline:lessonDiscipline(lesson), currentWorld:world.id || state.currentWorld, currentGroup:world.group || state.currentGroup, lessonView:"express", lessonFocus:null });
+    setState({ tab:"lesson", currentLessonId:lesson.id, currentDiscipline:lessonDiscipline(lesson), currentWorld:world.id || state.currentWorld, currentGroup:world.group || state.currentGroup, lessonView:"complete", lessonFocus:null });
     window.scrollTo?.({ top:0, behavior:"smooth" });
   }
 

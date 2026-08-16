@@ -1,11 +1,11 @@
 {
-  "version": "1.0.0-rc.35.0",
+  "version": "1.0.0-rc.36.0",
   "status": "passed",
   "principle": "désirable, fluide, évident; la hiérarchie remplace les explications",
   "checks": {
-    "polishModuleLoadedLast": {
+    "polishModuleBeforeLeanFlow": {
       "pass": true,
-      "detail": "La couche RC35 doit être chargée après les anciens polish, sans être réécrasée."
+      "detail": "La couche RC35 doit rester après les anciens polish et juste avant la simplification RC36."
     },
     "polishModuleInBundle": {
       "pass": true,

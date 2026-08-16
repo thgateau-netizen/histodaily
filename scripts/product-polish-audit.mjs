@@ -18,7 +18,7 @@ const pass = (name, condition, detail) => {
   if (!condition) errors.push(`${name}: ${detail}`);
 };
 
-pass('polishModuleLoadedLast', /'quality-pass-rc31\.js','product-polish-rc35\.js'\]/.test(build), 'La couche RC35 doit être chargée après les anciens polish, sans être réécrasée.');
+pass('polishModuleBeforeLeanFlow', /'quality-pass-rc31\.js','product-polish-rc35\.js','lean-flow-rc36\.js'\]/.test(build), 'La couche RC35 doit rester après les anciens polish et juste avant la simplification RC36.');
 pass('polishModuleInBundle', bundle.includes('SOURCE: product-polish-rc35.js'), 'Le module RC35 doit exister dans le bundle réellement servi.');
 pass('consistentDesignTokens', css.includes('--hd35-radius-card:18px') && css.includes('--hd35-line:'), 'Les écrans doivent partager les mêmes tokens de surface et de rayon.');
 pass('mobileHeroReduced', css.includes('.rc24-hero{min-height:438px}') && css.includes('.rc24-hero{min-height:420px}'), 'Le hero mobile ne doit plus monopoliser presque tout le premier écran.');

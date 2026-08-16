@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-rc.36.0",
+  "flow": [
+    "Expédition",
+    "Comprendre",
+    "Cours",
+    "Quiz"
+  ],
+  "express": {
+    "ui": "dormant",
+    "content_data": "preserved"
+  },
+  "home_mastery_percent": "removed",
+  "lean_checks": 13,
+  "lean_checks_total": 13,
+  "quality_status": "passed"
+}

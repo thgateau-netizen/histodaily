@@ -36,7 +36,7 @@
     return [world?.title, lesson.period || lesson.location].filter(Boolean).slice(0, 2).join(" · ") || "3 min de lecture";
   }
 
-  function openLesson(lesson, view = "express"){
+  function openLesson(lesson, view = "complete"){
     if (!lesson) return;
     const world = safe(() => lessonWorld(lesson), {}) || {};
     const disciplineId = safe(() => lessonDisciplineId(lesson), activeDisciplineId()) || activeDisciplineId();
@@ -340,7 +340,7 @@
     shell?.querySelector("[data-hd220-catalog]")?.addEventListener("click", () => openCatalog(disciplineId));
     shell?.querySelector("[data-hd220-expedition]")?.addEventListener("click", () => {
       if (stageView.type === "mystery") return setState({ tab:"mystery", currentMysteryId:mystery?.id || null, currentMysteryDiscipline:disciplineId, currentDiscipline:disciplineId });
-      if (stageView.type === "lesson" && linkedLesson) return openLesson(linkedLesson, stageView.view || "express");
+      if (stageView.type === "lesson" && linkedLesson) return openLesson(linkedLesson, stageView.view || "complete");
       if (stageView.type === "catalog") return openCatalog(disciplineId);
       if (linkedLesson) return openLesson(linkedLesson, stageView.view || "complete");
       return setState({ tab:"mystery" });
@@ -349,7 +349,7 @@
       const launch = () => {
         const id = card.dataset.hd220OpenLesson;
         const lesson = id ? safe(() => lessonById(id), null) : null;
-        lesson ? openLesson(lesson, "express") : openCatalog(disciplineId);
+        lesson ? openLesson(lesson, "complete") : openCatalog(disciplineId);
       };
       card.addEventListener("click", launch);
       card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); launch(); } });

@@ -167,7 +167,7 @@ window.HISTODAILY_ONBOARDING = {
       return { label: "Démarrage", title: "Commence par jouer, pas par lire.", text: "Le meilleur premier contact reste le dossier du jour : une énigme courte, puis seulement ensuite le résumé ou le cours.", action: "mystery", cta: "Lancer le mystère" };
     }
     if (todayDone && !linkedLessonDone) {
-      return { label: "Après résolution", title: "Profite du moment où le sujet est frais.", text: "Une fois le mystère résolu, l’express lié donne les repères essentiels sans transformer la session en pavé.", action: "daily-lesson", cta: "Lire l’express" };
+      return { label: "Après résolution", title: "Profite du moment où le sujet est frais.", text: "Une fois le mystère résolu, ouvre directement le cours associé pour comprendre pourquoi la réponse était juste.", action: "daily-lesson", cta: "Comprendre" };
     }
     if (backlog > 0) {
       return { label: "Archive", title: "Tu as un dossier déjà payé en gemmes.", text: "Mieux vaut finir une archive ouverte plutôt que dépenser encore : ça garde le rythme clair et évite d’enchaîner sans vraie attention.", action: "archive", cta: "Voir l’archive" };
@@ -181,8 +181,8 @@ window.HISTODAILY_ONBOARDING = {
     return [
       "Résoudre le dossier sans titre révélé",
       "Choisir un indice seulement si nécessaire",
-      "Lire l’express après la réponse",
-      "Ouvrir le cours complet seulement si le sujet accroche"
+      "Comprendre le sujet après la réponse",
+      "Faire le quiz pour ancrer l’essentiel"
     ];
   }
 };
