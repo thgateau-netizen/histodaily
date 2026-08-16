@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0-rc.47.0",
+  "status": "passed",
+  "principle": "Une seule prochaine action, choisie selon mémoire → continuité → équilibre léger → parcours courant. Aucun nouveau widget.",
+  "tests": {
+    "crossDisciplineReview": true,
+    "resumeStarted": true,
+    "balanceOnlyAfterDailyLoop": true,
+    "defaultStaysCurrent": true
+  },
+  "errors": []
+}

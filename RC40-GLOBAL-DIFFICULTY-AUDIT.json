@@ -1,0 +1,176 @@
+{
+  "version": "1.0.0-rc.47.0",
+  "status": "passed",
+  "principle": "Chaque discipline recommence doucement pour un nouvel utilisateur : bases/familier → confiance → application → difficulté réelle. La progression est locale à la discipline, pas au niveau global du compte.",
+  "disciplines": 11,
+  "coverage": {
+    "starterMysteries": 66,
+    "starterLessons": 22,
+    "perDiscipline": {
+      "history": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "art": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "cinema": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "science-inventions": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "astronomy": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "economy": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "geography": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "music": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "literature": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "philosophy": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "english": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      }
+    }
+  },
+  "stages": {
+    "discovery": "facile + pool découverte guidé",
+    "confidence": "facile + moyen",
+    "intermediate": "facile + moyen + difficile",
+    "advanced": "expert autorisé"
+  },
+  "experienceFormula": "2 × mystères réussis + cours validés (cours plafonnés à 12 pour le calcul)",
+  "simulations": [
+    {
+      "solved": 0,
+      "lessons": 0,
+      "want": "discovery"
+    },
+    {
+      "solved": 2,
+      "lessons": 2,
+      "want": "discovery"
+    },
+    {
+      "solved": 4,
+      "lessons": 0,
+      "want": "confidence"
+    },
+    {
+      "solved": 6,
+      "lessons": 4,
+      "want": "confidence"
+    },
+    {
+      "solved": 8,
+      "lessons": 6,
+      "want": "intermediate"
+    },
+    {
+      "solved": 14,
+      "lessons": 10,
+      "want": "advanced"
+    }
+  ],
+  "freshRuntime": {
+    "history": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "history-mystery-cold-war-236",
+      "difficulty": "facile"
+    },
+    "art": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "art-mystery-composition-122",
+      "difficulty": "facile"
+    },
+    "cinema": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "cinema-mystery-kuleshov-235",
+      "difficulty": "facile"
+    },
+    "science-inventions": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "science-mystery-hypothesis-122",
+      "difficulty": "facile"
+    },
+    "astronomy": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "astronomy-mystery-solstice-237",
+      "difficulty": "facile"
+    },
+    "economy": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "economy-mystery-opportunity-cost-175",
+      "difficulty": "facile"
+    },
+    "geography": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "geography-mystery-coordinates-122",
+      "difficulty": "facile"
+    },
+    "music": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "music-mystery-multitrack-233",
+      "difficulty": "facile"
+    },
+    "literature": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "literature-mystery-science-fiction-236",
+      "difficulty": "facile"
+    },
+    "philosophy": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "philo-mystery-validity-rc19",
+      "difficulty": "facile"
+    },
+    "english": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "english-mystery-one-reference-rc19",
+      "difficulty": "facile"
+    }
+  },
+  "warnings": [],
+  "errors": []
+}

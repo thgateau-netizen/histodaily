@@ -2,7 +2,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.36.0";
+  const VERSION = "1.0.0-rc.47.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -68,21 +68,34 @@
     return { mastery: Math.max(0, Math.min(100, Math.round(mastery))), label, detail, due: due.length };
   }
 
+  function belongsToTodayLoop(lesson){
+    const mystery = safe(() => currentMystery(), null);
+    if (!mystery || !safe(() => isTodayMystery(mystery.id), false)) return false;
+    if (String(mystery.lessonId || "") !== String(lesson?.id || "")) return false;
+    return safe(() => mysterySolved(mystery.id), false);
+  }
+
   function completionMarkup(lesson, snapshot){
     const memory = memoryStatus(lesson);
     const next = nextLesson(lesson);
     const nextTitle = next ? String(next.title || "Cours suivant") : "";
-    return `<section class="rc31-completion hd34-course-result" aria-label="Bilan et suite du parcours">
-      <div class="rc31-completion-memory">
-        <div class="rc31-mastery-ring" style="--rc31-mastery:${memory.mastery}" aria-label="Maîtrise ${memory.mastery} pour cent"><strong>${memory.mastery}%</strong><span>maîtrise</span></div>
+    const dailyLoop = belongsToTodayLoop(lesson);
+    const primary = dailyLoop
+      ? `<button type="button" data-rc31-home>Terminer pour aujourd’hui</button>`
+      : next
+        ? `<button type="button" data-rc31-next="${esc(next.id)}">Continuer · ${esc(nextTitle)}</button>`
+        : `<button type="button" data-rc31-home>Retour à l’accueil</button>`;
+    const secondary = dailyLoop && next
+      ? `<button type="button" class="ghost" data-rc31-next="${esc(next.id)}">Encore un cours · ${esc(nextTitle)}</button>`
+      : next
+        ? `<button type="button" class="ghost" data-rc31-home>Retour à l’accueil</button>`
+        : "";
+    return `<section class="rc31-completion rc44-completion hd34-course-result" aria-label="Bilan et suite du parcours">
+      <div class="rc31-completion-memory rc44-completion-memory">
+        <div class="rc44-completion-mark" aria-hidden="true">✓</div>
         <div><span class="card-label">Bilan · ${snapshot.correct}/${snapshot.total}</span><h3>${snapshot.correct === snapshot.total ? "Parfaitement validé" : "Cours validé"}</h3><p><strong>${esc(memory.label)}.</strong> ${esc(memory.detail)}</p></div>
       </div>
-      <div class="rc31-completion-actions">
-        ${memory.due ? `<button type="button" data-rc31-review="${esc(lessonDiscipline(lesson))}">Réviser maintenant</button>` : ""}
-        ${next ? `<button type="button" data-rc31-next="${esc(next.id)}">Continuer · ${esc(nextTitle)}</button>` : `<button type="button" data-rc31-home>Retour à l’accueil</button>`}
-        ${next ? `<button type="button" class="ghost" data-rc31-home>Retour à l’accueil</button>` : ""}
-        <button type="button" class="ghost rc31-secondary" data-reset-quiz>Refaire le quiz</button>
-      </div>
+      <div class="rc31-completion-actions rc44-completion-actions">${primary}${secondary}</div>
     </section>`;
   }
 

@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0-rc.41.0",
+  "status": "passed",
+  "release": "Adaptive Comfort & Personalized Path",
+  "checks": {
+    "clientBundlesSyntax": true,
+    "qualityPipeline": true,
+    "globalRamp11Disciplines": true,
+    "adaptiveComfort": true,
+    "personalizedNextAction": true,
+    "englishExperience": true,
+    "philosophyExperience": true,
+    "scienceAstronomyExperience": true,
+    "httpSmoke": true
+  },
+  "behavioralScenarios": [
+    "fresh/no evidence",
+    "strong performer",
+    "light support",
+    "strong support",
+    "cross-discipline review",
+    "started course resume",
+    "post-loop balance",
+    "predictable current-discipline fallback"
+  ],
+  "content": {
+    "courses": 209,
+    "mysteries": 158
+  }
+}

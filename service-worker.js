@@ -1,12 +1,12 @@
-const CACHE_NAME = "histodaily-rc36-lean-flow-v1";
-const APP_VERSION = "1.0.0-rc.36.0";
+const CACHE_NAME = "histodaily-rc47-daily-hook-v1";
+const APP_VERSION = "1.0.0-rc.47.0";
 const CRITICAL_ASSETS = [
   "/",
   "/index.html",
-  "/histodaily.css?v=1.0.0-rc.36.0",
-  "/bundles/core-rc27.js?v=1.0.0-rc.36.0",
-  "/bundles/content-rc27.js?v=1.0.0-rc.36.0",
-  "/bundles/experience-rc27.js?v=1.0.0-rc.36.0",
+  "/histodaily.css?v=1.0.0-rc.47.0",
+  "/bundles/core-rc27.js?v=1.0.0-rc.47.0",
+  "/bundles/content-rc27.js?v=1.0.0-rc.47.0",
+  "/bundles/experience-rc27.js?v=1.0.0-rc.47.0",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",
@@ -17,16 +17,12 @@ const CRITICAL_ASSETS = [
 const OPTIONAL_ASSETS = [
   "/privacy.html",
   "/robots.txt",
-  "/hero-astronomy-art-v2.png",
-  "/hero-astronomy-art-v3-faded.png",
-  "/hero-astronomy-blackhole.png",
   "/assets/hero-art.webp",
   "/assets/hero-astronomy.webp",
   "/assets/hero-cinema.webp",
   "/assets/hero-economy.webp",
   "/assets/hero-english.webp",
   "/assets/hero-geography.webp",
-  "/assets/hero-history-revolution.webp",
   "/assets/hero-history.webp",
   "/assets/hero-literature.webp",
   "/assets/hero-music.webp",

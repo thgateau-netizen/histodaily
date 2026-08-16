@@ -17,32 +17,32 @@
     'eng-implicit-meaning': 'eng-lab-understatement',
     // Anglais — approfondissement RC19
     'eng-context-reference': 'eng-lab-reference',
-    'eng-false-friends-second-wave': 'eng-lab-actually',
+    'eng-false-friends-second-wave': 'eng-lab-sensible',
     'eng-small-words-just-quite': 'eng-lab-audio-barely',
     'eng-register-email-directness': 'eng-lab-audio-wondering',
     'eng-phrasal-get': 'eng-lab-audio-endedup',
     'eng-paraphrase-clarify': 'eng-lab-clarify',
-    'eng-connectors-concession': 'eng-lab-concession',
+    'eng-connectors-concession': 'eng-lab-despite',
     'eng-implicit-understatement': 'eng-lab-audio-mind',
 
     // Philosophie — parcours initial
-    'philo-argument-thesis-objection': 'philo-lab-objection',
-    'philo-fact-opinion-value': 'philo-lab-factvalue',
-    'philo-socrates-questioning': 'philo-lab-counterexample',
-    'philo-stoic-control': 'philo-lab-influence',
-    'philo-descartes-doubt': 'philo-lab-cogito',
-    'philo-hume-causality': 'philo-lab-induction',
-    'philo-ethics-principles-consequences': 'philo-lab-ethics',
-    'philo-social-contract-liberty': 'philo-lab-contract',
+    'philo-argument-thesis-objection': 'philo38-lab-argument',
+    'philo-fact-opinion-value': 'philo38-lab-factvalue',
+    'philo-socrates-questioning': 'philo38-lab-socratic',
+    'philo-stoic-control': 'philo38-lab-control',
+    'philo-descartes-doubt': 'philo38-lab-doubt',
+    'philo-hume-causality': 'philo38-lab-causality',
+    'philo-ethics-principles-consequences': 'philo38-lab-dilemma',
+    'philo-social-contract-liberty': 'philo38-lab-liberty',
     // Philosophie — approfondissement RC19
-    'philo-argument-validity': 'philo-lab-validity',
-    'philo-distinction-necessary-sufficient': 'philo-lab-necessary',
-    'philo-socrates-definition': 'philo-lab-counterexample',
-    'philo-stoic-impressions': 'philo-lab-stoic',
-    'philo-descartes-cogito': 'philo-lab-cogito',
-    'philo-hume-induction': 'philo-lab-induction',
-    'philo-ethics-frameworks': 'philo-lab-consequences',
-    'philo-social-contract-comparison': 'philo-lab-generalwill'
+    'philo-argument-validity': 'philo38-lab-validity',
+    'philo-distinction-necessary-sufficient': 'philo38-lab-necessary',
+    'philo-socrates-definition': 'philo38-lab-definition',
+    'philo-stoic-impressions': 'philo38-lab-assent',
+    'philo-descartes-cogito': 'philo38-lab-cogito',
+    'philo-hume-induction': 'philo38-lab-induction',
+    'philo-ethics-frameworks': 'philo38-lab-frameworks',
+    'philo-social-contract-comparison': 'philo38-lab-contractcompare'
   };
 
   const esc = value => {
@@ -121,7 +121,7 @@
     const choices = Array.isArray(lab.choices) ? lab.choices : [];
     return `<section class="hd20-checkpoint hd20-${esc(disciplineId)} ${done ? 'done' : ''}" data-hd20-card="challenge" data-hd20-lesson="${esc(lesson.id)}" data-hd20-lab="${esc(lab.id)}">
       <div class="hd20-checkpoint-head">
-        <div><span class="hd20-kicker">${placement === 'express' ? 'Défi express' : 'Pause active · 1/2'}</span><h3>${esc(lab.title || 'Mets l’idée en pratique')}</h3></div>
+        <div><span class="hd20-kicker">${disciplineId === 'english' ? 'Situation · 1/2' : (disciplineId === 'philosophy' ? 'Cas à trancher · 1/2' : (placement === 'express' ? 'Défi express' : 'Pause active · 1/2'))}</span><h3>${esc(lab.title || 'Mets l’idée en pratique')}</h3></div>
         ${audio}
       </div>
       ${lab.context ? `<p class="hd20-context">${esc(lab.context)}</p>` : ''}
@@ -130,25 +130,25 @@
         ? `<div class="hd20-complete"><b>✓ Acquis</b><span>${esc(lab.takeaway || 'Tu as identifié le bon réflexe.')}</span></div>`
         : `<div class="hd20-choices" role="group" aria-label="Mini-défi">${choices.map((choice, index) => `<button type="button" data-hd20-choice="${index}" aria-pressed="false"><span>${String.fromCharCode(65 + index)}</span>${esc(choice.text)}</button>`).join('')}</div>
            <div class="hd20-feedback" data-hd20-feedback aria-live="polite"></div>`}
-      <small class="hd20-no-grade">Sans note · tu peux essayer jusqu’à comprendre.</small>
+      <small class="hd20-no-grade">${disciplineId === 'english' ? 'Choisis ce qui sonne juste dans la scène, puis regarde pourquoi.' : 'Sans note · tu peux essayer jusqu’à comprendre.'}</small>
     </section>`;
   }
 
   function recallMarkup(lesson, content, lab, disciplineId) {
     const p = lessonProgress(lesson.id);
     const done = Boolean(p.recall);
-    const answer = modelAnswer(lesson, content, lab, disciplineId);
+    const answer = clean(lab?.modelResponse) ? clean(lab.modelResponse) : modelAnswer(lesson, content, lab, disciplineId);
     const prompt = disciplineId === 'english'
-      ? 'Sans revenir au paragraphe précédent, explique avec tes mots ce que tu dois comprendre ou faire dans ce type de situation. Tu peux écrire en français ou en anglais.'
-      : 'Sans citer l’auteur, reformule avec tes mots la distinction, l’objection ou le mécanisme que tu viens de lire.';
+      ? (clean(lab?.productionPrompt) || 'Réponds en anglais à la situation avec une formulation naturelle. Le but est de produire, pas de traduire mot à mot.')
+      : (clean(lab?.productionPrompt) || 'Prends position en une ou deux phrases, donne la raison décisive, puis vérifie qu’elle résiste au cas proposé.');
     return `<section class="hd20-checkpoint hd20-recall hd20-${esc(disciplineId)} ${done ? 'done' : ''}" data-hd20-card="recall" data-hd20-lesson="${esc(lesson.id)}">
-      <div class="hd20-checkpoint-head"><div><span class="hd20-kicker">Rappel actif · 2/2</span><h3>Dis-le avec tes mots</h3></div><span class="hd20-selfcheck">auto-vérification</span></div>
+      <div class="hd20-checkpoint-head"><div><span class="hd20-kicker">${disciplineId === 'english' ? 'Production · 2/2' : (disciplineId === 'philosophy' ? 'Argument · 2/2' : 'Rappel actif · 2/2')}</span><h3>${disciplineId === 'english' ? 'À toi de répondre' : (disciplineId === 'philosophy' ? 'Construis ta réponse' : 'Dis-le avec tes mots')}</h3></div><span class="hd20-selfcheck">auto-vérification</span></div>
       <p class="hd20-prompt">${esc(prompt)}</p>
       ${done
-        ? `<div class="hd20-model-answer"><b>Une formulation possible</b><p>${esc(answer)}</p><small>La tienne n’avait pas besoin d’être identique : vérifie surtout que l’idée centrale y était.</small></div>`
-        : `<label class="hd20-recall-field"><span>Ta formulation</span><textarea rows="3" data-hd20-recall-input placeholder="Écris une phrase avant de comparer…"></textarea></label>
-           <button type="button" class="hd20-reveal" data-hd20-reveal disabled>Comparer avec une formulation possible</button>
-           <div class="hd20-model-answer" data-hd20-model hidden><b>Une formulation possible</b><p>${esc(answer)}</p><small>Ce n’est pas une correction mot à mot : compare le raisonnement, pas la formulation.</small></div>`}
+        ? `<div class="hd20-model-answer"><b>${disciplineId === 'english' ? 'Une réponse naturelle possible' : (disciplineId === 'philosophy' ? 'Une réponse argumentée possible' : 'Une formulation possible')}</b><p>${esc(answer)}</p><small>${disciplineId === 'english' ? 'Ta phrase peut être différente : vérifie surtout le sens, le registre et le naturel.' : 'La tienne n’avait pas besoin d’être identique : vérifie surtout que l’idée centrale y était.'}</small></div>`
+        : `<label class="hd20-recall-field"><span>${disciplineId === 'english' ? 'Ta réponse en anglais' : (disciplineId === 'philosophy' ? 'Ton raisonnement' : 'Ta formulation')}</span><textarea rows="3" data-hd20-recall-input placeholder="${disciplineId === 'english' ? 'Write your answer in English…' : (disciplineId === 'philosophy' ? 'Écris ta réponse et la raison qui la soutient…' : 'Écris une phrase avant de comparer…')}"></textarea></label>
+           <button type="button" class="hd20-reveal" data-hd20-reveal disabled>${disciplineId === 'english' ? 'Voir une réponse naturelle' : 'Comparer avec une formulation possible'}</button>
+           <div class="hd20-model-answer" data-hd20-model hidden><b>${disciplineId === 'english' ? 'Une réponse naturelle possible' : (disciplineId === 'philosophy' ? 'Une réponse argumentée possible' : 'Une formulation possible')}</b><p>${esc(answer)}</p><small>${disciplineId === 'english' ? 'Ta phrase peut être différente : compare surtout le sens, le registre et le naturel.' : 'Ce n’est pas une correction mot à mot : compare le raisonnement, pas la formulation.'}</small></div>`}
     </section>`;
   }
 
@@ -189,7 +189,7 @@
         if (panel && !panel.querySelector('.hd20-course-banner')) {
           const banner = document.createElement('div');
           banner.className = `hd20-course-banner hd20-${disciplineId}`;
-          banner.innerHTML = `<div><span>Cours interactif</span><b>${disciplineId === 'english' ? 'Comprendre, essayer, reformuler' : 'Lire, tester, reformuler'}</b></div>${progressMarkup(lesson.id)}`;
+          banner.innerHTML = `<div><span>Cours interactif</span><b>${disciplineId === 'english' ? 'Observer · choisir · produire' : 'Lire, tester, reformuler'}</b></div>${progressMarkup(lesson.id)}`;
           panel.prepend(banner);
         }
         const firstAnchor = blocks[Math.min(1, Math.max(0, blocks.length - 1))];

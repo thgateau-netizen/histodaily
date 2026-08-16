@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0-rc.46.0",
+  "status": "passed",
+  "method": "Conservative static reachability: a CSS rule is pruned only when every class/id token in its selector is absent from all runtime HTML and client JS sources/bundles.",
+  "baselineRC44": {
+    "cssBytes": 781199,
+    "cssLines": 11449,
+    "important": 2866,
+    "obsoleteVisualBytes": 60182
+  },
+  "rc45": {
+    "cssBytes": 663616,
+    "cssLines": 11115,
+    "important": 2397,
+    "cssGzipBytes": 118454,
+    "deadSelectorsDetected": 0
+  },
+  "improvement": {
+    "cssBytesRemoved": 117583,
+    "cssPercent": 15.1,
+    "importantRemoved": 469,
+    "importantPercent": 16.4,
+    "obsoleteVisualAssetsRemoved": 8,
+    "obsoleteVisualBytesRemoved": 60182
+  },
+  "removedAssets": [
+    "assets/hero-art.svg",
+    "assets/hero-cinema.svg",
+    "assets/hero-economy.svg",
+    "assets/hero-geography.svg",
+    "assets/hero-literature.svg",
+    "assets/hero-music.svg",
+    "assets/hero-science-inventions.svg",
+    "assets/hero-history-revolution.webp"
+  ],
+  "deadSelectorSamples": [],
+  "errors": []
+}

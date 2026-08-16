@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.36.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.47.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -3892,11 +3892,11 @@
     const current = disciplineById(selectedId);
     const currentProgress = disciplineProgress(selectedId);
     return `<details class="hd34-discipline-picker">
-      <summary><span>${HD_ICONS.discipline(current)} <b>${esc(current.title)}</b><small>${currentProgress.ready ? `${currentProgress.progress}%` : "bientôt"}</small></span><em>Changer</em></summary>
+      <summary><span>${HD_ICONS.discipline(current)} <b>${esc(current.title)}</b><small>${currentProgress.ready ? `${currentProgress.done}/${currentProgress.total || 0} cours` : "bientôt"}</small></span><em>Changer</em></summary>
       <div class="hd34-discipline-grid" aria-label="Changer de discipline">${DISCIPLINES.map(discipline => {
         const progress = disciplineProgress(discipline.id);
         const active = discipline.id === selectedId;
-        return `<button type="button" data-hd214-discipline="${esc(discipline.id)}" class="${active ? "active" : ""}" style="--hd214-accent:${esc(discipline.accent)}" aria-current="${active ? "true" : "false"}"><span>${HD_ICONS.discipline(discipline)}</span><b>${esc(discipline.title)}</b><small>${progress.ready ? `${progress.progress}%` : "bientôt"}</small></button>`;
+        return `<button type="button" data-hd214-discipline="${esc(discipline.id)}" class="${active ? "active" : ""}" style="--hd214-accent:${esc(discipline.accent)}" aria-current="${active ? "true" : "false"}"><span>${HD_ICONS.discipline(discipline)}</span><b>${esc(discipline.title)}</b><small>${progress.ready ? `${progress.done}/${progress.total || 0} cours` : "bientôt"}</small></button>`;
       }).join("")}</div>
     </details>`;
   }
@@ -3934,7 +3934,7 @@
       return `<button type="button" class="hd214-chapter-row ${done && done < total ? "in-progress" : ""} ${progress === 100 && total ? "done" : ""}" data-hd214-group="${esc(group.id)}">
         <span class="hd214-chapter-index">${String(index + 1).padStart(2, "0")}</span>
         <span class="hd214-chapter-copy"><small>${esc(group.range || "Période")}</small><strong>${esc(chapterDisplayTitle(group.title, "Chapitre"))}</strong><em>${esc(themes || group.description || "Thèmes en préparation")}</em><i><b style="width:${progress}%"></b></i></span>
-        <span class="hd214-chapter-status"><b>${progress}%</b><small>${worlds.length} thème${worlds.length > 1 ? "s" : ""}<br>${done}/${total || 0} cours</small><em>›</em></span>
+        <span class="hd214-chapter-status"><small>${done}/${total || 0} cours<br>${worlds.length} thème${worlds.length > 1 ? "s" : ""}</small><em>›</em></span>
       </button>`;
     }).join("")}</div></section>`;
   }
@@ -3952,12 +3952,15 @@
       return `<button type="button" data-hd214-world="${esc(world.id)}" class="${active ? "active" : ""}" style="--hd214-world-accent:${esc(world.accent || "#f6c453")}" aria-current="${active ? "true" : "false"}"><span>${HD_ICONS.world(world, disciplineById(activeDisciplineId()))}</span><b>${esc(world.title)}</b><small>${lessons.length ? `${done}/${lessons.length}` : "bientôt"}</small></button>`;
     }).join("")}</nav>`;
   }
-  function lessonFilterMarkup(){
+  function lessonFilterMarkup(world){
+    const lessons = treeLessonsForWorld(world?.id);
+    if (lessons.length <= 4) return "";
     const filter = ["all", "todo", "done"].includes(state.learnFilter) ? state.learnFilter : "all";
     return `<div class="hd214-lesson-filters" role="group" aria-label="Filtrer les cours"><button type="button" data-hd214-filter="all" class="${filter === "all" ? "active" : ""}">Tous</button><button type="button" data-hd214-filter="todo" class="${filter === "todo" ? "active" : ""}">À faire</button><button type="button" data-hd214-filter="done" class="${filter === "done" ? "active" : ""}">Terminés</button></div>`;
   }
   function filteredWorldLessons(world){
     const lessons = treeLessonsForWorld(world?.id);
+    if (lessons.length <= 4) return lessons;
     const filter = ["all", "todo", "done"].includes(state.learnFilter) ? state.learnFilter : "all";
     if (filter === "done") return lessons.filter(lesson => lessonDone(lesson.id));
     if (filter === "todo") return lessons.filter(lesson => !lessonDone(lesson.id));
@@ -3989,7 +3992,7 @@
     renderShell(`${learnTopbarMarkup({ back: "chapters", title: chapterDisplayTitle(group.title, "Chapitre"), eyebrow: discipline.title })}
       ${themeRailMarkup(worlds, activeWorld)}
       ${activeWorld ? `<section class="hd34-theme-context" style="--hd214-world-accent:${esc(activeWorld.accent || discipline.accent)}"><div><span>${esc(activeWorld.timeframe || group.range || "Thème")}</span><h2>${esc(activeWorld.title)}</h2></div><div class="hd34-theme-progress"><strong>${done}/${all.length || 0}</strong><small>cours validés</small><i><b style="width:${progress}%"></b></i></div></section>` : ""}
-      <section class="hd214-lessons-section hd34-lessons-section">${lessonFilterMarkup()}${lessonCardsMarkup(activeWorld, lessons)}</section>`);
+      <section class="hd214-lessons-section hd34-lessons-section">${lessonFilterMarkup(activeWorld)}${lessonCardsMarkup(activeWorld, lessons)}</section>`);
     const shell = document.querySelector(".app-shell.tab-learn");
     if (shell) { shell.classList.add("hd214-course-library", "hd214-theme-screen"); shell.dataset.hd187Enhanced = "1"; }
     bindLearnActions(disciplineId);
@@ -4102,7 +4105,7 @@
     const panel = article.querySelector(".complete-course-panel");
     if (!panel || article.querySelector(".hd214-reader-toc")) return;
     const sections = Array.from(panel.querySelectorAll(".deep-reading-block"));
-    if (sections.length < 3) return;
+    if (sections.length < 8) return;
     sections.forEach((section, index) => {
       section.dataset.hd214Section = String(index + 1);
       section.id = section.id || `hd214-section-${index + 1}`;
@@ -4151,10 +4154,11 @@
       article.querySelectorAll(".lesson-choice-panel,.rc26-course-toolbar,.lesson-next-choice").forEach(node => node.remove());
       if (view === "quiz") article.querySelectorAll(".beta165-quiz-facts,.key-facts").forEach(node => node.remove());
       const hook = article.querySelector(".lesson-hook");
-      if (hook) {
+      if (hook && view === "quiz") hook.remove();
+      else if (hook) {
         hook.classList.add("hd214-reader-hook");
         const label = hook.querySelector(".card-label");
-        if (label) label.textContent = view === "express" ? "L’idée centrale" : view === "complete" ? "Avant de commencer" : "Dernier contrôle";
+        if (label) label.textContent = "Avant de commencer";
       }
       const express = article.querySelector(".express-coach-card");
       if (express) {
@@ -4163,6 +4167,7 @@
       }
       article.querySelectorAll(".express-steps.clean-express > div").forEach((node, index) => { node.dataset.hd214Step = String(index + 1); const title = node.querySelector("b"); if (title) title.textContent = String(title.textContent || "").replace(/^\s*\d+\s*[·.:-]\s*/, ""); });
       if (view === "complete") buildReaderToc(article);
+      if (view === "quiz" && !article.querySelector(".rc31-completion,.rc31-retry")) article.querySelectorAll("[data-reset-quiz]").forEach(node => node.remove());
       article.querySelectorAll(".deep-reading-block").forEach((node, index) => node.dataset.hd214Section = String(index + 1));
       if (view !== "quiz") article.insertAdjacentHTML("afterend", readerFooterMarkup(lesson, view));
     }
@@ -7048,7 +7053,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.32.0";
+  const VERSION = "1.0.0-rc.47.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -7671,7 +7676,7 @@
   }
   function rankRowMarkup(row, { selfCard = false } = {}) {
     const name = rowName(row);
-    return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}${selfCard ? " hdsv2-self-row" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank ? `#${Number(row.rank)}` : "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${esc(rowMeta(row))} · voir le profil</small></span><b>${Number(row.score || 0)}<small> ${scoreUnit(row)}</small></b></button>`;
+    return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}${selfCard ? " hdsv2-self-row" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank ? `#${Number(row.rank)}` : "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${esc(rowMeta(row))}</small></span><b>${Number(row.score || 0)}<small> ${scoreUnit(row)}</small></b></button>`;
   }
 
   function podiumMarkup(rows = []) {
@@ -7764,7 +7769,7 @@
         <nav class="hdsv2-period-tabs" aria-label="Période">${[["daily", "Jour", "Aujourd’hui"], ["week", "Semaine", "Cette semaine"], ["year", "Année", "Cette année"]].map(([period, shortLabel, fullLabel]) => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}" aria-label="${fullLabel}" aria-current="${context.period === period ? "page" : "false"}">${shortLabel}</button>`).join("")}</nav>
         <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Tous</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
       </div>
-      <section class="hd34-my-rank" aria-label="Ta position"><div><span>Toi · ${esc(periodLabel(context.period))}</span><strong>${me?.rank ? `#${me.rank} · ` : ""}${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "pts"}</strong></div><button type="button" class="ghost" data-social-refresh aria-label="Actualiser le classement">↻</button>${pending ? `<small>${pending} score${pending > 1 ? "s" : ""} à envoyer</small>` : status.phase === "error" ? `<small>Actualisation indisponible</small>` : ""}</section>
+      <section class="hd34-my-rank" aria-label="Ta position"><div><span>Toi · ${esc(periodLabel(context.period))}</span><strong>${me?.rank ? `#${me.rank} · ` : ""}${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "pts"}</strong></div>${pending || status.phase === "error" ? `<button type="button" class="ghost" data-social-refresh aria-label="${status.phase === "error" ? "Réessayer l’actualisation" : "Envoyer les scores en attente"}">↻</button>` : ""}${pending ? `<small>${pending} score${pending > 1 ? "s" : ""} à envoyer</small>` : status.phase === "error" ? `<small>Actualisation indisponible</small>` : ""}</section>
       ${context.audience === "friends" ? requestMarkup() : ""}
       <section class="hdsv2-leaderboard hd34-leaderboard"><div class="hd34-leaderboard-head"><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2><small>${context.period === "year" ? "classés par XP" : context.audience === "friends" ? "dans ton cercle" : "classement général"}</small></div>${leaderboardMarkup(rows, context, status)}</section>
       ${context.audience === "friends" ? friendsMarkup({ includeAdd: true, context }) : ""}
@@ -7967,7 +7972,7 @@
     return `<section class="hd257-hero hd281-hero" style="--profile-accent:${esc(accent)};--level-progress:${levelPct * 3.6}deg">
       <div class="hd257-hero-glow" aria-hidden="true"></div>
       <div class="hd257-avatar hd281-avatar"><div>${esc(profileInitials())}</div><span>Niveau ${levelNumber}</span></div>
-      <div class="hd257-hero-copy hd281-hero-copy"><span class="hd281-rank-label">Rang · ${esc(levelTitle)}</span><h2>${esc(pseudo())}</h2><p>${profileDisciplineIcon(model.favorite)} ${esc(profileTitleFor(model.favorite.discipline))} · ${esc(model.favorite.discipline.title || "Culture générale")} est ton univers le plus exploré.</p></div>
+      <div class="hd257-hero-copy hd281-hero-copy"><span class="hd281-rank-label">Rang · ${esc(levelTitle)}</span><h2>${esc(pseudo())}</h2><p>${profileDisciplineIcon(model.favorite)} ${esc(profileTitleFor(model.favorite.discipline))} · ${esc(model.favorite.discipline.title || "Culture générale")} est ton domaine le plus exploré.</p></div>
       <div class="hd257-hero-numbers hd281-hero-numbers"><div><b>${xp.toLocaleString("fr-FR")}</b><small>XP accumulés</small></div><div><b>${streak}</b><small>${streak === 1 ? "jour de série" : "jours de série"}</small></div><div><b>${solved}</b><small>${solved === 1 ? "dossier résolu" : "dossiers résolus"}</small></div></div>
       <div class="hd257-level-line hd281-level-line"><div><span>Niveau ${levelNumber} · ${levelXp}/250 XP</span><b>${xpRemaining ? `${xpRemaining} XP avant le niveau ${levelNumber + 1}` : "Niveau suivant atteint"}</b></div><i role="progressbar" aria-label="Progression vers le niveau suivant" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${levelPct}"><em style="width:${levelPct}%"></em></i></div>
     </section>`;
@@ -8010,7 +8015,17 @@
   }
 
   function profileProgressMarkup(model) {
-    return `<section class="hd257-progress-card"><header class="hd257-section-head"><div><span>Progression</span><h2>Tes domaines</h2><p>Un aperçu concret des cours terminés dans chaque univers.</p></div><b>${model.average}%<small>moyenne</small></b></header><div class="hd257-progress-grid">${model.rows.map(item => `<button type="button" data-profile-discipline="${esc(item.discipline.id)}" style="--domain-accent:${esc(item.discipline.accent || "#f6c453")}"><span>${profileDisciplineIcon(item)}</span><div><strong>${esc(item.discipline.title)}</strong><small>${item.done}/${item.total || 0} cours</small><i><em style="width:${item.progress}%"></em></i></div><b>${item.progress}%</b></button>`).join("")}</div></section>`;
+    const ordered = [...model.rows].sort((a, b) => {
+      const aStarted = a.done > 0 ? 1 : 0;
+      const bStarted = b.done > 0 ? 1 : 0;
+      return bStarted - aStarted || b.done - a.done || b.progress - a.progress || a.index - b.index;
+    });
+    const visible = ordered.slice(0, 4);
+    const rest = ordered.slice(4);
+    const totalDone = model.rows.reduce((sum, item) => sum + Number(item.done || 0), 0);
+    const totalCourses = model.rows.reduce((sum, item) => sum + Number(item.total || 0), 0);
+    const row = item => `<button type="button" data-profile-discipline="${esc(item.discipline.id)}" style="--domain-accent:${esc(item.discipline.accent || "#f6c453")}"><span>${profileDisciplineIcon(item)}</span><div><strong>${esc(item.discipline.title)}</strong><small>${item.done}/${item.total || 0} cours</small><i><em style="width:${item.progress}%"></em></i></div></button>`;
+    return `<section class="hd257-progress-card rc44-profile-progress"><header class="hd257-section-head"><div><span>Progression</span><h2>Tes domaines</h2><p>Les domaines que tu pratiques le plus apparaissent en premier.</p></div><b>${totalDone}<small>sur ${totalCourses} cours</small></b></header><div class="hd257-progress-grid">${visible.map(row).join("")}</div>${rest.length ? `<details class="rc44-more-domains"><summary>Voir les ${rest.length} autres domaines</summary><div class="hd257-progress-grid">${rest.map(row).join("")}</div></details>` : ""}</section>`;
   }
 
   function profileCollectionsMarkup() {
@@ -8055,9 +8070,9 @@
     renderShell(`<div class="hdsv2-screen hdsv2-profile-screen hd257-profile-root hd34-profile-root">
       <header class="hd257-page-head hd34-profile-head"><div><p class="eyebrow">Profil</p><h1>${esc(pseudo())}</h1></div></header>
       ${profileHeroMarkup(model)}
-      <section class="hd257-dashboard">${profileRhythmMarkup()}${profileCommunityMarkup(s)}</section>
+      <section class="hd257-dashboard rc44-profile-dashboard">${profileRhythmMarkup()}</section>
       ${profileProgressMarkup(model)}
-      <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("spark")}</span><div><b>Carte de curiosité et collections</b><small>Affinités, univers explorés et trophées</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileOrbitMarkup(model)}${profileCollectionsMarkup()}</div></details>
+      <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("spark")}</span><div><b>Carte de curiosité et collections</b><small>Affinités, domaines explorés et trophées</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileOrbitMarkup(model)}${profileCollectionsMarkup()}</div></details>
       <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("trophy")}</span><div><b>Succès</b><small>Objectifs débloqués et prochain défi</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileAchievementsMarkup(s)}</div></details>
       ${profileDetailsMarkup(s)}
     </div>`);
@@ -9251,7 +9266,7 @@
       <div class="hd275-onboarding-top"><div class="hd275-logo"><i>⌛</i><span>HistoDaily</span></div></div>
       <p class="hd275-kicker">Ta dose quotidienne de culture</p>
       <h1>Un dossier.<br>Quelques minutes.<br>Une chose retenue.</h1>
-      <p class="hd275-lead">Lis le contexte, choisis la réponse qui te paraît la plus logique, puis comprends pourquoi. Commence simplement par l’univers qui t’attire.</p>
+      <p class="hd275-lead">Lis le contexte, choisis la réponse qui te paraît la plus logique, puis comprends pourquoi. Commence simplement par la discipline qui t’attire.</p>
       <div class="hd275-disciplines">${disciplines.map(item => `<button type="button" class="hd275-discipline ${item.id === selectedDiscipline ? "is-selected" : ""}" data-hd275-discipline="${esc(item.id)}" style="--discipline-accent:${esc(item.accent || "#f6c453")}"><span>${item.icon}</span><div><b>${esc(item.title)}</b><small>${item.lessons} cours</small></div></button>`).join("")}</div>
       ${selected?.id === "english" ? '<div class="hd275-selected-note"><b>Anglais</b><span>Comprendre le sens, le registre et l’implicite — pas réciter des listes de mots.</span></div>' : selected?.id === "philosophy" ? '<div class="hd275-selected-note"><b>Philosophie</b><span>Raisonner, distinguer et objecter avant de réciter des auteurs.</span></div>' : ""}
       <div class="hd275-actions"><button type="button" class="hd275-next" data-hd275-next>${replayMode ? "Fermer" : "Lancer mon expédition"}</button></div>
@@ -9888,32 +9903,32 @@
     'eng-implicit-meaning': 'eng-lab-understatement',
     // Anglais — approfondissement RC19
     'eng-context-reference': 'eng-lab-reference',
-    'eng-false-friends-second-wave': 'eng-lab-actually',
+    'eng-false-friends-second-wave': 'eng-lab-sensible',
     'eng-small-words-just-quite': 'eng-lab-audio-barely',
     'eng-register-email-directness': 'eng-lab-audio-wondering',
     'eng-phrasal-get': 'eng-lab-audio-endedup',
     'eng-paraphrase-clarify': 'eng-lab-clarify',
-    'eng-connectors-concession': 'eng-lab-concession',
+    'eng-connectors-concession': 'eng-lab-despite',
     'eng-implicit-understatement': 'eng-lab-audio-mind',
 
     // Philosophie — parcours initial
-    'philo-argument-thesis-objection': 'philo-lab-objection',
-    'philo-fact-opinion-value': 'philo-lab-factvalue',
-    'philo-socrates-questioning': 'philo-lab-counterexample',
-    'philo-stoic-control': 'philo-lab-influence',
-    'philo-descartes-doubt': 'philo-lab-cogito',
-    'philo-hume-causality': 'philo-lab-induction',
-    'philo-ethics-principles-consequences': 'philo-lab-ethics',
-    'philo-social-contract-liberty': 'philo-lab-contract',
+    'philo-argument-thesis-objection': 'philo38-lab-argument',
+    'philo-fact-opinion-value': 'philo38-lab-factvalue',
+    'philo-socrates-questioning': 'philo38-lab-socratic',
+    'philo-stoic-control': 'philo38-lab-control',
+    'philo-descartes-doubt': 'philo38-lab-doubt',
+    'philo-hume-causality': 'philo38-lab-causality',
+    'philo-ethics-principles-consequences': 'philo38-lab-dilemma',
+    'philo-social-contract-liberty': 'philo38-lab-liberty',
     // Philosophie — approfondissement RC19
-    'philo-argument-validity': 'philo-lab-validity',
-    'philo-distinction-necessary-sufficient': 'philo-lab-necessary',
-    'philo-socrates-definition': 'philo-lab-counterexample',
-    'philo-stoic-impressions': 'philo-lab-stoic',
-    'philo-descartes-cogito': 'philo-lab-cogito',
-    'philo-hume-induction': 'philo-lab-induction',
-    'philo-ethics-frameworks': 'philo-lab-consequences',
-    'philo-social-contract-comparison': 'philo-lab-generalwill'
+    'philo-argument-validity': 'philo38-lab-validity',
+    'philo-distinction-necessary-sufficient': 'philo38-lab-necessary',
+    'philo-socrates-definition': 'philo38-lab-definition',
+    'philo-stoic-impressions': 'philo38-lab-assent',
+    'philo-descartes-cogito': 'philo38-lab-cogito',
+    'philo-hume-induction': 'philo38-lab-induction',
+    'philo-ethics-frameworks': 'philo38-lab-frameworks',
+    'philo-social-contract-comparison': 'philo38-lab-contractcompare'
   };
 
   const esc = value => {
@@ -9992,7 +10007,7 @@
     const choices = Array.isArray(lab.choices) ? lab.choices : [];
     return `<section class="hd20-checkpoint hd20-${esc(disciplineId)} ${done ? 'done' : ''}" data-hd20-card="challenge" data-hd20-lesson="${esc(lesson.id)}" data-hd20-lab="${esc(lab.id)}">
       <div class="hd20-checkpoint-head">
-        <div><span class="hd20-kicker">${placement === 'express' ? 'Défi express' : 'Pause active · 1/2'}</span><h3>${esc(lab.title || 'Mets l’idée en pratique')}</h3></div>
+        <div><span class="hd20-kicker">${disciplineId === 'english' ? 'Situation · 1/2' : (disciplineId === 'philosophy' ? 'Cas à trancher · 1/2' : (placement === 'express' ? 'Défi express' : 'Pause active · 1/2'))}</span><h3>${esc(lab.title || 'Mets l’idée en pratique')}</h3></div>
         ${audio}
       </div>
       ${lab.context ? `<p class="hd20-context">${esc(lab.context)}</p>` : ''}
@@ -10001,25 +10016,25 @@
         ? `<div class="hd20-complete"><b>✓ Acquis</b><span>${esc(lab.takeaway || 'Tu as identifié le bon réflexe.')}</span></div>`
         : `<div class="hd20-choices" role="group" aria-label="Mini-défi">${choices.map((choice, index) => `<button type="button" data-hd20-choice="${index}" aria-pressed="false"><span>${String.fromCharCode(65 + index)}</span>${esc(choice.text)}</button>`).join('')}</div>
            <div class="hd20-feedback" data-hd20-feedback aria-live="polite"></div>`}
-      <small class="hd20-no-grade">Sans note · tu peux essayer jusqu’à comprendre.</small>
+      <small class="hd20-no-grade">${disciplineId === 'english' ? 'Choisis ce qui sonne juste dans la scène, puis regarde pourquoi.' : 'Sans note · tu peux essayer jusqu’à comprendre.'}</small>
     </section>`;
   }
 
   function recallMarkup(lesson, content, lab, disciplineId) {
     const p = lessonProgress(lesson.id);
     const done = Boolean(p.recall);
-    const answer = modelAnswer(lesson, content, lab, disciplineId);
+    const answer = clean(lab?.modelResponse) ? clean(lab.modelResponse) : modelAnswer(lesson, content, lab, disciplineId);
     const prompt = disciplineId === 'english'
-      ? 'Sans revenir au paragraphe précédent, explique avec tes mots ce que tu dois comprendre ou faire dans ce type de situation. Tu peux écrire en français ou en anglais.'
-      : 'Sans citer l’auteur, reformule avec tes mots la distinction, l’objection ou le mécanisme que tu viens de lire.';
+      ? (clean(lab?.productionPrompt) || 'Réponds en anglais à la situation avec une formulation naturelle. Le but est de produire, pas de traduire mot à mot.')
+      : (clean(lab?.productionPrompt) || 'Prends position en une ou deux phrases, donne la raison décisive, puis vérifie qu’elle résiste au cas proposé.');
     return `<section class="hd20-checkpoint hd20-recall hd20-${esc(disciplineId)} ${done ? 'done' : ''}" data-hd20-card="recall" data-hd20-lesson="${esc(lesson.id)}">
-      <div class="hd20-checkpoint-head"><div><span class="hd20-kicker">Rappel actif · 2/2</span><h3>Dis-le avec tes mots</h3></div><span class="hd20-selfcheck">auto-vérification</span></div>
+      <div class="hd20-checkpoint-head"><div><span class="hd20-kicker">${disciplineId === 'english' ? 'Production · 2/2' : (disciplineId === 'philosophy' ? 'Argument · 2/2' : 'Rappel actif · 2/2')}</span><h3>${disciplineId === 'english' ? 'À toi de répondre' : (disciplineId === 'philosophy' ? 'Construis ta réponse' : 'Dis-le avec tes mots')}</h3></div><span class="hd20-selfcheck">auto-vérification</span></div>
       <p class="hd20-prompt">${esc(prompt)}</p>
       ${done
-        ? `<div class="hd20-model-answer"><b>Une formulation possible</b><p>${esc(answer)}</p><small>La tienne n’avait pas besoin d’être identique : vérifie surtout que l’idée centrale y était.</small></div>`
-        : `<label class="hd20-recall-field"><span>Ta formulation</span><textarea rows="3" data-hd20-recall-input placeholder="Écris une phrase avant de comparer…"></textarea></label>
-           <button type="button" class="hd20-reveal" data-hd20-reveal disabled>Comparer avec une formulation possible</button>
-           <div class="hd20-model-answer" data-hd20-model hidden><b>Une formulation possible</b><p>${esc(answer)}</p><small>Ce n’est pas une correction mot à mot : compare le raisonnement, pas la formulation.</small></div>`}
+        ? `<div class="hd20-model-answer"><b>${disciplineId === 'english' ? 'Une réponse naturelle possible' : (disciplineId === 'philosophy' ? 'Une réponse argumentée possible' : 'Une formulation possible')}</b><p>${esc(answer)}</p><small>${disciplineId === 'english' ? 'Ta phrase peut être différente : vérifie surtout le sens, le registre et le naturel.' : 'La tienne n’avait pas besoin d’être identique : vérifie surtout que l’idée centrale y était.'}</small></div>`
+        : `<label class="hd20-recall-field"><span>${disciplineId === 'english' ? 'Ta réponse en anglais' : (disciplineId === 'philosophy' ? 'Ton raisonnement' : 'Ta formulation')}</span><textarea rows="3" data-hd20-recall-input placeholder="${disciplineId === 'english' ? 'Write your answer in English…' : (disciplineId === 'philosophy' ? 'Écris ta réponse et la raison qui la soutient…' : 'Écris une phrase avant de comparer…')}"></textarea></label>
+           <button type="button" class="hd20-reveal" data-hd20-reveal disabled>${disciplineId === 'english' ? 'Voir une réponse naturelle' : 'Comparer avec une formulation possible'}</button>
+           <div class="hd20-model-answer" data-hd20-model hidden><b>${disciplineId === 'english' ? 'Une réponse naturelle possible' : (disciplineId === 'philosophy' ? 'Une réponse argumentée possible' : 'Une formulation possible')}</b><p>${esc(answer)}</p><small>${disciplineId === 'english' ? 'Ta phrase peut être différente : compare surtout le sens, le registre et le naturel.' : 'Ce n’est pas une correction mot à mot : compare le raisonnement, pas la formulation.'}</small></div>`}
     </section>`;
   }
 
@@ -10060,7 +10075,7 @@
         if (panel && !panel.querySelector('.hd20-course-banner')) {
           const banner = document.createElement('div');
           banner.className = `hd20-course-banner hd20-${disciplineId}`;
-          banner.innerHTML = `<div><span>Cours interactif</span><b>${disciplineId === 'english' ? 'Comprendre, essayer, reformuler' : 'Lire, tester, reformuler'}</b></div>${progressMarkup(lesson.id)}`;
+          banner.innerHTML = `<div><span>Cours interactif</span><b>${disciplineId === 'english' ? 'Observer · choisir · produire' : 'Lire, tester, reformuler'}</b></div>${progressMarkup(lesson.id)}`;
           panel.prepend(banner);
         }
         const firstAnchor = blocks[Math.min(1, Math.max(0, blocks.length - 1))];
@@ -11123,11 +11138,113 @@
 
 ;
 
+/* ===== SOURCE: personalized-path-rc41.js ===== */
+/* HistoDaily RC41 — one personalized next action, no new dashboard. */
+(function histodailyRc41PersonalizedPath(){
+  "use strict";
+  const VERSION="1.0.0-rc.43.0";
+  const safe=(fn,fallback=null)=>{try{return fn();}catch{return fallback;}};
+
+  function did(raw){ return safe(()=>disciplineById(raw||"history").id,String(raw||"history")); }
+  function dname(raw){ const d=safe(()=>disciplineById(raw),null); return String(d?.title||d?.label||raw||""); }
+  function lessonDiscipline(lesson){
+    return did(safe(()=>lessonDisciplineId(lesson),safe(()=>worldDisciplineId(lessonWorld(lesson)),state?.currentDiscipline||"history")));
+  }
+  function lessonsForDiscipline(id){ return safe(()=>allLessons().filter(item=>lessonDiscipline(item)===did(id)),[])||[]; }
+  function solvedCount(id){ return safe(()=>rc17SolvedMysteryCount(did(id)),0)||0; }
+  function progress(id){
+    const p=safe(()=>window.HistoDailyDifficultyRC40?.progressFor?.(did(id)),null);
+    if(p)return p;
+    const lessons=lessonsForDiscipline(id); const done=lessons.filter(item=>safe(()=>lessonDone(item.id),false)).length;
+    return {id:did(id),lessons:done,solved:solvedCount(id),points:done+solvedCount(id)*2,stage:"discovery"};
+  }
+  function memory(){ return window.HistoDaily?.memory||null; }
+  function dueFor(id){ return safe(()=>memory()?.validReviewEntries?.(did(id))||[],[])||[]; }
+  function activeDisciplineIds(currentId){
+    const ids=(typeof DISCIPLINES!=="undefined"?DISCIPLINES:[]).map(item=>item.id);
+    const active=ids.filter(id=>{
+      if(id===did(currentId))return true;
+      const p=progress(id);
+      return Number(p.points||0)>0 || dueFor(id).length>0;
+    });
+    return active.length?active:[did(currentId)];
+  }
+  function startedLesson(id){
+    const lessons=lessonsForDiscipline(id);
+    return lessons.find(lesson=>{
+      if(safe(()=>lessonDone(lesson.id),false))return false;
+      const answers=state?.quizProgress?.[lesson.id]?.answers||{};
+      return Object.keys(answers).length>0;
+    })||null;
+  }
+  function nextLesson(id,excludedId=""){
+    const lessons=lessonsForDiscipline(id);
+    return lessons.find(item=>String(item.id)!==String(excludedId||"")&&!safe(()=>lessonDone(item.id),false))
+      || lessons.find(item=>!safe(()=>lessonDone(item.id),false))
+      || lessons[0]||null;
+  }
+  function metaFor(lesson,id){
+    const raw=safe(()=>lessonMetaLine(lesson),"")||safe(()=>lessonWorld(lesson)?.title,"")||"Cours";
+    return `${dname(id)} · ${raw}`;
+  }
+  function loopComplete(currentId,linkedLesson){
+    const mystery=safe(()=>mysteryForDisciplineDayOffset(did(currentId),0),null);
+    const solved=Boolean(mystery?.id&&safe(()=>mysterySolved(mystery.id),false));
+    const courseDone=!linkedLesson||Boolean(safe(()=>lessonDone(linkedLesson.id),false));
+    return solved&&courseDone;
+  }
+
+  function nextAction(currentId,linkedLesson){
+    const current=did(currentId);
+    const active=activeDisciplineIds(current);
+
+    // 1. Mémoire : une dette réelle est plus utile qu'un nouveau contenu.
+    const reviewRows=active.map(id=>({id,due:dueFor(id)})).filter(row=>row.due.length);
+    if(reviewRows.length){
+      reviewRows.sort((a,b)=>(a.id===current?-1:0)-(b.id===current?-1:0)||b.due.length-a.due.length);
+      const row=reviewRows[0];
+      return {kind:"review",disciplineId:row.id,eyebrow:"À faire maintenant",title:`${row.due.length} notion${row.due.length>1?"s":""} à revoir`,meta:`${dname(row.id)} · séance courte`,action:"Réviser",count:row.due.length,reason:"memory"};
+    }
+
+    // 2. Continuité : ne pas abandonner un quiz/cours déjà commencé.
+    const startedCurrent=startedLesson(current);
+    if(startedCurrent)return {kind:"lesson",disciplineId:current,lesson:startedCurrent,eyebrow:"Reprendre",title:startedCurrent.title||"Cours en cours",meta:metaFor(startedCurrent,current),action:"Continuer",reason:"resume"};
+    for(const id of active){
+      if(id===current)continue;
+      const lesson=startedLesson(id);
+      if(lesson)return {kind:"lesson",disciplineId:id,lesson,eyebrow:"Reprendre",title:lesson.title||"Cours en cours",meta:metaFor(lesson,id),action:"Continuer",reason:"resume"};
+    }
+
+    // 3. Après la boucle du jour seulement : rééquilibrer un domaine déjà pratiqué, jamais imposer un nouvel univers.
+    if(loopComplete(current,linkedLesson)&&active.length>=2){
+      const currentPoints=Number(progress(current).points||0);
+      const candidates=active.filter(id=>id!==current&&Number(progress(id).points||0)>0).map(id=>({id,p:progress(id)}));
+      candidates.sort((a,b)=>Number(a.p.points||0)-Number(b.p.points||0));
+      const weakest=candidates[0];
+      if(weakest&&currentPoints-Number(weakest.p.points||0)>=8){
+        const lesson=nextLesson(weakest.id);
+        if(lesson)return {kind:"lesson",disciplineId:weakest.id,lesson,eyebrow:"Une autre piste",title:lesson.title||"Prochain cours",meta:metaFor(lesson,weakest.id),action:"Continuer",reason:"balance"};
+      }
+    }
+
+    // 4. Sinon, rester dans l'univers choisi : comportement simple et prévisible.
+    const lesson=nextLesson(current,linkedLesson?.id||"");
+    if(lesson)return {kind:"lesson",disciplineId:current,lesson,eyebrow:"Prochaine étape",title:lesson.title||"Prochain cours",meta:metaFor(lesson,current),action:safe(()=>lessonDone(lesson.id),false)?"Revoir":"Continuer",reason:"current"};
+    return {kind:"catalog",disciplineId:current,eyebrow:"À explorer",title:"Choisis un nouveau parcours",meta:dname(current),action:"Voir les cours",reason:"catalog"};
+  }
+
+  const api=Object.freeze({version:VERSION,nextAction,activeDisciplineIds,progress});
+  window.HistoDailyPersonalizedPathRC41=api;
+  try{window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,personalizedPathRC41:true,personalizedPath:api};}catch{}
+})();
+
+;
+
 /* ===== SOURCE: home-premium-rc24.js ===== */
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.36.0";
+  const VERSION = "1.0.0-rc.47.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11178,10 +11295,12 @@
     if (!solved) return {index:1,type:"mystery",kicker:"Expédition du jour",title:mysteryTitle(mystery),text:mysteryTeaserText(mystery),action:"Commencer l’expédition"};
     if (lesson && !read) return {index:2,type:"lesson",view:"complete",kicker:"Étape 2 · Comprendre",title:titleOf(lesson),text:"Trouvé. Comprends maintenant pourquoi cette réponse tient.",action:"Comprendre"};
     if (lesson && !quiz) return {index:3,type:"lesson",view:"quiz",kicker:"Étape 3 · Vérifier",title:"Ancre ce que tu viens d’apprendre",text:`5 questions pour ancrer l’essentiel de « ${titleOf(lesson)} ».`,action:"Faire le quiz"};
-    return {index:4,type:lesson?"lesson":"mystery",view:"complete",kicker:"Parcours du jour terminé",title:"Bien joué — la boucle est complète",text:"Expédition, cours et quiz : rituel terminé.",action:lesson?"Revoir le cours":"Revoir l’expédition"};
+    return {index:4,type:"complete",view:"complete",kicker:"C’est fait pour aujourd’hui",title:"À demain pour un nouveau dossier",text:"Ta session est enregistrée. Si tu as encore envie d’apprendre, une suggestion facultative t’attend juste dessous.",action:""};
   }
   function memoryApi(){ return window.HistoDaily?.memory || null; }
   function nextAction(id, linkedLesson){
+    const personalized = safe(() => window.HistoDailyPersonalizedPathRC41?.nextAction?.(id, linkedLesson), null);
+    if (personalized) return personalized;
     const mem = memoryApi();
     const due = safe(() => mem?.validReviewEntries?.(id), []) || [];
     if (due.length) return {kind:"review",eyebrow:"À faire maintenant",title:`${due.length} notion${due.length>1?"s":""} à revoir`,meta:`Séance courte · ${Math.min(5,due.length)} rappel${Math.min(5,due.length)>1?"s":""} max`,action:"Réviser",count:due.length};
@@ -11221,19 +11340,21 @@
     const linked = mystery?.lessonId ? safe(() => lessonById(mystery.lessonId), null) : null;
     const s = stage(mystery, linked);
     const next = nextAction(id, linked);
+    const nextDisciplineId = next?.disciplineId || id;
+    const nextDiscipline = discipline(nextDisciplineId);
     const streak = Math.max(0, Number(safe(() => currentStreakValue(), state?.streak || 0)) || 0);
     const lvl = Number(safe(() => level(), 1)) || 1;
     const greeting = String(state?.pseudo||"").trim() && !/^invité$/i.test(String(state.pseudo)) ? `Bonjour ${String(state.pseudo).trim()}` : "Bonjour";
     const routeIndex = clamp(s.index,1,3);
     const steps = ["Expédition","Cours","Quiz"];
     const heroClass = artIds.has(id) ? ` has-art art-${esc(id)}` : "";
-    const nextThumbClass = artIds.has(id) ? ` art-${esc(id)}` : "";
+    const nextThumbClass = artIds.has(nextDisciplineId) ? ` art-${esc(nextDisciplineId)}` : "";
 
     document.documentElement.classList.add("hd324-premium-home");
     renderShell(`<div class="rc24-home" style="--world:${esc(d.accent||"#f5c451")}" data-rc24-discipline="${esc(id)}">
       <header class="rc24-head">
         <div class="rc24-brand"><span>✦ HISTODAILY</span><h1>${esc(greeting)}</h1></div>
-        <div class="rc24-metrics"><button type="button" data-rc24-profile><span>🔥</span><b>${streak}</b></button><button type="button" data-rc24-profile><span>♛</span><b>Niv. ${lvl}</b></button></div>
+        <div class="rc24-metrics" aria-label="Statut du profil"><span class="rc44-metric" aria-label="${streak} jour${streak > 1 ? "s" : ""} de série"><span aria-hidden="true">🔥</span><b>${streak}</b></span><span class="rc44-metric" aria-label="Niveau ${lvl}"><span aria-hidden="true">♛</span><b>Niv. ${lvl}</b></span></div>
       </header>
 
       <section class="rc24-hero${heroClass}" aria-labelledby="rc24-hero-title">
@@ -11244,28 +11365,27 @@
           <p>${esc(s.kicker)}</p>
           <h2 id="rc24-hero-title">${esc(s.title)}</h2>
           <span>${esc(s.text)}</span>
-          <button type="button" class="rc24-hero-cta" data-rc24-primary><b>${esc(s.action)}</b><i>→</i></button>
+          ${s.type!=="complete" ? `<button type="button" class="rc24-hero-cta" data-rc24-primary><b>${esc(s.action)}</b><i>→</i></button>` : `<div class="rc43-done-note"><span>✓</span><b>Nouveau dossier demain</b></div>`}
         </div>
         <div class="rc24-route" aria-label="Parcours du jour">${steps.map((label,i)=>{const step=i+1;const status=s.index>3||step<routeIndex?"done":step===routeIndex?"current":"future";return `<div class="${status}"><i>${status==="done"?"✓":step}</i><span>${label}</span></div>`;}).join("")}</div>
       </section>
 
-      <section class="rc24-dashboard" aria-label="Ta progression">
+      ${s.type === "complete" ? `<section class="rc24-dashboard rc44-optional-next" aria-label="Continuer si tu en as envie">
         <button type="button" class="rc24-next" data-rc24-next>
-          <span class="rc24-next-thumb${nextThumbClass}" aria-hidden="true">${next.kind==="review"?"↻":icon(d)}</span>
-          <span class="rc24-next-copy"><small>${esc(next.eyebrow)}</small><b>${esc(next.title)}</b><em>${esc(next.meta)}</em></span>
+          <span class="rc24-next-thumb${nextThumbClass}" aria-hidden="true">${next.kind==="review"?"↻":icon(nextDiscipline)}</span>
+          <span class="rc24-next-copy"><small>Encore envie ?</small><b>${esc(next.title)}</b><em>${esc(next.meta)}</em></span>
           <span class="rc24-next-arrow">→</span>
         </button>
-      </section>
+      </section>` : ""}
 
       <details class="rc24-universes">
-        <summary><span>Univers</span><b>${esc(disciplineName(d))}</b><em>Changer</em></summary>
+        <summary><span>Discipline</span><b>${esc(disciplineName(d))}</b><em>Changer</em></summary>
         ${universeMarkup(id)}
       </details>
     </div>`);
 
     const shell = document.querySelector(".app-shell.tab-home");
     shell?.classList.add("rc24-home-shell");
-    shell?.querySelectorAll("[data-rc24-profile]").forEach(b => b.addEventListener("click",()=>setState({tab:"profile"})));
     shell?.querySelector("[data-rc24-catalog]")?.addEventListener("click",()=>openCatalog(id));
     shell?.querySelector("[data-rc24-primary]")?.addEventListener("click",()=>{
       if (s.type==="mystery") return setState({tab:"mystery",currentMysteryId:mystery?.id||null,currentMysteryDiscipline:id,currentDiscipline:id});
@@ -11275,7 +11395,7 @@
       return setState({tab:"mystery"});
     });
     shell?.querySelector("[data-rc24-next]")?.addEventListener("click",()=>{
-      if (next.kind==="review") return safe(()=>memoryApi()?.openReviewSession?.(id),null);
+      if (next.kind==="review") return safe(()=>memoryApi()?.openReviewSession?.(next.disciplineId || id),null);
       if (next.kind==="lesson" && next.lesson) return openLesson(next.lesson,"complete");
       return openCatalog(id);
     });
@@ -11305,11 +11425,21 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.32.0";
+  const VERSION = "1.0.0-rc.47.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
     "mystery-neolithic-agriculture", "mystery-nile", "mystery-minoens", "mystery-1789-rc39"
+  ]);
+  const STARTER_SCIENCE = new Set([
+    "science-mystery-hypothesis-122", "science-mystery-experimental-proof-121",
+    "science-mystery-double-helix-233", "science-mystery-immune-memory-235",
+    "science-mystery-universal-gravity-236", "science-mystery-atomic-number-237"
+  ]);
+  const STARTER_ASTRONOMY = new Set([
+    "astro-mystery-aurora-186", "astro-mystery-orbit-186",
+    "astronomy-mystery-transit-method-235", "astronomy-mystery-synchronous-rotation-236",
+    "astronomy-mystery-apollo11-236", "astronomy-mystery-solstice-237"
   ]);
 
   function assignmentMap(){
@@ -11346,12 +11476,19 @@
 
   function preferredPool(id, rawPool){
     const solvedCount = typeof rc17SolvedMysteryCount === "function" ? rc17SolvedMysteryCount(id) : 0;
-    const starter = solvedCount < 8 && id === "history" ? rawPool.filter(item => STARTER_HISTORY.has(item.id)) : [];
-    const allowed = solvedCount < 4
-      ? new Set(["facile"])
-      : solvedCount < 30
-        ? new Set(["facile", "moyen"])
-        : new Set(["facile", "moyen", "difficile"]);
+    let starterSet = null;
+    let starterLimit = 0;
+    if (id === "history") { starterSet = STARTER_HISTORY; starterLimit = 8; }
+    else if (id === "science-inventions") { starterSet = STARTER_SCIENCE; starterLimit = 6; }
+    else if (id === "astronomy") { starterSet = STARTER_ASTRONOMY; starterLimit = 6; }
+    const starter = starterSet && solvedCount < starterLimit ? rawPool.filter(item => starterSet.has(item.id)) : [];
+
+    // RC39 : sciences/astronomie montent plus doucement. Les premiers dossiers
+    // doivent surtout apprendre le geste de raisonnement, pas sanctionner le jargon.
+    const gentleDiscipline = id === "science-inventions" || id === "astronomy";
+    const allowed = gentleDiscipline
+      ? (solvedCount < 8 ? new Set(["facile"]) : solvedCount < 24 ? new Set(["facile", "moyen"]) : new Set(["facile", "moyen", "difficile"]))
+      : (solvedCount < 4 ? new Set(["facile"]) : solvedCount < 30 ? new Set(["facile", "moyen"]) : new Set(["facile", "moyen", "difficile"]));
     const adapted = rawPool.filter(item => allowed.has(item.difficulty || "moyen"));
     const nonExpert = rawPool.filter(item => (item.difficulty || "moyen") !== "expert");
     return starter.length ? starter : (adapted.length ? adapted : (nonExpert.length ? nonExpert : rawPool));
@@ -11437,7 +11574,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.36.0";
+  const VERSION = "1.0.0-rc.47.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -11503,21 +11640,34 @@
     return { mastery: Math.max(0, Math.min(100, Math.round(mastery))), label, detail, due: due.length };
   }
 
+  function belongsToTodayLoop(lesson){
+    const mystery = safe(() => currentMystery(), null);
+    if (!mystery || !safe(() => isTodayMystery(mystery.id), false)) return false;
+    if (String(mystery.lessonId || "") !== String(lesson?.id || "")) return false;
+    return safe(() => mysterySolved(mystery.id), false);
+  }
+
   function completionMarkup(lesson, snapshot){
     const memory = memoryStatus(lesson);
     const next = nextLesson(lesson);
     const nextTitle = next ? String(next.title || "Cours suivant") : "";
-    return `<section class="rc31-completion hd34-course-result" aria-label="Bilan et suite du parcours">
-      <div class="rc31-completion-memory">
-        <div class="rc31-mastery-ring" style="--rc31-mastery:${memory.mastery}" aria-label="Maîtrise ${memory.mastery} pour cent"><strong>${memory.mastery}%</strong><span>maîtrise</span></div>
+    const dailyLoop = belongsToTodayLoop(lesson);
+    const primary = dailyLoop
+      ? `<button type="button" data-rc31-home>Terminer pour aujourd’hui</button>`
+      : next
+        ? `<button type="button" data-rc31-next="${esc(next.id)}">Continuer · ${esc(nextTitle)}</button>`
+        : `<button type="button" data-rc31-home>Retour à l’accueil</button>`;
+    const secondary = dailyLoop && next
+      ? `<button type="button" class="ghost" data-rc31-next="${esc(next.id)}">Encore un cours · ${esc(nextTitle)}</button>`
+      : next
+        ? `<button type="button" class="ghost" data-rc31-home>Retour à l’accueil</button>`
+        : "";
+    return `<section class="rc31-completion rc44-completion hd34-course-result" aria-label="Bilan et suite du parcours">
+      <div class="rc31-completion-memory rc44-completion-memory">
+        <div class="rc44-completion-mark" aria-hidden="true">✓</div>
         <div><span class="card-label">Bilan · ${snapshot.correct}/${snapshot.total}</span><h3>${snapshot.correct === snapshot.total ? "Parfaitement validé" : "Cours validé"}</h3><p><strong>${esc(memory.label)}.</strong> ${esc(memory.detail)}</p></div>
       </div>
-      <div class="rc31-completion-actions">
-        ${memory.due ? `<button type="button" data-rc31-review="${esc(lessonDiscipline(lesson))}">Réviser maintenant</button>` : ""}
-        ${next ? `<button type="button" data-rc31-next="${esc(next.id)}">Continuer · ${esc(nextTitle)}</button>` : `<button type="button" data-rc31-home>Retour à l’accueil</button>`}
-        ${next ? `<button type="button" class="ghost" data-rc31-home>Retour à l’accueil</button>` : ""}
-        <button type="button" class="ghost rc31-secondary" data-reset-quiz>Refaire le quiz</button>
-      </div>
+      <div class="rc31-completion-actions rc44-completion-actions">${primary}${secondary}</div>
     </section>`;
   }
 
@@ -11593,7 +11743,7 @@
 /* HistoDaily RC35 — product polish: coherent mobile interaction without new feature layers. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.36.0";
+  const VERSION = "1.0.0-rc.39.0";
   const root = document.documentElement;
   const app = document.getElementById("app");
   let scheduled = false;
@@ -11687,7 +11837,7 @@
 /* HistoDaily RC36 — lean learning flow. Express remains in data/code, dormant in the current UI. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.36.0";
+  const VERSION = "1.0.0-rc.39.0";
   document.documentElement.classList.add("hd36-lean-flow");
   try {
     if (typeof state === "object" && state) {
@@ -11696,6 +11846,701 @@
     }
     window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, expressDormant: true, leanLearningFlow: true };
   } catch {}
+})();
+
+;
+
+/* ===== SOURCE: adaptive-comfort-rc41.js ===== */
+/* HistoDaily RC41 — adaptive comfort: performance slows difficulty locally without adding UI complexity. */
+(function histodailyRc41AdaptiveComfort(){
+  "use strict";
+  const VERSION = "1.0.0-rc.41.0";
+  const previousGuidedMode = typeof rc17GuidedMysteryMode === "function" ? rc17GuidedMysteryMode : null;
+  const clamp = (value, min=0, max=100) => Math.max(min, Math.min(max, Number(value) || 0));
+
+  function disciplineId(raw){
+    try { return disciplineById(raw || "history").id; }
+    catch { return String(raw || "history"); }
+  }
+  function lessonDiscipline(lesson){
+    if (!lesson) return "";
+    try { return lessonDisciplineId(lesson); }
+    catch {
+      try { return worldDisciplineId(lessonWorld(lesson)); }
+      catch { return ""; }
+    }
+  }
+  function mysteryDiscipline(mystery){
+    if (!mystery) return "";
+    try { return mysteryDisciplineId(mystery); }
+    catch { return String(mystery.disciplineId || mystery.discipline || "history"); }
+  }
+
+  function quizMetrics(rawId){
+    const id = disciplineId(rawId);
+    let answered = 0;
+    let correct = 0;
+    const lessonCount = new Set();
+    for (const [lessonId, progress] of Object.entries(state?.quizProgress || {})) {
+      const lesson = (() => { try { return lessonById(lessonId); } catch { return null; } })();
+      if (!lesson || disciplineId(lessonDiscipline(lesson)) !== id) continue;
+      const answers = progress?.answers && typeof progress.answers === "object" ? progress.answers : {};
+      const correctMap = progress?.correct && typeof progress.correct === "object" ? progress.correct : {};
+      const count = Object.keys(answers).length;
+      if (!count) continue;
+      lessonCount.add(String(lessonId));
+      answered += count;
+      correct += Object.values(correctMap).filter(Boolean).length;
+    }
+    const accuracy = answered ? correct / answered : null;
+    return { answered, correct, lessons: lessonCount.size, accuracy, evidence: answered >= 10 };
+  }
+
+  function mysteryMetrics(rawId){
+    const id = disciplineId(rawId);
+    const catalog = (() => { try { return data?.mysteries || []; } catch { return []; } })();
+    const byId = new Map(catalog.map(item => [String(item?.id || ""), item]));
+    const rows = Object.entries(state?.solvedMysteries || {})
+      .map(([mysteryId, meta]) => ({ mystery: byId.get(String(mysteryId)), meta: meta || {} }))
+      .filter(row => row.mystery && disciplineId(mysteryDiscipline(row.mystery)) === id)
+      .sort((a,b) => Number(b.meta?.at || 0) - Number(a.meta?.at || 0))
+      .slice(0, 8);
+    if (!rows.length) return { solved:0, sampled:0, avgTries:null, hintRate:null, firstTryRate:null, evidence:false };
+    const tries = rows.map(row => Math.max(1, Number(row.meta?.tries || 1) || 1));
+    const hinted = rows.filter(row => Number(row.meta?.hints ?? row.meta?.visibleHints ?? 0) > 0).length;
+    const firstTry = rows.filter((row,index) => tries[index] <= 1).length;
+    return {
+      solved: Object.entries(state?.solvedMysteries || {}).filter(([mysteryId]) => {
+        const mystery = byId.get(String(mysteryId));
+        return mystery && disciplineId(mysteryDiscipline(mystery)) === id;
+      }).length,
+      sampled: rows.length,
+      avgTries: tries.reduce((sum,value)=>sum+value,0) / tries.length,
+      hintRate: hinted / rows.length,
+      firstTryRate: firstTry / rows.length,
+      evidence: rows.length >= 4
+    };
+  }
+
+  function metricsFor(rawId){
+    const id = disciplineId(rawId);
+    const quiz = quizMetrics(id);
+    const mysteries = mysteryMetrics(id);
+    const components = [];
+    if (quiz.evidence) components.push({ weight: 0.55, score: clamp((quiz.accuracy || 0) * 100) });
+    if (mysteries.evidence) {
+      const triesPenalty = Math.max(0, (Number(mysteries.avgTries || 1) - 1) * 18);
+      const hintsPenalty = Number(mysteries.hintRate || 0) * 22;
+      components.push({ weight: 0.45, score: clamp(100 - triesPenalty - hintsPenalty, 20, 100) });
+    }
+    const evidenceWeight = components.reduce((sum,item)=>sum+item.weight,0);
+    const comfort = evidenceWeight
+      ? Math.round(components.reduce((sum,item)=>sum+item.score*item.weight,0) / evidenceWeight)
+      : 75;
+
+    const strongSupport = Boolean(
+      (quiz.evidence && Number(quiz.accuracy || 0) < 0.55) ||
+      (mysteries.evidence && Number(mysteries.avgTries || 0) >= 3.2) ||
+      (components.length >= 2 && comfort < 56)
+    );
+    const lightSupport = !strongSupport && Boolean(
+      (quiz.evidence && Number(quiz.accuracy || 0) < 0.68) ||
+      (mysteries.evidence && (Number(mysteries.avgTries || 0) >= 2.35 || Number(mysteries.hintRate || 0) >= 0.55)) ||
+      (components.length >= 2 && comfort < 68)
+    );
+    const support = strongSupport ? "strong" : lightSupport ? "light" : "none";
+    return { id, comfort, support, quiz, mysteries, hasEvidence: components.length > 0 };
+  }
+
+  function capStage(baseStage, rawId){
+    const stage = String(baseStage || "discovery");
+    if (stage === "discovery") return stage;
+    const metrics = metricsFor(rawId);
+    if (!metrics.hasEvidence || metrics.support === "none") return stage;
+    if (metrics.support === "strong") {
+      if (stage === "advanced" || stage === "intermediate") return "confidence";
+      return stage;
+    }
+    if (metrics.support === "light" && stage === "advanced") return "intermediate";
+    return stage;
+  }
+
+  function guidedMode(mystery){
+    if (!mystery?.id) return false;
+    if (previousGuidedMode && previousGuidedMode(mystery)) return true;
+    const id = disciplineId(mysteryDiscipline(mystery));
+    const metrics = metricsFor(id);
+    let solved = 0;
+    try { solved = Math.max(0, Number(rc17SolvedMysteryCount(id) || 0)); } catch {}
+    // Le choix guidé se prolonge seulement si les résultats montrent un besoin réel.
+    if (metrics.support === "strong" && solved < 30) return true;
+    if (metrics.support === "light" && solved < 24) return true;
+    return false;
+  }
+
+  if (previousGuidedMode) rc17GuidedMysteryMode = guidedMode;
+
+  const api = Object.freeze({ version:VERSION, metricsFor, capStage, guidedMode });
+  window.HistoDailyComfortRC41 = api;
+  try { window.HistoDaily = { ...(window.HistoDaily || {}), version:VERSION, adaptiveComfortRC41:true, comfort:api }; } catch {}
+})();
+
+;
+
+/* ===== SOURCE: global-difficulty-ramp-rc40.js ===== */
+/* HistoDaily RC40 — global per-discipline progressive difficulty engine. */
+(function histodailyRc40GlobalDifficultyRamp(){
+  "use strict";
+  const VERSION = "1.0.0-rc.42.0";
+  const cfg = window.HD_GLOBAL_RAMP_RC40 || {};
+  const thresholds = cfg.thresholds || { discoveryPoints: 8, confidencePoints: 20, intermediatePoints: 38 };
+  const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
+
+  function progressFor(disciplineId){
+    const id = disciplineById(disciplineId || "history").id;
+    const solved = Math.max(0, Number(typeof rc17SolvedMysteryCount === "function" ? rc17SolvedMysteryCount(id) : 0) || 0);
+    let lessons = 0;
+    try { lessons = Math.max(0, Number(disciplineProgress(id)?.done || 0)); } catch {}
+    // Les mystères pèsent davantage car ils mesurent une restitution sans le cours sous les yeux.
+    // Les cours validés comptent aussi : un utilisateur peut progresser sans faire une expédition chaque jour.
+    const points = solved * 2 + Math.min(12, lessons);
+    let stage = "advanced";
+    if (solved < 4 && points < thresholds.discoveryPoints) stage = "discovery";
+    else if (points < thresholds.confidencePoints) stage = "confidence";
+    else if (points < thresholds.intermediatePoints) stage = "intermediate";
+    const baseStage = stage;
+    const comfortApi = window.HistoDailyComfortRC41 || null;
+    try { stage = comfortApi?.capStage?.(baseStage, id) || baseStage; } catch { stage = baseStage; }
+    const comfort = (() => { try { return comfortApi?.metricsFor?.(id) || null; } catch { return null; } })();
+    return { id, solved, lessons, points, baseStage, stage, comfort };
+  }
+
+  function allowedDifficulties(stage){
+    if (stage === "discovery") return new Set(["facile"]);
+    if (stage === "confidence") return new Set(["facile", "moyen"]);
+    if (stage === "intermediate") return new Set(["facile", "moyen", "difficile"]);
+    return new Set(["facile", "moyen", "difficile", "expert"]);
+  }
+
+  function starterSet(id){ return new Set(cfg.starterMysteries?.[id] || []); }
+  function mysteryIsSolved(id){ try { return Boolean(mysterySolved(id)); } catch { return Boolean(state.solvedMysteries?.[id]); } }
+  function unsolved(items){ return (items || []).filter(item => item?.id && !mysteryIsSolved(item.id)); }
+  function stableHash(value=""){
+    let hash=2166136261;
+    for(const char of String(value)){ hash^=char.charCodeAt(0); hash=Math.imul(hash,16777619); }
+    return hash>>>0;
+  }
+  function dayKey(offset=0){
+    const date=new Date(); date.setHours(12,0,0,0); date.setDate(date.getDate()-Math.max(0,Number(offset||0)));
+    return localDayKey(date.getTime());
+  }
+  function assignments(){
+    if(!state.dailyMysteryAssignments || typeof state.dailyMysteryAssignments!=="object" || Array.isArray(state.dailyMysteryAssignments)) state.dailyMysteryAssignments={};
+    return state.dailyMysteryAssignments;
+  }
+  function key(id,offset=0){ return `${dayKey(offset)}|${id}`; }
+  function assigned(rawPool,id,offset=0){
+    const assignedId=assignments()[key(id,offset)];
+    return rawPool.find(item=>item?.id===assignedId)||null;
+  }
+
+  function preferredPool(id,rawPool){
+    const progress=progressFor(id);
+    const allowed=allowedDifficulties(progress.stage);
+    if(progress.stage==="discovery"){
+      const starters=rawPool.filter(item=>starterSet(id).has(item.id));
+      if(starters.length) return { progress, pool: starters, allowed };
+    }
+    const adapted=rawPool.filter(item=>allowed.has(item.difficulty||"moyen"));
+    // Ne jamais faire entrer expert comme simple secours avant le stade avancé.
+    const safeFallback=rawPool.filter(item=>(item.difficulty||"moyen")!=="expert");
+    return { progress, pool: adapted.length?adapted:(safeFallback.length?safeFallback:rawPool), allowed };
+  }
+
+  function chooseToday(id,rawPool){
+    const map=assignments();
+    const selection=preferredPool(id,rawPool);
+    const current=assigned(rawPool,id,0);
+    if(current){
+      const stillSuitable = selection.pool.some(item=>item.id===current.id) || mysteryIsSolved(current.id);
+      if(stillSuitable) return current;
+      // Migration RC40 : on remplace une ancienne assignation trop dure uniquement si elle n'a pas encore été jouée.
+      delete map[key(id,0)];
+    }
+    const unseenPreferred=unsolved(selection.pool);
+    const unseenSafe=unsolved(rawPool.filter(item=>selection.allowed.has(item.difficulty||"moyen")));
+    const unseenNonExpert=unsolved(rawPool.filter(item=>(item.difficulty||"moyen")!=="expert"));
+    const unseenAll=unsolved(rawPool);
+    let candidates=unseenPreferred.length?unseenPreferred:
+      unseenSafe.length?unseenSafe:
+      unseenNonExpert.length?unseenNonExpert:
+      unseenAll.length?unseenAll:
+      selection.pool.length?selection.pool:rawPool;
+
+    const yesterdayId=map[key(id,1)]||"";
+    if(yesterdayId && candidates.length>1){
+      const withoutYesterday=candidates.filter(item=>item.id!==yesterdayId);
+      if(withoutYesterday.length)candidates=withoutYesterday;
+    }
+    if(!candidates.length)return null;
+    const index=stableHash(`${dayKey(0)}|${id}|histodaily-rc41-adaptive-comfort`)%candidates.length;
+    const chosen=candidates[index]||candidates[0];
+    if(chosen?.id){
+      map[key(id,0)]=chosen.id;
+      const keys=Object.keys(map).sort();
+      if(keys.length>180)keys.slice(0,keys.length-180).forEach(oldKey=>delete map[oldKey]);
+      state.dailyMysteryAssignments=map;
+      try{queueSaveState?.(80);}catch{}
+    }
+    return chosen||null;
+  }
+
+  mysteryForDisciplineDayOffset=function rc40MysteryForDisciplineDayOffset(disciplineId=activeDisciplineId(),offset=0){
+    const id=disciplineById(disciplineId||"history").id;
+    const rawPool=publicMysteries(id)||[];
+    if(!rawPool.length)return id==="history"?null:(publicMysteries("history")?.[0]||null);
+    const safeOffset=Math.max(0,Number(offset||0));
+    const historical=assigned(rawPool,id,safeOffset);
+    if(historical)return historical;
+    if(safeOffset===0)return chooseToday(id,rawPool);
+    return previousForDiscipline?previousForDiscipline(id,safeOffset):rawPool[(todayIndex()-safeOffset+rawPool.length)%rawPool.length];
+  };
+  mysteryForDayOffset=function rc40MysteryForDayOffset(offset=0){return mysteryForDisciplineDayOffset(activeDisciplineId(),offset);};
+  dailyMystery=function rc40DailyMystery(){return mysteryForDayOffset(0);};
+  isTodayMystery=function rc40IsTodayMystery(id){return Boolean(id&&dailyMystery()?.id===id);};
+
+  const previousLabForToday = typeof disciplineLabForToday === "function" ? disciplineLabForToday : null;
+  if(previousLabForToday){
+    disciplineLabForToday=function rc40DisciplineLabForToday(disciplineId=activeDisciplineId()){
+      const rawPool=disciplineLabPool(disciplineId);
+      if(!rawPool.length)return null;
+      const progress=progressFor(disciplineId);
+      const allowed=allowedDifficulties(progress.stage);
+      const adapted=rawPool.filter(item=>allowed.has(item.difficulty||"moyen"));
+      const pool=adapted.length?adapted:rawPool.filter(item=>(item.difficulty||"moyen")!=="expert");
+      const usable=pool.length?pool:rawPool;
+      const seed=seededHash(`${disciplineId}:${localDayKey()}:rc40`);
+      return usable[(seed+disciplineLabOffsetValue(disciplineId))%usable.length]||usable[0]||null;
+    };
+  }
+
+  const api=Object.freeze({
+    version:VERSION,
+    progressFor,
+    allowedFor:(disciplineId)=>[...allowedDifficulties(progressFor(disciplineId).stage)],
+    stageFor:(disciplineId)=>progressFor(disciplineId).stage,
+    starterMysteries:(disciplineId)=>[...(cfg.starterMysteries?.[disciplineById(disciplineId||"history").id]||[])]
+  });
+  window.HistoDailyDifficultyRC40=api;
+  try{window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,globalDifficultyRampRC40:true,difficulty:api};}catch{}
+})();
+
+;
+
+/* ===== SOURCE: daily-freshness-rc43.js ===== */
+/* HistoDaily RC43 — daily freshness.
+   Keeps the daily expedition stable for the day while avoiding recent thematic repeats.
+   Selection remains constrained by the RC40/41 per-discipline difficulty ramp.
+*/
+(function histodailyRc43DailyFreshness(){
+  "use strict";
+  const VERSION = "1.0.0-rc.47.0";
+  const RECENT_DAYS = 10;
+  const HARD_RECENT_ID_DAYS = 7;
+  const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
+
+  const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
+  const normalize = value => String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+
+  function stableHash(value = "") {
+    let hash = 2166136261;
+    for (const char of String(value || "")) { hash ^= char.charCodeAt(0); hash = Math.imul(hash, 16777619); }
+    return hash >>> 0;
+  }
+  function dayKey(offset = 0) {
+    const date = new Date();
+    date.setHours(12, 0, 0, 0);
+    date.setDate(date.getDate() - Math.max(0, Number(offset || 0)));
+    return localDayKey(date.getTime());
+  }
+  function disciplineId(raw) { return safe(() => disciplineById(raw || "history").id, String(raw || "history")); }
+  function assignmentMap() {
+    if (!state.dailyMysteryAssignments || typeof state.dailyMysteryAssignments !== "object" || Array.isArray(state.dailyMysteryAssignments)) state.dailyMysteryAssignments = {};
+    return state.dailyMysteryAssignments;
+  }
+  function assignmentKey(id, offset = 0) { return `${dayKey(offset)}|${id}`; }
+  function assignedMystery(pool, id, offset = 0) {
+    const value = assignmentMap()[assignmentKey(id, offset)];
+    return pool.find(item => item?.id === value) || null;
+  }
+  function solved(item) { return Boolean(item?.id && safe(() => mysterySolved(item.id), Boolean(state?.solvedMysteries?.[item.id]))); }
+  function recentMysteries(pool, id, days = RECENT_DAYS) {
+    const list = [];
+    for (let offset = 1; offset <= days; offset += 1) {
+      const item = assignedMystery(pool, id, offset);
+      if (item) list.push({ item, offset });
+    }
+    return list;
+  }
+  function sameLesson(a, b) { return Boolean(a?.lessonId && b?.lessonId && String(a.lessonId) === String(b.lessonId)); }
+  function sameSubject(a, b) {
+    const left = normalize(a?.subjectType); const right = normalize(b?.subjectType);
+    return Boolean(left && right && left === right && !["usage reel", "probleme philosophique"].includes(left));
+  }
+  function samePeriod(a, b) {
+    const left = normalize(a?.periodHint); const right = normalize(b?.periodHint);
+    return Boolean(left && right && left === right && left.length >= 5 && !["anglais en contexte", "raisonnement applique"].includes(left));
+  }
+  function noveltyPenalty(candidate, recent) {
+    let penalty = 0;
+    for (const { item, offset } of recent) {
+      if (candidate.id === item.id) penalty += offset <= HARD_RECENT_ID_DAYS ? 1000 : 120;
+      if (sameLesson(candidate, item)) penalty += offset === 1 ? 180 : offset <= 4 ? 65 : 18;
+      if (sameSubject(candidate, item)) penalty += offset === 1 ? 48 : offset <= 3 ? 18 : 4;
+      if (samePeriod(candidate, item)) penalty += offset === 1 ? 38 : offset <= 3 ? 14 : 3;
+    }
+    return penalty;
+  }
+  function rampSelection(id, rawPool) {
+    const api = window.HistoDailyDifficultyRC40 || null;
+    const stage = safe(() => api?.stageFor?.(id), "discovery") || "discovery";
+    const allowed = new Set(safe(() => api?.allowedFor?.(id), ["facile"]) || ["facile"]);
+    let preferred = rawPool.filter(item => allowed.has(item?.difficulty || "moyen"));
+    if (stage === "discovery") {
+      const starters = new Set(safe(() => api?.starterMysteries?.(id), []) || []);
+      const starterPool = rawPool.filter(item => starters.has(item.id));
+      if (starterPool.length) preferred = starterPool;
+    }
+    const nonExpert = rawPool.filter(item => (item?.difficulty || "moyen") !== "expert");
+    return { stage, allowed, preferred: preferred.length ? preferred : (nonExpert.length ? nonExpert : rawPool), nonExpert };
+  }
+  function chooseCandidates(id, rawPool) {
+    const selection = rampSelection(id, rawPool);
+    const unseenPreferred = selection.preferred.filter(item => !solved(item));
+    const unseenAllowed = rawPool.filter(item => selection.allowed.has(item?.difficulty || "moyen") && !solved(item));
+    const unseenNonExpert = selection.nonExpert.filter(item => !solved(item));
+    const unseenAll = rawPool.filter(item => !solved(item));
+    return {
+      selection,
+      pool: unseenPreferred.length ? unseenPreferred : unseenAllowed.length ? unseenAllowed : unseenNonExpert.length ? unseenNonExpert : unseenAll.length ? unseenAll : selection.preferred
+    };
+  }
+  function chooseToday(id, rawPool) {
+    const map = assignmentMap();
+    const current = assignedMystery(rawPool, id, 0);
+    if (current) return current; // stable until local midnight, even after solving.
+
+    const { pool: initialPool } = chooseCandidates(id, rawPool);
+    let candidates = [...initialPool];
+    const recent = recentMysteries(rawPool, id);
+    const yesterday = recent.find(row => row.offset === 1)?.item || null;
+
+    // The daily dossier must change whenever there is any viable alternative.
+    if (yesterday && candidates.length > 1) {
+      const changed = candidates.filter(item => item.id !== yesterday.id);
+      if (changed.length) candidates = changed;
+    }
+
+    // When all unseen content is exhausted, do not fall straight back onto something just seen.
+    if (candidates.length && candidates.every(item => recent.some(row => row.offset <= HARD_RECENT_ID_DAYS && row.item.id === item.id))) {
+      const broader = rawPool.filter(item => !recent.some(row => row.offset <= HARD_RECENT_ID_DAYS && row.item.id === item.id));
+      const safeBroader = broader.filter(item => (item?.difficulty || "moyen") !== "expert");
+      if (safeBroader.length) candidates = safeBroader;
+      else if (broader.length) candidates = broader;
+    }
+
+    if (!candidates.length) return null;
+    const scored = candidates.map(item => ({
+      item,
+      penalty: noveltyPenalty(item, recent),
+      tie: stableHash(`${dayKey(0)}|${id}|${item.id}|rc43`)
+    })).sort((a, b) => a.penalty - b.penalty || a.tie - b.tie);
+    const chosen = scored[0]?.item || candidates[0] || null;
+    if (chosen?.id) {
+      map[assignmentKey(id, 0)] = chosen.id;
+      const keys = Object.keys(map).sort();
+      if (keys.length > 240) keys.slice(0, keys.length - 240).forEach(oldKey => delete map[oldKey]);
+      state.dailyMysteryAssignments = map;
+      try { queueSaveState?.(80); } catch {}
+    }
+    return chosen;
+  }
+
+  mysteryForDisciplineDayOffset = function rc43MysteryForDisciplineDayOffset(rawId = activeDisciplineId(), offset = 0) {
+    const id = disciplineId(rawId);
+    const rawPool = safe(() => publicMysteries(id), []) || [];
+    if (!rawPool.length) return id === "history" ? null : (safe(() => publicMysteries("history")?.[0], null));
+    const safeOffset = Math.max(0, Number(offset || 0));
+    const historical = assignedMystery(rawPool, id, safeOffset);
+    if (historical) return historical;
+    if (safeOffset === 0) return chooseToday(id, rawPool);
+    // Archives predating the assignment map keep the historic deterministic fallback.
+    const previous = previousForDiscipline ? safe(() => previousForDiscipline(id, safeOffset), null) : null;
+    return previous || rawPool[(todayIndex() - safeOffset + rawPool.length * 100) % rawPool.length] || null;
+  };
+  mysteryForDayOffset = function rc43MysteryForDayOffset(offset = 0) { return mysteryForDisciplineDayOffset(activeDisciplineId(), offset); };
+  dailyMystery = function rc43DailyMystery() { return mysteryForDayOffset(0); };
+  isTodayMystery = function rc43IsTodayMystery(id) { return Boolean(id && dailyMystery()?.id === id); };
+
+  const api = Object.freeze({
+    version: VERSION,
+    recentDays: RECENT_DAYS,
+    noveltyPenalty,
+    recentFor: (id) => recentMysteries(safe(() => publicMysteries(disciplineId(id)), []) || [], disciplineId(id)).map(row => row.item.id)
+  });
+  window.HistoDailyFreshnessRC43 = api;
+  try { window.HistoDaily = { ...(window.HistoDaily || {}), version:VERSION, dailyFreshnessRC43: true, dailyFreshness: api }; } catch {}
+})();
+
+;
+
+/* ===== SOURCE: daily-hook-rc47.js ===== */
+/* HistoDaily RC47 — Daily Hook.
+   The daily expedition is now a complete ritual by itself.
+   Course + quiz remain available as an optional deep dive.
+   Also prepares an exact next-day teaser and records local D1/D3/D7 retention signals.
+*/
+(function histodailyRc47DailyHook(){
+  "use strict";
+  const VERSION = "1.0.0-rc.47.0";
+  const ANALYTICS_KEY = "histodaily_retention_rc47";
+  const TEASER_HISTORY_LIMIT = 120;
+  const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  const clean = value => String(value || "").replace(/\s+/g," ").trim();
+
+  function dateKey(delta = 0){
+    const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate() + Number(delta || 0));
+    return localDayKey(d.getTime());
+  }
+  function dayNumber(key){
+    const parts = String(key || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if(!parts) return NaN;
+    return Math.floor(new Date(Number(parts[1]), Number(parts[2])-1, Number(parts[3]), 12).getTime() / 86400000);
+  }
+  function daysBetween(a,b){ const left=dayNumber(a), right=dayNumber(b); return Number.isFinite(left)&&Number.isFinite(right)?right-left:null; }
+  function stableHash(value=""){
+    let hash=2166136261;
+    for(const ch of String(value)){ hash^=ch.charCodeAt(0); hash=Math.imul(hash,16777619); }
+    return hash>>>0;
+  }
+  function disciplineId(raw){ return safe(()=>disciplineById(raw || "history").id, String(raw || "history")); }
+  function todayClaimRecord(){ return safe(()=>state.dailyClaims?.[dateKey(0)] || state.dailyHistory?.[dateKey(0)], null); }
+  function claimedMystery(){
+    const claim=todayClaimRecord();
+    return claim?.mysteryId ? safe(()=>mysteryById(claim.mysteryId), null) : null;
+  }
+  function dailyDone(){ return Boolean(todayClaimRecord()); }
+
+  function analyticsRead(){
+    try { const raw=JSON.parse(localStorage.getItem(ANALYTICS_KEY)||"null"); if(raw&&typeof raw==="object") return raw; } catch {}
+    return { version:VERSION, firstSeenDay:dateKey(0), activeDays:{}, events:[], milestones:{} };
+  }
+  function analyticsWrite(data){
+    try { localStorage.setItem(ANALYTICS_KEY, JSON.stringify(data)); } catch {}
+  }
+  function record(type, meta={}){
+    const data=analyticsRead();
+    const today=dateKey(0);
+    data.version=VERSION;
+    data.firstSeenDay=data.firstSeenDay || today;
+    data.activeDays=data.activeDays&&typeof data.activeDays==="object"?data.activeDays:{};
+    data.activeDays[today]=Math.max(1, Number(data.activeDays[today]||0)+1);
+    data.events=Array.isArray(data.events)?data.events:[];
+    const signature=`${today}|${type}|${String(meta.mysteryId||meta.lessonId||meta.source||"")}`;
+    if(!data.events.some(row=>row?.signature===signature)) data.events.push({ signature, type, day:today, at:Date.now(), ...meta });
+    if(data.events.length>400) data.events=data.events.slice(-400);
+    const offset=daysBetween(data.firstSeenDay,today);
+    data.milestones=data.milestones&&typeof data.milestones==="object"?data.milestones:{};
+    if([1,3,7].includes(offset)) data.milestones[`D${offset}`]=true;
+    analyticsWrite(data);
+    return data;
+  }
+  function retentionSnapshot(){
+    const data=analyticsRead();
+    const active=Object.keys(data.activeDays||{}).sort();
+    return {
+      firstSeenDay:data.firstSeenDay,
+      activeDays:active.length,
+      lastActiveDay:active.at(-1)||null,
+      D1:Boolean(data.milestones?.D1), D3:Boolean(data.milestones?.D3), D7:Boolean(data.milestones?.D7),
+      opens:(data.events||[]).filter(x=>x.type==="app_open").length,
+      mysteryStarts:(data.events||[]).filter(x=>x.type==="mystery_start").length,
+      mysterySolves:(data.events||[]).filter(x=>x.type==="mystery_solved").length,
+      deepDives:(data.events||[]).filter(x=>x.type==="deep_dive").length,
+      pushOpens:(data.events||[]).filter(x=>x.type==="push_open").length
+    };
+  }
+
+  function assignmentMap(){
+    if(!state.dailyMysteryAssignments || typeof state.dailyMysteryAssignments!=="object" || Array.isArray(state.dailyMysteryAssignments)) state.dailyMysteryAssignments={};
+    return state.dailyMysteryAssignments;
+  }
+  function tomorrowAssignmentKey(id){ return `${dateKey(1)}|${disciplineId(id)}`; }
+  function todayAssignmentKey(id){ return `${dateKey(0)}|${disciplineId(id)}`; }
+  function recentAssignedIds(id, days=10){
+    const map=assignmentMap(); const out=[]; const canonical=disciplineId(id);
+    for(let delta=0; delta>=-days; delta--){ const value=map[`${dateKey(delta)}|${canonical}`]; if(value) out.push(String(value)); }
+    return out;
+  }
+  function chooseTomorrow(id){
+    const canonical=disciplineId(id); const map=assignmentMap(); const key=tomorrowAssignmentKey(canonical);
+    const pool=safe(()=>publicMysteries(canonical),[])||[];
+    if(!pool.length) return null;
+    const existing=pool.find(item=>item?.id===map[key]);
+    if(existing) return existing;
+    const difficulty=window.HistoDailyDifficultyRC40 || null;
+    const stage=safe(()=>difficulty?.stageFor?.(canonical),"discovery")||"discovery";
+    const allowed=new Set(safe(()=>difficulty?.allowedFor?.(canonical),["facile"])||["facile"]);
+    let preferred=pool.filter(item=>allowed.has(item?.difficulty||"moyen"));
+    if(stage==="discovery"){
+      const starters=new Set(safe(()=>difficulty?.starterMysteries?.(canonical),[])||[]);
+      const starterPool=pool.filter(item=>starters.has(item.id));
+      if(starterPool.length) preferred=starterPool;
+    }
+    const unsolved=items=>items.filter(item=>!safe(()=>mysterySolved(item.id), Boolean(state.solvedMysteries?.[item.id])));
+    let candidates=unsolved(preferred);
+    if(!candidates.length) candidates=unsolved(pool.filter(item=>(item?.difficulty||"moyen")!=="expert"));
+    if(!candidates.length) candidates=unsolved(pool);
+    if(!candidates.length) candidates=preferred.length?preferred:pool;
+    const recent=new Set(recentAssignedIds(canonical,10));
+    const fresh=candidates.filter(item=>!recent.has(String(item.id)));
+    if(fresh.length) candidates=fresh;
+    const todayId=map[todayAssignmentKey(canonical)] || claimedMystery()?.id || "";
+    if(todayId && candidates.length>1){ const changed=candidates.filter(item=>item.id!==todayId); if(changed.length)candidates=changed; }
+    if(!candidates.length) return null;
+    candidates=[...candidates].sort((a,b)=>stableHash(`${dateKey(1)}|${canonical}|${a.id}|rc47`)-stableHash(`${dateKey(1)}|${canonical}|${b.id}|rc47`));
+    const chosen=candidates[0]||null;
+    if(chosen?.id){
+      map[key]=chosen.id;
+      const keys=Object.keys(map).sort(); if(keys.length>TEASER_HISTORY_LIMIT*2) keys.slice(0,keys.length-TEASER_HISTORY_LIMIT*2).forEach(old=>delete map[old]);
+      state.dailyMysteryAssignments=map;
+      safe(()=>queueSaveState?.(80));
+    }
+    return chosen;
+  }
+  function teaserStore(){
+    if(!state.dailyTomorrowTeasers || typeof state.dailyTomorrowTeasers!=="object" || Array.isArray(state.dailyTomorrowTeasers)) state.dailyTomorrowTeasers={};
+    return state.dailyTomorrowTeasers;
+  }
+  function ensureTomorrowTeaser(mystery=claimedMystery()){
+    if(!mystery) return null;
+    const today=dateKey(0); const store=teaserStore();
+    const saved=store[today];
+    if(saved?.mysteryId){ const found=safe(()=>mysteryById(saved.mysteryId),null); if(found) return found; }
+    const id=disciplineId(safe(()=>mysteryDisciplineId(mystery), mystery.disciplineId||mystery.discipline||activeDisciplineId()));
+    const next=chooseTomorrow(id);
+    if(next?.id){
+      store[today]={ mysteryId:next.id, disciplineId:id, forDay:dateKey(1), createdAt:Date.now() };
+      const keys=Object.keys(store).sort(); if(keys.length>60)keys.slice(0,keys.length-60).forEach(old=>delete store[old]);
+      state.dailyTomorrowTeasers=store; safe(()=>queueSaveState?.(80));
+    }
+    return next;
+  }
+  function teaserText(mystery){
+    if(!mystery) return "Un nouveau dossier t’attendra demain.";
+    const mission=clean(mystery.missionQuestion);
+    if(mission) return mission;
+    const teaser=clean(safe(()=>mysteryTeaser(mystery), mystery.teaser||mystery.publicPrompt||mystery.prompt||""));
+    if(teaser) return teaser.length>170?`${teaser.slice(0,167).trim()}…`:teaser;
+    return clean(mystery.caseTitle||mystery.title||"Un nouveau dossier t’attendra demain.");
+  }
+  function takeaway(mystery){
+    const lesson=mystery?.lessonId?safe(()=>lessonById(mystery.lessonId),null):null;
+    const content=lesson?safe(()=>buildLessonContent(lesson),null):null;
+    const item=Array.isArray(content?.takeaways)?content.takeaways[0]:null;
+    const fromTakeaway=clean(typeof item==="string"?item:item?.text||"");
+    if(fromTakeaway) return fromTakeaway;
+    const explanation=clean(mystery?.explanation||"");
+    if(!explanation) return "Garde surtout le mécanisme qui permettait de relier les indices à la réponse.";
+    const sentence=explanation.match(/^.*?[.!?](?:\s|$)/)?.[0]||explanation;
+    return sentence.length>220?`${sentence.slice(0,217).trim()}…`:sentence;
+  }
+
+  function enhanceSolvedMystery(){
+    const mystery=safe(()=>currentMystery(),null); if(!mystery?.id || !safe(()=>mysterySolved(mystery.id),false))return;
+    const solution=document.querySelector(".hd300-solution"); if(!solution || solution.querySelector("[data-rc47-takeaway]"))return;
+    const resultLine=solution.querySelector(".hd300-result-line");
+    const anchor=resultLine || solution.querySelector(".reward-feedback");
+    const block=document.createElement("div"); block.className="rc47-takeaway"; block.dataset.rc47Takeaway="true";
+    block.innerHTML=`<small>À retenir</small><p>${esc(takeaway(mystery))}</p>`;
+    if(anchor) anchor.insertAdjacentElement("beforebegin",block); else solution.append(block);
+
+    const lesson=mystery.lessonId?safe(()=>lessonById(mystery.lessonId),null):null;
+    const lessonButton=solution.querySelector("[data-open-lesson]");
+    if(lessonButton){ lessonButton.textContent="Approfondir ce sujet"; lessonButton.insertAdjacentHTML("beforebegin","<small class=\"rc47-optional-label\">Facultatif · si tu veux aller plus loin</small>"); lessonButton.addEventListener("click",()=>record("deep_dive",{mysteryId:mystery.id,lessonId:lesson?.id||mystery.lessonId,source:"solution"}),{once:true}); }
+    const homeButton=solution.querySelector("[data-home-stop]"); if(homeButton) homeButton.textContent="Terminer pour aujourd’hui";
+
+    if(isTodayMystery(mystery.id) || String(todayClaimRecord()?.mysteryId||"")===String(mystery.id)){
+      const tomorrow=ensureTomorrowTeaser(mystery);
+      if(tomorrow){
+        const teaser=document.createElement("div"); teaser.className="rc47-tomorrow-teaser";
+        teaser.innerHTML=`<small>Demain</small><p>${esc(teaserText(tomorrow))}</p>`;
+        const actions=solution.querySelector(".hd34-solved-next"); if(actions)actions.insertAdjacentElement("beforebegin",teaser); else solution.append(teaser);
+        record("teaser_seen",{mysteryId:tomorrow.id,source:"solution"});
+      }
+    }
+  }
+
+  function optionalDeepDiveMarkup(mystery){
+    const lesson=mystery?.lessonId?safe(()=>lessonById(mystery.lessonId),null):null;
+    if(!lesson)return "";
+    const done=safe(()=>lessonDone(lesson.id),false);
+    const title=clean(safe(()=>buildLessonContent(lesson)?.title,lesson.title||"Approfondir le sujet"));
+    return `<section class="rc47-deep-dive" aria-label="Approfondissement facultatif"><button type="button" data-rc47-deep-dive="${esc(lesson.id)}"><span><small>${done?"Pour aller plus loin":"Si tu as 5 minutes de plus"}</small><b>${done?"Revoir le sujet":"Approfondir le sujet"}</b><em>${esc(title)}</em></span><i>→</i></button></section>`;
+  }
+  function enhanceHome(){
+    const home=document.querySelector(".rc24-home"); if(!home)return;
+    const hero=home.querySelector(".rc24-hero"); if(!hero)return;
+    const claim=todayClaimRecord();
+    if(!claim){
+      const route=hero.querySelector(".rc24-route"); if(route){ route.classList.add("rc47-ritual-note"); route.innerHTML="<span><b>2–4 min</b> · un dossier, une révélation</span>"; }
+      const primary=hero.querySelector("[data-rc24-primary]"); if(primary)primary.addEventListener("click",()=>{ const m=safe(()=>dailyMystery(),null); record("mystery_start",{mysteryId:m?.id||"",disciplineId:activeDisciplineId(),source:"home"}); },{once:true});
+      return;
+    }
+    const mystery=claimedMystery() || safe(()=>dailyMystery(),null);
+    const claimedDiscipline=disciplineId(safe(()=>mysteryDisciplineId(mystery), mystery?.disciplineId||mystery?.discipline||activeDisciplineId()));
+    const discipline=safe(()=>disciplineById(claimedDiscipline),null);
+    if(discipline?.accent) home.style.setProperty("--world",discipline.accent);
+    [...hero.classList].filter(name=>name.startsWith("art-")).forEach(name=>hero.classList.remove(name));
+    hero.classList.add("has-art",`art-${claimedDiscipline}`);
+    const tomorrow=ensureTomorrowTeaser(mystery);
+    const content=hero.querySelector(".rc24-hero-content");
+    if(content){
+      content.innerHTML=`<p>Expédition terminée</p><h2 id="rc24-hero-title">C’est fait pour aujourd’hui</h2><span>Tu as eu ta révélation du jour. Le cours est maintenant facultatif.</span><div class="rc43-done-note"><span>✓</span><b>Journée validée</b></div>${tomorrow?`<div class="rc47-home-teaser"><small>Demain</small><strong>${esc(teaserText(tomorrow))}</strong></div>`:""}`;
+    }
+    const route=hero.querySelector(".rc24-route"); if(route){route.classList.add("rc47-ritual-note","is-done");route.innerHTML="<span>✓ Reviens demain pour un nouveau dossier</span>";}
+    home.querySelector(".rc44-optional-next")?.remove();
+    home.querySelector(".rc47-deep-dive")?.remove();
+    const deep=optionalDeepDiveMarkup(mystery);
+    if(deep){hero.insertAdjacentHTML("afterend",deep);const btn=home.querySelector("[data-rc47-deep-dive]");btn?.addEventListener("click",()=>{record("deep_dive",{mysteryId:mystery?.id||"",lessonId:btn.dataset.rc47DeepDive,source:"home"});const lesson=safe(()=>lessonById(btn.dataset.rc47DeepDive),null);if(lesson)openLesson(lesson,"complete");});}
+    if(tomorrow)record("teaser_seen",{mysteryId:tomorrow.id,source:"home"});
+  }
+
+  const previousSubmitGuess=typeof submitGuess==="function"?submitGuess:null;
+  if(previousSubmitGuess) submitGuess=function rc47SubmitGuess(event){
+    const mystery=safe(()=>currentMystery(),null); const wasSolved=Boolean(mystery?.id&&safe(()=>mysterySolved(mystery.id),false));
+    const result=previousSubmitGuess(event);
+    window.setTimeout(()=>{
+      const nowSolved=Boolean(mystery?.id&&safe(()=>mysterySolved(mystery.id),false));
+      if(!wasSolved&&nowSolved){ record("mystery_solved",{mysteryId:mystery.id,disciplineId:safe(()=>mysteryDisciplineId(mystery),activeDisciplineId()),tries:Number(state.solvedMysteries?.[mystery.id]?.tries||1),hints:Number(state.solvedMysteries?.[mystery.id]?.hints||0)}); ensureTomorrowTeaser(mystery); }
+    },0);
+    return result;
+  };
+
+  const previousRenderMystery=typeof renderMystery==="function"?renderMystery:null;
+  if(previousRenderMystery) renderMystery=function rc47RenderMystery(){const out=previousRenderMystery();window.setTimeout(enhanceSolvedMystery,0);return out;};
+  const previousRenderHome=typeof renderHome==="function"?renderHome:null;
+  if(previousRenderHome) renderHome=function rc47RenderHome(){const out=previousRenderHome();window.setTimeout(enhanceHome,0);return out;};
+
+  record("app_open",{source:new URLSearchParams(location.search).get("source")||"direct"});
+  if(new URLSearchParams(location.search).get("source")?.startsWith("push")) record("push_open",{source:new URLSearchParams(location.search).get("source")});
+  if(dailyDone()) ensureTomorrowTeaser(claimedMystery());
+
+  const api=Object.freeze({ version:VERSION, dailyDone, ensureTomorrowTeaser, teaserText, retentionSnapshot, record });
+  window.HistoDailyDailyHookRC47=api;
+  try { window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,dailyHookRC47:true,dailyHook:api}; } catch {}
+  try { if(state?.tab==="home") window.setTimeout(()=>{renderHome();},0); else if(state?.tab==="mystery") window.setTimeout(enhanceSolvedMystery,0); } catch {}
 })();
 
 ;

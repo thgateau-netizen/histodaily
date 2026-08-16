@@ -11,8 +11,8 @@ const version = pkg.version;
 
 const groups = {
   'core-rc27.js': ['lessons-lite.js','app-bootstrap.js','sound-ui.js','app.js'],
-  'content-rc27.js': ['content-library.js','content-literature.js','content-philosophy.js','content-english.js','content-english-rc19.js','content-philosophy-rc19.js','content-foundations-depth-rc19.js','discipline-labs-rc19.js','discipline-mysteries-rc19.js','content-premium-233.js','content-premium-234.js','content-premium-235.js','content-premium-236.js','content-premium-237.js','content-coherence-239.js','content-humanize-240.js','content-cleanup-241.js','content-audit-v267.js','mystery-clarity-v272.js','content-homogenize-rc32.js','content-editorial-rc33.js'],
-  'experience-rc27.js': ['app-runtime.js','visual-v4.js','engagement-v263.js','mobile-layout.js','social-v2.js','streak-v265.js','archive-mobile-v268.js','course-mobile-v269.js','onboarding-v275.js','release-polish-v278.js','release-center-v279.js','polish-v280.js','course-polish-v283.js','course-interactions-rc20.js','launch-readiness-v284.js','performance-accessibility-v285.js','stability-v286.js','notifications-v288.js','adaptive-path-rc22.js','home-premium-rc24.js','daily-rotation-rc29.js','quality-pass-rc31.js','product-polish-rc35.js','lean-flow-rc36.js']
+  'content-rc27.js': ['content-library.js','content-literature.js','content-philosophy.js','content-english.js','content-english-rc19.js','content-philosophy-rc19.js','content-foundations-depth-rc19.js','discipline-labs-rc19.js','discipline-mysteries-rc19.js','content-premium-233.js','content-premium-234.js','content-premium-235.js','content-premium-236.js','content-premium-237.js','content-coherence-239.js','content-humanize-240.js','content-cleanup-241.js','content-audit-v267.js','mystery-clarity-v272.js','content-homogenize-rc32.js','content-editorial-rc33.js','content-english-redesign-rc37.js','content-philosophy-redesign-rc38.js','content-science-astronomy-rc39.js','content-difficulty-ramp-rc40.js','content-expansion-rc42.js'],
+  'experience-rc27.js': ['app-runtime.js','visual-v4.js','engagement-v263.js','mobile-layout.js','social-v2.js','streak-v265.js','archive-mobile-v268.js','course-mobile-v269.js','onboarding-v275.js','release-polish-v278.js','release-center-v279.js','polish-v280.js','course-polish-v283.js','course-interactions-rc20.js','launch-readiness-v284.js','performance-accessibility-v285.js','stability-v286.js','notifications-v288.js','adaptive-path-rc22.js','personalized-path-rc41.js','home-premium-rc24.js','daily-rotation-rc29.js','quality-pass-rc31.js','product-polish-rc35.js','lean-flow-rc36.js','adaptive-comfort-rc41.js','global-difficulty-ramp-rc40.js','daily-freshness-rc43.js','daily-hook-rc47.js']
 };
 
 fs.mkdirSync(outRoot, { recursive: true });
@@ -38,8 +38,18 @@ const manifest = {
     content: groups['content-rc27.js'],
     experience: groups['experience-rc27.js']
   },
-  uiPass: 'RC36 lean learning flow',
-  importantFix: 'Express dormant in UI; home mastery percentage removed; expedition opens full course directly'
+  uiPass: 'RC47 Daily Hook',
+  importantFix: 'Daily expedition becomes a complete ritual; exact tomorrow teaser; optional deep dive; local D1/D3/D7 instrumentation'
 };
-fs.writeFileSync(path.join(root, 'RC36-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC47-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC46-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC45-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC44-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC43-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC42-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+// Compatibility alias for existing discipline-specific audits.
+fs.writeFileSync(path.join(root, 'RC41-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC40-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC39-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(root, 'RC27-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
 console.log(`HistoDaily ${version}: ${Object.keys(groups).length} client bundles rebuilt.`);

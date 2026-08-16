@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.36.0",
+  "version": "1.0.0-rc.47.0",
   "status": "passed",
   "principle": "désirable, fluide, évident; la hiérarchie remplace les explications",
   "checks": {
@@ -65,7 +65,7 @@
     },
     "releaseVersionExposed": {
       "pass": true,
-      "detail": "La couche finale doit exposer la vraie version du build."
+      "detail": "La dernière couche d’expérience doit exposer la vraie version du build."
     }
   },
   "errors": []

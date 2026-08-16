@@ -1,0 +1,24 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
+
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,'..');
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'RC37-BUNDLE-MANIFEST.json'),'utf8'));
+const readSource=n=>fs.readFileSync(path.join(root,'src','legacy-client',n),'utf8');
+const noop=()=>{};
+const element=new Proxy({style:{},dataset:{},classList:{add:noop,remove:noop,toggle:noop,contains:()=>false},appendChild:noop,append:noop,remove:noop,setAttribute:noop,addEventListener:noop,querySelector:()=>null,querySelectorAll:()=>[]},{get:(t,p)=>p in t?t[p]:noop});
+const document={readyState:'loading',body:element,documentElement:element,head:element,getElementById:()=>element,querySelector:()=>null,querySelectorAll:()=>[],createElement:()=>Object.create(element),createTextNode:()=>({}),addEventListener:noop};
+const storage={getItem:()=>null,setItem:noop,removeItem:noop,clear:noop};
+const quiet={log:noop,warn:noop,error:noop,info:noop,debug:noop};
+const win={document,addEventListener:noop,removeEventListener:noop,setTimeout:()=>0,clearTimeout:noop,setInterval:()=>0,clearInterval:noop,localStorage:storage,sessionStorage:storage,location:{href:'http://audit/',pathname:'/',search:'',hash:'',origin:'http://audit',reload:noop},history:{pushState:noop,replaceState:noop},navigator:{onLine:true,language:'fr-FR',serviceWorker:{register:async()=>({})}},matchMedia:()=>({matches:false,addEventListener:noop}),innerWidth:390,innerHeight:844};
+const sandbox={console:quiet,window:win,document,localStorage:storage,sessionStorage:storage,navigator:win.navigator,location:win.location,history:win.history,setTimeout:win.setTimeout,clearTimeout:noop,setInterval:win.setInterval,clearInterval:noop,fetch:async()=>({ok:false,status:404,json:async()=>({}),text:async()=>''}),AbortController:globalThis.AbortController,URL,URLSearchParams,TextEncoder,TextDecoder,Blob,Response,Request,Headers,crypto:globalThis.crypto,Intl,Date,Math,JSON,Object,Array,Set,Map,WeakMap,Promise,RegExp,String,Number,Boolean,Error,TypeError,performance:{now:()=>0},requestAnimationFrame:()=>0,cancelAnimationFrame:noop,alert:noop,confirm:()=>false,prompt:()=>null,CSS:{escape:String},structuredClone:globalThis.structuredClone,HD_ART:{}};
+sandbox.globalThis=sandbox; win.window=win; win.globalThis=sandbox;
+const ctx=vm.createContext(sandbox);
+for(const group of ['core','content']) for(const source of manifest.sources[group]||[]) vm.runInContext(readSource(source),ctx,{filename:source,timeout:10000});
+const catalogue=JSON.parse(vm.runInContext(`JSON.stringify({packs:READY_LESSON_PACKS,mysteries:data.mysteries||[],labs:window.HD_DISCIPLINE_LABS||{},meta:window.HistoDaily?.englishRedesignRC37||null})`,ctx));
+const philo=Object.entries(catalogue.packs).filter(([id])=>id.startsWith('philo-'));
+console.log(JSON.stringify(philo.map(([id,p])=>({id,title:p.title,revision:p.contentRevision,complete:(p.complete||[]).length,quiz:(p.quiz||[]).length,hook:p.hook})),null,2));
+console.log('LABS',JSON.stringify((catalogue.labs?.philosophy||[]).map(l=>({id:l.id,title:l.title,prompt:l.prompt})),null,2));
+console.log('MYSTERIES',JSON.stringify((catalogue.mysteries||[]).filter(m=>m.discipline==='philosophy').map(m=>({id:m.id,title:m.title,lessonId:m.lessonId,missionQuestion:m.missionQuestion,prompt:m.prompt,answer:m.answer})),null,2));

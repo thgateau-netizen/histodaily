@@ -1,0 +1,165 @@
+{
+  "version": "1.0.0-rc.46.0",
+  "status": "passed_with_structural_debt",
+  "scope": "ergonomie, navigation, densité, mobile, états, accessibilité, cohérence visuelle, performance perçue et dette UI — contenu exclu",
+  "checks": {
+    "homeOnePrimaryActionDuringDailyLoop": {
+      "pass": true,
+      "detail": "La carte secondaire de l’accueil ne doit apparaître qu’une fois la boucle quotidienne terminée."
+    },
+    "homeStatsAreNotNavigationButtons": {
+      "pass": true,
+      "detail": "Série et niveau doivent être des informations, pas deux faux boutons qui mènent au même profil."
+    },
+    "homeUsesPlainDisciplineLanguage": {
+      "pass": true,
+      "detail": "Le changement de domaine doit être nommé avec un mot immédiatement compréhensible."
+    },
+    "expeditionIsImmersive": {
+      "pass": true,
+      "detail": "La navigation basse doit disparaître pendant une expédition, comme pendant un cours."
+    },
+    "expeditionNoRedundantOpenStatus": {
+      "pass": true,
+      "detail": "Un dossier ouvert n’a pas besoin d’un badge qui répète qu’il est à résoudre."
+    },
+    "expeditionNestedSurfacesFlattened": {
+      "pass": true,
+      "detail": "Indice gratuit et solution doivent être intégrés au dossier, pas être deux cartes supplémentaires."
+    },
+    "courseProgressUsesConcreteCounts": {
+      "pass": true,
+      "detail": "Le catalogue doit privilégier des comptes concrets plutôt que répéter des pourcentages."
+    },
+    "smallCourseListsHaveNoFilterBar": {
+      "pass": true,
+      "detail": "Les filtres Tous/À faire/Terminés ne doivent exister que lorsqu’ils apportent réellement quelque chose."
+    },
+    "readerTocOnlyForLongCourses": {
+      "pass": true,
+      "detail": "Un sommaire ne doit apparaître que pour un cours réellement long."
+    },
+    "quizStartsOnQuestion": {
+      "pass": true,
+      "detail": "Le quiz doit arriver directement sur la question, sans carte d’introduction supplémentaire."
+    },
+    "activeQuizHasNoResetCompetingAction": {
+      "pass": true,
+      "detail": "Le reset ne doit pas concurrencer Continuer pendant chaque question."
+    },
+    "completionHasNoMasteryPercentage": {
+      "pass": true,
+      "detail": "Le bilan utilisateur ne doit plus exposer un pourcentage abstrait de maîtrise."
+    },
+    "completionHasAtMostTwoActions": {
+      "pass": true,
+      "detail": "Après réussite : une action principale et au plus une secondaire."
+    },
+    "dailyLoopCompletionEndsTheDay": {
+      "pass": true,
+      "detail": "Le cours lié au dossier du jour doit déboucher naturellement sur la fin de session."
+    },
+    "rankingRowsDoNotRepeatAffordance": {
+      "pass": true,
+      "detail": "Une ligne déjà cliquable n’a pas besoin de répéter « voir le profil »."
+    },
+    "rankingRefreshIsExceptional": {
+      "pass": true,
+      "detail": "Le bouton actualiser ne doit apparaître que si une action est réellement nécessaire."
+    },
+    "profileLearningFirst": {
+      "pass": true,
+      "detail": "Le profil principal doit montrer apprentissage et rythme; la communauté reste dans son panneau dédié."
+    },
+    "profileDomainsAreProgressivelyDisclosed": {
+      "pass": true,
+      "detail": "Le profil ne doit pas afficher onze domaines d’un coup."
+    },
+    "profileAvoidsAveragePercentHeadline": {
+      "pass": true,
+      "detail": "Le résumé de progression doit utiliser un total concret, pas une moyenne abstraite."
+    },
+    "serviceWorkerDoesNotPrecacheLegacyArtwork": {
+      "pass": true,
+      "detail": "Le premier cache ne doit pas télécharger des visuels historiques inutiles."
+    },
+    "rc46BuildManifestIsGenerated": {
+      "pass": true,
+      "detail": "Les outils de release doivent décrire la version réellement livrée."
+    },
+    "versionConsistent": {
+      "pass": true,
+      "detail": "Les couches capables d’exposer la version doivent rester alignées."
+    },
+    "touchTargetsMeetMobileBaseline": {
+      "pass": true,
+      "detail": "Les cibles tactiles interactives doivent conserver une base de 44 px."
+    },
+    "iosSafeAreaHandled": {
+      "pass": true,
+      "detail": "Navigation et flux immersifs doivent respecter la safe area des iPhone."
+    },
+    "keyboardFocusVisible": {
+      "pass": true,
+      "detail": "Le focus clavier doit rester visible sur toute l’application."
+    },
+    "reducedMotionSupported": {
+      "pass": true,
+      "detail": "Les animations doivent respecter la préférence système de réduction des mouvements."
+    },
+    "routeChangesAreAnnounced": {
+      "pass": true,
+      "detail": "Les changements de vue doivent rester annoncés aux technologies d’assistance."
+    },
+    "singleScreenOnboarding": {
+      "pass": true,
+      "detail": "Le premier lancement doit rester court et utiliser une terminologie explicite."
+    },
+    "rankingHasRecoverableErrorState": {
+      "pass": true,
+      "detail": "Une erreur réseau de classement doit proposer une récupération claire."
+    },
+    "noBlockingPolishOverlay": {
+      "pass": true,
+      "detail": "Le polish ne doit pas réintroduire un écran de chargement bloquant."
+    }
+  },
+  "technicalDebt": {
+    "css": {
+      "bytes": 663616,
+      "lines": 11115,
+      "important": 2397,
+      "boxShadow": 353,
+      "borderRadius": 849,
+      "backdropFilter": 65,
+      "zIndex": 149,
+      "transitions": 85,
+      "animations": 88,
+      "mediaQueries": 246
+    },
+    "bundles": {
+      "bundles/core-rc27.js": {
+        "bytes": 1379507,
+        "gzipBytes": 355326
+      },
+      "bundles/content-rc27.js": {
+        "bytes": 2279023,
+        "gzipBytes": 604047
+      },
+      "bundles/experience-rc27.js": {
+        "bytes": 702848,
+        "gzipBytes": 177765
+      }
+    },
+    "initialRawBytes": 5024994,
+    "initialGzipBytes": 1255592
+  },
+  "warnings": [
+    "Feuille CSS historique volumineuse: 11115 lignes. Ne pas supprimer agressivement sans couverture visuelle navigateur."
+  ],
+  "errors": [],
+  "browserValidation": {
+    "status": "not_available_in_environment",
+    "note": "Chromium local est bloqué par la politique de l’environnement; aucune validation pixel-perfect automatisée n’est revendiquée."
+  }
+}

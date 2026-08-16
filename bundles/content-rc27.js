@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.36.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.47.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: content-library.js ===== */
 /* HistoDaily LTS — bibliothèque de contenus publiés */
@@ -29563,6 +29563,7291 @@ try { if (typeof invalidateCatalogCaches === "function") invalidateCatalogCaches
     window.HD_RC33_EDITORIAL={version:VERSION,removedFiller,bespokePractice,quizRepairs,manualWhy,mysteriesFixed,reasoningQuizUpgrades,distractorSetsUpgraded,sectionTitlesUpgraded};
     if(typeof invalidateCatalogCaches==='function')invalidateCatalogCaches();
   }catch{}
+})();
+
+;
+
+/* ===== SOURCE: content-english-redesign-rc37.js ===== */
+/* HistoDaily 1.0.0-rc.37.0 — English redesign: situation, intent, production. */
+(function histodailyRC37EnglishRedesign(){
+  "use strict";
+  const VERSION = "1.0.0-rc.37.0";
+  const PAYLOAD = {
+  "courses": {
+    "eng-context-inference": {
+      "title": "Garder le fil quand un mot manque",
+      "hook": "Ici, pas de liste de vocabulaire à réciter. Tu apprends à continuer une conversation ou une lecture même lorsqu’un mot t’échappe, en exploitant la scène, la grammaire et les conséquences.",
+      "sections": [
+        {
+          "title": "1. Start with the scene",
+          "text": "Lis d’abord la scène entière : “The café was packed, so we waited outside.” Même si packed t’échappe, café + so + waited outside te donnent déjà une hypothèse utile : il n’y avait probablement pas de place. En anglais réel, tu n’as pas besoin d’une traduction parfaite pour continuer. Le premier objectif est de préserver le sens global, puis d’affiner seulement si le détail devient important."
+        },
+        {
+          "title": "2. Use what happens next",
+          "text": "La suite d’une phrase agit comme une preuve. “The battery was dead, so the car wouldn’t start.” Dead pourrait avoir plusieurs sens dans un dictionnaire, mais la conséquence élimine presque tout : la batterie ne fournit plus d’énergie. Fais le même geste avec “The path was slippery, so we slowed down.” L’action qui suit transforme un mot inconnu en hypothèse raisonnable."
+        },
+        {
+          "title": "3. Grammar narrows the field",
+          "text": "La grammaire réduit encore les possibilités. Dans “She looked exhausted after the flight”, exhausted décrit l’état de she ; ce n’est ni un lieu ni une action future. Dans “We had to postpone the meeting”, postpone est l’action imposée après had to. Tu n’as peut-être pas encore le mot français exact, mais tu sais déjà quel rôle il joue et quel type de sens chercher."
+        },
+        {
+          "title": "4. Keep uncertainty alive",
+          "text": "Un bon lecteur n’invente pas une certitude. Si deux sens restent possibles, garde une compréhension provisoire : “quelque chose de négatif”, “une manière de parler”, “un objet lié à la cuisine”. Continue une ou deux phrases. Souvent, un nouvel indice tranche naturellement. Cette tolérance à l’incertitude est essentielle à l’oral, où sortir mentalement un dictionnaire à chaque trou fait perdre le fil."
+        },
+        {
+          "title": "5. Check only when it matters",
+          "text": "Vérifie un mot lorsqu’il bloque l’action, revient souvent ou change une décision. Si tu comprends qu’un train est delayed et que l’écran affiche une nouvelle heure, le mot précis est utile. Si un adjectif inconnu décrit simplement un décor et que l’histoire continue, tu peux le laisser en suspens. Le but n’est pas de deviner pour toujours : c’est de choisir quand l’effort de vérification vaut vraiment la peine."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "inference",
+          "q": "“The café was packed, so we waited outside.” Quelle conclusion est la mieux soutenue par la phrase ?",
+          "a": "There were probably no free tables.",
+          "choices": [
+            "The café had stopped serving food.",
+            "The waiter had lost our booking.",
+            "The café was about to close."
+          ],
+          "why": "Waited outside est présenté comme la conséquence de packed : l’hypothèse la plus directe est donc un manque de place, sans inventer un autre événement.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "inference",
+          "q": "“The battery was dead, so the car wouldn’t start.” Si dead est inconnu, quelle paraphrase conserve le mieux le sens ?",
+          "a": "The battery had no usable power.",
+          "choices": [
+            "The battery was physically damaged.",
+            "The battery had been removed.",
+            "The battery was recently replaced."
+          ],
+          "why": "La voiture ne démarre pas à cause de l’état de la batterie ; “no usable power” reconstruit cette relation sans traduire dead mot à mot.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "grammar",
+          "q": "Dans “She looked exhausted after the flight”, quel rôle joue exhausted ?",
+          "a": "It describes how she seemed after the flight.",
+          "choices": [
+            "It tells us where she looked.",
+            "It names something she did during the flight.",
+            "It explains why the flight was delayed."
+          ],
+          "why": "Après look comme verbe de liaison, exhausted décrit l’état apparent de la personne ; les autres réponses ajoutent des informations absentes.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "strategy",
+          "q": "Tu lis un article et un adjectif inconnu décrit la couleur d’un bâtiment sans modifier l’action. Quel réflexe est le plus utile ?",
+          "a": "Keep reading and see whether the word matters later.",
+          "choices": [
+            "Stop immediately and translate every possible meaning.",
+            "Replace the word with the first French cognate you notice.",
+            "Skip the whole sentence because one detail is uncertain."
+          ],
+          "why": "La compréhension globale est déjà intacte : continuer permet de garder le rythme et de vérifier seulement si le détail devient pertinent.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "transfer",
+          "q": "“The pavement was slick, so I walked more slowly.” Sans connaître slick, que peux-tu raisonnablement inférer ?",
+          "a": "The pavement made walking less secure.",
+          "choices": [
+            "The pavement was unusually wide.",
+            "The pavement had just been repaired.",
+            "The pavement was crowded with people."
+          ],
+          "why": "Le ralentissement est une réaction à slick ; on peut donc inférer un problème d’adhérence ou de stabilité sans exiger une traduction exacte.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "Lis d’abord la scène entière : “The café was packed, so we waited outside.” Même si packed t’échappe, café + so + waited outside te donnent déjà une hypothèse utile : il n’y avait probablement pas de place. En anglais réel, tu n’as pas besoin d’une traduction parfaite pour continuer. Le premier objectif est de préserver le sens global, puis d’affiner seulement si le détail devient important.",
+        "La suite d’une phrase agit comme une preuve. “The battery was dead, so the car wouldn’t start.” Dead pourrait avoir plusieurs sens dans un dictionnaire, mais la conséquence élimine presque tout : la batterie ne fournit plus d’énergie. Fais le même geste avec “The path was slippery, so we slowed down.” L’action qui suit transforme un mot inconnu en hypothèse raisonnable.",
+        "La grammaire réduit encore les possibilités. Dans “She looked exhausted after the flight”, exhausted décrit l’état de she ; ce n’est ni un lieu ni une action future. Dans “We had to postpone the meeting”, postpone est l’action imposée après had to. Tu n’as peut-être pas encore le mot français exact, mais tu sais déjà quel rôle il joue et quel type de sens chercher."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Ici, pas de liste de vocabulaire à réciter. Tu apprends à continuer une conversation ou une lecture même lorsqu’un mot t’échappe, en exploitant la scène, la grammaire et les conséquences."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-context-reference": {
+      "title": "Suivre qui, quoi et ce que “it” désigne vraiment",
+      "hook": "Comprendre l’anglais naturel demande souvent de suivre des références plutôt que de traduire des mots. One, it, they, this ou that peuvent reprendre un objet, une personne ou même toute une idée.",
+      "sections": [
+        {
+          "title": "1. Rebuild the missing noun",
+          "text": "“I need a charger. Do you have one?” One ne signifie pas “un” au sens isolé : il remplace charger. À l’oral, les anglophones évitent constamment les répétitions de ce type. Le réflexe utile consiste à réinsérer mentalement le nom : “Do you have a charger?” Puis seulement tu continues. Avec ones, même principe : “Which shoes? The black ones” = the black shoes."
+        },
+        {
+          "title": "2. Follow pronouns across sentences",
+          "text": "Dans “Maya called Lucy because she needed help”, she peut renvoyer à Maya ou Lucy. Parfois le contexte tranche ; parfois non. Un bon lecteur ne force pas une réponse. Il repère les candidats compatibles, observe la phrase suivante et accepte une ambiguïté réelle si rien ne permet de décider. Cette compétence est plus proche d’une enquête de discours que d’un exercice de vocabulaire."
+        },
+        {
+          "title": "3. This and that can point to an idea",
+          "text": "“They cancelled the train at the last minute. That ruined our evening.” That reprend ici tout l’événement précédent, pas train. La question utile est : qu’est-ce qui peut logiquement “ruin our evening” ? L’objet train tout seul ne suffit pas ; c’est l’annulation tardive qui crée le problème. Le sens naît du lien entre propositions."
+        },
+        {
+          "title": "4. Context beats nearest noun",
+          "text": "Le nom le plus proche n’est pas automatiquement le bon référent. “I put the cake in the fridge because it was warm.” It renvoie normalement au cake si l’idée est de le refroidir, mais une autre scène pourrait rendre fridge pertinent. Teste chaque candidat dans le sens de la phrase : lequel rend l’action cohérente ? La syntaxe aide, mais la logique de la scène reste essentielle."
+        },
+        {
+          "title": "5. Learn to notice ambiguity",
+          "text": "À l’oral, demander clarification est normal : “Do you mean Maya or Lucy?” ou “When you say that, do you mean the cancellation?” Comprendre une langue, ce n’est pas seulement résoudre toutes les références ; c’est aussi détecter quand elles ne sont pas résolubles sans aide. Cette vigilance évite les faux contresens produits par une certitude trop rapide."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "reference",
+          "q": "“I tried two jackets. The first one was too small.” Que remplace one ?",
+          "a": "The first jacket.",
+          "choices": [
+            "The first shop.",
+            "The first size.",
+            "The first time I tried something."
+          ],
+          "why": "One remplace le nom comptable jacket déjà introduit ; first sélectionne lequel des deux sans répéter le nom.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "reference",
+          "q": "“The delivery arrived late. That annoyed the client.” Que reprend that ?",
+          "a": "The fact that the delivery arrived late.",
+          "choices": [
+            "The delivery company itself.",
+            "The client’s previous message.",
+            "The physical package only."
+          ],
+          "why": "That peut condenser un événement entier ; c’est le retard, plutôt que l’objet colis isolé, qui explique naturellement l’agacement.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "ambiguity",
+          "q": "“Anna texted Sophie after she got home.” Quelle lecture est correcte ?",
+          "a": "The sentence is ambiguous without more context.",
+          "choices": [
+            "She definitely means Anna.",
+            "She definitely means Sophie.",
+            "She refers to home, not to a person."
+          ],
+          "why": "Deux personnes féminines sont compatibles avec she et la phrase seule ne fournit pas assez d’information pour trancher.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "reasoning",
+          "q": "“I moved the soup off the stove because it was too hot.” Quel référent de it est le plus naturel ?",
+          "a": "The soup.",
+          "choices": [
+            "The stove.",
+            "The kitchen.",
+            "The plate."
+          ],
+          "why": "Déplacer la soupe hors du feu est une réaction naturelle à une soupe trop chaude ; les autres référents ne correspondent pas aussi directement à l’action.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "repair",
+          "q": "Tu n’es pas sûr de ce que “that” reprend dans une conversation. Quelle réponse maintient le mieux l’échange ?",
+          "a": "When you say “that”, do you mean the delay?",
+          "choices": [
+            "What is the dictionary meaning of “that”?",
+            "Can you repeat every sentence from the beginning?",
+            "I’ll assume you mean the last noun."
+          ],
+          "why": "La question cible exactement l’incertitude et propose une hypothèse vérifiable sans interrompre toute la conversation.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“I need a charger. Do you have one?” One ne signifie pas “un” au sens isolé : il remplace charger. À l’oral, les anglophones évitent constamment les répétitions de ce type. Le réflexe utile consiste à réinsérer mentalement le nom : “Do you have a charger?” Puis seulement tu continues. Avec ones, même principe : “Which shoes? The black ones” = the black shoes.",
+        "Dans “Maya called Lucy because she needed help”, she peut renvoyer à Maya ou Lucy. Parfois le contexte tranche ; parfois non. Un bon lecteur ne force pas une réponse. Il repère les candidats compatibles, observe la phrase suivante et accepte une ambiguïté réelle si rien ne permet de décider. Cette compétence est plus proche d’une enquête de discours que d’un exercice de vocabulaire.",
+        "“They cancelled the train at the last minute. That ruined our evening.” That reprend ici tout l’événement précédent, pas train. La question utile est : qu’est-ce qui peut logiquement “ruin our evening” ? L’objet train tout seul ne suffit pas ; c’est l’annulation tardive qui crée le problème. Le sens naît du lien entre propositions."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Comprendre l’anglais naturel demande souvent de suivre des références plutôt que de traduire des mots. One, it, they, this ou that peuvent reprendre un objet, une personne ou même toute une idée."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-false-friends-core": {
+      "title": "Actually, eventually, currently : choisir le mot qui fait le bon travail",
+      "hook": "On ne va pas mémoriser une liste “anglais = français”. On va choisir entre plusieurs phrases grammaticales selon ce qu’on veut réellement faire : corriger, situer dans le temps ou raconter une issue.",
+      "sections": [
+        {
+          "title": "1. Actually corrects or reframes",
+          "text": "“I thought Ben was from London.” — “Actually, he’s from Manchester.” Actually intervient comme correction ou précision. Il peut aussi adoucir une contradiction : “Actually, I think the deadline is Thursday.” Si tu veux simplement dire “en ce moment”, currently ou at the moment sera plus direct. Le contraste est fonctionnel : correction d’une idée versus localisation temporelle."
+        },
+        {
+          "title": "2. Currently locates the present situation",
+          "text": "“I’m currently working in Lyon, but I normally live in Grenoble.” Currently décrit une situation présente, parfois temporaire. La phrase ne corrige pas forcément quelqu’un. Compare “Actually, I work in Lyon” : selon le contexte, cette version peut sonner comme une rectification. Le choix dépend donc de l’intention conversationnelle, pas d’une ressemblance avec le français."
+        },
+        {
+          "title": "3. Eventually is the end of a process",
+          "text": "“After three interviews, she eventually got the job.” Eventually signale le résultat final après du temps, des essais ou des étapes. Pour “éventuellement” au sens de possibilité, on utilisera plutôt possibly, perhaps, maybe ou une reformulation. En contexte, eventually s’entend souvent avec une histoire qui a une trajectoire : problème, attente, puis issue."
+        },
+        {
+          "title": "4. Attend and assist swap the trap",
+          "text": "“I attended the conference” signifie que j’y étais présent. “A colleague assisted me during the presentation” signifie qu’il m’a aidé. Les deux mots ressemblent à des mots français mais leurs rôles sont différents. Au lieu de réciter la paire, imagine deux scènes : entrer dans une salle pour attend ; apporter une aide concrète pour assist."
+        },
+        {
+          "title": "5. Use collocations, not isolated labels",
+          "text": "Apprends des blocs : currently unavailable, actually quite good, eventually managed to, attend a meeting, assist a customer. Une collocation te donne immédiatement une scène plausible et réduit le risque de faux ami. Quand tu hésites, demande-toi quel rôle la phrase doit jouer : corriger, dater, conclure une évolution, être présent ou aider."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "natural-choice",
+          "q": "Quel message convient si quelqu’un pense que tu habites à Paris et que tu veux le corriger ?",
+          "a": "Actually, I live in Lille — I only work in Paris.",
+          "choices": [
+            "Currently, I live in Lille — I only work in Paris.",
+            "Eventually, I live in Lille — I only work in Paris.",
+            "Possibly, I live in Lille — I only work in Paris."
+          ],
+          "why": "Actually marque naturellement la correction d’une supposition ; currently pourrait décrire le présent mais ne signale pas aussi clairement la rectification.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "natural-choice",
+          "q": "Tu veux dire que tu travailles temporairement à distance en ce moment. Quelle phrase est la plus directe ?",
+          "a": "I’m currently working from home.",
+          "choices": [
+            "I’m actually working from home.",
+            "I’m eventually working from home.",
+            "I’m attending working from home."
+          ],
+          "why": "Currently situe simplement la situation présente ; actually ajouterait une nuance de correction qui n’est pas nécessaire dans ce contexte.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "meaning-in-context",
+          "q": "“After several failed attempts, we eventually fixed it.” Quelle reformulation anglaise garde le mieux le sens ?",
+          "a": "In the end, we managed to fix it.",
+          "choices": [
+            "For now, we are fixing it.",
+            "Maybe we will fix it later.",
+            "We fixed it by accident immediately."
+          ],
+          "why": "Eventually décrit l’issue après plusieurs tentatives ; “in the end” et “managed to” conservent cette progression.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "usage",
+          "q": "Tu étais présent à une réunion hier. Quelle phrase est naturelle ?",
+          "a": "I attended the meeting yesterday.",
+          "choices": [
+            "I assisted the meeting yesterday.",
+            "I eventually the meeting yesterday.",
+            "I currently went to the meeting yesterday."
+          ],
+          "why": "Attend signifie être présent à un événement ; assist demanderait une personne ou une tâche que tu as aidée.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "usage",
+          "q": "Un collègue t’a aidé à installer un logiciel. Quelle phrase convient ?",
+          "a": "A colleague assisted me with the installation.",
+          "choices": [
+            "A colleague attended me with the installation.",
+            "A colleague currently me with the installation.",
+            "A colleague eventually me with the installation."
+          ],
+          "why": "Assist se construit naturellement avec une personne aidée et une tâche ; attend ne porte pas ce sens d’aide.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“I thought Ben was from London.” — “Actually, he’s from Manchester.” Actually intervient comme correction ou précision. Il peut aussi adoucir une contradiction : “Actually, I think the deadline is Thursday.” Si tu veux simplement dire “en ce moment”, currently ou at the moment sera plus direct. Le contraste est fonctionnel : correction d’une idée versus localisation temporelle.",
+        "“I’m currently working in Lyon, but I normally live in Grenoble.” Currently décrit une situation présente, parfois temporaire. La phrase ne corrige pas forcément quelqu’un. Compare “Actually, I work in Lyon” : selon le contexte, cette version peut sonner comme une rectification. Le choix dépend donc de l’intention conversationnelle, pas d’une ressemblance avec le français.",
+        "“After three interviews, she eventually got the job.” Eventually signale le résultat final après du temps, des essais ou des étapes. Pour “éventuellement” au sens de possibilité, on utilisera plutôt possibly, perhaps, maybe ou une reformulation. En contexte, eventually s’entend souvent avec une histoire qui a une trajectoire : problème, attente, puis issue."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "On ne va pas mémoriser une liste “anglais = français”. On va choisir entre plusieurs phrases grammaticales selon ce qu’on veut réellement faire : corriger, situer dans le temps ou raconter une issue."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-false-friends-second-wave": {
+      "title": "Sensible, sensitive, comprehensive : sonner naturel plutôt que traduire",
+      "hook": "Le piège n’est pas seulement le sens : c’est la combinaison naturelle des mots. On travaille donc avec des situations et des collocations, pas avec une colonne de traductions.",
+      "sections": [
+        {
+          "title": "1. Sensible belongs to decisions",
+          "text": "A sensible plan, a sensible precaution, sensible shoes : sensible évoque généralement le bon sens, le caractère pratique ou raisonnable. Si tu décris une décision prise parce que le temps manque, “the sensible option” sonne naturel. Pour une personne facilement affectée ou un sujet délicat, sensitive sera souvent le bon mot."
+        },
+        {
+          "title": "2. Sensitive belongs to reactions and delicate topics",
+          "text": "Sensitive skin réagit facilement ; a sensitive issue demande de la prudence ; sensitive information peut avoir des conséquences si elle est divulguée. Le mot ne signifie pas “raisonnable”. Compare : “Be sensitive when you discuss it” demande de la délicatesse ; “Be sensible and take an umbrella” demande du bon sens."
+        },
+        {
+          "title": "3. Comprehensive means broad in coverage",
+          "text": "A comprehensive guide couvre beaucoup d’aspects. A comprehensive review examine le sujet de manière étendue. Il ne décrit pas une personne “compréhensive”. Pour cette idée, understanding, sympathetic ou patient seront souvent plus proches selon la scène. Là encore, l’environnement du mot est plus utile qu’une traduction unique."
+        },
+        {
+          "title": "4. Library and bookshop are different places",
+          "text": "You borrow from a library; you buy from a bookshop or bookstore. Le verbe de la scène permet souvent de résoudre le faux ami avant même d’y penser. “I returned the novel to the library” décrit un prêt. “I ordered the novel from a bookshop” décrit un achat. Associe les mots à leurs actions typiques."
+        },
+        {
+          "title": "5. Build contrast pairs you can reuse",
+          "text": "Crée des paires qui vivent : sensible decision / sensitive topic ; comprehensive report / understanding manager ; borrow from a library / buy from a bookshop. Puis change un seul élément : “sensitive data”, “sensible budget”, “comprehensive insurance”. Le but est de sentir quelles associations paraissent attendues plutôt que de traduire à rebours depuis le français."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "collocation",
+          "q": "Un collègue propose de reporter une tâche non urgente parce que l’équipe est débordée. Quelle réaction est naturelle ?",
+          "a": "That sounds like a sensible decision.",
+          "choices": [
+            "That sounds like a sensitive decision.",
+            "That sounds like a comprehensive decision.",
+            "That sounds like an understanding decision."
+          ],
+          "why": "Sensible évalue ici le caractère raisonnable et pratique du choix ; sensitive porterait plutôt sur la délicatesse ou la réactivité.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "collocation",
+          "q": "Tu avertis qu’un document contient des données confidentielles. Quelle formulation convient ?",
+          "a": "This file contains sensitive information.",
+          "choices": [
+            "This file contains sensible information.",
+            "This file contains understanding information.",
+            "This file contains sympathetic information."
+          ],
+          "why": "Sensitive information est une collocation courante pour des données délicates ; sensible ne décrit pas ce type de contenu.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "meaning-in-context",
+          "q": "“The report gives a comprehensive overview of the project.” Que suggère comprehensive ?",
+          "a": "It covers the project broadly and in detail.",
+          "choices": [
+            "It explains the project in very simple language.",
+            "It agrees with everyone involved in the project.",
+            "It focuses only on the most urgent problem."
+          ],
+          "why": "Comprehensive concerne l’étendue de la couverture ; il ne dit ni que le texte est facile ni qu’il est conciliant.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "natural-choice",
+          "q": "Tu veux acheter un roman neuf. Quelle phrase correspond à cette scène ?",
+          "a": "I ordered it from a bookshop.",
+          "choices": [
+            "I borrowed it from a bookshop.",
+            "I ordered it from the library.",
+            "I returned it to the bookshop after three weeks."
+          ],
+          "why": "Bookshop est le lieu d’achat ; library correspond plutôt au prêt et au retour de livres empruntés.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "contrast",
+          "q": "Quel couple montre correctement la différence ?",
+          "a": "a sensible precaution / a sensitive subject",
+          "choices": [
+            "a sensitive precaution / a sensible subject",
+            "a comprehensive person / an understanding report",
+            "a library purchase / a bookshop loan"
+          ],
+          "why": "Le premier associe le bon sens à precaution et la délicatesse à subject, ce qui correspond aux usages naturels des deux adjectifs.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "A sensible plan, a sensible precaution, sensible shoes : sensible évoque généralement le bon sens, le caractère pratique ou raisonnable. Si tu décris une décision prise parce que le temps manque, “the sensible option” sonne naturel. Pour une personne facilement affectée ou un sujet délicat, sensitive sera souvent le bon mot.",
+        "Sensitive skin réagit facilement ; a sensitive issue demande de la prudence ; sensitive information peut avoir des conséquences si elle est divulguée. Le mot ne signifie pas “raisonnable”. Compare : “Be sensitive when you discuss it” demande de la délicatesse ; “Be sensible and take an umbrella” demande du bon sens.",
+        "A comprehensive guide couvre beaucoup d’aspects. A comprehensive review examine le sujet de manière étendue. Il ne décrit pas une personne “compréhensive”. Pour cette idée, understanding, sympathetic ou patient seront souvent plus proches selon la scène. Là encore, l’environnement du mot est plus utile qu’une traduction unique."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Le piège n’est pas seulement le sens : c’est la combinaison naturelle des mots. On travaille donc avec des situations et des collocations, pas avec une colonne de traductions."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-still-yet-already-even": {
+      "title": "Still, yet, already, even : sentir l’attente derrière la phrase",
+      "hook": "Ces mots ne servent pas seulement à placer une action dans le temps. Ils montrent ce que le locuteur attendait, ce qui continue, ce qui arrive tôt ou ce qui le surprend.",
+      "sections": [
+        {
+          "title": "1. Still = continuation against a reference point",
+          "text": "“I’m still waiting.” La situation a commencé avant et continue maintenant. Selon le ton, still peut aussi suggérer que cela dure plus longtemps que prévu. “Are you still working?” ne demande pas seulement un état : la question compare le présent à une attente implicite. Écoute donc ce que le locuteur pensait devoir avoir changé."
+        },
+        {
+          "title": "2. Yet = expected but not completed",
+          "text": "“I haven’t finished yet.” Le travail n’est pas fini, mais l’accomplissement reste attendu. Dans une question, “Have you finished yet?” demande si le point attendu a été atteint. Yet ne ferme donc pas la porte ; il place l’action sur une ligne où l’on attend encore un changement."
+        },
+        {
+          "title": "3. Already = earlier than the reference point",
+          "text": "“You’ve already finished?” peut exprimer une simple constatation ou une surprise : la fin arrive plus tôt que prévu. “I already knew that” place la connaissance avant un moment de référence. Le mot ne signifie pas seulement “déjà” : son intérêt vient de la comparaison avec ce qu’on croyait être le calendrier normal."
+        },
+        {
+          "title": "4. Even = surprising member of a scale",
+          "text": "“Even Alex understood the instructions.” La phrase suppose une échelle implicite : si Alex est présenté comme le cas le moins attendu, son succès rend le résultat remarquable. Le mot ne donne pas une date. Il sélectionne un cas surprenant parmi d’autres possibilités. Le contexte te dit pourquoi ce cas est inattendu."
+        },
+        {
+          "title": "5. Compare the same scene",
+          "text": "Imagine un rapport : “I’m still writing it” = ça continue ; “I haven’t sent it yet” = l’envoi reste attendu ; “I’ve already sent it” = l’envoi est accompli, éventuellement plus tôt que prévu ; “Even Marta has sent hers” = Marta devient le cas surprenant. Travailler la même scène permet de sentir la nuance plutôt que mémoriser quatre traductions séparées."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "nuance",
+          "q": "À 18 h, un collègue dit “I’m still working on the report.” Quelle nuance est la plus probable ?",
+          "a": "The work started earlier and is continuing now.",
+          "choices": [
+            "The report was completed earlier than expected.",
+            "The report has not been started yet.",
+            "The report is surprising because someone else wrote it."
+          ],
+          "why": "Still relie le présent à une situation commencée auparavant et suggère souvent que sa continuation mérite d’être remarquée.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "nuance",
+          "q": "“I haven’t heard from Sam yet.” Quelle réponse paraphrase le mieux l’idée ?",
+          "a": "I’m still waiting for a message from Sam.",
+          "choices": [
+            "Sam has definitely decided not to reply.",
+            "Sam replied earlier than I expected.",
+            "I received a surprising message from Sam."
+          ],
+          "why": "Yet maintient l’attente ouverte : aucun message jusqu’à maintenant, sans conclure que Sam ne répondra pas.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "nuance",
+          "q": "Tu pensais qu’un travail prendrait toute la journée et quelqu’un dit à midi “I’ve already finished.” Que peut suggérer already ?",
+          "a": "The task was completed earlier than the speaker expected.",
+          "choices": [
+            "The task is continuing longer than expected.",
+            "The task may never be completed.",
+            "The task was completed by an unexpected person."
+          ],
+          "why": "Already compare implicitement l’achèvement au calendrier attendu et peut donc signaler une avance.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "nuance",
+          "q": "“Even Chris remembered the password.” Que faut-il inférer pour que even soit naturel ?",
+          "a": "Chris was one of the less expected people to remember it.",
+          "choices": [
+            "Chris remembered it before everyone else.",
+            "Chris is still trying to remember it.",
+            "Chris has not remembered it up to now."
+          ],
+          "why": "Even place Chris à une extrémité d’une échelle implicite de probabilité ou d’attente ; c’est ce contraste qui crée la surprise.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "transfer",
+          "q": "Tu veux dire “ce n’est pas fini pour l’instant, mais je compte le finir”. Quelle phrase convient le mieux ?",
+          "a": "I haven’t finished it yet.",
+          "choices": [
+            "I’m already finishing it.",
+            "I even finished it.",
+            "I still finished it."
+          ],
+          "why": "La négation avec yet exprime précisément l’absence d’achèvement jusqu’à présent tout en gardant l’achèvement comme attente ouverte.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“I’m still waiting.” La situation a commencé avant et continue maintenant. Selon le ton, still peut aussi suggérer que cela dure plus longtemps que prévu. “Are you still working?” ne demande pas seulement un état : la question compare le présent à une attente implicite. Écoute donc ce que le locuteur pensait devoir avoir changé.",
+        "“I haven’t finished yet.” Le travail n’est pas fini, mais l’accomplissement reste attendu. Dans une question, “Have you finished yet?” demande si le point attendu a été atteint. Yet ne ferme donc pas la porte ; il place l’action sur une ligne où l’on attend encore un changement.",
+        "“You’ve already finished?” peut exprimer une simple constatation ou une surprise : la fin arrive plus tôt que prévu. “I already knew that” place la connaissance avant un moment de référence. Le mot ne signifie pas seulement “déjà” : son intérêt vient de la comparaison avec ce qu’on croyait être le calendrier normal."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Ces mots ne servent pas seulement à placer une action dans le temps. Ils montrent ce que le locuteur attendait, ce qui continue, ce qui arrive tôt ou ce qui le surprend."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-small-words-just-quite": {
+      "title": "Just, quite, rather, pretty : régler le ton sans surtraduire",
+      "hook": "Les petits adverbes changent souvent la relation plus que le contenu. On apprend à entendre leur effet : adoucir, minimiser, intensifier ou signaler une surprise.",
+      "sections": [
+        {
+          "title": "1. Just can soften a request",
+          "text": "“I just wanted to check whether you saw my email.” Just peut rendre l’entrée moins abrupte : le locuteur présente sa demande comme limitée. Ce n’est pas une règle de politesse automatique, mais un effet fréquent. Compare “I want to know why you haven’t replied” : le contenu est proche, le niveau de pression ne l’est pas."
+        },
+        {
+          "title": "2. Just can also mean only or very recently",
+          "text": "“It’s just a suggestion” minimise l’importance : ce n’est qu’une suggestion. “I’ve just arrived” situe l’action dans un passé très récent. La structure et le temps verbal t’indiquent la fonction. Chercher une traduction unique de just crée donc des contresens ; cherche plutôt ce que le mot fait dans la phrase."
+        },
+        {
+          "title": "3. Quite depends on the adjective and variety",
+          "text": "“It’s quite good” peut être une appréciation modérée ou franchement positive selon le locuteur et la variété d’anglais. Avec un adjectif plus absolu, “quite impossible” peut renforcer fortement. Ce n’est pas un bouton d’intensité fixe. Le contexte, l’intonation et le type d’adjectif comptent davantage qu’une équivalence “quite = assez”."
+        },
+        {
+          "title": "4. Pretty is often an informal intensifier",
+          "text": "“It’s pretty cold” ne parle pas d’apparence. Pretty fonctionne comme un intensifieur courant et assez informel. “The film was pretty good” peut être sincèrement positif sans être extravagant. À l’oral, l’intonation peut encore augmenter ou réduire la force. Apprends le bloc entier plutôt que le mot séparé."
+        },
+        {
+          "title": "5. Rather can sound more marked",
+          "text": "“That’s rather unusual” peut sembler plus soutenu ou signaler une légère surprise. “I’d rather stay home” est une autre construction : would rather exprime une préférence. Le même mot participe donc à deux mécanismes différents. Pour choisir, identifie d’abord la structure, puis demande quel ton ou quelle comparaison le locuteur construit."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "pragmatics",
+          "q": "Un collègue relance doucement un e-mail sans vouloir paraître accusateur. Quelle ouverture convient le mieux ?",
+          "a": "I just wanted to check whether you saw my message.",
+          "choices": [
+            "I need to know why you ignored my message.",
+            "You still haven’t answered my message.",
+            "I am checking your failure to reply."
+          ],
+          "why": "Just wanted to check réduit la pression et présente la relance comme une vérification, contrairement aux autres formulations plus accusatrices.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "meaning-in-context",
+          "q": "“I’ve just got home.” Que fait just ici ?",
+          "a": "It places the arrival in the very recent past.",
+          "choices": [
+            "It means home is the only place available.",
+            "It makes the sentence more formal.",
+            "It suggests the speaker is uncertain about arriving."
+          ],
+          "why": "Avec le present perfect et une action d’arrivée, just signale naturellement qu’elle vient de se produire.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "register",
+          "q": "Quelle phrase sonne la plus naturelle dans une conversation informelle pour dire qu’un examen était assez difficile ?",
+          "a": "The exam was pretty difficult.",
+          "choices": [
+            "The exam was comprehensively difficult.",
+            "The exam was sensitively difficult.",
+            "The exam was currently difficult."
+          ],
+          "why": "Pretty est un intensifieur informel courant devant un adjectif gradable ; les autres adverbes ne remplissent pas cette fonction.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "nuance",
+          "q": "“That’s rather unusual.” Quelle lecture est la plus plausible ?",
+          "a": "The speaker finds it noticeably unusual, perhaps with some surprise.",
+          "choices": [
+            "The speaker is saying it is completely normal.",
+            "The speaker is asking for a preference.",
+            "The speaker means it happened very recently."
+          ],
+          "why": "Rather intensifie ici unusual et peut ajouter une coloration un peu marquée ou surprise ; ce n’est pas la structure would rather.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "contrast",
+          "q": "Quelle paire montre deux fonctions différentes de just ?",
+          "a": "I’ve just arrived / It’s just a suggestion.",
+          "choices": [
+            "I’m quite tired / I’d rather leave.",
+            "It’s pretty cold / It’s rather cold.",
+            "I’m still here / I haven’t left yet."
+          ],
+          "why": "Dans la première phrase just marque la récence ; dans la seconde il minimise en donnant l’idée de “seulement”.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“I just wanted to check whether you saw my email.” Just peut rendre l’entrée moins abrupte : le locuteur présente sa demande comme limitée. Ce n’est pas une règle de politesse automatique, mais un effet fréquent. Compare “I want to know why you haven’t replied” : le contenu est proche, le niveau de pression ne l’est pas.",
+        "“It’s just a suggestion” minimise l’importance : ce n’est qu’une suggestion. “I’ve just arrived” situe l’action dans un passé très récent. La structure et le temps verbal t’indiquent la fonction. Chercher une traduction unique de just crée donc des contresens ; cherche plutôt ce que le mot fait dans la phrase.",
+        "“It’s quite good” peut être une appréciation modérée ou franchement positive selon le locuteur et la variété d’anglais. Avec un adjectif plus absolu, “quite impossible” peut renforcer fortement. Ce n’est pas un bouton d’intensité fixe. Le contexte, l’intonation et le type d’adjectif comptent davantage qu’une équivalence “quite = assez”."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Les petits adverbes changent souvent la relation plus que le contenu. On apprend à entendre leur effet : adoucir, minimiser, intensifier ou signaler une surprise."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-polite-register": {
+      "title": "Demander sans sonner brutal ni cérémonieux",
+      "hook": "La politesse utile n’est pas “mettre le maximum de mots polis”. On calibre une demande selon la relation, l’urgence et le coût imposé à l’autre.",
+      "sections": [
+        {
+          "title": "1. Direct is not the same as rude",
+          "text": "“Send me the file” peut être normal entre proches dans une situation rapide, mais abrupt avec un collègue peu connu. “Could you send me the file?” ajoute une distance polie sans devenir cérémonieux. La question n’est donc pas “quelle phrase est grammaticalement correcte ?” mais “quelle phrase convient à cette relation précise ?”."
+        },
+        {
+          "title": "2. Add a reason when it helps",
+          "text": "“Could you send me the figures by noon? I need them for the client call.” Une raison brève rend la demande plus facile à interpréter et évite l’impression d’une exigence arbitraire. Inutile toutefois d’empiler excuses et justifications. Un anglais naturel préfère souvent une demande claire, une contrainte réelle et une marge si elle existe."
+        },
+        {
+          "title": "3. Soften bad news, not the facts",
+          "text": "“I’m afraid we can’t offer a refund” ou “Unfortunately, we can’t offer a refund” préparent une information négative sans masquer le message. Être poli ne signifie pas devenir vague. Si la décision est ferme, “I’m not sure we can…” peut créer une ambiguïté inutile. Le bon registre protège la relation tout en gardant le contenu compréhensible."
+        },
+        {
+          "title": "4. Friends, colleagues, clients",
+          "text": "À un ami : “Can you send me the address?” À un collègue : “Could you send me the address when you get a chance?” À un client : “Would you mind confirming the address?” Ces exemples ne forment pas une échelle rigide ; ils montrent comment la distance sociale et le coût de la demande modifient la formulation."
+        },
+        {
+          "title": "5. Natural politeness is economical",
+          "text": "Les formulations comme “I humbly request that you might perhaps…” sont grammaticales mais disproportionnées dans un e-mail ordinaire. La politesse naturelle repose souvent sur quelques outils : could, would you mind, when you have a moment, unfortunately, thanks. Le but est que l’autre comprenne vite ce que tu veux sans ressentir une pression inutile."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "register",
+          "q": "Tu demandes un document non urgent à un collègue que tu connais peu. Quelle phrase est la mieux calibrée ?",
+          "a": "Could you send me the document when you have a minute?",
+          "choices": [
+            "Send me the document when you see this.",
+            "Would you be so kind as to transmit the aforementioned document at your earliest convenience?",
+            "I was wondering whether there might possibly be any chance of getting the document someday."
+          ],
+          "why": "La bonne réponse reste claire et polie sans être impérative ni excessivement cérémonieuse ou vague.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "register",
+          "q": "Tu écris à un ami proche qui doit t’envoyer une adresse dans la journée. Quelle phrase paraît naturelle ?",
+          "a": "Can you send me the address when you get a sec?",
+          "choices": [
+            "Would you mind formally confirming the postal details at your earliest convenience?",
+            "I require the address to be transmitted to me.",
+            "I’m afraid I must request the address from you."
+          ],
+          "why": "Avec un proche, une demande simple et directe est naturelle ; les autres formulations créent une distance ou une solennité artificielle.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "bad-news",
+          "q": "Un remboursement est définitivement impossible. Quelle phrase est à la fois polie et claire ?",
+          "a": "I’m afraid we can’t offer a refund in this case.",
+          "choices": [
+            "I’m not sure a refund would maybe be possible.",
+            "A refund is impossible, obviously.",
+            "Perhaps the refund situation is not ideal."
+          ],
+          "why": "I’m afraid atténue la mauvaise nouvelle tout en gardant la décision ferme ; les autres réponses sont soit ambiguës, soit inutilement dures ou floues.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "reason",
+          "q": "Pourquoi “Could you send it by noon? I need it for the client call.” fonctionne bien ?",
+          "a": "It combines a clear request with a useful reason.",
+          "choices": [
+            "It makes the deadline sound optional.",
+            "It avoids saying what the speaker actually needs.",
+            "It is more formal because every sentence is long."
+          ],
+          "why": "La contrainte est explicite et la raison permet à l’autre de comprendre pourquoi midi compte, sans ajouter de lourdeur.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "transfer",
+          "q": "Tu veux refuser une proposition sans fermer brutalement la discussion. Quelle réponse convient ?",
+          "a": "I don’t think that option will work for us, but we could try the second one.",
+          "choices": [
+            "No. That option won’t work. Next.",
+            "That is perhaps an interesting possibility of uncertain relevance.",
+            "I’m afraid of that option."
+          ],
+          "why": "La formulation exprime un désaccord net puis ouvre une alternative, ce qui protège à la fois la clarté et la coopération.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“Send me the file” peut être normal entre proches dans une situation rapide, mais abrupt avec un collègue peu connu. “Could you send me the file?” ajoute une distance polie sans devenir cérémonieux. La question n’est donc pas “quelle phrase est grammaticalement correcte ?” mais “quelle phrase convient à cette relation précise ?”.",
+        "“Could you send me the figures by noon? I need them for the client call.” Une raison brève rend la demande plus facile à interpréter et évite l’impression d’une exigence arbitraire. Inutile toutefois d’empiler excuses et justifications. Un anglais naturel préfère souvent une demande claire, une contrainte réelle et une marge si elle existe.",
+        "“I’m afraid we can’t offer a refund” ou “Unfortunately, we can’t offer a refund” préparent une information négative sans masquer le message. Être poli ne signifie pas devenir vague. Si la décision est ferme, “I’m not sure we can…” peut créer une ambiguïté inutile. Le bon registre protège la relation tout en gardant le contenu compréhensible."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "La politesse utile n’est pas “mettre le maximum de mots polis”. On calibre une demande selon la relation, l’urgence et le coût imposé à l’autre."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-register-email-directness": {
+      "title": "E-mails : écrire clair, humain et au bon niveau de pression",
+      "hook": "Un bon e-mail anglais n’est pas forcément plus poli parce qu’il est plus long. On travaille le niveau de pression, l’objet de la demande et les formulations qui sonnent réellement professionnelles.",
+      "sections": [
+        {
+          "title": "1. Put the action where it can be seen",
+          "text": "“Could you confirm the date by Thursday?” permet de comprendre immédiatement l’action attendue et l’échéance. Un e-mail qui commence par quatre phrases de contexte peut être poli mais difficile à traiter. En anglais professionnel, une demande claire n’est pas impolie si elle est correctement calibrée. Place le besoin assez tôt, puis ajoute le contexte utile."
+        },
+        {
+          "title": "2. A follow-up should not accuse by default",
+          "text": "“Just checking whether you had a chance to look at this” est une relance neutre. “You still haven’t replied” transforme la même situation en reproche. Parfois le reproche est justifié, mais il ne doit pas être accidentel. Choisis donc consciemment le niveau de pression au lieu de traduire une formule française mot à mot."
+        },
+        {
+          "title": "3. Deadlines can be firm without sounding hostile",
+          "text": "“Could you send the final version by 3 pm? We need to submit it today.” est ferme : l’heure et la raison sont explicites. Ajouter “if possible” quand l’échéance n’est pas réellement optionnelle affaiblit inutilement le message. La diplomatie ne consiste pas à cacher une contrainte réelle."
+        },
+        {
+          "title": "4. Requests and reminders need different tones",
+          "text": "Première demande : “Could you send me the invoice?” Relance : “Just following up on the invoice below.” Escalade : “We still need the invoice today to process payment.” Même objectif, trois moments différents. Le registre évolue avec l’historique de l’échange, pas seulement avec le statut des personnes."
+        },
+        {
+          "title": "5. Close with the next step",
+          "text": "Une fin utile indique la suite : “Let me know if Thursday is a problem.”, “Thanks — I’ll review it this afternoon.” ou “If I don’t hear back, I’ll use the current version.” Ces phrases réduisent l’ambiguïté opérationnelle. L’e-mail devient un outil d’action, pas seulement une démonstration de politesse."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "email",
+          "q": "Première relance après deux jours, sans urgence particulière. Quelle phrase est la plus adaptée ?",
+          "a": "Just checking whether you had a chance to look at the draft.",
+          "choices": [
+            "You still haven’t replied to my draft.",
+            "I require an immediate response regarding the draft.",
+            "I assume the draft has been rejected because you did not answer."
+          ],
+          "why": "La bonne phrase vérifie l’état sans attribuer de faute ni inventer une conclusion ; elle laisse à l’autre une sortie naturelle.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "email",
+          "q": "L’échéance de 15 h est réelle et non négociable. Quelle formulation est la plus claire ?",
+          "a": "Could you send the final version by 3 pm? We need to submit it today.",
+          "choices": [
+            "Could you maybe send it by 3 pm if that happens to be convenient?",
+            "Send it at 3 pm. No excuses.",
+            "I was wondering about the general possibility of a final version."
+          ],
+          "why": "La phrase combine politesse, heure précise et raison ; elle n’affaiblit pas artificiellement une contrainte réellement ferme.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "email",
+          "q": "Quel début d’e-mail rend l’action la plus immédiatement visible ?",
+          "a": "Could you confirm the meeting time for Friday?",
+          "choices": [
+            "I hope this message finds you well. I wanted to reach out regarding a matter.",
+            "Following our recent correspondence and various considerations, I am writing today.",
+            "There are several things that may be worth discussing before Friday."
+          ],
+          "why": "La demande précise apparaît dès la première ligne ; les autres ouvertures retardent l’information dont le lecteur a besoin pour agir.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "email",
+          "q": "Après deux relances ignorées et un paiement bloqué, quelle phrase augmente raisonnablement la pression ?",
+          "a": "We still need the invoice today to process the payment.",
+          "choices": [
+            "Just checking in whenever you have a spare moment.",
+            "I suppose the invoice might arrive eventually.",
+            "You are clearly refusing to send the invoice."
+          ],
+          "why": "Le message explique maintenant la conséquence et l’urgence sans passer directement à une accusation personnelle non démontrée.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "email",
+          "q": "Quelle fin réduit le mieux l’ambiguïté sur la suite ?",
+          "a": "Let me know by Thursday if that deadline is a problem.",
+          "choices": [
+            "Thanks in advance for your understanding.",
+            "Best regards and many thanks again.",
+            "I hope everything works out somehow."
+          ],
+          "why": "La bonne fin indique quoi signaler et quand ; elle transforme la formule de clôture en prochaine étape exploitable.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“Could you confirm the date by Thursday?” permet de comprendre immédiatement l’action attendue et l’échéance. Un e-mail qui commence par quatre phrases de contexte peut être poli mais difficile à traiter. En anglais professionnel, une demande claire n’est pas impolie si elle est correctement calibrée. Place le besoin assez tôt, puis ajoute le contexte utile.",
+        "“Just checking whether you had a chance to look at this” est une relance neutre. “You still haven’t replied” transforme la même situation en reproche. Parfois le reproche est justifié, mais il ne doit pas être accidentel. Choisis donc consciemment le niveau de pression au lieu de traduire une formule française mot à mot.",
+        "“Could you send the final version by 3 pm? We need to submit it today.” est ferme : l’heure et la raison sont explicites. Ajouter “if possible” quand l’échéance n’est pas réellement optionnelle affaiblit inutilement le message. La diplomatie ne consiste pas à cacher une contrainte réelle."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Un bon e-mail anglais n’est pas forcément plus poli parce qu’il est plus long. On travaille le niveau de pression, l’objet de la demande et les formulations qui sonnent réellement professionnelles."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-phrasal-context": {
+      "title": "Phrasal verbs : apprendre la scène, pas “verbe + particule”",
+      "hook": "Run out, call off, figure out ou turn out deviennent plus faciles quand on les apprend comme des actions complètes dans une histoire. La traduction mot à mot devient secondaire.",
+      "sections": [
+        {
+          "title": "1. Run out of = the resource reaches zero",
+          "text": "“We ran out of coffee halfway through the meeting.” La scène est une ressource disponible qui arrive à zéro. Tu peux varier : run out of time, battery, patience, paper. L’important est le cadre commun, pas quatre traductions séparées. Si tu visualises une quantité qui s’épuise, le bloc devient immédiatement plus stable."
+        },
+        {
+          "title": "2. Call off = a planned event will not happen",
+          "text": "“They called off the match because of the storm.” Quelque chose était prévu puis annulé. Compare postpone : l’événement est déplacé, pas supprimé. En apprenant call off avec meeting, trip, search, match, tu construis un réseau d’usages naturels plutôt qu’une formule abstraite."
+        },
+        {
+          "title": "3. Figure out = reach understanding or a solution",
+          "text": "“I finally figured out why the app was crashing.” Le processus se termine par une compréhension ou une solution. Figure out a password, a problem, how something works. Le sens ne vient pas de figure + out ; il vient du type de résultat que la scène produit."
+        },
+        {
+          "title": "4. Turn out = the final reality is revealed",
+          "text": "“We thought the restaurant was closed, but it turned out to be open.” Turn out introduit souvent la réalité découverte après une attente, une erreur ou une incertitude. La structure “turn out to be” est particulièrement utile pour raconter un résultat surprenant ou différent de ce qu’on croyait."
+        },
+        {
+          "title": "5. Learn by swapping the nouns",
+          "text": "Construis “We ran out of ___”, “They called off ___”, “I figured out ___”, “It turned out to be ___”. Change uniquement le complément et vérifie si la scène reste naturelle. Cet exercice te force à apprendre les contraintes d’usage. Un phrasal verb devient alors un outil productif, pas une entrée de dictionnaire."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "phrasal",
+          "q": "“We ran out of time, so we skipped the last topic.” Que s’est-il passé ?",
+          "a": "There was no time left for the last topic.",
+          "choices": [
+            "The meeting started later than expected.",
+            "The last topic was too difficult to understand.",
+            "Someone deliberately removed the final topic earlier."
+          ],
+          "why": "Run out of décrit une ressource arrivée à zéro ; la conséquence skipped the last topic confirme ici qu’il ne restait plus de temps.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "phrasal",
+          "q": "Une conférence est annulée à cause d’une grève. Quelle phrase convient ?",
+          "a": "They called off the conference because of the strike.",
+          "choices": [
+            "They figured out the conference because of the strike.",
+            "They ran out of the conference because of the strike.",
+            "The conference turned out because of the strike."
+          ],
+          "why": "Call off s’emploie naturellement lorsqu’un événement prévu est annulé ; les autres verbes décrivent d’autres types de scènes.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "phrasal",
+          "q": "“I finally figured out how to export the file.” Quelle paraphrase garde le sens ?",
+          "a": "I finally found the solution and understood how to do it.",
+          "choices": [
+            "I finally cancelled the export.",
+            "I finally used up the file.",
+            "I finally discovered the export was impossible."
+          ],
+          "why": "Figure out aboutit à une compréhension ou solution ; ici le résultat est de savoir comment effectuer l’export.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "phrasal",
+          "q": "“The cheap charger turned out to be excellent.” Quelle idée est centrale ?",
+          "a": "The final reality was better than expected.",
+          "choices": [
+            "The charger was returned to the shop.",
+            "The charger stopped working after a while.",
+            "The charger was deliberately switched off."
+          ],
+          "why": "Turn out to be révèle le résultat ou la réalité constatée après coup ; la phrase oppose ici l’attente liée au prix au résultat réel.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "transfer",
+          "q": "Quelle combinaison est la plus naturelle ?",
+          "a": "run out of patience / call off a trip / figure out a problem",
+          "choices": [
+            "run out of a meeting / call off a password / figure out some coffee",
+            "run out a solution / call off some battery / figure out a storm",
+            "run out to be late / call off patience / figure out a conference"
+          ],
+          "why": "Chaque phrasal verb impose un cadre sémantique différent : ressource épuisée, événement annulé, problème compris ou résolu.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“We ran out of coffee halfway through the meeting.” La scène est une ressource disponible qui arrive à zéro. Tu peux varier : run out of time, battery, patience, paper. L’important est le cadre commun, pas quatre traductions séparées. Si tu visualises une quantité qui s’épuise, le bloc devient immédiatement plus stable.",
+        "“They called off the match because of the storm.” Quelque chose était prévu puis annulé. Compare postpone : l’événement est déplacé, pas supprimé. En apprenant call off avec meeting, trip, search, match, tu construis un réseau d’usages naturels plutôt qu’une formule abstraite.",
+        "“I finally figured out why the app was crashing.” Le processus se termine par une compréhension ou une solution. Figure out a password, a problem, how something works. Le sens ne vient pas de figure + out ; il vient du type de résultat que la scène produit."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Run out, call off, figure out ou turn out deviennent plus faciles quand on les apprend comme des actions complètes dans une histoire. La traduction mot à mot devient secondaire."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-phrasal-get": {
+      "title": "Get : reconnaître le résultat plutôt que traduire “obtenir”",
+      "hook": "Get change énormément avec son complément. Le bon réflexe est d’identifier le résultat de la scène : revenir, se débrouiller, se remettre, s’en tirer ou finir par faire quelque chose.",
+      "sections": [
+        {
+          "title": "1. Get back = return",
+          "text": "“I’ll get back home around eight.” = revenir. “I’ll get back to you tomorrow” = revenir vers quelqu’un avec une réponse. Le noyau est un retour vers un point ou une interaction antérieure. Le contexte te dit si le retour est physique ou conversationnel."
+        },
+        {
+          "title": "2. Get by = manage with what you have",
+          "text": "“My Spanish isn’t great, but I can get by.” La personne n’est pas experte ; elle peut néanmoins gérer les situations nécessaires. Get by on little money utilise la même idée de fonctionner avec des ressources limitées. Ce n’est pas “passer à côté” au sens spatial."
+        },
+        {
+          "title": "3. Get over = recover from",
+          "text": "“It took me a week to get over the flu.” = se remettre. Le complément peut être illness, shock, breakup, disappointment. La scène décrit un état difficile puis une récupération progressive. Visualiser cette trajectoire rend le sens plus solide qu’une traduction isolée."
+        },
+        {
+          "title": "4. Get away with = avoid the expected consequence",
+          "text": "“He cheated and got away with it.” Il a fait quelque chose de répréhensible sans subir la conséquence attendue. Le sens est très différent de get away = partir/s’échapper. Le with introduit souvent précisément l’action dont la personne “s’en tire”."
+        },
+        {
+          "title": "5. End up + -ing = final result",
+          "text": "Même si ce n’est pas un phrasal de get, “We ended up taking the train” appartient au même apprentissage par résultat : le train est ce qui s’est finalement produit, pas forcément ce qui était prévu. Apprends ces blocs comme des conclusions de petites histoires et entraîne-toi à prédire la phrase suivante."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "phrasal",
+          "q": "“I’ll get back to you after I check the figures.” Quelle réponse paraphrase le mieux la phrase ?",
+          "a": "I’ll contact you again once I have checked them.",
+          "choices": [
+            "I’ll return the figures to you physically.",
+            "I’ll avoid checking the figures.",
+            "I’ll recover from the figures later."
+          ],
+          "why": "Get back to someone signifie revenir vers cette personne avec une réponse ou un suivi ; la suite after I check the figures confirme ce sens.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "phrasal",
+          "q": "“I don’t know much Italian, but I can get by.” Que dit le locuteur ?",
+          "a": "I can manage basic situations despite my limits.",
+          "choices": [
+            "I can speak Italian at a near-native level.",
+            "I can avoid using Italian completely.",
+            "I can return to Italy whenever I want."
+          ],
+          "why": "Get by exprime une capacité suffisante pour fonctionner malgré des limites, pas une maîtrise complète ni un déplacement.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "phrasal",
+          "q": "“She’s finally getting over the flu.” Quel changement est en cours ?",
+          "a": "She is recovering from the illness.",
+          "choices": [
+            "She is starting to develop the illness.",
+            "She is hiding the illness from someone.",
+            "She is travelling despite the illness."
+          ],
+          "why": "Get over décrit la récupération après une maladie ou une expérience difficile ; finally renforce l’idée d’un processus qui a pris du temps.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "phrasal",
+          "q": "“He broke the rule and got away with it.” Quelle conséquence est sous-entendue ?",
+          "a": "He was not punished or stopped as expected.",
+          "choices": [
+            "He immediately admitted what he had done.",
+            "He left the place before breaking the rule.",
+            "He was rewarded for following the rule."
+          ],
+          "why": "Get away with something signifie échapper à la conséquence normalement attendue d’un comportement problématique.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "result",
+          "q": "“We planned to drive, but we ended up taking the train.” Que montre end up ?",
+          "a": "The train was the final outcome, not necessarily the original plan.",
+          "choices": [
+            "The train journey was cancelled.",
+            "The drive and the train happened at the same time.",
+            "Taking the train was always the fixed plan."
+          ],
+          "why": "End up + -ing raconte le résultat final après une évolution ou un changement de plan, ici explicitement opposé à planned to drive.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“I’ll get back home around eight.” = revenir. “I’ll get back to you tomorrow” = revenir vers quelqu’un avec une réponse. Le noyau est un retour vers un point ou une interaction antérieure. Le contexte te dit si le retour est physique ou conversationnel.",
+        "“My Spanish isn’t great, but I can get by.” La personne n’est pas experte ; elle peut néanmoins gérer les situations nécessaires. Get by on little money utilise la même idée de fonctionner avec des ressources limitées. Ce n’est pas “passer à côté” au sens spatial.",
+        "“It took me a week to get over the flu.” = se remettre. Le complément peut être illness, shock, breakup, disappointment. La scène décrit un état difficile puis une récupération progressive. Visualiser cette trajectoire rend le sens plus solide qu’une traduction isolée."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Get change énormément avec son complément. Le bon réflexe est d’identifier le résultat de la scène : revenir, se débrouiller, se remettre, s’en tirer ou finir par faire quelque chose."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-paraphrase-repair": {
+      "title": "Le mot manque ? Continuer quand même en anglais",
+      "hook": "La vraie fluidité n’est pas connaître tous les mots : c’est pouvoir rester dans la conversation quand un mot disparaît. On travaille la description, la fonction et la reformulation.",
+      "sections": [
+        {
+          "title": "1. Describe the function",
+          "text": "Le mot screwdriver te manque : “It’s the tool you use to tighten screws.” Tu donnes une catégorie approximative et surtout une fonction. L’autre personne peut deviner ou fournir le mot. Cette stratégie est beaucoup plus robuste que “How do you say tournevis?” car elle maintient le cerveau dans la langue cible et crée un contexte mémorable pour le nouveau vocabulaire."
+        },
+        {
+          "title": "2. Describe shape, place or use",
+          "text": "Pour kettle : “the thing you use to boil water for tea.” Pour shelf : “the flat part on a wall where you put books.” Pour receipt : “the paper you get after you pay.” Les définitions n’ont pas besoin d’être élégantes. Elles doivent seulement isoler l’objet assez bien pour que l’échange continue."
+        },
+        {
+          "title": "3. Paraphrase abstract ideas too",
+          "text": "Pour disappointed : “sad because something was not as good as you expected.” Pour reliable : “someone or something you can depend on.” Les idées abstraites se contournent avec cause, conséquence ou exemple. Cet exercice développe une compétence plus générale : exprimer le sens même quand le vocabulaire précis n’est pas disponible."
+        },
+        {
+          "title": "4. Signal the gap naturally",
+          "text": "Tu peux dire “What do you call the thing that…?”, “I can’t remember the word, but it’s…”, “It’s a kind of…” ou “It’s the opposite of…”. Ces expressions achètent du temps sans sortir de l’anglais. Elles donnent aussi à l’interlocuteur un rôle actif dans la réparation."
+        },
+        {
+          "title": "5. Prefer communication over perfect wording",
+          "text": "Une paraphrase peut être grammaticalement imparfaite et quand même très efficace. L’objectif est d’abord que l’autre comprenne. Ensuite, s’il donne le mot exact, répète-le dans une nouvelle phrase : “Right, screwdriver — I need a screwdriver for this.” Tu transformes immédiatement la réparation en apprentissage actif."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "paraphrase",
+          "q": "Le mot “umbrella” te manque. Quelle phrase permet le mieux de continuer en anglais ?",
+          "a": "It’s the thing you hold over your head when it rains.",
+          "choices": [
+            "It’s a weather object, you know, the French word is parapluie.",
+            "I can’t say it, so let’s change the subject.",
+            "It’s something, maybe for outside, I don’t know."
+          ],
+          "why": "La bonne paraphrase combine fonction et situation et donne suffisamment d’indices pour que l’autre identifie l’objet.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "paraphrase",
+          "q": "Tu veux expliquer “reliable” sans connaître de synonyme précis. Quelle reformulation aide le plus ?",
+          "a": "Someone you can depend on and trust to do what they said.",
+          "choices": [
+            "Someone who is generally quite nice.",
+            "Someone who works in the same place as you.",
+            "Someone who agrees with you most of the time."
+          ],
+          "why": "Depend on et doing what they said décrivent le mécanisme de fiabilité ; les autres réponses parlent de qualités différentes.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "repair",
+          "q": "Quelle phrase signale naturellement un trou de vocabulaire sans quitter l’anglais ?",
+          "a": "I can’t remember the word, but it’s the thing you use to…",
+          "choices": [
+            "What is the French translation of the missing word?",
+            "Forget it — my English is too bad.",
+            "I will stop until I remember the exact noun."
+          ],
+          "why": "La phrase annonce le problème puis lance immédiatement une paraphrase, ce qui maintient le tour de parole et l’échange.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "transfer",
+          "q": "Le mot “receipt” te manque après un achat. Quelle description est la plus efficace ?",
+          "a": "The paper or message you get after you pay, showing what you bought.",
+          "choices": [
+            "The document you sometimes see in a shop.",
+            "The paper that is related to money in some way.",
+            "The thing the cashier may or may not have."
+          ],
+          "why": "La description précise le moment, la fonction et le contenu, ce qui distingue receipt d’autres documents liés à l’argent.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "learning",
+          "q": "L’interlocuteur te donne finalement le mot “screwdriver”. Quel geste aide le plus à l’ancrer ?",
+          "a": "Use “screwdriver” immediately in a new sentence of your own.",
+          "choices": [
+            "Switch back to French to check the spelling first.",
+            "Repeat only the French translation several times.",
+            "Move on without using the new word again."
+          ],
+          "why": "Réutiliser immédiatement le mot dans une phrase personnelle relie la forme nouvelle à la scène et à l’intention déjà comprises.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "Le mot screwdriver te manque : “It’s the tool you use to tighten screws.” Tu donnes une catégorie approximative et surtout une fonction. L’autre personne peut deviner ou fournir le mot. Cette stratégie est beaucoup plus robuste que “How do you say tournevis?” car elle maintient le cerveau dans la langue cible et crée un contexte mémorable pour le nouveau vocabulaire.",
+        "Pour kettle : “the thing you use to boil water for tea.” Pour shelf : “the flat part on a wall where you put books.” Pour receipt : “the paper you get after you pay.” Les définitions n’ont pas besoin d’être élégantes. Elles doivent seulement isoler l’objet assez bien pour que l’échange continue.",
+        "Pour disappointed : “sad because something was not as good as you expected.” Pour reliable : “someone or something you can depend on.” Les idées abstraites se contournent avec cause, conséquence ou exemple. Cet exercice développe une compétence plus générale : exprimer le sens même quand le vocabulaire précis n’est pas disponible."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "La vraie fluidité n’est pas connaître tous les mots : c’est pouvoir rester dans la conversation quand un mot disparaît. On travaille la description, la fonction et la reformulation."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-paraphrase-clarify": {
+      "title": "Clarifier précisément au lieu de dire “I don’t understand”",
+      "hook": "Quand tu comprends 80 % d’une phrase, ne jette pas les 80 %. Apprends à isoler ce qui bloque, vérifier une interprétation et demander une reformulation utile.",
+      "sections": [
+        {
+          "title": "1. Target the unknown part",
+          "text": "Si seul reliable bloque, “What do you mean by reliable here?” est beaucoup plus utile que “I don’t understand.” L’autre sait exactement quoi reformuler et tu conserves tout ce que tu avais déjà compris. La réparation devient courte, naturelle et compatible avec une vraie conversation."
+        },
+        {
+          "title": "2. Check an interpretation",
+          "text": "“Do you mean the deadline is Friday, not Thursday?” te permet de vérifier une hypothèse sans demander une répétition totale. Cette stratégie est particulièrement utile au téléphone ou en réunion : elle montre ce que tu as compris et concentre la correction sur un seul point."
+        },
+        {
+          "title": "3. Ask for simpler wording",
+          "text": "“Could you say that another way?” ou “Could you give me an example?” sont souvent plus efficaces que “Can you repeat?” si le problème vient du vocabulaire et non du son. Une répétition identique peut simplement reproduire la même difficulté."
+        },
+        {
+          "title": "4. Repair your own sentence",
+          "text": "Tu peux aussi te corriger en parlant : “He didn’t accept it — sorry, I mean he didn’t agree with the decision.” Les expressions “I mean”, “what I’m trying to say is…” ou “let me put it another way” permettent de reconstruire une idée sans interrompre la conversation."
+        },
+        {
+          "title": "5. Clarification is a normal skill",
+          "text": "Les locuteurs natifs demandent aussi des clarifications. Le but n’est donc pas d’éviter toute incompréhension, mais de la gérer vite. Une bonne réparation contient souvent trois éléments : ce que tu as compris, le point incertain, puis une question ciblée. Cette structure transforme l’hésitation en interaction efficace."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "clarify",
+          "q": "Tu comprends toute la phrase sauf “reliable”. Quelle question est la plus ciblée ?",
+          "a": "What do you mean by “reliable” here?",
+          "choices": [
+            "Could you repeat everything from the beginning?",
+            "Can you speak more slowly for the rest of the conversation?",
+            "What does every word in that sentence mean?"
+          ],
+          "why": "La question isole précisément le mot qui bloque et conserve toute la compréhension déjà acquise.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "clarify",
+          "q": "Tu crois avoir entendu “Friday” mais tu veux vérifier. Quelle réponse est la plus efficace ?",
+          "a": "Do you mean Friday, not Thursday?",
+          "choices": [
+            "I didn’t understand the meeting date at all.",
+            "Can you repeat the whole explanation?",
+            "Friday is probably right, so I’ll assume that."
+          ],
+          "why": "La formulation présente ton hypothèse et demande seulement la correction nécessaire, ce qui minimise la friction dans l’échange.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "clarify",
+          "q": "Le problème vient d’une expression compliquée, pas du volume sonore. Quelle demande aide le plus ?",
+          "a": "Could you say that another way?",
+          "choices": [
+            "Could you say exactly the same words again?",
+            "Could you speak much louder?",
+            "Could you translate the whole conversation?"
+          ],
+          "why": "Une reformulation modifie le vocabulaire ou la structure, alors qu’une répétition identique risque de reproduire exactement le même obstacle.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "self-repair",
+          "q": "Tu viens d’utiliser un mot qui ne rend pas ton idée. Quelle phrase te permet de te corriger naturellement ?",
+          "a": "Sorry, that’s not quite what I mean — let me put it another way.",
+          "choices": [
+            "Forget everything I just said.",
+            "My English is wrong, so I’ll stop.",
+            "You should guess what I meant."
+          ],
+          "why": "La phrase signale la correction puis garde le tour de parole pour proposer une nouvelle formulation, ce qui est courant dans une conversation naturelle.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "transfer",
+          "q": "Quelle clarification montre le mieux ce que tu as déjà compris ?",
+          "a": "So the meeting is online; I’m just not sure what time it starts.",
+          "choices": [
+            "I don’t understand anything about the meeting.",
+            "Please explain the entire meeting again.",
+            "I’ll wait until someone else tells me later."
+          ],
+          "why": "La phrase conserve l’information comprise et isole le seul élément incertain, ce qui aide l’interlocuteur à répondre exactement au bon endroit.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "Si seul reliable bloque, “What do you mean by reliable here?” est beaucoup plus utile que “I don’t understand.” L’autre sait exactement quoi reformuler et tu conserves tout ce que tu avais déjà compris. La réparation devient courte, naturelle et compatible avec une vraie conversation.",
+        "“Do you mean the deadline is Friday, not Thursday?” te permet de vérifier une hypothèse sans demander une répétition totale. Cette stratégie est particulièrement utile au téléphone ou en réunion : elle montre ce que tu as compris et concentre la correction sur un seul point.",
+        "“Could you say that another way?” ou “Could you give me an example?” sont souvent plus efficaces que “Can you repeat?” si le problème vient du vocabulaire et non du son. Une répétition identique peut simplement reproduire la même difficulté."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Quand tu comprends 80 % d’une phrase, ne jette pas les 80 %. Apprends à isoler ce qui bloque, vérifier une interprétation et demander une reformulation utile."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-connectors-logic": {
+      "title": "Although, however, therefore : lire la logique avant le vocabulaire",
+      "hook": "Les connecteurs sont des panneaux de circulation. Ils te disent si la phrase ajoute, oppose, concède ou conclut. On les utilise pour suivre un raisonnement et produire un texte clair.",
+      "sections": [
+        {
+          "title": "1. Although introduces a concession inside the sentence",
+          "text": "“Although the hotel was cheap, it was far from the centre.” Le prix faible crée une raison potentielle d’être satisfait ; la distance introduit un obstacle qui coexiste avec cet avantage. Although relie directement les deux propositions dans une même structure."
+        },
+        {
+          "title": "2. However changes direction between statements",
+          "text": "“The hotel was cheap. However, it was far from the centre.” Le lien logique ressemble à although, mais la grammaire change : however fonctionne comme adverbe de liaison entre deux énoncés. Le choix dépend donc autant de la structure que de la relation logique."
+        },
+        {
+          "title": "3. Therefore marks a conclusion or consequence",
+          "text": "“The buses stopped at midnight; therefore, we took a taxi.” Therefore indique que la deuxième décision découle de la première information. Dans un texte, le mot t’aide à distinguer une nouvelle preuve d’une conclusion tirée de ce qui précède."
+        },
+        {
+          "title": "4. Because gives the reason, so gives the result",
+          "text": "“We left early because the road was busy.” La route encombrée explique le départ. “The road was busy, so we left early.” Même relation, mais le point de départ change. Savoir inverser ces deux formes permet de construire un texte plus flexible sans modifier le raisonnement."
+        },
+        {
+          "title": "5. Map the logic before translating",
+          "text": "Sur un paragraphe, marque simplement +, contrast, cause, result. Même si plusieurs mots sont inconnus, tu peux reconstruire l’architecture. Ensuite seulement, regarde le vocabulaire. Cette méthode est particulièrement utile dans les articles, les e-mails argumentés et les consignes où le lien entre phrases porte une grande partie du sens."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "logic",
+          "q": "“The room was small. However, it had an amazing view.” Que fait however ?",
+          "a": "It introduces a contrasting positive point.",
+          "choices": [
+            "It gives the reason why the room was small.",
+            "It shows that the view caused the small size.",
+            "It concludes that the room should be avoided."
+          ],
+          "why": "However change la direction de l’évaluation : après un défaut, la phrase apporte un élément positif qui contraste avec lui.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "logic",
+          "q": "“The last train had left; therefore, we booked a hotel.” Quelle relation exprime therefore ?",
+          "a": "The hotel booking is presented as a consequence.",
+          "choices": [
+            "The hotel booking contradicts the train information.",
+            "The train left because a hotel was booked.",
+            "The two events are presented as unrelated facts."
+          ],
+          "why": "Therefore signale explicitement que la décision de réserver découle de l’absence de train disponible.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "structure",
+          "q": "Quelle phrase utilise although naturellement ?",
+          "a": "Although it was raining, we walked to the station.",
+          "choices": [
+            "Although the rain, we walked to the station.",
+            "It was raining. Although, we walked to the station.",
+            "We walked to the station because although it rained."
+          ],
+          "why": "Although introduit une proposition avec sujet et verbe ; les autres options imitent des structures d’autres connecteurs.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "rewrite",
+          "q": "Quelle reformulation garde la même relation que “We left early because traffic was heavy” ?",
+          "a": "Traffic was heavy, so we left early.",
+          "choices": [
+            "Traffic was heavy, however we left early.",
+            "Although traffic was heavy, we left early for that reason.",
+            "Traffic was heavy; nevertheless, it caused us to leave early."
+          ],
+          "why": "Because introduit la cause ; en plaçant la cause d’abord, so peut introduire le même résultat sans changer le raisonnement.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "reading",
+          "q": "Dans un paragraphe difficile, pourquoi repérer les connecteurs avant certains mots rares ?",
+          "a": "They reveal how the ideas relate even when some vocabulary is missing.",
+          "choices": [
+            "They guarantee that every unknown word can be ignored.",
+            "They translate the entire paragraph automatically.",
+            "They tell you which sentences are grammatically optional."
+          ],
+          "why": "Les connecteurs donnent l’architecture cause/contraste/conséquence ; cette architecture aide à maintenir la compréhension malgré un vocabulaire incomplet.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“Although the hotel was cheap, it was far from the centre.” Le prix faible crée une raison potentielle d’être satisfait ; la distance introduit un obstacle qui coexiste avec cet avantage. Although relie directement les deux propositions dans une même structure.",
+        "“The hotel was cheap. However, it was far from the centre.” Le lien logique ressemble à although, mais la grammaire change : however fonctionne comme adverbe de liaison entre deux énoncés. Le choix dépend donc autant de la structure que de la relation logique.",
+        "“The buses stopped at midnight; therefore, we took a taxi.” Therefore indique que la deuxième décision découle de la première information. Dans un texte, le mot t’aide à distinguer une nouvelle preuve d’une conclusion tirée de ce qui précède."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Les connecteurs sont des panneaux de circulation. Ils te disent si la phrase ajoute, oppose, concède ou conclut. On les utilise pour suivre un raisonnement et produire un texte clair."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-connectors-concession": {
+      "title": "Although, despite, whereas, however : même contraste, structures différentes",
+      "hook": "Le piège est de connaître le sens mais d’utiliser la mauvaise structure. On compare des phrases naturelles qui expriment un contraste proche avec des grammaires différentes.",
+      "sections": [
+        {
+          "title": "1. Although + clause",
+          "text": "“Although it was raining, we went out.” Après although, tu as une proposition complète : it + was raining. Le mot introduit un fait qui aurait pu empêcher l’action, mais ne l’a pas empêchée. Il peut aussi venir au milieu : “We went out although it was raining.”"
+        },
+        {
+          "title": "2. Despite + noun or -ing form",
+          "text": "“Despite the rain, we went out.” “Despite feeling tired, she stayed.” Despite n’introduit pas directement une proposition finie de type “despite it was raining”. Il s’associe naturellement à un nom, un groupe nominal ou une forme en -ing. Le sens de concession reste proche ; la structure change."
+        },
+        {
+          "title": "3. Whereas compares two sides",
+          "text": "“Alex prefers working early, whereas Mia works better at night.” Whereas met deux situations en contraste, souvent de manière assez neutre. Il ne suggère pas nécessairement qu’un fait aurait dû empêcher l’autre ; il compare surtout deux profils ou deux états."
+        },
+        {
+          "title": "4. However links separate statements",
+          "text": "“The price was attractive. However, the location was poor.” However fonctionne bien pour réorienter un texte après une première affirmation. Il est particulièrement utile dans l’écriture structurée, mais attention à la ponctuation et au fait qu’il ne remplace pas directement although dans toutes les positions."
+        },
+        {
+          "title": "5. Choose by meaning and syntax",
+          "text": "Avant de choisir, pose deux questions : quelle relation veux-tu exprimer — obstacle, comparaison, changement de direction ? Et quelle structure as-tu déjà — proposition, nom, nouvelle phrase ? Cette double vérification évite les erreurs produites par une traduction française unique comme “malgré / bien que / cependant”."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "structure",
+          "q": "Tu veux dire “Malgré la pluie, nous sommes sortis.” Quelle phrase est naturelle ?",
+          "a": "Despite the rain, we went out.",
+          "choices": [
+            "Despite it was raining, we went out.",
+            "Although the rain, we went out.",
+            "However the rain, we went out."
+          ],
+          "why": "Despite accepte directement le groupe nominal the rain ; although demanderait une proposition complète comme “although it was raining”.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "structure",
+          "q": "Quelle phrase utilise despite correctement avec une action ?",
+          "a": "Despite feeling tired, she stayed until the end.",
+          "choices": [
+            "Despite she felt tired, she stayed until the end.",
+            "Despite she was tired, she stayed until the end.",
+            "Despite to feel tired, she stayed until the end."
+          ],
+          "why": "La forme en -ing peut suivre despite pour exprimer une circonstance concessive sans proposition finie.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "contrast",
+          "q": "Deux collègues ont des habitudes opposées, sans idée d’obstacle. Quel connecteur convient bien ?",
+          "a": "Alex works best early, whereas Mia prefers evenings.",
+          "choices": [
+            "Alex works best early, therefore Mia prefers evenings.",
+            "Alex works best early, despite Mia prefers evenings.",
+            "Alex works best early, because Mia prefers evenings."
+          ],
+          "why": "Whereas juxtapose naturellement deux caractéristiques contrastées sans construire une relation de cause ou de conséquence.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "writing",
+          "q": "Tu veux introduire un contrepoint dans une nouvelle phrase. Quelle option est naturelle ?",
+          "a": "The apartment is spacious. However, it is quite noisy.",
+          "choices": [
+            "The apartment is spacious. Although, it is quite noisy.",
+            "The apartment is spacious. Despite, it is quite noisy.",
+            "The apartment is spacious. Whereas, it is quite noisy."
+          ],
+          "why": "However fonctionne comme transition entre deux énoncés autonomes et marque clairement le changement de direction.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "choice",
+          "q": "Quelle question aide le plus à choisir entre although et despite ?",
+          "a": "Do I have a full clause or a noun/-ing phrase after the connector?",
+          "choices": [
+            "Is the sentence longer than ten words?",
+            "Does the French version contain the word “mais”?",
+            "Is the adjective positive or negative?"
+          ],
+          "why": "Les deux connecteurs peuvent exprimer une concession proche ; leur différence la plus utile en production vient souvent de la structure qui suit.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "“Although it was raining, we went out.” Après although, tu as une proposition complète : it + was raining. Le mot introduit un fait qui aurait pu empêcher l’action, mais ne l’a pas empêchée. Il peut aussi venir au milieu : “We went out although it was raining.”",
+        "“Despite the rain, we went out.” “Despite feeling tired, she stayed.” Despite n’introduit pas directement une proposition finie de type “despite it was raining”. Il s’associe naturellement à un nom, un groupe nominal ou une forme en -ing. Le sens de concession reste proche ; la structure change.",
+        "“Alex prefers working early, whereas Mia works better at night.” Whereas met deux situations en contraste, souvent de manière assez neutre. Il ne suggère pas nécessairement qu’un fait aurait dû empêcher l’autre ; il compare surtout deux profils ou deux états."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "Le piège est de connaître le sens mais d’utiliser la mauvaise structure. On compare des phrases naturelles qui expriment un contraste proche avec des grammaires différentes."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-implicit-meaning": {
+      "title": "Comprendre ce que la personne fait avec ses mots",
+      "hook": "À partir de B1/B2, le sens littéral ne suffit plus. On apprend à lire le désaccord, l’engagement, l’hésitation ou la politesse à partir de la scène entière.",
+      "sections": [
+        {
+          "title": "1. “I’m not sure that would work” may be a disagreement",
+          "text": "En réunion, quelqu’un dit “I’m not sure that would work” puis énumère trois risques majeurs. Littéralement, il exprime une incertitude ; pragmatiquement, il peut être en train de rejeter l’idée avec retenue. La suite du discours est un indice plus fort que le degré de certitude grammatical pris isolément."
+        },
+        {
+          "title": "2. “Interesting” is not a fixed compliment",
+          "text": "“That’s interesting” peut exprimer un vrai intérêt, une surprise, une réserve ou simplement gagner du temps. L’intonation et la suite tranchent. Si la personne pose trois questions enthousiastes, l’intérêt est probable ; si elle change immédiatement de sujet, l’engagement est beaucoup plus faible."
+        },
+        {
+          "title": "3. “I’ll think about it” has levels of commitment",
+          "text": "La phrase promet une réflexion, pas une acceptation. Le niveau d’ouverture dépend de ce qui suit : fixer un rendez-vous pour en reparler crée un engagement plus fort ; ne proposer aucune suite peut rendre la réponse très prudente. Évite donc de traduire une formule en verdict automatique."
+        },
+        {
+          "title": "4. Actions are evidence",
+          "text": "Après une phrase atténuée, regarde ce que la personne fait. “That might be difficult” suivi d’un plan alternatif détaillé peut équivaloir à un refus pratique. “We’ll see” suivi d’une date précise pour vérifier quelque chose est plus concret. Les actions et prochaines étapes servent de commentaire sur l’intention."
+        },
+        {
+          "title": "5. Clarify when the stakes matter",
+          "text": "Quand l’implicite a une conséquence réelle, demande : “Do you mean you’d prefer the second option?” ou “Should I take that as a no for now?” La compétence n’est pas de devenir devin. Elle consiste à formuler une hypothèse fondée puis à la tester lorsque l’ambiguïté compte."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "implicit",
+          "q": "En réunion : “I’m not sure that would work.” Puis la personne liste trois problèmes sérieux. Quelle lecture est la plus probable ?",
+          "a": "It is a softened disagreement, not just missing information.",
+          "choices": [
+            "The speaker simply needs the proposal repeated.",
+            "The speaker is broadly supportive but wants more detail.",
+            "The speaker has not formed any opinion about the proposal."
+          ],
+          "why": "Les objections détaillées qui suivent montrent une position négative réelle ; la formulation initiale sert surtout à atténuer le désaccord.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "implicit",
+          "q": "Quel contexte rend “That’s interesting” le plus clairement positif ?",
+          "a": "The speaker leans in, asks several follow-up questions and wants to hear more.",
+          "choices": [
+            "The speaker says it, pauses, and immediately changes the subject.",
+            "The speaker says it after rejecting the idea in writing.",
+            "The speaker says it while ending the conversation early."
+          ],
+          "why": "L’intérêt se confirme par les comportements qui prolongent l’échange ; la phrase seule reste trop ambiguë pour suffire.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "commitment",
+          "q": "Quel comportement rend “I’ll think about it” le plus engagé ?",
+          "a": "The speaker suggests a time tomorrow to discuss the answer.",
+          "choices": [
+            "The speaker immediately changes topic and never mentions it again.",
+            "The speaker says it while walking away from the conversation.",
+            "The speaker gives no next step and avoids the subject later."
+          ],
+          "why": "Une prochaine étape précise transforme une formule vague en engagement observable à reconsidérer réellement la proposition.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "clarify",
+          "q": "Un refus implicite aurait des conséquences importantes. Quelle question est la plus utile ?",
+          "a": "Do you mean you’d prefer us not to go ahead with this option?",
+          "choices": [
+            "Why are you being indirect?",
+            "So that definitely means no, right?",
+            "Can you say the same sentence again?"
+          ],
+          "why": "La question propose une interprétation précise sans accuser ni transformer une hypothèse en certitude.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "reasoning",
+          "q": "Pourquoi les actions qui suivent une phrase sont-elles importantes ?",
+          "a": "They reveal how strongly the speaker is acting on the words.",
+          "choices": [
+            "They replace the need to understand the words at all.",
+            "They prove that every indirect phrase means no.",
+            "They tell you the dictionary definition of each expression."
+          ],
+          "why": "L’intention pragmatique se lit dans l’ensemble parole + comportement ; une action concrète peut renforcer ou affaiblir l’interprétation de la formulation.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "En réunion, quelqu’un dit “I’m not sure that would work” puis énumère trois risques majeurs. Littéralement, il exprime une incertitude ; pragmatiquement, il peut être en train de rejeter l’idée avec retenue. La suite du discours est un indice plus fort que le degré de certitude grammatical pris isolément.",
+        "“That’s interesting” peut exprimer un vrai intérêt, une surprise, une réserve ou simplement gagner du temps. L’intonation et la suite tranchent. Si la personne pose trois questions enthousiastes, l’intérêt est probable ; si elle change immédiatement de sujet, l’engagement est beaucoup plus faible.",
+        "La phrase promet une réflexion, pas une acceptation. Le niveau d’ouverture dépend de ce qui suit : fixer un rendez-vous pour en reparler crée un engagement plus fort ; ne proposer aucune suite peut rendre la réponse très prudente. Évite donc de traduire une formule en verdict automatique."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "À partir de B1/B2, le sens littéral ne suffit plus. On apprend à lire le désaccord, l’engagement, l’hésitation ou la politesse à partir de la scène entière."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    },
+    "eng-implicit-understatement": {
+      "title": "Understatement et hedging : entendre la force cachée",
+      "hook": "“Not ideal”, “a bit difficult”, “perhaps we should reconsider”… L’anglais peut réduire la force des mots tout en transmettant un message très net. On apprend à calibrer cette force sans appliquer de règle mécanique.",
+      "sections": [
+        {
+          "title": "1. Understatement says less than the situation",
+          "text": "Après une panne qui efface plusieurs heures de travail : “Well, that’s not ideal.” Le sens littéral est faible, mais la scène rend l’évaluation beaucoup plus négative. L’effet peut être humoristique, professionnel ou émotionnel. Ce n’est pas une traduction spéciale de not ideal ; c’est un contraste entre la force des mots et la gravité des faits."
+        },
+        {
+          "title": "2. Hedging reduces commitment",
+          "text": "Perhaps, might, seem, a little, I think peuvent rendre une affirmation moins frontale. “This seems a little risky” peut être une réserve sérieuse selon le contexte. Le hedge réduit l’engagement linguistique, pas nécessairement l’importance pratique du message."
+        },
+        {
+          "title": "3. British-style understatement is not a codebook",
+          "text": "“Not bad” peut aller de “correct” à un vrai compliment. “A bit of a problem” peut décrire un souci mineur ou une catastrophe racontée avec humour. Il serait donc faux d’apprendre “not bad = excellent”. L’intonation, la situation et les actions qui suivent déterminent la force réelle."
+        },
+        {
+          "title": "4. Compare wording with consequences",
+          "text": "Si quelqu’un dit “We might need to rethink this” puis annule le lancement, la décision montre que la réserve était forte. Si la même phrase est suivie de “but let’s try it anyway”, l’interprétation change. Observe toujours la conséquence proposée avant de classer la phrase comme faible ou forte."
+        },
+        {
+          "title": "5. Use hedging deliberately",
+          "text": "En production, hedger ne signifie pas devenir flou. “I think we need another day” exprime une recommandation claire avec une légère atténuation. “Maybe there are possibly some issues” dilue trop le message. Cherche le niveau minimal d’atténuation qui protège la relation sans cacher ce que tu veux dire."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "understatement",
+          "q": "Après une panne grave, l’ingénieur dit “That’s not ideal” et lance immédiatement une procédure d’urgence. Quelle lecture est la plus plausible ?",
+          "a": "The words are deliberately mild compared with the seriousness of the problem.",
+          "choices": [
+            "The engineer genuinely believes the problem is minor.",
+            "The engineer is praising the system’s behaviour.",
+            "The engineer has not noticed that anything went wrong."
+          ],
+          "why": "La procédure d’urgence fournit la preuve comportementale que la situation est grave malgré la formulation atténuée.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "hedging",
+          "q": "Quelle phrase exprime une réserve claire avec une atténuation raisonnable ?",
+          "a": "I think this approach is a little too risky for this client.",
+          "choices": [
+            "This approach is unquestionably disastrous in every possible way.",
+            "Maybe there could perhaps possibly be some sort of risk.",
+            "This approach is fine, although I completely reject it."
+          ],
+          "why": "La bonne phrase atténue avec I think et a little tout en conservant un jugement compréhensible ; les autres surjouent ou deviennent incohérentes.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "context",
+          "q": "“Not bad.” Dans quel contexte la phrase ressemble le plus à un vrai compliment ?",
+          "a": "The speaker smiles, sounds impressed and asks where they can buy one.",
+          "choices": [
+            "The speaker shrugs and immediately lists several defects.",
+            "The speaker says it after asking for a complete redesign.",
+            "The speaker avoids looking at the result and changes topic."
+          ],
+          "why": "Les indices non verbaux et la suite confirment ici une évaluation positive ; la formule seule ne fixe pas son intensité.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "consequence",
+          "q": "“We might need to rethink the launch.” Quelle suite rend la phrase la plus forte ?",
+          "a": "The team immediately cancels the launch and schedules a new review.",
+          "choices": [
+            "The team keeps the launch unchanged and moves to another topic.",
+            "Someone mentions a minor typo and laughs.",
+            "The speaker says the idea was only hypothetical and irrelevant."
+          ],
+          "why": "Une action lourde et immédiate montre que might n’indiquait pas une simple possibilité abstraite mais une réserve opérationnelle majeure.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        },
+        {
+          "kind": "production",
+          "q": "Tu veux dire clairement qu’il faut un jour de plus sans être brutal. Quelle phrase convient ?",
+          "a": "I think we need one more day to finish this properly.",
+          "choices": [
+            "Maybe one more day could perhaps be useful, possibly.",
+            "We absolutely cannot do anything unless you give us another day.",
+            "One day is a concept we may want to consider."
+          ],
+          "why": "La phrase garde la demande explicite tout en utilisant une atténuation légère ; elle reste donc naturelle, professionnelle et exploitable.",
+          "trap": "Les autres propositions restent possibles en anglais, mais elles ne produisent pas le même sens, le même registre ou la même intention dans cette scène.",
+          "evidence": "Observe la situation, la relation entre les interlocuteurs et ce que la phrase permet réellement de déduire."
+        }
+      ],
+      "express": [
+        "Après une panne qui efface plusieurs heures de travail : “Well, that’s not ideal.” Le sens littéral est faible, mais la scène rend l’évaluation beaucoup plus négative. L’effet peut être humoristique, professionnel ou émotionnel. Ce n’est pas une traduction spéciale de not ideal ; c’est un contraste entre la force des mots et la gravité des faits.",
+        "Perhaps, might, seem, a little, I think peuvent rendre une affirmation moins frontale. “This seems a little risky” peut être une réserve sérieuse selon le contexte. Le hedge réduit l’engagement linguistique, pas nécessairement l’importance pratique du message.",
+        "“Not bad” peut aller de “correct” à un vrai compliment. “A bit of a problem” peut décrire un souci mineur ou une catastrophe racontée avec humour. Il serait donc faux d’apprendre “not bad = excellent”. L’intonation, la situation et les actions qui suivent déterminent la force réelle."
+      ],
+      "takeaways": [
+        {
+          "label": "Réflexe",
+          "text": "“Not ideal”, “a bit difficult”, “perhaps we should reconsider”… L’anglais peut réduire la force des mots tout en transmettant un message très net. On apprend à calibrer cette force sans appliquer de règle mécanique."
+        },
+        {
+          "label": "À pratiquer",
+          "text": "Choisis ou produis la formulation qui convient à la scène, puis explique ce qui change si le contexte, la relation ou l’intention change."
+        }
+      ]
+    }
+  },
+  "labs": {
+    "eng-context-inference": {
+      "id": "eng-lab-context",
+      "skill": "Compréhension",
+      "title": "Déduis sans traduire",
+      "context": "Tu entends une phrase dans un récit de voyage.",
+      "speak": "The platform was packed, so we waited for the next train.",
+      "prompt": "Quelle conclusion est la mieux soutenue ?",
+      "choices": [
+        {
+          "text": "There were probably too many people to board comfortably.",
+          "correct": true,
+          "feedback": "Packed + waited for the next train pointe vers une forte affluence."
+        },
+        {
+          "text": "The train had been cancelled for the whole day.",
+          "correct": false,
+          "feedback": "La phrase parle d’attendre le suivant, pas d’une annulation générale."
+        },
+        {
+          "text": "They had arrived at the wrong station.",
+          "correct": false,
+          "feedback": "Aucun indice ne suggère une erreur de gare."
+        }
+      ],
+      "productionPrompt": "Réponds en anglais en une phrase : tu ne connais pas “packed”, mais tu veux expliquer ce que tu as compris de la scène.",
+      "modelResponse": "I’m not sure what “packed” means exactly, but the platform was probably very crowded.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-context-reference": {
+      "id": "eng-lab-reference",
+      "skill": "Référence",
+      "title": "Retrouve ce que la phrase reprend",
+      "context": "Deux personnes parlent de deux chargeurs.",
+      "speak": "The old charger stopped working, so I bought a new one.",
+      "prompt": "Que représente “one” dans cette scène ?",
+      "choices": [
+        {
+          "text": "A new charger.",
+          "correct": true,
+          "feedback": "One remplace charger, déjà connu dans le discours."
+        },
+        {
+          "text": "A new phone.",
+          "correct": false,
+          "feedback": "Le téléphone n’est pas mentionné."
+        },
+        {
+          "text": "A new problem.",
+          "correct": false,
+          "feedback": "La phrase décrit une solution, pas un nouveau problème."
+        }
+      ],
+      "productionPrompt": "Reformule la phrase en anglais sans utiliser “one”.",
+      "modelResponse": "The old charger stopped working, so I bought a new charger.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-false-friends-core": {
+      "id": "eng-lab-actually",
+      "skill": "Choix naturel",
+      "title": "Correction ou situation actuelle ?",
+      "context": "Quelqu’un pense que tu vis à Paris, mais tu n’y fais que travailler.",
+      "speak": "Actually, I live in Lille. I only work in Paris.",
+      "prompt": "Quelle ouverture correspond à une correction ?",
+      "choices": [
+        {
+          "text": "Actually, I live in Lille. I only work in Paris.",
+          "correct": true,
+          "feedback": "Actually signale naturellement la rectification."
+        },
+        {
+          "text": "Currently, I live in Lille. I only work in Paris.",
+          "correct": false,
+          "feedback": "Currently décrit le présent mais ne marque pas aussi clairement la correction."
+        },
+        {
+          "text": "Eventually, I live in Lille. I only work in Paris.",
+          "correct": false,
+          "feedback": "Eventually raconterait l’issue d’un processus, ce qui ne correspond pas à la scène."
+        }
+      ],
+      "productionPrompt": "Écris en anglais une phrase avec “currently” qui décrit simplement ta situation du moment, sans corriger quelqu’un.",
+      "modelResponse": "I’m currently working from home three days a week.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-false-friends-second-wave": {
+      "id": "eng-lab-sensible",
+      "skill": "Collocation",
+      "title": "Quel adjectif sonne naturel ?",
+      "context": "Une décision réduit le risque et simplifie le projet.",
+      "speak": "Choosing the simpler plan is a sensible decision.",
+      "prompt": "Quelle formulation correspond le mieux à “raisonnable” ?",
+      "choices": [
+        {
+          "text": "a sensible decision",
+          "correct": true,
+          "feedback": "Sensible est naturel pour une décision raisonnable et pratique."
+        },
+        {
+          "text": "a sensitive decision",
+          "correct": false,
+          "feedback": "Sensitive décrirait plutôt quelque chose de délicat ou réactif."
+        },
+        {
+          "text": "a comprehensive decision",
+          "correct": false,
+          "feedback": "Comprehensive parle surtout d’étendue ou de couverture."
+        }
+      ],
+      "productionPrompt": "Écris deux mini-phrases en anglais : une avec “sensible”, une avec “sensitive”, dans deux contextes différents.",
+      "modelResponse": "Taking a taxi was a sensible choice. / Salary information is sensitive.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-still-yet-already-even": {
+      "id": "eng-lab-yet",
+      "skill": "Nuance",
+      "title": "Quelle attente se cache derrière la phrase ?",
+      "context": "Le rapport doit être envoyé aujourd’hui.",
+      "speak": "I haven't sent it yet.",
+      "prompt": "Que laisse entendre “yet” ?",
+      "choices": [
+        {
+          "text": "Sending it is still expected, but it has not happened up to now.",
+          "correct": true,
+          "feedback": "Yet garde ouverte l’attente de l’action."
+        },
+        {
+          "text": "The speaker has decided not to send it.",
+          "correct": false,
+          "feedback": "La phrase ne ferme pas la possibilité future."
+        },
+        {
+          "text": "The report was sent earlier than expected.",
+          "correct": false,
+          "feedback": "Cela correspondrait plutôt à already."
+        }
+      ],
+      "productionPrompt": "Écris en anglais deux phrases sur la même tâche : une avec “still”, une avec “already”, en faisant sentir deux attentes différentes.",
+      "modelResponse": "I'm still working on it. / I've already finished it.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-small-words-just-quite": {
+      "id": "eng-lab-audio-barely",
+      "skill": "Ton",
+      "title": "Entends la pression",
+      "context": "Une relance professionnelle non agressive.",
+      "speak": "I just wanted to check whether you saw my email.",
+      "prompt": "Quel effet “just” produit-il surtout ici ?",
+      "choices": [
+        {
+          "text": "It softens the follow-up and reduces the sense of pressure.",
+          "correct": true,
+          "feedback": "Just présente la relance comme une vérification limitée."
+        },
+        {
+          "text": "It means the email arrived only a few seconds ago.",
+          "correct": false,
+          "feedback": "La phrase ne situe pas ici l’arrivée de l’e-mail dans le temps."
+        },
+        {
+          "text": "It makes the message more formal and legalistic.",
+          "correct": false,
+          "feedback": "L’effet est plutôt conversationnel et atténuateur."
+        }
+      ],
+      "productionPrompt": "Réécris la phrase en anglais de façon plus directe, puis compare mentalement le changement de ton.",
+      "modelResponse": "Did you see my email?",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-polite-register": {
+      "id": "eng-lab-register",
+      "skill": "Registre",
+      "title": "Calibre la demande",
+      "context": "Collègue peu connu, aucune urgence.",
+      "speak": "Could you send me the file when you have a minute?",
+      "prompt": "Quelle phrase est la mieux calibrée ?",
+      "choices": [
+        {
+          "text": "Could you send me the file when you have a minute?",
+          "correct": true,
+          "feedback": "Claire, polie et légère pour une demande ordinaire."
+        },
+        {
+          "text": "Send me the file when you see this.",
+          "correct": false,
+          "feedback": "Possible dans certains rapports proches, mais plus direct ici."
+        },
+        {
+          "text": "Would you be so kind as to forward the requested file at your earliest convenience?",
+          "correct": false,
+          "feedback": "Trop cérémonieux pour une demande simple entre collègues."
+        }
+      ],
+      "productionPrompt": "Écris la même demande en anglais pour un ami proche, puis pour un client. Fais varier le registre, pas le contenu.",
+      "modelResponse": "Friend: Can you send me the file? / Client: Would you mind sending me the file when you have a moment?",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-register-email-directness": {
+      "id": "eng-lab-audio-wondering",
+      "skill": "E-mail",
+      "title": "Relance sans accusation",
+      "context": "Première relance après deux jours.",
+      "speak": "Just checking whether you had a chance to look at the draft.",
+      "prompt": "Pourquoi cette formulation fonctionne-t-elle ?",
+      "choices": [
+        {
+          "text": "It asks for an update without assuming the other person ignored you.",
+          "correct": true,
+          "feedback": "La relance reste factuelle et laisse une explication possible."
+        },
+        {
+          "text": "It clearly blames the reader for being late.",
+          "correct": false,
+          "feedback": "La formulation évite précisément l’accusation."
+        },
+        {
+          "text": "It makes the request sound legally binding.",
+          "correct": false,
+          "feedback": "Le ton est professionnel mais non juridique."
+        }
+      ],
+      "productionPrompt": "Écris une relance anglaise plus ferme pour le même dossier après deux rappels ignorés, sans insulte ni accusation personnelle.",
+      "modelResponse": "We still need your feedback today so we can send the final version.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-phrasal-context": {
+      "id": "eng-lab-getby",
+      "skill": "Phrasal verb",
+      "title": "Prédit le résultat",
+      "context": "Une réunion manque de temps.",
+      "speak": "We ran out of time, so we skipped the last topic.",
+      "prompt": "Quelle paraphrase conserve le sens ?",
+      "choices": [
+        {
+          "text": "There was no time left for the final topic.",
+          "correct": true,
+          "feedback": "Run out of time décrit une ressource qui arrive à zéro."
+        },
+        {
+          "text": "The final topic was cancelled before the meeting began.",
+          "correct": false,
+          "feedback": "La phrase indique une conséquence du manque de temps pendant la réunion."
+        },
+        {
+          "text": "The final topic was too easy to discuss.",
+          "correct": false,
+          "feedback": "Aucun indice ne parle de difficulté ou de facilité."
+        }
+      ],
+      "productionPrompt": "Crée en anglais une phrase avec “run out of” dans une autre scène réelle, puis une avec “call off”.",
+      "modelResponse": "My phone died because I ran out of battery. / They called off the match because of the storm.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-phrasal-get": {
+      "id": "eng-lab-audio-endedup",
+      "skill": "Résultat",
+      "title": "Quel résultat final ?",
+      "context": "Le plan initial était de conduire.",
+      "speak": "We ended up taking the train.",
+      "prompt": "Que raconte “ended up” ?",
+      "choices": [
+        {
+          "text": "Taking the train was the final outcome, not necessarily the original plan.",
+          "correct": true,
+          "feedback": "End up + -ing met l’accent sur ce qui s’est finalement produit."
+        },
+        {
+          "text": "The train journey ended earlier than expected.",
+          "correct": false,
+          "feedback": "End up ne décrit pas ici la fin temporelle du trajet."
+        },
+        {
+          "text": "They deliberately planned the train from the beginning.",
+          "correct": false,
+          "feedback": "La tournure suggère au contraire souvent une trajectoire vers un résultat final."
+        }
+      ],
+      "productionPrompt": "Écris en anglais une mini-histoire de deux phrases avec “planned to…” puis “ended up…”.",
+      "modelResponse": "We planned to cook at home, but we ended up ordering pizza.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-paraphrase-repair": {
+      "id": "eng-lab-paraphrase",
+      "skill": "Production",
+      "title": "Décris le mot que tu n’as pas",
+      "context": "Tu as besoin d’un tournevis, mais le mot ne vient pas.",
+      "prompt": "Quelle formulation maintient le mieux l’échange en anglais ?",
+      "choices": [
+        {
+          "text": "It's the tool you use to tighten screws.",
+          "correct": true,
+          "feedback": "Fonction + objet associé donnent une description claire."
+        },
+        {
+          "text": "It's a small metal thing for repairs.",
+          "correct": false,
+          "feedback": "Compréhensible, mais trop vague pour identifier facilement l’objet."
+        },
+        {
+          "text": "I know the French word, but not the English one.",
+          "correct": false,
+          "feedback": "La phrase explique le problème mais ne permet pas encore à l’autre de deviner."
+        }
+      ],
+      "productionPrompt": "Choisis un objet autour de toi et décris-le en anglais sans utiliser son nom.",
+      "modelResponse": "It’s the thing you use to charge your phone when the battery is low.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-paraphrase-clarify": {
+      "id": "eng-lab-clarify",
+      "skill": "Interaction",
+      "title": "Isole ce qui bloque",
+      "context": "Tu comprends tout sauf “reliable”.",
+      "speak": "What do you mean by reliable here?",
+      "prompt": "Quelle question répare le mieux l’échange ?",
+      "choices": [
+        {
+          "text": "What do you mean by “reliable” here?",
+          "correct": true,
+          "feedback": "Elle cible exactement le point incertain."
+        },
+        {
+          "text": "Could you repeat the whole sentence?",
+          "correct": false,
+          "feedback": "Une répétition identique peut ne rien résoudre si le mot reste inconnu."
+        },
+        {
+          "text": "Could you explain everything again from the start?",
+          "correct": false,
+          "feedback": "La demande jette inutilement les informations déjà comprises."
+        }
+      ],
+      "productionPrompt": "Écris en anglais une phrase qui vérifie ton interprétation : tu crois que la réunion est vendredi et non jeudi.",
+      "modelResponse": "Do you mean the meeting is on Friday, not Thursday?",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-connectors-logic": {
+      "id": "eng-lab-concession",
+      "skill": "Logique",
+      "title": "Lis le virage du texte",
+      "context": "Un hôtel a un avantage puis un défaut.",
+      "speak": "The hotel was cheap. However, it was far from the centre.",
+      "prompt": "Que fait “however” ?",
+      "choices": [
+        {
+          "text": "It introduces a point that contrasts with the previous positive fact.",
+          "correct": true,
+          "feedback": "La direction de l’évaluation change entre les deux phrases."
+        },
+        {
+          "text": "It explains why the hotel was cheap.",
+          "correct": false,
+          "feedback": "Le lien de cause n’est pas exprimé."
+        },
+        {
+          "text": "It concludes that the distance was caused by the price.",
+          "correct": false,
+          "feedback": "Aucune conséquence de ce type n’est donnée."
+        }
+      ],
+      "productionPrompt": "Écris deux phrases anglaises reliées par “therefore”, puis transforme-les avec “because” sans changer la relation cause-résultat.",
+      "modelResponse": "The last train had left; therefore, we took a taxi. / We took a taxi because the last train had left.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-connectors-concession": {
+      "id": "eng-lab-despite",
+      "skill": "Structure",
+      "title": "Même contraste, bonne grammaire",
+      "context": "Tu veux dire “malgré la pluie”.",
+      "speak": "Despite the rain, we went out.",
+      "prompt": "Quelle structure est naturelle ?",
+      "choices": [
+        {
+          "text": "Despite the rain, we went out.",
+          "correct": true,
+          "feedback": "Despite accepte directement un groupe nominal."
+        },
+        {
+          "text": "Despite it was raining, we went out.",
+          "correct": false,
+          "feedback": "Une proposition finie n’est pas la structure standard après despite."
+        },
+        {
+          "text": "Although the rain, we went out.",
+          "correct": false,
+          "feedback": "Although demande normalement une proposition complète."
+        }
+      ],
+      "productionPrompt": "Produis en anglais la même idée deux fois : une avec “although”, une avec “despite”.",
+      "modelResponse": "Although it was raining, we went out. / Despite the rain, we went out.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-implicit-meaning": {
+      "id": "eng-lab-understatement",
+      "skill": "Implicite",
+      "title": "Quel message derrière les mots ?",
+      "context": "Une proposition en réunion reçoit trois objections sérieuses.",
+      "speak": "I'm not sure that would work.",
+      "prompt": "Quelle intention est la plus probable ?",
+      "choices": [
+        {
+          "text": "A softened disagreement.",
+          "correct": true,
+          "feedback": "Les objections qui suivent montrent que la réserve est substantielle."
+        },
+        {
+          "text": "A request to hear the exact same proposal again.",
+          "correct": false,
+          "feedback": "Le problème n’est pas un manque d’audition ou d’information."
+        },
+        {
+          "text": "A strong sign of approval.",
+          "correct": false,
+          "feedback": "La suite négative rend cette lecture très improbable."
+        }
+      ],
+      "productionPrompt": "Écris en anglais une manière polie mais claire de dire que tu préfères la deuxième option.",
+      "modelResponse": "I’m not sure the first option will work for us. I’d prefer the second one.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    },
+    "eng-implicit-understatement": {
+      "id": "eng-lab-audio-mind",
+      "skill": "Hedging",
+      "title": "Doux dans les mots, fort dans la décision",
+      "context": "Le lancement vient de révéler un risque sérieux.",
+      "speak": "We might need to rethink this.",
+      "prompt": "Quelle suite montrerait que la réserve est en réalité forte ?",
+      "choices": [
+        {
+          "text": "They stop the launch and schedule an urgent review.",
+          "correct": true,
+          "feedback": "L’action transforme une formulation prudente en réserve opérationnelle majeure."
+        },
+        {
+          "text": "They keep everything unchanged and move on.",
+          "correct": false,
+          "feedback": "Cette suite affaiblirait fortement l’interprétation sérieuse."
+        },
+        {
+          "text": "They laugh about a harmless typo.",
+          "correct": false,
+          "feedback": "Le contexte deviendrait mineur, donc le hedge serait beaucoup moins chargé."
+        }
+      ],
+      "productionPrompt": "Écris une phrase anglaise qui exprime une recommandation ferme avec une légère atténuation, sans devenir vague.",
+      "modelResponse": "I think we need one more day before we launch.",
+      "takeaway": "Observe le contexte, choisis la formulation naturelle, puis produis ta propre phrase en anglais.",
+      "difficulty": "moyen"
+    }
+  },
+  "mysteries": [
+    {
+      "id": "english-mystery-actually-318",
+      "discipline": "english",
+      "difficulty": "facile",
+      "title": "Correction en réunion",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-false-friends-core",
+      "missionQuestion": "Quelle réponse corrige naturellement la supposition ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Un collègue dit : “So you live in Paris now?” Tu travailles à Paris, mais tu vis à Lille.",
+      "answer": "Actually, I live in Lille. I only work in Paris.",
+      "aliases": [
+        "Actually, I live in Lille. I only work in Paris.",
+        "Actually, I live in Lille. I only work in Paris",
+        "actually, i live in lille. i only work in paris."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "Actually sert ici à corriger l’hypothèse “tu vis à Paris”. Currently pourrait situer le présent, mais ne marque pas aussi nettement la rectification.",
+      "blockedGuesses": [
+        "Currently, I live in Lille. I only work in Paris.",
+        "Eventually, I live in Lille. I only work in Paris.",
+        "I possibly live in Lille. I only work in Paris."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-eventually-318",
+      "discipline": "english",
+      "difficulty": "facile",
+      "title": "Après trois essais",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-false-friends-core",
+      "missionQuestion": "Quelle phrase raconte le mieux cette trajectoire ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Après deux échecs, Maya tente une troisième fois et réussit enfin son examen.",
+      "answer": "She eventually passed the exam.",
+      "aliases": [
+        "She eventually passed the exam.",
+        "She eventually passed the exam",
+        "she eventually passed the exam."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "Eventually présente l’issue finale après plusieurs étapes ou tentatives ; les autres phrases changent le rapport au temps ou à la certitude.",
+      "blockedGuesses": [
+        "She currently passed the exam.",
+        "She possibly passed the exam.",
+        "She actually passes the exam every time."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-afraid-318",
+      "discipline": "english",
+      "difficulty": "facile",
+      "title": "Mauvaise nouvelle à l’hôtel",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-polite-register",
+      "missionQuestion": "Quelle formulation est la plus adaptée ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "À la réception, il ne reste aucune chambre. Le réceptionniste veut annoncer le refus poliment mais sans laisser croire qu’une chambre est peut-être disponible.",
+      "answer": "I'm afraid we don't have any rooms left.",
+      "aliases": [
+        "I'm afraid we don't have any rooms left.",
+        "I'm afraid we don't have any rooms left",
+        "im afraid we dont have any rooms left."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "“I’m afraid” fonctionne comme atténuateur de mauvaise nouvelle tout en laissant l’information principale parfaitement claire.",
+      "blockedGuesses": [
+        "I'm not sure we maybe have no rooms left.",
+        "We have no rooms. That's your problem.",
+        "I'm frightened because there are no rooms."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-yet-318",
+      "discipline": "english",
+      "difficulty": "facile",
+      "title": "Toujours attendu",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-still-yet-already-even",
+      "missionQuestion": "Quelle phrase exprime le mieux cette situation ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "À 16 h, le rapport n’est pas envoyé, mais la personne prévoit toujours de l’envoyer aujourd’hui.",
+      "answer": "I haven't sent the report yet.",
+      "aliases": [
+        "I haven't sent the report yet.",
+        "I haven't sent the report yet",
+        "i havent sent the report yet."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "Not ... yet décrit une action non accomplie jusqu’à maintenant tout en conservant l’idée qu’elle reste attendue.",
+      "blockedGuesses": [
+        "I've already sent the report.",
+        "I'm still sending the report yesterday.",
+        "I even sent the report."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-turnout-318",
+      "discipline": "english",
+      "difficulty": "moyen",
+      "title": "La réalité après coup",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-phrasal-context",
+      "missionQuestion": "Quelle phrase raconte naturellement cette découverte ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Vous pensiez qu’un e-mail était authentique. Après vérification, vous découvrez que c’était une arnaque.",
+      "answer": "It turned out to be a scam.",
+      "aliases": [
+        "It turned out to be a scam.",
+        "It turned out to be a scam",
+        "it turned out to be a scam."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "Turn out to be sert à révéler la réalité finale après une attente ou une croyance différente ; c’est exactement la structure de cette scène.",
+      "blockedGuesses": [
+        "It called off to be a scam.",
+        "It ran out of being a scam.",
+        "It figured out to be a scam."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-soft-disagree-318",
+      "discipline": "english",
+      "difficulty": "moyen",
+      "title": "Désaccord sans claquer la porte",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-implicit-meaning",
+      "missionQuestion": "Quelle réponse est la plus naturelle ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "En réunion, tu veux signaler qu’une proposition pose problème et ouvrir immédiatement une alternative.",
+      "answer": "I'm not sure that would work. Could we try the second option instead?",
+      "aliases": [
+        "I'm not sure that would work. Could we try the second option instead?",
+        "I'm not sure that would work. Could we try the second option instead?",
+        "im not sure that would work. could we try the second option instead?"
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "La phrase exprime un désaccord réel mais atténué, puis transforme la critique en prochaine étape concrète avec une alternative.",
+      "blockedGuesses": [
+        "That won't work. Next idea.",
+        "Maybe it is perhaps somehow not perfect.",
+        "I'm not sure what the proposal means at all."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-sensible-rc19",
+      "discipline": "english",
+      "difficulty": "moyen",
+      "title": "Une décision raisonnable",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-false-friends-second-wave",
+      "missionQuestion": "Quelle réaction sonne naturelle ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Le temps manque. Un plan plus simple réduit le risque sans sacrifier l’objectif.",
+      "answer": "That sounds like a sensible decision.",
+      "aliases": [
+        "That sounds like a sensible decision.",
+        "That sounds like a sensible decision",
+        "that sounds like a sensible decision."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "Sensible qualifie naturellement une décision raisonnable et pratique ; sensitive et comprehensive appartiennent à d’autres types de contexte.",
+      "blockedGuesses": [
+        "That sounds like a sensitive decision.",
+        "That sounds like a comprehensive decision.",
+        "That sounds like an understanding decision."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-one-reference-rc19",
+      "discipline": "english",
+      "difficulty": "moyen",
+      "title": "Le nom disparu",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-context-reference",
+      "missionQuestion": "Que représente “one” dans cette phrase ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "“My charger is broken, so I need to buy a new one.” Le nom n’est pas répété dans la seconde proposition.",
+      "answer": "A new charger.",
+      "aliases": [
+        "A new charger.",
+        "A new charger",
+        "a new charger."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "One remplace charger, déjà disponible dans le contexte. Le lecteur reconstruit le nom sans qu’il soit répété.",
+      "blockedGuesses": [
+        "A new phone.",
+        "A new battery.",
+        "A new problem."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-pretty-rc19",
+      "discipline": "english",
+      "difficulty": "moyen",
+      "title": "Pretty sans apparence",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-small-words-just-quite",
+      "missionQuestion": "Quelle reformulation anglaise garde le mieux le ton ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Un étudiant sort d’un examen exigeant et dit : “That was pretty difficult.” Il ne parle évidemment pas d’apparence.",
+      "answer": "That was fairly difficult.",
+      "aliases": [
+        "That was fairly difficult.",
+        "That was fairly difficult",
+        "that was fairly difficult."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "Pretty fonctionne ici comme intensifieur informel. Fairly difficult conserve une intensité modérée sans introduire l’idée de beauté.",
+      "blockedGuesses": [
+        "That was visually attractive.",
+        "That was impossible to understand.",
+        "That was slightly beautiful."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-email-rc19",
+      "discipline": "english",
+      "difficulty": "moyen",
+      "title": "La bonne relance",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-register-email-directness",
+      "missionQuestion": "Quelle relance est la mieux calibrée ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Tu as envoyé un brouillon à un collègue il y a deux jours. C’est la première relance et il n’y a pas encore d’urgence.",
+      "answer": "Just checking whether you had a chance to look at the draft.",
+      "aliases": [
+        "Just checking whether you had a chance to look at the draft.",
+        "Just checking whether you had a chance to look at the draft",
+        "just checking whether you had a chance to look at the draft."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "La formulation demande une mise à jour sans attribuer de faute ni inventer l’intention du collègue ; elle convient à une première relance.",
+      "blockedGuesses": [
+        "You still haven't replied to my draft.",
+        "I require your immediate feedback on the draft.",
+        "I assume you rejected the draft because you didn't answer."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-getover-rc19",
+      "discipline": "english",
+      "difficulty": "moyen",
+      "title": "Deux semaines plus tard",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-phrasal-get",
+      "missionQuestion": "Quelle phrase raconte naturellement cette récupération ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Après une grippe, quelqu’un retrouve progressivement son état normal après deux semaines.",
+      "answer": "It took him two weeks to get over the flu.",
+      "aliases": [
+        "It took him two weeks to get over the flu.",
+        "It took him two weeks to get over the flu",
+        "it took him two weeks to get over the flu."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "Get over décrit la récupération après une maladie ou une expérience difficile ; les autres constructions avec get décrivent des résultats différents.",
+      "blockedGuesses": [
+        "It took him two weeks to get by the flu.",
+        "It took him two weeks to get away with the flu.",
+        "It took him two weeks to get back the flu."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-clarify-rc19",
+      "discipline": "english",
+      "difficulty": "difficile",
+      "title": "Un seul mot bloque",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-paraphrase-clarify",
+      "missionQuestion": "Quelle question est la plus efficace ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Tu comprends toute la phrase sauf “reliable”. Tu veux demander de l’aide sans faire répéter tout le reste.",
+      "answer": "What do you mean by 'reliable' here?",
+      "aliases": [
+        "What do you mean by 'reliable' here?",
+        "What do you mean by 'reliable' here?",
+        "what do you mean by reliable here?"
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "La question cible l’unique zone d’incertitude et conserve les informations déjà comprises, ce qui rend la réparation courte et naturelle.",
+      "blockedGuesses": [
+        "Could you repeat everything from the beginning?",
+        "Can you explain every word in that sentence?",
+        "I don't understand anything."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-despite-rc19",
+      "discipline": "english",
+      "difficulty": "difficile",
+      "title": "Même idée, bonne structure",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-connectors-concession",
+      "missionQuestion": "Quelle phrase est naturelle ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Tu veux exprimer “Malgré la pluie, nous sommes sortis” avec despite et un groupe nominal.",
+      "answer": "Despite the rain, we went out.",
+      "aliases": [
+        "Despite the rain, we went out.",
+        "Despite the rain, we went out",
+        "despite the rain, we went out."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "Despite se construit ici avec le groupe nominal the rain. Although demanderait une proposition complète : although it was raining.",
+      "blockedGuesses": [
+        "Despite it was raining, we went out.",
+        "Although the rain, we went out.",
+        "However the rain, we went out."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    },
+    {
+      "id": "english-mystery-notideal-rc19",
+      "discipline": "english",
+      "difficulty": "difficile",
+      "title": "Deux mots faibles, gros problème",
+      "caseTitle": "English in context",
+      "subjectType": "usage réel",
+      "periodHint": "anglais contemporain",
+      "lessonId": "eng-implicit-understatement",
+      "missionQuestion": "Que fait la formulation “not ideal” dans cette scène ?",
+      "answerInstruction": "Choisis la formulation ou l’interprétation qui convient à la scène.",
+      "prompt": "Un déploiement efface plusieurs heures de travail. L’ingénieur dit “Well, that’s not ideal” puis lance immédiatement une récupération d’urgence.",
+      "answer": "It understates a serious problem.",
+      "aliases": [
+        "It understates a serious problem.",
+        "It understates a serious problem",
+        "it understates a serious problem."
+      ],
+      "clues": [
+        "Regarde ce que la personne essaie de faire, pas seulement les mots isolés.",
+        "Compare le registre et la conséquence de chaque formulation.",
+        "Les mauvaises réponses restent proches en surface mais changent le sens ou la relation."
+      ],
+      "explanation": "La gravité de la situation et l’action d’urgence montrent que les mots sont volontairement plus faibles que l’évaluation réelle.",
+      "blockedGuesses": [
+        "It shows the engineer thinks the problem is minor.",
+        "It means the engineer has not understood what happened.",
+        "It expresses genuine satisfaction with the deployment."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "englishScenarioRC37": true
+    }
+  ]
+};
+
+  const MYSTERY_DEPTH = {
+    "english-mystery-actually-318": ["La réponse doit montrer clairement que tu rectifies une idée déjà formulée par l'autre personne.", "La nuance importante est conversationnelle : actually corrige, alors que currently situe simplement une situation dans le présent."],
+    "english-mystery-eventually-318": ["Le contexte contient plusieurs tentatives : la phrase doit faire sentir l'issue obtenue au terme de ce processus.", "Eventually regarde vers le résultat final après une progression ; il ne marque ni une simple possibilité ni le présent actuel."],
+    "english-mystery-afraid-318": ["Le client doit comprendre immédiatement qu'il n'y a plus de chambre, tout en recevant la nouvelle sans brutalité inutile.", "La formule atténue l'annonce négative sans affaiblir son contenu : le refus reste ferme et parfaitement compréhensible."],
+    "english-mystery-yet-318": ["L'élément décisif est que l'envoi reste prévu : l'absence d'action est vraie maintenant, pas présentée comme définitive.", "Yet maintient une attente ouverte jusqu'au moment présent ; il ne transforme pas la phrase en abandon du projet."],
+    "english-mystery-turnout-318": ["La formulation doit opposer ce que vous croyiez au départ à la réalité découverte après la vérification.", "Turn out to be sert précisément à révéler après coup une réalité différente de l'hypothèse ou de l'attente initiale."],
+    "english-mystery-soft-disagree-318": ["Le but n'est pas seulement d'être poli : il faut aussi rendre visible le désaccord et proposer une voie de sortie concrète.", "La bonne réponse combine une réserve compréhensible avec une alternative, ce qui évite autant la brutalité que le flou diplomatique."],
+    "english-mystery-sensible-rc19": ["Le mot recherché doit évaluer le caractère pratique et raisonnable du choix, pas sa charge émotionnelle ou sa sensibilité.", "Sensible appartient naturellement aux décisions et précautions raisonnables ; sensitive décrit plutôt ce qui réagit fortement ou demande de la délicatesse."],
+    "english-mystery-one-reference-rc19": ["Pour résoudre la scène, réinsère mentalement le nom déjà mentionné à l'endroit où one évite sa répétition.", "One agit ici comme substitut nominal : il permet de parler d'un nouveau chargeur sans répéter charger une seconde fois."],
+    "english-mystery-pretty-rc19": ["Cherche une reformulation qui conserve une intensité conversationnelle modérée, sans transformer l'évaluation en jugement extrême.", "Pretty est un intensifieur informel devant difficult ; l'idée porte sur le degré de difficulté, pas sur l'apparence de l'examen."],
+    "english-mystery-email-rc19": ["Comme il s'agit d'une première relance sans urgence, la formulation doit demander une mise à jour sans attribuer de mauvaise intention.", "Just checking fonctionne comme une relance légère : elle rappelle le dossier tout en laissant ouverte la possibilité d'un simple retard."],
+    "english-mystery-getover-rc19": ["La phrase doit décrire un passage progressif de l'état malade vers un retour à l'état normal après plusieurs jours.", "Get over correspond à cette trajectoire de récupération ; get by ou get away with décrivent des résultats totalement différents."],
+    "english-mystery-clarify-rc19": ["Tu as déjà compris le reste de la phrase : une bonne réparation doit donc viser uniquement le mot qui bloque.", "La question ciblée préserve les informations acquises et demande exactement la reformulation utile, au lieu de recommencer toute la conversation."],
+    "english-mystery-despite-rc19": ["Le sens de concession est déjà choisi ; le vrai problème consiste maintenant à sélectionner la structure grammaticale qui suit naturally despite.", "Despite accepte ici le groupe nominal the rain, tandis que although introduirait une proposition complète avec sujet et verbe."],
+    "english-mystery-notideal-rc19": ["La formulation doit être interprétée avec ce que l'ingénieur fait ensuite : la procédure d'urgence révèle la force réelle de son jugement.", "L'understatement naît du contraste entre des mots volontairement faibles et une situation dont les conséquences montrent qu'elle est très sérieuse."]
+  };
+  for (const mystery of PAYLOAD.mysteries) {
+    const depth = MYSTERY_DEPTH[mystery.id];
+    if (!depth) continue;
+    mystery.prompt = `${mystery.prompt} ${depth[0]}`;
+    mystery.explanation = `${mystery.explanation} ${depth[1]}`;
+  }
+
+  const titleById = Object.fromEntries(Object.entries(PAYLOAD.courses).map(([id, pack]) => [id, pack.title]));
+  for (const [id, spec] of Object.entries(PAYLOAD.courses)) {
+    READY_LESSON_PACKS[id] = {
+      title: spec.title,
+      hook: spec.hook,
+      keyFacts: [
+        "Comprendre la scène avant de traduire.",
+        "Choisir une formulation naturelle, pas seulement grammaticale.",
+        "Lire le registre et l’intention.",
+        "Produire une phrase personnelle pour fixer la compétence."
+      ],
+      express: spec.express,
+      complete: spec.sections,
+      deeper: [],
+      takeaways: spec.takeaways,
+      quiz: spec.quiz,
+      editorialStatus: "published",
+      contentRevision: "rc37-english-situational",
+      englishExperience: { mode: "situation-intent-production", redesigned: true }
+    };
+    PUBLISHED_LESSON_IDS.add(id);
+  }
+
+  // Retitle existing lesson cards without changing IDs/progress.
+  try {
+    for (const lessons of Object.values(data.lessons || {})) {
+      if (!Array.isArray(lessons)) continue;
+      for (const lesson of lessons) if (titleById[lesson?.id]) lesson.title = titleById[lesson.id];
+    }
+  } catch {}
+
+  // English labs become language-use checkpoints; philosophy labs remain untouched.
+  const oldLabs = window.HD_DISCIPLINE_LABS || {};
+  window.HD_DISCIPLINE_LABS = { ...oldLabs, english: Object.values(PAYLOAD.labs) };
+
+  // Replace every existing English mystery with a situational language task while preserving IDs/history.
+  if (Array.isArray(data.mysteries)) {
+    const replacement = new Map(PAYLOAD.mysteries.map(item => [item.id, item]));
+    data.mysteries = data.mysteries.map(item => item?.discipline === "english" && replacement.has(item.id) ? replacement.get(item.id) : item);
+    const known = new Set(data.mysteries.map(item => item?.id));
+    for (const item of PAYLOAD.mysteries) if (!known.has(item.id)) data.mysteries.push(item);
+  }
+
+  try {
+    DISCIPLINE_MODE_COPY.english = {
+      ...(DISCIPLINE_MODE_COPY.english || {}),
+      headline: "Comprends ce que les gens veulent dire — puis réponds naturellement.",
+      promise: "Des scènes courtes, de l’écoute, des choix plausibles et de la production. Pas de récitation de règles ni de traduction mot à mot.",
+      discoveryTitle: "Scènes d’anglais réel",
+      discoveryIntro: "Décoder une intention, choisir le bon registre, reformuler et répondre comme dans une vraie interaction."
+    };
+  } catch {}
+
+  if (typeof invalidateCatalogCaches === "function") invalidateCatalogCaches(); else try { lessonIndexCache = null; } catch {}
+  try {
+    window.HistoDaily = {
+      ...(window.HistoDaily || {}),
+      version: VERSION,
+      englishRedesignRC37: {
+        version: VERSION,
+        courses: Object.keys(PAYLOAD.courses).length,
+        labs: Object.keys(PAYLOAD.labs).length,
+        mysteries: PAYLOAD.mysteries.length,
+        principles: ["context", "naturalness", "register", "intent", "paraphrase", "production"]
+      }
+    };
+  } catch {}
+})();
+
+;
+
+/* ===== SOURCE: content-philosophy-redesign-rc38.js ===== */
+/* HistoDaily 1.0.0-rc.38.0 — Philosophy redesign: problems, objections, counterexamples, argument production. */
+(function histodailyRC38PhilosophyRedesign(){
+  "use strict";
+  const VERSION = "1.0.0-rc.38.0";
+  const PAYLOAD = {
+  "courses": {
+    "philo-argument-thesis-objection": {
+      "title": "Construire un argument qui résiste à une objection",
+      "hook": "En philosophie, avoir une position ne suffit pas. Le vrai travail commence quand tu peux reconstruire les raisons, formuler l’objection la plus forte et préciser ce que ta thèse peut encore défendre.",
+      "practice": "Une ville veut interdire les voitures dans son centre le dimanche. Ne commence pas par être pour ou contre. Écris d’abord la conclusion exacte, puis deux prémisses qui la soutiennent. Cherche ensuite l’objection la plus forte — par exemple l’accès des personnes qui ne peuvent pas venir autrement — et vois si elle détruit la thèse ou oblige seulement à ajouter une exception. La qualité du raisonnement se mesure à sa capacité à survivre à cette mise à l’épreuve.",
+      "takeaways": [
+        "Une thèse devient un argument quand des raisons soutiennent réellement sa conclusion.",
+        "La meilleure objection vise le point le plus fragile de l’argument, pas une caricature.",
+        "Répondre à une objection peut conduire à limiter ou préciser sa thèse sans l’abandonner."
+      ],
+      "quiz": [
+        {
+          "kind": "reconstruction",
+          "q": "Une commune dit : « Nous devons piétonniser la place, car cela réduira les accidents et rendra l’espace plus agréable. » Quelle reconstruction est la plus fidèle ?",
+          "a": "La commune défend la piétonnisation en invoquant deux bénéfices attendus : sécurité et qualité d’usage.",
+          "choices": [
+            "La commune affirme que toute voiture est dangereuse et doit disparaître de la ville.",
+            "La commune préfère les piétons aux automobilistes et n’a donc pas besoin d’autre raison.",
+            "La commune prouve déjà que la piétonnisation produira forcément ces deux effets."
+          ],
+          "why": "Une bonne reconstruction distingue la conclusion des raisons sans ajouter une thèse plus forte que celle réellement défendue.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "objection",
+          "q": "Quelle objection met le mieux cet argument à l’épreuve ?",
+          "a": "Demander comment seront maintenus les accès nécessaires pour les riverains ou personnes à mobilité réduite.",
+          "choices": [
+            "Dire que la place actuelle est jolie sur certaines photos.",
+            "Affirmer que les élus détestent probablement les voitures.",
+            "Rappeler qu’une autre ville possède aussi une place piétonne."
+          ],
+          "why": "L’objection porte sur une conséquence importante que l’argument doit intégrer plutôt que sur les intentions supposées des personnes.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "strawman",
+          "q": "Quel énoncé transforme l’argument en homme de paille ?",
+          "a": "« Ils veulent interdire toute voiture partout et tout le temps. »",
+          "choices": [
+            "« Leur proposition concerne seulement la place et le dimanche. »",
+            "« Il faut vérifier si la baisse d’accidents est plausible. »",
+            "« Une exception d’accès pourrait modifier l’évaluation du projet. »"
+          ],
+          "why": "L’homme de paille rend la position adverse plus extrême pour la réfuter plus facilement.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "reply",
+          "q": "L’objection sur l’accès est solide. Quelle réponse améliore le mieux la thèse ?",
+          "a": "Maintenir la piétonnisation tout en prévoyant des dérogations d’accès clairement définies.",
+          "choices": [
+            "Ignorer l’objection parce que la majorité des gens peuvent marcher.",
+            "Abandonner toute règle dès qu’une exception imaginable existe.",
+            "Répondre que les critiques sont simplement attachés à leurs habitudes."
+          ],
+          "why": "Une bonne réponse conserve ce qui résiste dans la thèse et traite précisément le cas problématique.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "premise",
+          "q": "Une étude montre que les accidents diminuent après piétonnisation, mais rien sur l’agrément. Quelle conclusion est justifiée ?",
+          "a": "L’argument sur la sécurité gagne un appui ; le bénéfice sur l’agrément reste à établir.",
+          "choices": [
+            "Les deux bénéfices sont désormais démontrés.",
+            "La piétonnisation est nécessairement la seule cause de la baisse observée.",
+            "L’étude ne peut rien apporter puisque l’argument comportait deux raisons."
+          ],
+          "why": "Une preuve soutient la prémisse qu’elle concerne ; elle ne valide pas automatiquement les autres prémisses ni toute la chaîne causale.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-fact-opinion-value": {
+      "title": "Séparer les faits, les valeurs et le passage entre les deux",
+      "hook": "Les débats se brouillent quand une mesure, une préférence et un jugement moral sont traités comme le même type d’énoncé. Le bon réflexe est de repérer ce qui décrit, ce qui évalue et quelle prémisse relie les deux.",
+      "practice": "Un restaurant augmente ses prix de 10 %. « Ses coûts ont augmenté » est une proposition factuelle à vérifier. « Ce prix est injuste » est une évaluation qui demande un critère d’équité. « Donc il ne devrait pas augmenter ses prix » ajoute une conclusion normative. La discussion devient plus claire dès que tu demandes quelle règle implicite permet de passer du constat au jugement.",
+      "takeaways": [
+        "Un fait peut être vrai sans contenir à lui seul une conclusion morale.",
+        "Une préférence personnelle n’est pas identique à un jugement de valeur général.",
+        "Quand un ‘donc’ passe de ce qui est à ce qui doit être, cherche la prémisse normative manquante."
+      ],
+      "quiz": [
+        {
+          "kind": "classification",
+          "q": "« Le billet coûte 15 € de plus que l’an dernier. » Quel type d’énoncé est-ce d’abord ?",
+          "a": "Une description factuelle vérifiable.",
+          "choices": [
+            "Une condamnation morale du prix.",
+            "Une préférence pour l’ancien tarif.",
+            "Une règle sur ce que le vendeur devrait faire."
+          ],
+          "why": "La phrase décrit un écart mesurable sans encore dire s’il est bon, mauvais ou acceptable.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "bridge",
+          "q": "« Les loyers ont augmenté, donc la ville doit plafonner les loyers. » Que manque-t-il pour que le passage soit argumenté ?",
+          "a": "Une prémisse normative expliquant pourquoi cette hausse justifie un plafonnement.",
+          "choices": [
+            "Une deuxième mesure de l’augmentation, quelle qu’elle soit.",
+            "La preuve que tout le monde préfère les loyers bas.",
+            "Un exemple historique de ville ayant déjà plafonné les loyers."
+          ],
+          "why": "Le constat d’une hausse n’implique pas à lui seul une politique ; il faut rendre explicite le principe qui relie le fait à la norme.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "preference",
+          "q": "Laquelle exprime surtout une préférence plutôt qu’un jugement général ?",
+          "a": "« Je préfère les films courts. »",
+          "choices": [
+            "« Ce film dure 92 minutes. »",
+            "« Un distributeur ne devrait pas tromper le public sur la durée. »",
+            "« Une salle bondée augmente le temps d’attente à la sortie. »"
+          ],
+          "why": "Une préférence dit ce que le locuteur aime ; elle n’impose pas encore une règle générale aux autres.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "value-disagreement",
+          "q": "Deux personnes acceptent exactement les mêmes chiffres sur une taxe mais en tirent des jugements opposés. Quel désaccord faut-il examiner en priorité ?",
+          "a": "Les valeurs ou principes qu’elles utilisent pour évaluer ces chiffres.",
+          "choices": [
+            "La possibilité que les nombres changent de sens grammaticalement.",
+            "Le fait que l’une des deux personnes ait nécessairement mal lu le tableau.",
+            "Le nombre de personnes qui partagent chaque opinion."
+          ],
+          "why": "Un accord factuel peut coexister avec un désaccord normatif si les critères d’équité, liberté ou efficacité diffèrent.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "is-ought",
+          "q": "« Cette pratique existe depuis longtemps, donc nous devons la conserver. » Quelle prémisse implicite rendrait au moins l’argument explicite ?",
+          "a": "« Les pratiques anciennes doivent être conservées sauf raison contraire. »",
+          "choices": [
+            "« Cette pratique est ancienne. »",
+            "« Beaucoup de personnes la connaissent. »",
+            "« Certaines traditions ont déjà disparu. »"
+          ],
+          "why": "La conclusion normative exige une règle normative ; l’exposer permet ensuite de la discuter au lieu de la cacher dans le ‘donc’.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-socrates-questioning": {
+      "title": "Questionner une idée jusqu’à trouver son vrai critère",
+      "hook": "Le geste socratique utile n’est pas de poser des questions au hasard : c’est d’obliger une définition à affronter les cas qui la confirment, les cas limites et les contre-exemples.",
+      "practice": "Quelqu’un définit la justice par « traiter tout le monde pareil ». Teste immédiatement un cas : deux élèves ont le même examen, mais l’un a besoin d’un aménagement lié à un handicap. Si traiter pareil produit ici une injustice plausible, la définition doit être précisée : égalité de traitement n’est peut-être pas le seul critère. Le questionnement sert à améliorer le concept, pas à humilier celui qui répond.",
+      "takeaways": [
+        "Une définition philosophique donne un critère, pas une simple liste d’exemples.",
+        "Un contre-exemple pertinent respecte les termes de la définition tout en donnant un verdict intuitivement problématique.",
+        "Une aporie peut être productive : elle montre exactement ce que la première définition ne savait pas traiter."
+      ],
+      "quiz": [
+        {
+          "kind": "definition",
+          "q": "« Être juste, c’est toujours traiter tout le monde exactement pareil. » Quel test est le plus philosophique ?",
+          "a": "Chercher un cas où un traitement différent semble nécessaire pour traiter les personnes équitablement.",
+          "choices": [
+            "Chercher une personne célèbre qui utilise le mot ‘justice’.",
+            "Compter combien de fois la définition emploie le mot ‘tout’.",
+            "Demander si la majorité trouve la phrase élégante."
+          ],
+          "why": "Le contre-exemple teste le critère proposé, pas sa popularité ou sa formulation.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "counterexample",
+          "q": "Quel cas fragilise le mieux cette définition ?",
+          "a": "Accorder un temps supplémentaire à un candidat dont le handicap ralentit matériellement l’écriture.",
+          "choices": [
+            "Deux candidats sans besoin particulier reçoivent la même durée.",
+            "Un professeur utilise le même barème pour deux copies identiques.",
+            "Deux élèves choisissent le même sujet d’exposé."
+          ],
+          "why": "Le cas montre qu’un traitement différent peut viser une égalité plus substantielle, ce qui oblige à préciser le concept de justice.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "revision",
+          "q": "Quelle révision répond le mieux à ce contre-exemple ?",
+          "a": "« Être juste exige de justifier les différences de traitement par des raisons pertinentes. »",
+          "choices": [
+            "« Être juste, c’est appliquer la même règle de départ, puis corriger les écarts quand le résultat paraît inégal. »",
+            "« Être juste, c’est compenser toutes les différences entre personnes, qu’elles soient pertinentes ou non pour la situation. »",
+            "« Être juste, c’est décider au cas par cas sans chercher de critère général, puisque les situations diffèrent toujours. »"
+          ],
+          "why": "La bonne révision conserve l’exigence d’impartialité tout en intégrant le rôle des différences pertinentes.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "aporia",
+          "q": "Après plusieurs contre-exemples, aucune définition ne tient encore. Que montre surtout cette aporie ?",
+          "a": "Que nos critères initiaux étaient insuffisants et doivent être retravaillés.",
+          "choices": [
+            "Que le concept étudié n’existe pas.",
+            "Que toute discussion philosophique est impossible.",
+            "Que la première définition était secrètement correcte."
+          ],
+          "why": "L’aporie est un constat de difficulté argumentée, pas une preuve que la recherche est vaine.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "source",
+          "q": "Pourquoi distinguer le Socrate des dialogues du ‘Socrate historique’ ?",
+          "a": "Parce que nos sources mettent en scène Socrate selon des projets d’auteur différents.",
+          "choices": [
+            "Parce que Socrate a écrit plusieurs traités contradictoires.",
+            "Parce qu’aucune source antique ne mentionne Socrate.",
+            "Parce que Platon a vécu plusieurs siècles avant lui."
+          ],
+          "why": "La prudence historique n’annule pas l’intérêt philosophique du questionnement ; elle évite seulement de confondre personnage textuel et biographie certaine.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-stoic-control": {
+      "title": "Agir sur ce qui dépend de toi sans confondre effort et résultat",
+      "hook": "Le stoïcisme devient utile quand on distingue trois choses souvent mélangées : ce que tu contrôles directement, ce que tu peux influencer et ce qui reste finalement hors de ta maîtrise.",
+      "practice": "Tu passes un entretien. Tu contrôles ton heure d’arrivée, ta préparation et la manière dont tu réponds. Tu peux influencer l’impression du recruteur, mais tu ne contrôles ni les autres candidats ni la décision finale. Cette distinction ne recommande pas de moins agir ; elle évite seulement de transformer un résultat incertain en mesure totale de ta valeur.",
+      "takeaways": [
+        "Préparation et action peuvent dépendre de toi alors que leur résultat final n’en dépend jamais entièrement.",
+        "Accepter une limite de contrôle n’est pas renoncer à toute influence.",
+        "Le réflexe stoïcien utile est de revenir à l’action disponible après avoir distingué événement, jugement et choix."
+      ],
+      "quiz": [
+        {
+          "kind": "control",
+          "q": "Tu prépares un entretien. Lequel dépend le plus directement de toi ?",
+          "a": "Arriver à l’heure avec des exemples préparés pour répondre aux questions.",
+          "choices": [
+            "Être le candidat préféré du recruteur.",
+            "Éviter qu’un autre candidat ait davantage d’expérience.",
+            "Obtenir exactement le salaire souhaité."
+          ],
+          "why": "Le choix et la préparation sont tes actions ; les décisions des autres et le résultat final ne sont pas entièrement à toi.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "influence",
+          "q": "Laquelle formule correctement la différence entre contrôle et influence ?",
+          "a": "Je peux améliorer mes chances par ma préparation sans pouvoir garantir la décision finale.",
+          "choices": [
+            "Si ma préparation est excellente, je contrôle la décision finale.",
+            "Puisque je ne contrôle pas la décision, ma préparation n’a aucune utilité.",
+            "Tout résultat influençable est, par définition, entièrement contrôlable."
+          ],
+          "why": "L’influence modifie des probabilités ou des conditions sans transformer le résultat en objet de maîtrise directe.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "passivity",
+          "q": "Ton train est annulé. Quelle réaction applique le mieux la distinction stoïcienne ?",
+          "a": "Chercher une alternative et prévenir les personnes concernées, puis accepter l’incertitude sur l’heure d’arrivée.",
+          "choices": [
+            "Ne rien faire puisque l’annulation ne dépend pas de toi.",
+            "Exiger de pouvoir garantir l’heure d’arrivée avant de choisir une solution.",
+            "Décider que la contrariété extérieure ne mérite jamais aucune action."
+          ],
+          "why": "Le stoïcisme distingue ce qu’on peut faire maintenant du résultat qu’on ne peut pas posséder.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "judgment",
+          "q": "Le recruteur répond : « Nous vous recontactons. » Quelle phrase ajoute le plus clairement un jugement ?",
+          "a": "« Cela prouve que j’ai raté et que je ne suis pas à la hauteur. »",
+          "choices": [
+            "« Il a dit qu’il me recontacterait. »",
+            "« Je n’ai pas encore de décision. »",
+            "« Je peux envoyer un message de suivi si le délai annoncé passe. »"
+          ],
+          "why": "Le jugement transforme une information incomplète en verdict global sur soi et l’avenir.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "aim",
+          "q": "Quel objectif est le plus compatible avec cette pratique ?",
+          "a": "Faire au mieux l’action qui dépend de moi tout en refusant de confondre réussite extérieure et valeur personnelle.",
+          "choices": [
+            "Éliminer toute émotion avant d’agir.",
+            "Éviter les objectifs dont le résultat n’est pas garanti.",
+            "Croire que les événements extérieurs n’ont jamais aucune importance pratique."
+          ],
+          "why": "Le stoïcisme ne nie ni les préférences ni l’action ; il travaille le rapport entre jugement, action et résultat.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-descartes-doubt": {
+      "title": "Utiliser le doute comme test, pas comme posture permanente",
+      "hook": "Le doute cartésien est un stress-test des croyances : il cherche ce qui résiste à une remise en question radicale, puis oblige à reconstruire les certitudes étape par étape.",
+      "practice": "Ton téléphone affiche 17 h 42. Tu as de bonnes raisons de lui faire confiance, mais tu peux imaginer un mauvais fuseau ou une synchronisation défaillante. Le doute méthodique ne signifie pas que l’heure est probablement fausse : il distingue simplement ce qui est très fiable de ce qui serait absolument indubitable dans l’expérience de pensée.",
+      "takeaways": [
+        "Douter méthodiquement revient à tester le fondement d’une croyance, pas à affirmer que tout est faux.",
+        "L’argument du rêve fragilise certaines certitudes sensibles sans conclure que nous rêvons effectivement.",
+        "Le cogito donne une certitude minimale ; toute conclusion plus large demande des arguments supplémentaires."
+      ],
+      "quiz": [
+        {
+          "kind": "method",
+          "q": "Quelle attitude ressemble le plus au doute méthodique ?",
+          "a": "Suspendre provisoirement une croyance pour voir quelles raisons résistent à l’hypothèse d’erreur.",
+          "choices": [
+            "Décider que toute croyance ordinaire est probablement fausse.",
+            "Refuser définitivement toute information issue des sens.",
+            "Choisir la croyance la plus rassurante lorsqu’un doute apparaît."
+          ],
+          "why": "Le doute est un outil de test volontaire, pas une conclusion sceptique déjà acquise.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "dream",
+          "q": "Que permet l’argument du rêve sans aller plus loin ?",
+          "a": "Montrer que certaines expériences très convaincantes peuvent ne pas garantir à elles seules que la scène extérieure est telle qu’elle apparaît.",
+          "choices": [
+            "Démontrer que nous sommes actuellement en train de rêver.",
+            "Prouver que les mathématiques changent pendant le sommeil.",
+            "Établir que toute perception est fausse même à l’état de veille."
+          ],
+          "why": "L’argument ouvre une possibilité de tromperie ; il ne transforme pas cette possibilité en description certaine de notre situation.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "cogito",
+          "q": "Même sous l’hypothèse d’un trompeur parfait, qu’est-ce qui résiste au moment où je doute ?",
+          "a": "Qu’une activité de pensée a lieu et que je ne peux nier mon existence comme sujet pensant à cet instant.",
+          "choices": [
+            "Que mon corps possède exactement les propriétés que je perçois.",
+            "Que tous mes souvenirs correspondent à des événements réels.",
+            "Que le monde extérieur existe déjà exactement comme je le conçois."
+          ],
+          "why": "Le cogito est volontairement minimal : il ne restaure pas d’un coup toutes les croyances mises en doute.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "overreach",
+          "q": "Quelle conclusion dépasse ce que le cogito établit immédiatement ?",
+          "a": "« Puisque je pense, mes perceptions du monde extérieur sont toutes fiables. »",
+          "choices": [
+            "« Si je doute, une pensée est en cours. »",
+            "« Le doute lui-même ne peut supprimer le fait qu’il y a pensée. »",
+            "« D’autres étapes seront nécessaires pour reconstruire la connaissance du monde. »"
+          ],
+          "why": "La certitude de penser ne suffit pas encore à garantir la fiabilité des perceptions externes.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "degrees",
+          "q": "Tu as une horloge synchronisée par réseau et une montre arrêtée hier. Quel usage du doute est le plus rationnel ?",
+          "a": "Accorder des degrés de confiance différents tout en distinguant cette confiance pratique d’une certitude absolue.",
+          "choices": [
+            "Traiter les deux affichages comme également douteux puisqu’aucun n’est absolument certain.",
+            "Considérer l’horloge réseau comme métaphysiquement indubitable parce qu’elle est plus fiable.",
+            "Refuser de lire l’heure tant qu’une démonstration philosophique complète n’est pas disponible."
+          ],
+          "why": "La méthode peut hiérarchiser les raisons sans exiger que toute décision pratique atteigne la certitude absolue.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-hume-causality": {
+      "title": "Passer d’une succession observée à une causalité sans aller trop vite",
+      "hook": "Voir A puis B, même souvent, ne revient pas à voir une nécessité qui relie A à B. Hume oblige à distinguer régularité observée, attente mentale et affirmation causale.",
+      "practice": "Les jours où tu dors peu, tu bois aussi davantage de café et tu te sens moins concentré. Une simple corrélation entre sommeil et concentration peut être informative, mais elle ne dit pas encore quel facteur produit quoi. La prudence causale consiste à chercher d’autres variables, comparer des situations et calibrer la force de la conclusion.",
+      "takeaways": [
+        "La répétition d’une succession produit une attente, pas une nécessité logique visible.",
+        "Une corrélation peut soutenir une hypothèse causale sans suffire à elle seule à l’établir.",
+        "Le problème humeien porte sur la justification du passage du passé au futur, pas sur l’interdiction pratique de prévoir."
+      ],
+      "quiz": [
+        {
+          "kind": "correlation",
+          "q": "Les jours chauds, ventes de glaces et noyades augmentent ensemble. Quelle conclusion est la plus prudente ?",
+          "a": "La corrélation peut s’expliquer en partie par une troisième variable, comme la chaleur qui augmente à la fois baignades et achats de glaces.",
+          "choices": [
+            "La répétition saisonnière rend plausible un lien causal direct des ventes de glaces vers les noyades, même sans mécanisme identifié.",
+            "Comme les deux séries augmentent ensemble, on peut choisir la direction de la cause en regardant simplement laquelle monte en premier.",
+            "Une cause commune reste possible, mais une corrélation forte et répétée suffit à ne pas avoir besoin de la tester."
+          ],
+          "why": "La simultanéité régulière peut venir d’un facteur commun ; elle ne détermine pas à elle seule le sens du lien causal.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "necessity",
+          "q": "Quand une boule en frappe une autre et que la seconde bouge, que souligne l’analyse de Hume ?",
+          "a": "Nous observons la succession et la régularité, pas une ‘nécessité’ séparée perceptible entre les événements.",
+          "choices": [
+            "Le mouvement transmis nous permet d’observer directement la nécessité causale elle-même, au-delà de la simple succession des événements.",
+            "La nécessité apparaît dès que le même type de choc se répète assez souvent dans des conditions semblables.",
+            "La causalité n’est que le nom donné à la succession temporelle ; l’habitude de l’observateur n’ajoute rien à notre attente."
+          ],
+          "why": "La critique vise l’idée d’une nécessité directement donnée dans l’expérience, pas l’utilité de l’enquête empirique.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "habit",
+          "q": "Après cent matins où la machine démarre avec le même bouton, pourquoi attends-tu qu’elle démarre demain ?",
+          "a": "L’habitude formée par la régularité passée produit naturellement cette attente.",
+          "choices": [
+            "Parce que la logique déductive interdit toute autre possibilité future.",
+            "Parce que la répétition rend la machine incapable de tomber en panne.",
+            "Parce qu’une attente psychologique équivaut à une preuve nécessaire."
+          ],
+          "why": "Hume décrit comment l’esprit forme l’attente sans confondre ce mécanisme avec une démonstration logique du futur.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "investigation",
+          "q": "Une étude observe que les personnes qui marchent davantage déclarent un meilleur moral. Quelle étape renforcerait une interprétation causale ?",
+          "a": "Comparer les groupes en tenant compte de variables comme santé initiale, âge ou conditions de vie.",
+          "choices": [
+            "Répéter uniquement le titre de l’étude avec davantage de participants sur les réseaux sociaux.",
+            "Supposer que la direction causale est évidente parce que marcher précède souvent l’humeur mesurée.",
+            "Écarter toute hypothèse causale puisque l’étude est observationnelle."
+          ],
+          "why": "Contrôler des facteurs concurrents ne garantit pas une cause, mais améliore nettement l’enquête par rapport à une corrélation brute.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "induction",
+          "q": "« Nos prévisions fondées sur le passé ont souvent marché ; donc le passé continuera à guider correctement le futur. » Quel problème apparaît ?",
+          "a": "La justification utilise déjà une projection du passé vers le futur pour justifier ce même type de projection.",
+          "choices": [
+            "La phrase est invalide uniquement parce qu’elle parle du futur.",
+            "La phrase prouve que toute prévision scientifique est inutile.",
+            "La phrase devient déductive dès qu’elle contient beaucoup d’observations."
+          ],
+          "why": "Le raisonnement paraît circulaire du point de vue de la justification de l’induction elle-même.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-ethics-principles-consequences": {
+      "title": "Trancher un dilemme sans cacher le critère qui décide",
+      "hook": "Un dilemme moral intéressant ne se résout pas en récitant un mot comme ‘devoir’ ou ‘conséquences’. Il faut exposer le critère, regarder ce qu’il implique dans le cas et tester ce qui ferait changer le jugement.",
+      "practice": "Tu as promis de garder une information confidentielle, mais cette information révèle un danger sérieux pour une autre personne. Une approche centrée sur le devoir demande quelles obligations entrent en conflit ; une approche conséquentialiste compare les dommages probables ; une analyse des vertus demande ce qu’exigent honnêteté, loyauté ou courage. Le travail consiste à rendre visibles ces raisons plutôt qu’à choisir une étiquette.",
+      "takeaways": [
+        "Les mêmes faits peuvent être évalués avec des critères moraux différents.",
+        "L’incertitude sur les conséquences oblige à raisonner sur probabilités et gravité, pas à faire comme si le futur était connu.",
+        "Une exception peut révéler que la règle était trop simple ou qu’un autre devoir entre réellement en conflit."
+      ],
+      "quiz": [
+        {
+          "kind": "dilemma",
+          "q": "Tu as promis le secret à un ami, mais l’information révèle un risque grave et immédiat pour quelqu’un. Quelle formulation décrit le mieux le dilemme ?",
+          "a": "Un devoir de confidentialité entre en conflit avec une raison forte de prévenir un dommage grave.",
+          "choices": [
+            "La promesse reste prioritaire tant que le danger n’est pas établi avec une certitude presque complète.",
+            "La gravité possible du danger suffit à suspendre la confidentialité avant même d’examiner sa probabilité ou les autres options.",
+            "Le conflit est surtout un calcul d’efficacité entre deux options ; parler de devoirs concurrents ajoute une complication inutile."
+          ],
+          "why": "Le cas est difficile précisément parce que deux raisons morales sérieuses tirent dans des directions opposées.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "consequence",
+          "q": "Quelle question est typiquement conséquentialiste dans ce cas ?",
+          "a": "Quels dommages probables résultent de garder le secret ou de le révéler, et pour qui ?",
+          "choices": [
+            "Ai-je formulé explicitement une promesse qui crée un devoir ?",
+            "Quel trait de caractère est manifesté par mon choix ?",
+            "Cette règle pourrait-elle être respectée même si le résultat m’est défavorable ?"
+          ],
+          "why": "Le conséquentialisme met au premier plan les effets comparés des options, même si d’autres approches peuvent aussi considérer ces effets.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "deontology",
+          "q": "Quelle question déontologique est la plus pertinente ?",
+          "a": "Quels devoirs et droits sont engagés, et l’un d’eux limite-t-il ce que je peux faire même pour produire un bon résultat ?",
+          "choices": [
+            "Quelle option maximise simplement la somme des effets agréables ?",
+            "Quelle réaction me donnera la meilleure réputation auprès des autres ?",
+            "Quelle option correspond le mieux à ce que la majorité ferait spontanément ?"
+          ],
+          "why": "Une approche déontologique examine les contraintes morales et les obligations, pas seulement le bilan final.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "uncertainty",
+          "q": "Le danger n’est plus certain mais seulement possible. Qu’est-ce que cela change surtout ?",
+          "a": "Il faut intégrer la probabilité et la gravité du dommage au lieu de traiter la conséquence comme garantie.",
+          "choices": [
+            "Toute considération des conséquences devient impossible.",
+            "La promesse devient automatiquement absolue dès qu’une probabilité apparaît.",
+            "Le raisonnement moral peut ignorer l’incertitude parce qu’elle appartient seulement aux sciences."
+          ],
+          "why": "Les décisions morales réelles sont souvent prises sous incertitude ; la comparaison doit alors être calibrée plutôt que supprimée.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "revision",
+          "q": "Quelle information pourrait légitimement te faire réviser ton jugement ?",
+          "a": "Apprendre que la menace est une plaisanterie vérifiée et qu’aucune personne n’est réellement en danger.",
+          "choices": [
+            "Découvrir que ton ami n’aime pas ton hésitation.",
+            "Voir qu’un commentaire en ligne approuve ton premier choix.",
+            "Changer le vocabulaire utilisé pour décrire exactement les mêmes faits."
+          ],
+          "why": "Une bonne raison de réviser modifie une prémisse moralement pertinente du cas plutôt que la pression sociale autour du choix.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-social-contract-liberty": {
+      "title": "Quand une règle commune limite une liberté pour en protéger d’autres",
+      "hook": "La philosophie politique devient concrète dès qu’une règle commune contraint quelqu’un. La question n’est pas seulement ‘suis-je limité ?’, mais qui décide, au nom de quoi, pour protéger quoi et avec quelles limites au pouvoir.",
+      "practice": "Une résidence interdit le bruit après 23 h. La règle retire une possibilité d’action à ceux qui veulent faire la fête, mais protège le sommeil des autres. Pour juger sa légitimité, il faut regarder la généralité de la règle, la procédure, les exceptions, les recours et l’équilibre entre libertés concurrentes.",
+      "takeaways": [
+        "Une contrainte peut réduire une liberté immédiate tout en sécurisant d’autres libertés.",
+        "Le contrat social est un outil de justification de l’autorité, pas nécessairement le récit d’un contrat historique signé.",
+        "Pouvoir imposer une règle et avoir le droit de l’imposer sont deux questions différentes."
+      ],
+      "quiz": [
+        {
+          "kind": "legitimacy",
+          "q": "Une résidence impose silence après 23 h. Quel élément renforce le plus la légitimité de cette règle ?",
+          "a": "Elle s’applique à tous selon une procédure connue, protège un intérêt commun identifiable et prévoit des exceptions justifiables.",
+          "choices": [
+            "Le gestionnaire peut physiquement sanctionner ceux qui désobéissent.",
+            "La règle n’est jamais discutée parce qu’elle existe depuis longtemps.",
+            "Les personnes les plus bruyantes n’ont pas participé au vote."
+          ],
+          "why": "La force d’exécution ne suffit pas à établir la légitimité ; généralité, justification et procédure comptent.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "liberty",
+          "q": "Pourquoi cette règle n’oppose-t-elle pas simplement ‘liberté’ et ‘absence de liberté’ ?",
+          "a": "Parce qu’elle limite la liberté de faire du bruit tout en protégeant la liberté des autres de dormir et d’utiliser leur logement.",
+          "choices": [
+            "Parce qu’une règle collective ne limite jamais aucune liberté.",
+            "Parce que la liberté ne concerne que les actes politiques.",
+            "Parce que toute majorité transforme automatiquement une contrainte en liberté."
+          ],
+          "why": "Les libertés peuvent entrer en conflit ; une institution doit alors justifier comment elle les organise.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "contract",
+          "q": "Dans une théorie du contrat social, qu’apporte l’idée de consentement hypothétique ou de justification commune ?",
+          "a": "Elle demande sous quelles conditions des personnes libres pourraient reconnaître une autorité comme légitime.",
+          "choices": [
+            "Elle prouve qu’un document historique a réellement été signé par tous les citoyens.",
+            "Elle rend toute contestation ultérieure illégitime.",
+            "Elle signifie que chaque loi doit être approuvée individuellement à l’unanimité."
+          ],
+          "why": "Le contrat est souvent un dispositif de justification, pas une archive historique.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "power",
+          "q": "Un groupe armé impose une règle et tout le monde obéit. Qu’est-ce qui reste à montrer ?",
+          "a": "Pourquoi ce pouvoir aurait une autorité légitime plutôt que la seule capacité de contraindre.",
+          "choices": [
+            "Que les citoyens ont effectivement peur du groupe.",
+            "Que la règle peut être exécutée rapidement.",
+            "Que la règle est formulée dans un langage juridique."
+          ],
+          "why": "L’efficacité coercitive répond à ‘peut-il imposer ?’, pas à ‘a-t-il le droit d’imposer ?’.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "rule-change",
+          "q": "Une exception permanente permet au dirigeant d’ignorer la règle qu’il impose aux autres. Quel problème apparaît ?",
+          "a": "La règle cesse d’être réellement générale et ressemble davantage à l’ordre particulier d’un supérieur.",
+          "choices": [
+            "Une règle devient plus légitime quand elle comporte une exception personnelle pour celui qui la crée.",
+            "L’égalité devant la règle n’a aucun lien possible avec la légitimité politique.",
+            "Le problème porte uniquement sur la longueur du texte réglementaire."
+          ],
+          "why": "Une règle commune est difficile à défendre comme expression collective si elle crée d’emblée un statut arbitrairement supérieur pour son auteur.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-argument-validity": {
+      "title": "Tester la forme d’un raisonnement indépendamment de ce qu’on croit déjà",
+      "hook": "Une conclusion vraie peut être soutenue par un mauvais raisonnement, et un raisonnement valide peut partir de prémisses fausses. La philosophie demande de savoir critiquer exactement la bonne couche.",
+      "practice": "« Tous les poissons sont des mammifères ; tous les mammifères respirent de l’air ; donc tous les poissons respirent de l’air. » Le contenu est faux, mais la conclusion découle bien des prémisses si on les suppose vraies. À l’inverse, « Paris est en France ; donc 2 + 2 = 4 » relie deux vérités sans relation logique pertinente.",
+      "takeaways": [
+        "La validité porte sur ce qui suivrait si les prémisses étaient vraies.",
+        "Une conclusion vraie ne répare pas une inférence invalide.",
+        "Un argument solide exige à la fois une bonne structure et des prémisses suffisamment justifiées."
+      ],
+      "quiz": [
+        {
+          "kind": "validity",
+          "q": "« Tous les A sont B. Tous les B sont C. Donc tous les A sont C. » Que peux-tu dire sans savoir ce que A, B et C désignent ?",
+          "a": "La forme est valide : si les deux prémisses sont vraies, la conclusion doit l’être.",
+          "choices": [
+            "La conclusion est forcément vraie dans le monde réel.",
+            "La forme est invalide tant que A, B et C ne sont pas définis.",
+            "Les prémisses sont automatiquement vraies parce que la forme est valide."
+          ],
+          "why": "La validité est une relation entre prémisses et conclusion, indépendante de la vérité factuelle des termes particuliers.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "true-conclusion",
+          "q": "« Rome est en Italie ; donc 2 + 2 = 4. » Comment évaluer l’argument ?",
+          "a": "La conclusion est vraie mais ne découle pas de la prémisse : l’argument est invalide.",
+          "choices": [
+            "L’argument est valide parce que les deux phrases sont vraies.",
+            "L’argument est solide parce que la conclusion est certaine.",
+            "L’argument devient valide si l’on ajoute davantage de faits vrais sans rapport."
+          ],
+          "why": "Des propositions vraies peuvent être juxtaposées sans former une inférence valide : il faut encore qu’une relation logique relie la prémisse à la conclusion.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "affirming-consequent",
+          "q": "« S’il pleut, la rue est mouillée. La rue est mouillée. Donc il pleut. » Quel problème ?",
+          "a": "La conclusion ne suit pas nécessairement : une autre cause peut avoir mouillé la rue.",
+          "choices": [
+            "La première prémisse est grammaticalement conditionnelle et donc toujours fausse.",
+            "La rue mouillée prouve logiquement qu’il a plu si elle est observée après midi.",
+            "Le raisonnement est valide dès que pluie et rue mouillée sont souvent corrélées."
+          ],
+          "why": "Affirmer le conséquent oublie d’autres chemins possibles vers le même effet : une rue mouillée peut avoir plusieurs causes compatibles avec la prémisse conditionnelle.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "critique",
+          "q": "Tu acceptes les prémisses mais pas l’inférence. Quelle critique est la plus précise ?",
+          "a": "« Même en accordant tes prémisses, ta conclusion peut encore être fausse. »",
+          "choices": [
+            "« Je n’aime pas ta conclusion. »",
+            "« Une de tes phrases est trop longue. »",
+            "« Beaucoup de gens pensent le contraire. »"
+          ],
+          "why": "La critique vise exactement la validité : ce qui suit ou non des prémisses.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "soundness",
+          "q": "Un argument est valide et ses prémisses sont bien établies. Quelle propriété supplémentaire a-t-il ?",
+          "a": "Il est solide au sens logique usuel.",
+          "choices": [
+            "Il devrait convaincre tout interlocuteur rationnel informé ; si quelqu’un résiste encore, le problème vient surtout de sa psychologie.",
+            "Il est cohérent et bien construit, mais le mot « solide » devrait être réservé aux arguments dont la conclusion a été vérifiée indépendamment.",
+            "Il est valide et bien fondé, mais il faudrait encore établir séparément la vérité de la conclusion avant de parler de solidité."
+          ],
+          "why": "La solidité combine validité et prémisses vraies ou suffisamment établies ; elle ne garantit pas l’accord psychologique de tous.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-distinction-necessary-sufficient": {
+      "title": "Nécessaire ou suffisant : tester les deux directions séparément",
+      "hook": "Beaucoup de raisonnements ratent parce qu’ils transforment ‘il faut X’ en ‘X suffit’. La solution n’est pas d’apprendre deux définitions par cœur, mais de chercher le bon contre-exemple dans chaque direction.",
+      "practice": "Avoir un billet valide peut être nécessaire pour entrer dans une salle de concert, sans être suffisant si la salle est évacuée ou si le billet correspond à une autre date. À l’inverse, être un carré suffit pour être un rectangle, mais n’est pas nécessaire : il existe des rectangles non carrés.",
+      "takeaways": [
+        "Pour tester la nécessité de X pour Y, cherche Y sans X.",
+        "Pour tester la suffisance de X pour Y, cherche X sans Y.",
+        "Dans les situations réelles, un facteur peut contribuer à Y sans être strictement nécessaire ni suffisant."
+      ],
+      "quiz": [
+        {
+          "kind": "necessary",
+          "q": "Une licence est exigée pour exercer légalement une profession réglementée, mais il faut aussi remplir d’autres conditions. La licence est alors…",
+          "a": "Nécessaire mais pas suffisante.",
+          "choices": [
+            "Suffisante mais pas nécessaire.",
+            "À la fois suffisante et inutile.",
+            "Ni nécessaire ni liée à l’exercice légal."
+          ],
+          "why": "Sans la licence la condition légale échoue, mais sa présence seule ne garantit pas que toutes les autres exigences soient remplies.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "sufficient",
+          "q": "Dans la géométrie usuelle, être un carré garantit d’être un rectangle. Que peut-on conclure ?",
+          "a": "Être carré est une condition suffisante pour être rectangle, mais pas nécessaire.",
+          "choices": [
+            "Être rectangle est suffisant pour être carré.",
+            "Aucun rectangle ne peut être carré.",
+            "Être carré et être rectangle sont exactement la même propriété."
+          ],
+          "why": "Tous les carrés sont rectangles, mais certains rectangles ne sont pas carrés.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "test-necessary",
+          "q": "Quel cas réfuterait l’affirmation « X est nécessaire à Y » ?",
+          "a": "Un cas réel ou possible où Y est présent alors que X ne l’est pas.",
+          "choices": [
+            "Un cas où X est présent et Y aussi.",
+            "Un cas où X est présent sans Y.",
+            "Un cas où ni X ni Y n’est présent."
+          ],
+          "why": "La nécessité signifie ‘pas de Y sans X’ ; un seul Y sans X suffit donc à la réfuter.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "test-sufficient",
+          "q": "Quel cas réfuterait « X suffit pour Y » ?",
+          "a": "Un cas où X est présent mais Y ne se produit pas.",
+          "choices": [
+            "Un cas où Y apparaît sans X.",
+            "Un cas où X et Y apparaissent ensemble.",
+            "Un cas où X est absent et Y aussi."
+          ],
+          "why": "La suffisance exige que chaque fois que X est donné, Y suive dans le cadre défini.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "causal",
+          "q": "Le manque de sommeil augmente souvent le risque d’erreur mais certaines personnes fatiguées ne se trompent pas et des personnes reposées peuvent se tromper. Quelle formulation est la plus précise ?",
+          "a": "Le manque de sommeil peut être un facteur contributif sans être strictement nécessaire ni suffisant pour chaque erreur.",
+          "choices": [
+            "Le manque de sommeil devient une condition nécessaire dès qu’on se limite aux erreurs liées à l’attention, même si d’autres erreurs ont d’autres causes.",
+            "Le manque de sommeil peut être considéré comme suffisant au niveau statistique, même si certains individus fatigués ne se trompent pas.",
+            "Puisqu’il existe des erreurs sans fatigue et de la fatigue sans erreur, il vaut mieux parler de simple corrélation plutôt que de contribution causale."
+          ],
+          "why": "Les relations probabilistes demandent parfois un vocabulaire plus fin que la seule opposition nécessaire/suffisant.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-socrates-definition": {
+      "title": "Fabriquer une définition qui survit aux cas limites",
+      "hook": "Une définition utile doit être assez large pour inclure les bons cas et assez précise pour exclure les mauvais. Les contre-exemples servent à régler ces deux frontières.",
+      "practice": "« Le courage, c’est ne jamais reculer. » Imagine un pompier qui recule parce qu’un plafond va s’effondrer, puis revient par un autre accès pour sauver une victime. Si tu juges encore son comportement courageux, la définition est trop étroite. Tu peux la réviser autour de l’idée d’affronter un risque pour une raison jugée valable, sans exiger l’absence de tout retrait tactique.",
+      "takeaways": [
+        "Un exemple illustre un concept ; une définition prétend fournir son critère.",
+        "Un cas inclus à tort montre souvent que la définition est trop large ; un bon cas exclu montre qu’elle est trop étroite.",
+        "Réviser une définition consiste à modifier son critère, pas à inventer une exception ad hoc pour chaque contre-exemple."
+      ],
+      "quiz": [
+        {
+          "kind": "too-narrow",
+          "q": "« Être courageux, c’est ne jamais reculer. » Que montre le pompier qui recule devant un effondrement puis revient par un autre accès ?",
+          "a": "La définition paraît trop étroite : elle exclut un comportement qui peut rester courageux.",
+          "choices": [
+            "Le pompier prouve que tout recul est courageux.",
+            "Le cas montre seulement que les bâtiments sont dangereux.",
+            "La définition devient vraie si l’on refuse de juger les intentions."
+          ],
+          "why": "Le cas conserve une conduite courageuse plausible tout en violant le critère ‘ne jamais reculer’.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "too-broad",
+          "q": "« Être courageux, c’est prendre un risque. » Quel cas montre que la définition est trop large ?",
+          "a": "Quelqu’un conduit très vite pour impressionner ses amis sans nécessité particulière.",
+          "choices": [
+            "Un sauveteur entre dans l’eau pour aider une personne en danger.",
+            "Une personne défend publiquement quelqu’un au risque d’être critiquée.",
+            "Un médecin accepte une mission difficile pour soigner des patients."
+          ],
+          "why": "Prendre un risque peut être imprudent ou vain ; le risque seul ne capture pas ce qui rend une action courageuse.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "revision",
+          "q": "Quelle révision améliore le mieux la définition ?",
+          "a": "« Le courage implique d’affronter un risque ou une difficulté pour une raison que l’on peut défendre, sans exiger l’absence de toute prudence. »",
+          "choices": [
+            "« Le courage, c’est tout ce que nous appelons courageux. »",
+            "« Le courage, c’est toujours avancer physiquement. »",
+            "« Le courage est impossible à définir dès qu’un contre-exemple existe. »"
+          ],
+          "why": "La révision répond aux deux problèmes : elle évite d’assimiler tout risque au courage et autorise la prudence tactique.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "example",
+          "q": "Pourquoi « un soldat qui tient sa position » ne suffit-il pas à définir le courage ?",
+          "a": "Parce que le cas ne dit pas encore quel trait commun permet de classer aussi d’autres comportements comme courageux ou non.",
+          "choices": [
+            "Parce qu’aucun soldat ne peut être courageux.",
+            "Parce qu’une définition doit toujours comporter exactement trois exemples.",
+            "Parce qu’un exemple concret est incompatible avec tout concept abstrait."
+          ],
+          "why": "L’exemple peut aider à chercher le critère, mais il ne remplace pas ce critère.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "ad-hoc",
+          "q": "Après chaque contre-exemple, quelqu’un ajoute une exception spécialement faite pour sauver sa définition. Quel problème apparaît ?",
+          "a": "La définition devient ad hoc et n’explique plus par un critère général pourquoi les cas comptent.",
+          "choices": [
+            "La définition devient plus précise à chaque exception ; tant qu’elle classe correctement les nouveaux cas, ce raffinement suffit.",
+            "Le problème vient seulement du nombre d’exceptions ; quelques clauses indépendantes peuvent encore constituer une bonne définition.",
+            "Une définition peut rester explicative même si chaque nouveau cas difficile exige une exception spécifique, à condition de toutes les énumérer."
+          ],
+          "why": "Une bonne révision cherche une règle plus éclairante, pas une liste illimitée de rustines.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-stoic-impressions": {
+      "title": "Entre l’impression qui surgit et le jugement auquel tu consens",
+      "hook": "Le stoïcisme ne prétend pas que la première réaction est choisie. Il s’intéresse au moment suivant : est-ce que tu transformes cette impression en vérité globale, ou est-ce que tu la réexamines avant d’agir ?",
+      "practice": "Tu reçois « On doit parler demain ». L’impression d’inquiétude peut apparaître immédiatement. Mais « je vais être licencié » est déjà une interprétation supplémentaire. Distinguer message, interprétation et action possible ne supprime pas l’émotion ; cela évite de traiter la première histoire produite par l’esprit comme un fait.",
+      "takeaways": [
+        "Une impression peut surgir avant toute décision consciente.",
+        "L’assentiment consiste à adopter l’interprétation comme vraie ou directrice.",
+        "Séparer fait, interprétation et action disponible permet de travailler le jugement sans nier l’événement."
+      ],
+      "quiz": [
+        {
+          "kind": "impression",
+          "q": "Tu lis « On doit parler demain » et tu ressens immédiatement une tension. Quelle distinction est la plus fidèle ?",
+          "a": "La tension peut surgir comme première impression ; « je vais être licencié » ajoute déjà un jugement sur ce que le message signifie.",
+          "choices": [
+            "Les deux sont des faits explicitement écrits dans le message.",
+            "La tension prouve que l’interprétation est correcte.",
+            "Le stoïcisme exige de ne ressentir aucune réaction physique à ce message."
+          ],
+          "why": "Le contenu observable du message est plus limité que le scénario que l’esprit peut immédiatement construire autour de lui.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "assent",
+          "q": "Que serait donner son assentiment à l’impression ?",
+          "a": "Traiter « je vais être licencié » comme vrai et organiser sa réaction à partir de ce verdict.",
+          "choices": [
+            "Constater seulement que le message contient six mots.",
+            "Sentir une accélération du cœur avant d’avoir formulé une pensée.",
+            "Demander calmement quel sera l’objet de la discussion."
+          ],
+          "why": "L’assentiment porte sur l’acceptation du jugement, pas sur l’apparition involontaire d’une première réaction.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "reframe",
+          "q": "Quelle reformulation réduit le moins l’événement tout en séparant fait et interprétation ?",
+          "a": "« Je sais qu’on veut me parler demain ; je ne sais pas encore pourquoi. »",
+          "choices": [
+            "« Tout va forcément très bien. »",
+            "« Ce message n’a aucune importance. »",
+            "« Je suis certain que le pire scénario est le plus réaliste. »"
+          ],
+          "why": "La reformulation ne remplace pas une catastrophe par un optimisme forcé ; elle revient à ce qui est effectivement établi.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "action",
+          "q": "Quelle action suit le mieux cette distinction ?",
+          "a": "Préparer les informations utiles et attendre la conversation avant de conclure sur son contenu.",
+          "choices": [
+            "Envoyer immédiatement sa démission pour reprendre le contrôle.",
+            "Ignorer le rendez-vous puisque la réaction émotionnelle est extérieure.",
+            "Chercher dix interprétations négatives supplémentaires pour être prêt à tout."
+          ],
+          "why": "Le travail sur le jugement sert à mieux agir avec les informations disponibles, pas à éviter toute action.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "emotion",
+          "q": "Pourquoi dire « le stoïcisme consiste à ne rien ressentir » est-il trompeur ?",
+          "a": "Parce qu’il distingue les premières impressions et le travail d’assentiment plutôt que de supposer toute réaction initiale volontaire.",
+          "choices": [
+            "Parce que les stoïciens cherchent surtout à remplacer les émotions négatives par des émotions positives avant de décider comment agir.",
+            "Parce qu’ils séparent totalement émotion et jugement : seule la conduite extérieure aurait une importance philosophique.",
+            "Parce que leur objectif principal serait de réduire l’intensité des émotions, le jugement n’intervenant qu’ensuite dans le choix de l’action."
+          ],
+          "why": "La pratique porte sur l’évaluation et la conduite, pas sur une commande magique qui empêcherait toute réaction de surgir.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-descartes-cogito": {
+      "title": "Comprendre exactement ce que le cogito établit — et ce qu’il n’établit pas",
+      "hook": "Le cogito est puissant parce qu’il est étroit. Au moment même où je doute, l’acte de douter rend impossible la négation totale de mon existence comme être pensant ; le reste doit encore être reconstruit.",
+      "practice": "Imagine qu’un trompeur fausse chacune de tes perceptions. Même cette hypothèse suppose qu’il y a quelque chose qui est trompé, doute ou pense. Mais elle ne te donne encore ni la forme de ton corps, ni la fiabilité de ta mémoire, ni la structure du monde extérieur. Le bon exercice consiste donc autant à limiter la conclusion qu’à la comprendre.",
+      "takeaways": [
+        "Le doute performe lui-même l’activité qui rend le cogito certain au moment où il a lieu.",
+        "Le cogito établit d’abord l’existence comme sujet pensant, pas l’existence détaillée du monde perçu.",
+        "Une conclusion philosophique forte peut être vraie tout en dépassant ce que l’argument présent a réellement démontré."
+      ],
+      "quiz": [
+        {
+          "kind": "performative",
+          "q": "Pourquoi l’hypothèse « je n’existe pas pendant que je doute » s’effondre-t-elle dans l’exercice cartésien ?",
+          "a": "Parce que l’acte même de douter manifeste une activité de pensée au moment où la négation est formulée.",
+          "choices": [
+            "Parce que toute phrase à la première personne est vraie.",
+            "Parce que le corps est déjà garanti par les sensations.",
+            "Parce qu’un trompeur ne pourrait jamais produire de pensée fausse."
+          ],
+          "why": "Le point est réflexif : tenter de nier toute existence pensante exige déjà l’activité dont on nie l’existence.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "scope",
+          "q": "Quelle conclusion est immédiatement la mieux soutenue ?",
+          "a": "« J’existe au moins comme être pensant au moment où je pense. »",
+          "choices": [
+            "« Mon corps possède certainement toutes les propriétés que je lui attribue. »",
+            "« Le monde extérieur existe exactement comme il apparaît. »",
+            "« Tous mes souvenirs sont fiables parce que je peux y penser. »"
+          ],
+          "why": "La force du cogito tient à sa portée minimale et difficile à nier, non à une restauration instantanée de tout le savoir.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "overreach",
+          "q": "Quel raisonnement commet un saut injustifié ?",
+          "a": "« Je suis certain que je pense ; donc je suis certain que la table devant moi existe telle que je la perçois. »",
+          "choices": [
+            "« Je suis certain qu’une pensée a lieu pendant que je doute. »",
+            "« Il faut un argument supplémentaire pour rétablir la confiance dans certaines perceptions. »",
+            "« Le cogito ne suffit pas seul à garantir mes souvenirs. »"
+          ],
+          "why": "La certitude de l’acte de penser et la fiabilité d’une perception extérieure sont deux étapes distinctes.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "evil-demon",
+          "q": "À quoi sert l’hypothèse du trompeur dans cette étape ?",
+          "a": "À pousser le scénario d’erreur assez loin pour tester s’il reste une certitude indépendante du contenu de mes perceptions.",
+          "choices": [
+            "À démontrer l’existence réelle d’un démon.",
+            "À montrer que toute erreur vient nécessairement d’un agent malveillant.",
+            "À prouver que les perceptions sont sans intérêt pratique."
+          ],
+          "why": "Le trompeur est un dispositif de pensée radicalisant le doute, pas une découverte empirique.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "next-step",
+          "q": "Après le cogito, que faudrait-il pour conclure davantage sur le monde ?",
+          "a": "De nouveaux arguments qui justifient les étapes supplémentaires au lieu de les inclure tacitement dans le cogito.",
+          "choices": [
+            "Répéter ‘je pense’ assez souvent pour rendre toutes les perceptions certaines.",
+            "Supposer que toute croyance antérieure redevient automatiquement vraie.",
+            "Changer de vocabulaire sans fournir de nouvelle raison."
+          ],
+          "why": "Une conclusion supplémentaire doit recevoir son propre soutien argumentatif : la certitude du cogito ne transporte pas automatiquement avec elle la fiabilité du monde extérieur.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-hume-induction": {
+      "title": "Pourquoi le passé guide nos attentes sans démontrer le futur",
+      "hook": "Nous projetons sans cesse des régularités : le soleil se lèvera, le feu chauffera, un médicament similaire agira probablement pareil. Hume demande ce qui justifie logiquement cette projection sans déjà supposer que le futur ressemble au passé.",
+      "practice": "Tu as utilisé cinquante fois une clé et elle a toujours ouvert la porte. Attendre qu’elle fonctionne demain est parfaitement raisonnable en pratique. Mais la phrase « elle a toujours fonctionné, donc elle fonctionnera nécessairement demain » ajoute une nécessité que les observations passées ne contiennent pas. Le problème philosophique porte sur cette justification, pas sur l’abandon de toute anticipation.",
+      "takeaways": [
+        "L’induction projette des régularités observées au-delà des cas déjà vus.",
+        "La réussite passée de l’induction ne justifie pas non circulairement le principe d’induction si elle est elle-même utilisée comme argument inductif.",
+        "Le problème est épistémologique : comment justifier nos attentes, pas comment vivre sans aucune attente."
+      ],
+      "quiz": [
+        {
+          "kind": "projection",
+          "q": "Une clé a ouvert la porte chaque jour pendant un an. Quelle affirmation va au-delà des observations ?",
+          "a": "« Elle ouvrira nécessairement la porte demain. »",
+          "choices": [
+            "« Elle a ouvert la porte à chacune des observations rapportées. »",
+            "« Son historique donne une raison pratique de s’attendre à ce qu’elle fonctionne encore. »",
+            "« Une panne future reste logiquement possible. »"
+          ],
+          "why": "Le mot ‘nécessairement’ transforme une régularité passée en garantie du futur, alors que les observations rapportées n’établissent qu’un historique de réussite.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "circularity",
+          "q": "Pourquoi « l’induction a été fiable jusqu’ici, donc elle sera fiable demain » pose-t-il problème comme justification ultime ?",
+          "a": "Parce qu’il utilise déjà un raisonnement inductif pour défendre la fiabilité future de l’induction.",
+          "choices": [
+            "Parce qu’un raisonnement ne peut jamais parler de sa propre méthode.",
+            "Parce que toute observation passée est forcément fausse.",
+            "Parce que l’induction et la déduction sont exactement le même type d’inférence."
+          ],
+          "why": "L’argument présuppose le type de projection dont il cherche justement à établir la légitimité.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "deduction",
+          "q": "Quelle différence est correcte ?",
+          "a": "Une déduction valide préserve nécessairement la vérité des prémisses vers la conclusion ; une induction peut être forte sans garantir sa conclusion.",
+          "choices": [
+            "Une induction garantit toujours le futur si elle contient beaucoup de cas.",
+            "Une déduction est seulement une induction avec moins d’observations.",
+            "Une déduction dépend toujours d’une habitude psychologique produite par répétition."
+          ],
+          "why": "La force logique d’une déduction valide et la force probabiliste d’une induction ne sont pas du même ordre.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "practical",
+          "q": "Hume conclut-il qu’il faut cesser de prévoir ?",
+          "a": "Non : il explique notamment que l’habitude rend ces attentes naturelles, tout en distinguant cette pratique d’une démonstration logique du futur.",
+          "choices": [
+            "Oui : toute anticipation devient irrationnelle et doit être supprimée.",
+            "Oui : seules les mathématiques permettent encore une action pratique.",
+            "Non : parce que le futur est en réalité déductivement garanti par le passé."
+          ],
+          "why": "Le problème de justification n’est pas une prescription de paralysie quotidienne : Hume distingue la pratique naturelle de l’anticipation et sa justification logique ultime.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "science",
+          "q": "Une théorie prédit correctement cent expériences. Quelle attitude respecte le problème de l’induction ?",
+          "a": "Considérer ce succès comme une forte raison empirique de confiance sans le transformer en preuve logique qu’aucune expérience future ne pourra diverger.",
+          "choices": [
+            "Considérer qu’après un grand nombre de confirmations, la théorie franchit un seuil où sa réussite future devient logiquement certaine.",
+            "Refuser d’augmenter sa confiance tant qu’on ne possède pas une déduction indépendante de toute expérience passée.",
+            "Utiliser les cent succès pour conclure que le même taux de réussite se maintiendra nécessairement dans toutes les expériences comparables."
+          ],
+          "why": "Le scepticisme humeien sur la nécessité logique n’empêche pas une confiance empirique graduée.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-ethics-frameworks": {
+      "title": "Faire varier le cadre moral pour voir ce qui change vraiment",
+      "hook": "Conséquences, devoirs et vertus ne sont pas trois réponses pré-écrites : ce sont trois focales qui posent des questions différentes au même cas. Les comparer permet de voir d’où vient réellement le désaccord.",
+      "practice": "Un collègue a commis une petite erreur et te demande de la cacher. Une approche par les conséquences regarde les effets du mensonge et de l’aveu ; une approche déontologique demande quels devoirs d’honnêteté ou de responsabilité sont engagés ; une approche des vertus s’interroge sur le caractère d’une conduite loyale mais aussi courageuse et juste. Les cadres peuvent converger ou entrer en tension.",
+      "takeaways": [
+        "Changer de cadre moral change la question principale posée au cas, pas nécessairement la réponse finale.",
+        "Deux cadres différents peuvent parfois recommander la même action pour des raisons différentes.",
+        "Comparer les cadres évite de changer silencieusement de critère uniquement quand le résultat nous déplaît."
+      ],
+      "quiz": [
+        {
+          "kind": "consequence",
+          "q": "Ton collègue te demande de cacher une erreur bénigne. Quelle question appartient d’abord à une analyse des conséquences ?",
+          "a": "Quels effets probables auront le mensonge ou l’aveu pour les personnes concernées et pour la confiance dans l’équipe ?",
+          "choices": [
+            "Quel devoir d’honnêteté s’applique indépendamment du bénéfice attendu ?",
+            "Quel type de collègue veux-je devenir en agissant ainsi ?",
+            "La règle ‘ne mens jamais’ pourrait-elle me contraindre même si mentir aide ici ?"
+          ],
+          "why": "La focale porte sur les résultats comparés des options et oblige à regarder qui bénéficie, qui supporte les coûts et avec quelle probabilité.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "duty",
+          "q": "Quelle question est la plus déontologique ?",
+          "a": "Ai-je un devoir de vérité ou de responsabilité que je ne peux pas simplement écarter parce qu’un mensonge serait commode ?",
+          "choices": [
+            "Quel choix produit le plus grand bénéfice total ?",
+            "Quelle émotion me fera paraître le plus sympathique ?",
+            "Quel trait de caractère mon équipe admire le plus souvent ?"
+          ],
+          "why": "La déontologie examine les obligations et limites qui structurent l’action, notamment ce qu’un devoir interdit de sacrifier même pour un résultat avantageux.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "virtue",
+          "q": "Quelle question relève le plus clairement d’une éthique des vertus ?",
+          "a": "Que ferait ici une personne honnête, loyale et courageuse, et comment arbitrer entre ces traits s’ils tirent différemment ?",
+          "choices": [
+            "Quel choix maximise mécaniquement un score de conséquences ?",
+            "Quelle règle contractuelle est écrite dans le règlement de l’entreprise ?",
+            "Combien de personnes sont statistiquement favorables à l’aveu ?"
+          ],
+          "why": "L’éthique des vertus réfléchit aux dispositions de caractère et à leur mise en œuvre prudente dans la situation.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "convergence",
+          "q": "Les trois cadres recommandent finalement d’avouer l’erreur. Que peut-on en conclure ?",
+          "a": "Ils peuvent converger sur l’action tout en la justifiant par des raisons différentes.",
+          "choices": [
+            "Ils deviennent alors une seule et même théorie morale.",
+            "Le cadre moral n’a donc jamais aucune importance.",
+            "Une réponse identique prouve que toutes les prémisses des trois cadres sont identiques."
+          ],
+          "why": "Même verdict ne signifie pas même structure de justification : deux cadres peuvent recommander la même action pour des raisons philosophiquement différentes.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "switching",
+          "q": "Quel comportement affaiblit le plus une discussion morale ?",
+          "a": "Changer de critère à chaque exemple uniquement pour préserver le verdict qu’on voulait déjà obtenir.",
+          "choices": [
+            "Dire explicitement qu’un nouveau fait rend un autre critère pertinent.",
+            "Comparer ce qu’impliquent deux cadres concurrents.",
+            "Reconnaître qu’un cas difficile produit une tension entre plusieurs raisons."
+          ],
+          "why": "Le problème n’est pas de changer d’avis, mais de déplacer invisiblement la règle du jeu pour immuniser sa conclusion.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    },
+    "philo-social-contract-comparison": {
+      "title": "Hobbes, Locke, Rousseau : comparer les problèmes plutôt que mémoriser trois fiches",
+      "hook": "Les trois auteurs parlent d’autorité politique, mais pas avec le même problème central. Les comparer par situations permet de comprendre ce que chaque théorie cherche à protéger ou à résoudre.",
+      "practice": "Imagine successivement trois crises : une société plongée dans l’insécurité où aucune règle n’est garantie ; un gouvernement stable qui confisque arbitrairement les biens ; une cité où une faction utilise la loi pour ses intérêts particuliers. Hobbes, Locke et Rousseau ne mettent pas le même danger au premier plan. C’est cette différence de problème qu’il faut savoir mobiliser.",
+      "takeaways": [
+        "Hobbes met au premier plan la sécurité et la puissance commune capable de sortir du conflit.",
+        "Locke insiste sur les droits que le gouvernement doit protéger et sur les limites de l’autorité.",
+        "Rousseau demande comment obéir à une loi commune peut rester compatible avec la liberté politique et l’intérêt général."
+      ],
+      "quiz": [
+        {
+          "kind": "hobbes",
+          "q": "Une région n’a plus d’autorité commune : groupes rivaux, peur constante, accords impossibles à faire respecter. Quelle problématique est la plus hobbesienne ?",
+          "a": "Comment établir une puissance commune assez forte pour rendre la sécurité et les engagements possibles ?",
+          "choices": [
+            "Comment empêcher un gouvernement déjà stable d’empiéter sur des droits protégés ?",
+            "Comment distinguer volonté générale et intérêt particulier d’une faction ?",
+            "Comment organiser prioritairement la séparation entre propriété privée et création artistique ?"
+          ],
+          "why": "Le scénario met au premier plan le problème de l’insécurité sans puissance commune.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "locke",
+          "q": "Le pays est stable, mais le gouvernement saisit arbitrairement les biens et interdit tout recours. Quelle critique est la plus lockéenne ?",
+          "a": "Un pouvoir institué pour protéger des droits perd sa justification lorsqu’il les viole arbitrairement.",
+          "choices": [
+            "Toute autorité est illégitime dès qu’elle édicte la moindre contrainte.",
+            "La seule question politique pertinente est de savoir si le gouvernement peut maintenir l’ordre.",
+            "La confiscation devient légitime dès qu’une majorité momentanée l’approuve."
+          ],
+          "why": "Locke lie la légitimité du gouvernement à la protection de droits et à des limites du pouvoir.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "rousseau",
+          "q": "Une majorité adopte une loi qui accorde un privilège permanent uniquement à ses propres membres. Quelle interrogation est la plus rousseauiste ?",
+          "a": "Cette décision exprime-t-elle réellement une règle générale orientée vers l’intérêt commun ou seulement la volonté particulière d’un groupe ?",
+          "choices": [
+            "La loi est-elle assez sévère pour produire l’obéissance par peur ?",
+            "Le privilège existait-il déjà avant la création du gouvernement ?",
+            "La décision protège-t-elle uniquement le droit de propriété de la majorité ?"
+          ],
+          "why": "Rousseau distingue l’agrégation d’intérêts particuliers d’une volonté générale portant sur le commun.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "liberty",
+          "q": "Quelle différence est la plus fidèle entre ces problématiques ?",
+          "a": "Elles cherchent toutes une autorité légitime, mais donnent des rôles différents à sécurité, droits individuels et participation à la loi commune.",
+          "choices": [
+            "Elles défendent exactement le même État pour exactement les mêmes raisons.",
+            "Hobbes ne s’intéresse jamais à la paix, Locke jamais aux droits et Rousseau jamais à la liberté.",
+            "Leur seule différence est le siècle où leurs textes ont été écrits."
+          ],
+          "why": "Comparer les problèmes évite de réduire les théories à trois slogans indépendants.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        },
+        {
+          "kind": "diagnosis",
+          "q": "Une société est sûre et les droits sont juridiquement protégés, mais les citoyens vivent la loi comme l’ordre d’un groupe séparé auquel ils ne participent jamais. Quel axe devient particulièrement saillant ?",
+          "a": "La question rousseauiste de la liberté politique et du rapport entre citoyens et loi commune.",
+          "choices": [
+            "Le problème reste surtout hobbesien : sans participation directe des citoyens, l’ordre politique retombe vers une simple relation de domination.",
+            "Le problème devient surtout lockéen : l’absence de participation suffit à montrer que les droits individuels ne sont plus réellement protégés.",
+            "Si la sécurité et les droits sont garantis, la question essentielle de la légitimité est déjà réglée ; la participation politique est secondaire."
+          ],
+          "why": "La stabilité et certains droits ne répondent pas à toutes les conceptions de la légitimité ; le rapport à l’auto-législation reste une question distincte.",
+          "trap": "Les distracteurs correspondent à des raisonnements plausibles mais déplacent une prémisse, le critère ou la portée de la conclusion.",
+          "evidence": "Demande-toi exactement ce que les raisons permettent de conclure, puis cherche ce qui ferait échouer le raisonnement."
+        }
+      ]
+    }
+  },
+  "labs": [
+    {
+      "id": "philo38-lab-argument",
+      "title": "Renforcer avant de réfuter",
+      "context": "Une équipe veut supprimer une réunion hebdomadaire parce qu’elle prend du temps et produit peu de décisions.",
+      "prompt": "Quelle réponse constitue la meilleure objection ?",
+      "choices": [
+        {
+          "text": "« Certaines équipes utilisent cette réunion pour traiter des problèmes transversaux qu’aucun autre canal ne prend en charge. »",
+          "correct": true,
+          "feedback": "Oui : elle cible une fonction que la thèse risque d’ignorer."
+        },
+        {
+          "text": "« Les réunions sont toujours pénibles. »",
+          "correct": false,
+          "feedback": "Cela renforce plutôt la conclusion au lieu de l’objecter."
+        },
+        {
+          "text": "« Le manager qui propose cela aime trop les e-mails. »",
+          "correct": false,
+          "feedback": "Cela attaque une personne supposée, pas le raisonnement."
+        }
+      ],
+      "takeaway": "Une objection forte montre ce que l’argument explique mal ou oublie.",
+      "productionPrompt": "Écris en deux phrases la thèse de l’équipe puis une version améliorée qui répond à l’objection sans abandonner tout le projet.",
+      "modelResponse": "Thèse : la réunion devrait disparaître car son coût dépasse son utilité. Réponse améliorée : supprimons-la sauf lorsqu’un problème transversal exige réellement un échange synchrone.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-factvalue",
+      "title": "Trouver la prémisse cachée",
+      "context": "Une ville constate que les voitures représentent 60 % des trajets du centre. Quelqu’un conclut : « donc il faut interdire les voitures ».",
+      "prompt": "Quelle phrase rendrait explicite la prémisse normative ?",
+      "choices": [
+        {
+          "text": "« Quand un mode de transport crée des coûts collectifs importants et qu’une alternative raisonnable existe, la ville peut légitimement le restreindre. »",
+          "correct": true,
+          "feedback": "Oui : elle relie un constat à une règle normative discutable."
+        },
+        {
+          "text": "« Les voitures représentent 60 % des trajets. »",
+          "correct": false,
+          "feedback": "C’est une répétition du fait, pas la règle qui produit le “il faut”."
+        },
+        {
+          "text": "« Beaucoup de villes ont un centre-ville. »",
+          "correct": false,
+          "feedback": "Ce fait ne relie pas les données à la conclusion."
+        }
+      ],
+      "takeaway": "Un passage du fait à la norme a besoin d’un principe normatif, explicite ou caché.",
+      "productionPrompt": "Invente un exemple quotidien avec un fait, puis un « donc il faut… ». Ajoute ensuite la prémisse normative qui manquait.",
+      "modelResponse": "Fait : ce service répond rarement en moins de 48 h. Conclusion : il faut annoncer un délai de 48 h. Prémisse : un service doit annoncer un délai réaliste plutôt que promettre ce qu’il ne tient pas.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-socratic",
+      "title": "Casser puis réparer une définition",
+      "context": "On propose : « être généreux, c’est donner beaucoup d’argent ».",
+      "prompt": "Quel cas constitue le meilleur contre-exemple ?",
+      "choices": [
+        {
+          "text": "Une personne modeste donne régulièrement du temps et de l’aide au prix d’un réel effort personnel.",
+          "correct": true,
+          "feedback": "Oui : le cas paraît généreux sans remplir le critère monétaire."
+        },
+        {
+          "text": "Une personne riche fait un don important à une association.",
+          "correct": false,
+          "feedback": "Ce cas confirme plutôt la définition."
+        },
+        {
+          "text": "Une personne ne donne rien et refuse toute aide.",
+          "correct": false,
+          "feedback": "Il n’attaque pas la frontière de la définition."
+        }
+      ],
+      "takeaway": "Un bon contre-exemple force la définition à expliquer un cas qu’elle classe mal.",
+      "productionPrompt": "Propose une meilleure définition de la générosité qui survive au contre-exemple sans devenir vague.",
+      "modelResponse": "La générosité consiste à consacrer volontairement une part significative de ses ressources — argent, temps ou effort — au bénéfice d’autrui sans réduire le concept au montant donné.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-control",
+      "title": "Contrôle, influence, résultat",
+      "context": "Tu présentes un projet devant un jury.",
+      "prompt": "Quelle formulation est la plus précise ?",
+      "choices": [
+        {
+          "text": "« Je contrôle ma préparation et mes réponses ; je peux influencer le jury, mais pas posséder sa décision finale. »",
+          "correct": true,
+          "feedback": "Oui : les trois niveaux sont distingués."
+        },
+        {
+          "text": "« Si je prépare assez bien, je contrôle forcément la note. »",
+          "correct": false,
+          "feedback": "Une bonne préparation influence le résultat sans le garantir."
+        },
+        {
+          "text": "« Puisque la note ne dépend pas entièrement de moi, préparer ne sert pas. »",
+          "correct": false,
+          "feedback": "Ne pas contrôler un résultat n’annule pas l’influence de l’action."
+        }
+      ],
+      "takeaway": "Ne transforme ni l’influence en contrôle, ni l’absence de contrôle en passivité.",
+      "productionPrompt": "Écris trois lignes pour un événement à venir : ce que tu contrôles, ce que tu influences, ce que tu ne contrôles pas.",
+      "modelResponse": "Contrôle : préparer mon intervention. Influence : rendre mon argument clair. Hors contrôle : les priorités et la décision finale du jury.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-doubt",
+      "title": "Stress-test d’une croyance",
+      "context": "Ton application météo annonce de la pluie à 18 h.",
+      "prompt": "Quelle attitude correspond au doute méthodique sans caricature ?",
+      "choices": [
+        {
+          "text": "« Je peux tester les raisons de lui faire confiance et imaginer des erreurs possibles sans conclure que la prévision est fausse. »",
+          "correct": true,
+          "feedback": "Oui : le doute teste la justification sans transformer la possibilité d’erreur en certitude d’erreur."
+        },
+        {
+          "text": "« Toute prévision est fausse tant qu’elle n’est pas absolument certaine. »",
+          "correct": false,
+          "feedback": "Cela confond doute méthodique et scepticisme pratique total."
+        },
+        {
+          "text": "« Une application populaire est indubitable. »",
+          "correct": false,
+          "feedback": "La popularité ne crée pas de certitude absolue."
+        }
+      ],
+      "takeaway": "Le doute cartésien hiérarchise les certitudes ; il ne rend pas toute croyance ordinaire inutilisable.",
+      "productionPrompt": "Choisis une croyance banale et écris : raison de confiance / erreur possible / ce qui resterait certain si elle était fausse.",
+      "modelResponse": "Mon téléphone indique 18 h. Confiance : synchronisation réseau. Erreur possible : mauvais fuseau. Même s’il se trompe, il reste certain que je vois actuellement un affichage que j’interprète comme une heure.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-causality",
+      "title": "Corrélation ou cause ?",
+      "context": "Les jours de forte chaleur, les urgences liées à la baignade et les ventes de boissons augmentent.",
+      "prompt": "Quelle hypothèse faut-il tester avant de dire que les boissons causent les urgences ?",
+      "choices": [
+        {
+          "text": "La chaleur peut augmenter séparément les deux phénomènes.",
+          "correct": true,
+          "feedback": "Oui : une cause commune peut produire la corrélation."
+        },
+        {
+          "text": "Les deux séries utilisent des nombres et sont donc causalement liées.",
+          "correct": false,
+          "feedback": "Le format numérique ne crée aucun lien causal."
+        },
+        {
+          "text": "Une corrélation répétée suffit toujours à fixer la direction de la cause.",
+          "correct": false,
+          "feedback": "La direction et les variables cachées restent à examiner."
+        }
+      ],
+      "takeaway": "Une régularité est une piste ; la causalité demande une enquête supplémentaire.",
+      "productionPrompt": "Donne un exemple de corrélation quotidienne et propose une troisième variable qui pourrait expliquer les deux phénomènes.",
+      "modelResponse": "Je dors moins les jours où je bois plus de café et je suis moins concentré. Le stress peut à la fois réduire mon sommeil, augmenter le café et diminuer ma concentration.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-dilemma",
+      "title": "Nommer les raisons en conflit",
+      "context": "Tu as promis de garder un secret, mais ce secret révèle un danger sérieux pour quelqu’un.",
+      "prompt": "Quelle description du dilemme est la plus honnête ?",
+      "choices": [
+        {
+          "text": "« Une obligation de confidentialité entre en conflit avec une raison forte de prévenir un dommage grave. »",
+          "correct": true,
+          "feedback": "Oui : les deux raisons sont conservées au lieu d’en effacer une."
+        },
+        {
+          "text": "« Toute promesse disparaît dès qu’elle devient difficile. »",
+          "correct": false,
+          "feedback": "Cela résout le cas en supprimant arbitrairement une des raisons."
+        },
+        {
+          "text": "« Une promesse doit toujours être tenue, donc le danger n’a aucune pertinence. »",
+          "correct": false,
+          "feedback": "Cela immunise une règle contre le conflit au lieu de l’examiner."
+        }
+      ],
+      "takeaway": "Un dilemme est plus clair quand on formule les deux raisons sérieuses avant de trancher.",
+      "productionPrompt": "Écris une réponse de trois phrases : ton choix, le critère principal et l’information qui pourrait te faire changer d’avis.",
+      "modelResponse": "Je préviendrais la personne menacée, car la gravité et l’imminence du dommage l’emportent ici sur la confidentialité. Si le danger se révélait fictif ou déjà écarté, je réévaluerais ce choix.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-liberty",
+      "title": "Une règle, deux libertés",
+      "context": "Une copropriété limite le bruit après 23 h.",
+      "prompt": "Quelle analyse est la plus complète ?",
+      "choices": [
+        {
+          "text": "« La règle limite certaines actions mais protège aussi l’usage paisible du logement ; sa légitimité dépend notamment de sa généralité, de sa justification et de la procédure. »",
+          "correct": true,
+          "feedback": "Oui : contrainte et protection sont examinées ensemble."
+        },
+        {
+          "text": "« Toute limitation d’une action est nécessairement incompatible avec la liberté. »",
+          "correct": false,
+          "feedback": "Cela ignore les conflits entre libertés."
+        },
+        {
+          "text": "« La règle est légitime uniquement parce qu’elle peut être sanctionnée. »",
+          "correct": false,
+          "feedback": "Le pouvoir d’exécution ne suffit pas à fonder l’autorité."
+        }
+      ],
+      "takeaway": "La philosophie politique demande comment justifier la contrainte, pas seulement si elle existe.",
+      "productionPrompt": "Propose une règle collective banale et donne une raison pour elle, puis une limite ou exception qui éviterait qu’elle devienne arbitraire.",
+      "modelResponse": "Règle : pas de musique forte après 23 h pour protéger le repos. Limite : exceptions annoncées pour certains événements, avec un niveau sonore et un horaire maximum communs à tous.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-validity",
+      "title": "Changer les mots, garder la forme",
+      "context": "Tous les norps sont des lumes. Tous les lumes sont des veks. Donc tous les norps sont des veks.",
+      "prompt": "Que peux-tu déjà juger ?",
+      "choices": [
+        {
+          "text": "La forme est valide même sans savoir ce que les mots inventés désignent.",
+          "correct": true,
+          "feedback": "Oui : la relation logique suffit à tester cette structure."
+        },
+        {
+          "text": "L’argument est faux parce que “norp” n’existe pas.",
+          "correct": false,
+          "feedback": "La vérité des termes n’est pas nécessaire pour tester la forme."
+        },
+        {
+          "text": "La conclusion est vraie dans le monde réel.",
+          "correct": false,
+          "feedback": "La validité n’établit pas la vérité factuelle des prémisses inventées."
+        }
+      ],
+      "takeaway": "La validité se teste en supposant les prémisses vraies puis en demandant si la conclusion pourrait encore être fausse.",
+      "productionPrompt": "Crée un argument valide avec une prémisse manifestement fausse, puis explique en une phrase pourquoi il reste valide.",
+      "modelResponse": "Tous les chats sont des reptiles ; Félix est un chat ; donc Félix est un reptile. Il est valide parce que la conclusion suivrait nécessairement si les prémisses étaient vraies, même si l’une est fausse en réalité.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-necessary",
+      "title": "Tester les deux directions",
+      "context": "Être carré suffit pour être rectangle.",
+      "prompt": "Quel contre-exemple testerait l’idée que « carré » est aussi nécessaire pour être rectangle ?",
+      "choices": [
+        {
+          "text": "Un rectangle qui n’est pas carré.",
+          "correct": true,
+          "feedback": "Oui : Y sans X réfute la nécessité de X pour Y."
+        },
+        {
+          "text": "Un carré qui est aussi rectangle.",
+          "correct": false,
+          "feedback": "Cela confirme la suffisance sans tester la nécessité."
+        },
+        {
+          "text": "Une figure qui n’est ni carré ni rectangle.",
+          "correct": false,
+          "feedback": "Elle ne touche pas à la relation proposée."
+        }
+      ],
+      "takeaway": "Pour la nécessité, cherche Y sans X ; pour la suffisance, cherche X sans Y.",
+      "productionPrompt": "Choisis une condition de la vie quotidienne et écris deux phrases : est-elle nécessaire ? est-elle suffisante ? Justifie chacune avec un cas.",
+      "modelResponse": "Avoir un billet valide est généralement nécessaire pour entrer au concert, mais pas suffisant si la salle est évacuée ou si le billet est pour une autre date.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-definition",
+      "title": "Trop large ou trop étroite ?",
+      "context": "Définition : « le courage, c’est prendre un risque ».",
+      "prompt": "Quel cas montre le mieux que la définition est trop large ?",
+      "choices": [
+        {
+          "text": "Conduire dangereusement pour impressionner ses amis.",
+          "correct": true,
+          "feedback": "Oui : il y a risque sans courage évident."
+        },
+        {
+          "text": "Entrer dans l’eau pour secourir quelqu’un.",
+          "correct": false,
+          "feedback": "Ce cas peut illustrer le courage."
+        },
+        {
+          "text": "Prendre la parole pour défendre une personne injustement attaquée.",
+          "correct": false,
+          "feedback": "Ce cas peut également compter comme courageux."
+        }
+      ],
+      "takeaway": "Un bon critère doit exclure les cas qui possèdent un trait superficiel sans posséder le concept étudié.",
+      "productionPrompt": "Réécris la définition en ajoutant le critère qui manque, puis cherche toi-même un nouveau cas limite.",
+      "modelResponse": "Le courage consiste à affronter lucidement un risque ou une difficulté pour une raison défendable. Cas limite : prendre un risque sportif extrême pour soi-même — courage, goût du risque, ou les deux ?",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-assent",
+      "title": "Le message et l’histoire qu’on se raconte",
+      "context": "Tu reçois « On doit parler demain ».",
+      "prompt": "Quelle phrase distingue le mieux fait et jugement ?",
+      "choices": [
+        {
+          "text": "« Je sais qu’on veut me parler demain ; “je vais être licencié” est une interprétation supplémentaire. »",
+          "correct": true,
+          "feedback": "Oui : l’information certaine est séparée du scénario ajouté."
+        },
+        {
+          "text": "« Mon inquiétude prouve que le licenciement est probable. »",
+          "correct": false,
+          "feedback": "Une émotion n’établit pas la vérité de son interprétation."
+        },
+        {
+          "text": "« Si je suis stoïcien, le message ne doit produire aucune première réaction. »",
+          "correct": false,
+          "feedback": "La doctrine distingue l’impression de l’assentiment ; elle ne suppose pas toute réaction initiale choisie."
+        }
+      ],
+      "takeaway": "La première impression peut surgir ; la pratique porte sur le jugement auquel on décide ensuite de consentir.",
+      "productionPrompt": "Écris un fait observable qui t’inquiéterait, puis deux interprétations différentes et une action possible avant de savoir laquelle est vraie.",
+      "modelResponse": "Fait : mon responsable annule notre réunion. Interprétation 1 : mon projet est abandonné. Interprétation 2 : son planning a changé. Action : demander quand reprogrammer sans conclure avant sa réponse.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-cogito",
+      "title": "Ne pas sur-vendre une certitude",
+      "context": "Suppose que toutes tes perceptions extérieures puissent être trompeuses.",
+      "prompt": "Quelle conclusion reste la mieux protégée ?",
+      "choices": [
+        {
+          "text": "« Au moment où je doute, une activité de pensée a lieu et je ne peux nier totalement mon existence comme être pensant. »",
+          "correct": true,
+          "feedback": "Oui : c’est la portée minimale du cogito."
+        },
+        {
+          "text": "« Donc chaque objet que je perçois existe exactement comme je le vois. »",
+          "correct": false,
+          "feedback": "Cela dépasse ce que le cogito établit."
+        },
+        {
+          "text": "« Donc mes souvenirs sont tous fiables. »",
+          "correct": false,
+          "feedback": "La mémoire exige une justification supplémentaire."
+        }
+      ],
+      "takeaway": "Une bonne lecture du cogito consiste autant à limiter sa conclusion qu’à l’affirmer.",
+      "productionPrompt": "Écris une conclusion que le cogito permet, puis une conclusion plausible qu’il ne permet pas encore.",
+      "modelResponse": "Permet : j’existe au moins comme sujet pensant pendant que je pense. Ne permet pas encore : mon corps et le monde extérieur sont exactement tels que je les perçois.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-induction",
+      "title": "Le futur n’est pas contenu dans la liste du passé",
+      "context": "La même clé a ouvert la porte 200 fois.",
+      "prompt": "Quelle affirmation est la plus rigoureuse ?",
+      "choices": [
+        {
+          "text": "« Cela donne une forte raison pratique d’attendre qu’elle fonctionne encore, sans démontrer qu’elle fonctionnera nécessairement demain. »",
+          "correct": true,
+          "feedback": "Oui : confiance empirique et nécessité logique sont séparées."
+        },
+        {
+          "text": "« Deux cents succès rendent une panne future logiquement impossible. »",
+          "correct": false,
+          "feedback": "Une série finie ne contient pas déductivement tous les cas futurs."
+        },
+        {
+          "text": "« Comme ce n’est pas certain, l’historique n’apporte aucune information utile. »",
+          "correct": false,
+          "feedback": "L’absence de certitude n’annule pas toute force inductive."
+        }
+      ],
+      "takeaway": "Le problème de l’induction limite la prétention à la nécessité ; il ne transforme pas toute prévision en absurdité.",
+      "productionPrompt": "Prends une habitude fiable de ton quotidien et formule d’abord ta confiance pratique, puis la limite logique de cette confiance.",
+      "modelResponse": "Mon train est généralement à l’heure, donc je m’attends raisonnablement à ce qu’il le soit demain. Mais les trajets passés ne démontrent pas qu’aucun incident futur ne peut survenir.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-frameworks",
+      "title": "Même action, trois questions",
+      "context": "Un collègue te demande de cacher une petite erreur.",
+      "prompt": "Quelle question appartient le mieux à l’éthique des vertus ?",
+      "choices": [
+        {
+          "text": "« Que ferait une personne honnête, loyale et courageuse dans cette situation, et comment arbitrer ces traits ? »",
+          "correct": true,
+          "feedback": "Oui : le caractère et la prudence pratique sont centraux."
+        },
+        {
+          "text": "« Quel choix maximise les effets positifs globaux ? »",
+          "correct": false,
+          "feedback": "C’est une question conséquentialiste."
+        },
+        {
+          "text": "« Quel devoir de vérité s’applique indépendamment du résultat attendu ? »",
+          "correct": false,
+          "feedback": "C’est une question déontologique."
+        }
+      ],
+      "takeaway": "Les cadres moraux se distinguent d’abord par ce qu’ils regardent, pas par une liste de réponses automatiques.",
+      "productionPrompt": "Analyse une même petite décision avec trois phrases commençant par « Conséquences : », « Devoir : », « Vertu : ».",
+      "modelResponse": "Conséquences : cacher l’erreur peut éviter un embarras mais fragiliser la confiance. Devoir : j’ai une obligation d’honnêteté. Vertu : la loyauté ne doit pas devenir complicité ; le courage peut exiger de reconnaître l’erreur.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    },
+    {
+      "id": "philo38-lab-contractcompare",
+      "title": "Quel problème politique est au premier plan ?",
+      "context": "Un État est très stable mais saisit arbitrairement les biens de certains citoyens sans recours.",
+      "prompt": "Quelle problématique devient particulièrement lockéenne ?",
+      "choices": [
+        {
+          "text": "La limite d’un pouvoir qui cesse de protéger les droits pour lesquels il est institué.",
+          "correct": true,
+          "feedback": "Oui : stabilité et légitimité ne sont pas identiques."
+        },
+        {
+          "text": "La nécessité première de créer une puissance commune pour sortir d’une guerre générale.",
+          "correct": false,
+          "feedback": "C’est davantage le problème hobbesien dans un état d’insécurité radicale."
+        },
+        {
+          "text": "La distinction entre induction et déduction.",
+          "correct": false,
+          "feedback": "Cette question n’appartient pas au problème politique décrit."
+        }
+      ],
+      "takeaway": "Comparer Hobbes, Locke et Rousseau par problèmes est plus utile que mémoriser trois slogans.",
+      "productionPrompt": "Invente trois mini-crises politiques en une phrase : une hobbesienne, une lockéenne, une rousseauiste.",
+      "modelResponse": "Hobbes : aucune autorité ne peut faire respecter les accords. Locke : un gouvernement stable viole arbitrairement les droits. Rousseau : une faction utilise la loi générale pour ses intérêts particuliers.",
+      "difficulty": "moyen",
+      "philosophyReasoningRC38": true
+    }
+  ],
+  "mysteries": [
+    {
+      "id": "philo-mystery-strawman-318",
+      "lessonId": "philo-argument-thesis-objection",
+      "difficulty": "facile",
+      "title": "La version trop facile à battre",
+      "missionQuestion": "Quelle réponse rétablit le vrai débat ?",
+      "prompt": "A dit : « Je veux limiter la circulation automobile autour des écoles aux heures d’entrée et de sortie. » B répond : « Donc tu veux interdire toutes les voitures partout. »",
+      "answer": "Revenir à la proposition limitée autour des écoles",
+      "aliases": [
+        "revenir à la proposition réelle",
+        "reformuler la vraie proposition",
+        "répondre à la proposition limitée"
+      ],
+      "blockedGuesses": [
+        "défendre l’interdiction totale inventée par B",
+        "attaquer les intentions de B",
+        "changer de sujet"
+      ],
+      "explanation": "B a remplacé la thèse par une version beaucoup plus extrême. Le bon geste est d’abord de restaurer la proposition réellement défendue avant de l’évaluer.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-is-ought-318",
+      "lessonId": "philo-fact-opinion-value",
+      "difficulty": "moyen",
+      "title": "Le ‘donc’ qui cache une règle",
+      "missionQuestion": "Quelle prémisse manque ?",
+      "prompt": "« Cette entreprise travaille ainsi depuis vingt ans, donc nous devons conserver cette méthode. » Le fait historique est admis par tout le monde.",
+      "answer": "Les pratiques anciennes doivent être conservées sauf raison contraire",
+      "aliases": [
+        "ce qui est ancien doit être conservé",
+        "une pratique ancienne mérite d'être conservée"
+      ],
+      "blockedGuesses": [
+        "cette entreprise existe depuis vingt ans",
+        "la méthode est ancienne",
+        "beaucoup de salariés connaissent la méthode"
+      ],
+      "explanation": "Pour passer d’un fait à une obligation, il faut une prémisse normative. Une fois rendue explicite, cette prémisse peut elle-même être discutée.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-control-318",
+      "lessonId": "philo-stoic-control",
+      "difficulty": "facile",
+      "title": "Préparer sans posséder le résultat",
+      "missionQuestion": "Quelle formulation distingue correctement action et résultat ?",
+      "prompt": "Tu as un entretien demain. Tu peux préparer tes exemples, arriver à l’heure et répondre clairement. Tu ignores qui seront les autres candidats et quelle décision finale prendra le recruteur.",
+      "answer": "Je contrôle ma préparation mais pas la décision finale",
+      "aliases": [
+        "je contrôle la préparation pas le résultat",
+        "préparer oui contrôler la décision non"
+      ],
+      "blockedGuesses": [
+        "si je me prépare bien je contrôle le résultat",
+        "puisque le résultat m'échappe préparer ne sert à rien",
+        "je dois éviter de vouloir réussir"
+      ],
+      "explanation": "La préparation dépend largement de ton action ; elle peut influencer le résultat sans le garantir. Cette distinction vise une action lucide, pas la passivité.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-cogito-318",
+      "lessonId": "philo-descartes-doubt",
+      "difficulty": "moyen",
+      "title": "Ce qui résiste au stress-test",
+      "missionQuestion": "Quelle certitude reste la plus minimale ?",
+      "prompt": "Suppose que tes perceptions, tes souvenirs et même la scène devant toi puissent être trompeurs. Tu es pourtant en train d’examiner cette hypothèse.",
+      "answer": "Une pensée est en cours pendant que je doute",
+      "aliases": [
+        "je pense pendant que je doute",
+        "il y a une activité de pensée"
+      ],
+      "blockedGuesses": [
+        "tout ce que je perçois est certain",
+        "mes souvenirs sont fiables",
+        "le monde extérieur est déjà démontré"
+      ],
+      "explanation": "Le doute radical n’efface pas l’acte même de douter. Le cogito part de cette certitude minimale et ne restaure pas encore toutes les autres croyances.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-induction-318",
+      "lessonId": "philo-hume-causality",
+      "difficulty": "moyen",
+      "title": "Deux courbes montent ensemble",
+      "missionQuestion": "Quelle hypothèse faut-il tester avant de parler de cause ?",
+      "prompt": "En été, les ventes de glaces et les interventions de secours sur les plages augmentent toutes les deux. Quelqu’un conclut : « les glaces provoquent donc les interventions ».",
+      "answer": "La chaleur peut être une cause commune des deux phénomènes",
+      "aliases": [
+        "une troisième variable comme la chaleur",
+        "la chaleur explique les deux"
+      ],
+      "blockedGuesses": [
+        "les interventions causent les glaces",
+        "toute corrélation prouve une cause",
+        "aucune causalité n'est jamais connaissable"
+      ],
+      "explanation": "Une cause commune peut produire deux séries corrélées. Ici, la chaleur augmente à la fois les baignades et les achats de glaces ; la corrélation soutient une enquête, pas encore une direction causale précise.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-contract-318",
+      "lessonId": "philo-social-contract-liberty",
+      "difficulty": "moyen",
+      "title": "Obéir n’est pas encore légitimer",
+      "missionQuestion": "Qu’est-ce qu’il manque pour passer du pouvoir à l’autorité ?",
+      "prompt": "Un groupe possède assez de force pour imposer une règle et tout le monde obéit. Rien n’est dit sur la procédure, les droits protégés ou la justification commune.",
+      "answer": "Une justification de la légitimité de la règle",
+      "aliases": [
+        "justifier pourquoi le pouvoir est légitime",
+        "une raison légitime d'obéir"
+      ],
+      "blockedGuesses": [
+        "davantage de force",
+        "une sanction plus rapide",
+        "un texte plus long"
+      ],
+      "explanation": "La capacité de contraindre montre un pouvoir de fait. La philosophie politique demande encore pourquoi ce pouvoir aurait le droit de gouverner.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-validity-rc19",
+      "lessonId": "philo-argument-validity",
+      "difficulty": "facile",
+      "title": "Une conclusion vraie pour une mauvaise raison",
+      "missionQuestion": "Comment évaluer le raisonnement ?",
+      "prompt": "« Rome est en Italie. Donc 2 + 2 = 4. » Les deux propositions sont vraies, mais aucune information supplémentaire ne relie la première à la seconde comme prémisse et conclusion.",
+      "answer": "La conclusion est vraie mais le raisonnement est invalide",
+      "aliases": [
+        "vrai mais invalide",
+        "la conclusion ne découle pas de la prémisse"
+      ],
+      "blockedGuesses": [
+        "valide parce que tout est vrai",
+        "solide parce que la conclusion est certaine",
+        "valide si on ajoute d'autres faits vrais"
+      ],
+      "explanation": "La validité demande que la conclusion suive des prémisses. Deux vérités sans lien logique ne forment pas un bon argument.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-necessary-rc19",
+      "lessonId": "philo-distinction-necessary-sufficient",
+      "difficulty": "moyen",
+      "title": "Le billet qui ne garantit pas l’entrée",
+      "missionQuestion": "Quel statut a le billet dans ce cas ?",
+      "prompt": "Pour entrer au concert il faut un billet valide. Pourtant, même avec un billet, tu n’entres pas si la salle est évacuée pour raisons de sécurité.",
+      "answer": "Le billet est nécessaire mais pas suffisant",
+      "aliases": [
+        "nécessaire pas suffisant",
+        "condition nécessaire mais non suffisante"
+      ],
+      "blockedGuesses": [
+        "suffisant mais pas nécessaire",
+        "à la fois nécessaire et suffisant",
+        "ni nécessaire ni suffisant"
+      ],
+      "explanation": "Sans billet l’entrée échoue, mais le billet seul ne garantit pas l’entrée : d’autres conditions peuvent encore manquer, comme l’ouverture effective de la salle et l’absence d’évacuation.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-counterexample-rc19",
+      "lessonId": "philo-socrates-definition",
+      "difficulty": "moyen",
+      "title": "Le courage qui recule",
+      "missionQuestion": "Que montre le cas du pompier ?",
+      "prompt": "Définition : « être courageux, c’est ne jamais reculer ». Un pompier recule devant un plafond prêt à s’effondrer, contourne le bâtiment puis revient sauver une victime.",
+      "answer": "La définition est trop étroite",
+      "aliases": [
+        "définition trop étroite",
+        "le contre-exemple montre qu'on peut reculer et rester courageux"
+      ],
+      "blockedGuesses": [
+        "tout recul est courageux",
+        "la définition est trop large",
+        "le cas confirme exactement la définition"
+      ],
+      "explanation": "Le pompier paraît encore courageux tout en violant le critère ‘ne jamais reculer’. La définition exclut donc un cas plausible qu’elle devrait pouvoir traiter.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-assent-rc19",
+      "lessonId": "philo-stoic-impressions",
+      "difficulty": "facile",
+      "title": "Le message et le scénario",
+      "missionQuestion": "Quelle phrase ajoute un jugement plutôt qu’un fait ?",
+      "prompt": "Ton responsable écrit seulement : « On doit parler demain. » Trois secondes plus tard, ton esprit produit plusieurs scénarios.",
+      "answer": "Je vais être licencié",
+      "aliases": [
+        "je vais sûrement être licencié",
+        "ça prouve que je vais être licencié"
+      ],
+      "blockedGuesses": [
+        "on doit parler demain",
+        "je ne sais pas encore pourquoi",
+        "je peux demander l'objet du rendez-vous"
+      ],
+      "explanation": "Le message est le fait disponible ; le licenciement est une interprétation possible à laquelle on peut ou non donner son assentiment.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-cogito-rc19",
+      "lessonId": "philo-descartes-cogito",
+      "difficulty": "moyen",
+      "title": "Jusqu’où va la certitude ?",
+      "missionQuestion": "Quelle conclusion ne dépasse pas le cogito ?",
+      "prompt": "Tu accordes le raisonnement du cogito mais rien de plus. Choisis la conclusion qui reste à l’intérieur de sa portée immédiate.",
+      "answer": "J’existe au moins comme être pensant pendant que je pense",
+      "aliases": [
+        "j'existe comme sujet pensant",
+        "je pense donc j'existe au moment où je pense"
+      ],
+      "blockedGuesses": [
+        "mon corps est exactement comme je le perçois",
+        "tous mes souvenirs sont fiables",
+        "le monde extérieur est déjà démontré"
+      ],
+      "explanation": "Le cogito donne une certitude minimale sur l’existence pensante actuelle. Les conclusions sur le corps, la mémoire ou le monde demandent encore d’autres arguments.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-induction-rc19",
+      "lessonId": "philo-hume-induction",
+      "difficulty": "difficile",
+      "title": "La méthode qui se justifie elle-même",
+      "missionQuestion": "Pourquoi la justification tourne-t-elle en cercle ?",
+      "prompt": "« Nos projections du passé vers le futur ont généralement réussi jusqu’ici ; donc elles continueront à être fiables demain. »",
+      "answer": "On utilise déjà l’induction pour justifier l’induction",
+      "aliases": [
+        "raisonnement circulaire sur l'induction",
+        "l'induction justifie elle-même l'induction"
+      ],
+      "blockedGuesses": [
+        "le futur ne peut jamais être prévu",
+        "le passé est forcément faux",
+        "il s'agit d'une déduction valide"
+      ],
+      "explanation": "Le succès passé est projeté vers le futur pour défendre le principe même qui autorise cette projection. C’est précisément la difficulté soulevée par Hume.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-ethics-rc19",
+      "lessonId": "philo-ethics-frameworks",
+      "difficulty": "moyen",
+      "title": "Même choix, autre raison",
+      "missionQuestion": "Quelle question change vraiment de cadre ?",
+      "prompt": "Un collègue te demande de cacher son erreur. Tu as déjà demandé : « quels effets aura mon choix ? » Tu veux maintenant examiner le même cas sous une focale déontologique.",
+      "answer": "Ai-je un devoir d'honnêteté que je ne peux pas écarter pour un meilleur résultat",
+      "aliases": [
+        "quel devoir d'honnêteté s'applique",
+        "y a-t-il un devoir ou un droit en jeu"
+      ],
+      "blockedGuesses": [
+        "quel choix produit le plus de bénéfices",
+        "quelle option aura les meilleures conséquences",
+        "combien de personnes seront contentes"
+      ],
+      "explanation": "Changer de cadre signifie changer la question centrale. Une focale déontologique met d’abord au premier plan les devoirs et droits.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    },
+    {
+      "id": "philo-mystery-contract-rc19",
+      "lessonId": "philo-social-contract-comparison",
+      "difficulty": "difficile",
+      "title": "Trois crises, trois priorités",
+      "missionQuestion": "Quel auteur est le plus directement interpellé par ce cas ?",
+      "prompt": "L’État est stable, les rues sont sûres et les accords sont exécutés, mais le gouvernement confisque arbitrairement les biens de certains citoyens, interdit tout recours et ne justifie aucune limite à son pouvoir.",
+      "answer": "Locke",
+      "aliases": [
+        "John Locke",
+        "locke : droits et limites du pouvoir"
+      ],
+      "blockedGuesses": [
+        "Hobbes : il manque surtout une puissance commune",
+        "Rousseau : le problème est uniquement l'absence de sondage",
+        "aucun : la stabilité suffit à rendre le pouvoir légitime"
+      ],
+      "explanation": "Le cas met au premier plan la protection des droits et les limites d’un gouvernement déjà établi, une problématique particulièrement lockéenne.",
+      "discipline": "philosophy",
+      "caseTitle": "Atelier de raisonnement",
+      "subjectType": "problème philosophique",
+      "periodHint": "raisonnement",
+      "answerInstruction": "Choisis la réponse qui résiste le mieux au cas.",
+      "clues": [
+        "Isole la conclusion exacte avant de choisir.",
+        "Cherche le critère ou la prémisse qui change réellement le cas.",
+        "Écarte les réponses qui ajoutent une information absente ou rendent la thèse artificiellement extrême."
+      ],
+      "modeMystery": true,
+      "manualCluesB97": true,
+      "cluesCleaned": true,
+      "rescueAvailable": true,
+      "philosophyScenarioRC38": true
+    }
+  ]
+};
+  const cleanSection = section => {
+    if (Array.isArray(section)) return { title: String(section[0] || ''), text: String(section[1] || '') };
+    if (section && typeof section === 'object') return { title: String(section.title || section.heading || ''), text: String(section.text || section.body || '') };
+    return { title: '', text: String(section || '') };
+  };
+  const titleById = Object.fromEntries(Object.entries(PAYLOAD.courses).map(([id,s])=>[id,s.title]));
+  for (const [id,spec] of Object.entries(PAYLOAD.courses)) {
+    const current = READY_LESSON_PACKS[id] || {};
+    const inherited = Array.isArray(current.complete) ? current.complete.map(cleanSection).filter(s=>s.text) : [];
+    const conceptual = inherited.slice(0, Math.min(5, inherited.length));
+    READY_LESSON_PACKS[id] = {
+      ...current,
+      title: spec.title,
+      hook: spec.hook,
+      complete: [{title:'Le problème',text:spec.hook}, ...conceptual, {title:'Mise à l’épreuve',text:spec.practice}],
+      takeaways: (spec.takeaways || []).map((text,index)=>({label:index===0?'À comprendre':index===1?'À tester':'À réutiliser',text})),
+      quiz: spec.quiz,
+      editorialStatus: 'published',
+      contentRevision: 'rc38-philosophy-reasoning',
+      philosophyExperience: {mode:'problem-argument-objection-production', redesigned:true}
+    };
+    PUBLISHED_LESSON_IDS.add(id);
+  }
+  try {
+    for (const lessons of Object.values(data.lessons || {})) {
+      if (!Array.isArray(lessons)) continue;
+      for (const lesson of lessons) if (titleById[lesson?.id]) lesson.title = titleById[lesson.id];
+    }
+  } catch {}
+  const oldLabs = window.HD_DISCIPLINE_LABS || {};
+  window.HD_DISCIPLINE_LABS = {...oldLabs, philosophy: PAYLOAD.labs};
+  if (Array.isArray(data.mysteries)) {
+    const replacement = new Map(PAYLOAD.mysteries.map(item=>[item.id,item]));
+    data.mysteries = data.mysteries.map(item=>item?.discipline==='philosophy' && replacement.has(item.id) ? replacement.get(item.id) : item);
+    const known = new Set(data.mysteries.map(item=>item?.id));
+    for (const item of PAYLOAD.mysteries) if (!known.has(item.id)) data.mysteries.push(item);
+  }
+  try {
+    DISCIPLINE_MODE_COPY.philosophy = {
+      ...(DISCIPLINE_MODE_COPY.philosophy || {}),
+      headline:'Prends position, attaque l’argument, puis reconstruis-le.',
+      promise:'Des problèmes concrets, des objections plausibles et des contre-exemples. Le but n’est pas de réciter les auteurs : c’est d’apprendre à raisonner.',
+      discoveryTitle:'Problèmes à mettre à l’épreuve',
+      discoveryIntro:'Distinguer, argumenter, objecter, chercher un contre-exemple et reformuler une position plus solide.'
+    };
+  } catch {}
+  if (typeof invalidateCatalogCaches === 'function') invalidateCatalogCaches(); else try { lessonIndexCache = null; } catch {}
+  try {
+    window.HistoDaily = {...(window.HistoDaily||{}),version:VERSION,philosophyRedesignRC38:{version:VERSION,courses:Object.keys(PAYLOAD.courses).length,labs:PAYLOAD.labs.length,mysteries:PAYLOAD.mysteries.length,principles:['problem','argument','objection','counterexample','distinction','production']}};
+  } catch {}
+})();
+
+;
+
+/* ===== SOURCE: content-science-astronomy-rc39.js ===== */
+/* HistoDaily 1.0.0-rc.39.0 — Science & Astronomy progressive reasoning pass. */
+(function histodailyRC39ScienceAstronomy(){
+  "use strict";
+  const VERSION="1.0.0-rc.39.0";
+  const PAYLOAD={
+  "courses": {
+    "sci-method-proof-basics": {
+      "practice": "Tu veux savoir si la lumière influence la croissance d’une plante. Avant de chercher une “bonne réponse”, imagine deux plantes comparables, une seule différence entre elles, ce que tu mesures et quel résultat te ferait changer d’avis. La science commence par rendre une idée testable.",
+      "quiz": [
+        {
+          "kind": "experiment",
+          "q": "Deux plantes identiques reçoivent la même eau. L’une est près d’une fenêtre, l’autre dans l’obscurité. Quelle variable est volontairement changée ?",
+          "a": "La quantité de lumière reçue.",
+          "choices": [
+            "La quantité d’eau reçue.",
+            "L’espèce de la plante.",
+            "La durée totale de l’expérience."
+          ],
+          "why": "Le protocole cherche précisément à isoler l’effet de la lumière en gardant le reste aussi comparable que possible.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "prediction",
+          "q": "Ton hypothèse est : « davantage de lumière augmente la croissance ». Quelle prédiction permet réellement de la tester ?",
+          "a": "Dans des conditions comparables, la plante mieux éclairée devrait croître davantage.",
+          "choices": [
+            "La plante éclairée sera forcément plus belle.",
+            "Toutes les plantes du monde ont besoin exactement de la même lumière.",
+            "Si la plante pousse, l’hypothèse est définitivement prouvée."
+          ],
+          "why": "Une prédiction traduit l’hypothèse en différence observable sans transformer un résultat en certitude absolue.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "evidence",
+          "q": "Une seule mesure va dans le sens attendu. Qu’est-ce qui rendrait le résultat plus solide ?",
+          "a": "Répéter l’expérience et retrouver le même effet avec plusieurs plantes.",
+          "choices": [
+            "Choisir uniquement les plantes qui confirment l’idée.",
+            "Arrêter les mesures dès que le résultat attendu apparaît.",
+            "Demander à davantage de personnes si elles trouvent l’idée convaincante."
+          ],
+          "why": "La répétition permet de distinguer un effet robuste d’un hasard, d’une erreur de mesure ou d’un cas particulier.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "revision",
+          "q": "Le résultat répété contredit ton hypothèse. Quel réflexe est le plus scientifique ?",
+          "a": "Revoir l’hypothèse ou le protocole et chercher ce qui explique le résultat.",
+          "choices": [
+            "Écarter les mesures puisqu’elles ne correspondent pas à l’idée de départ.",
+            "Modifier après coup la prédiction pour qu’elle corresponde au résultat.",
+            "Conserver l’hypothèse parce qu’elle semblait logique avant l’expérience."
+          ],
+          "why": "Une hypothèse scientifique accepte le risque d’être corrigée quand les observations lui résistent.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "interpretation",
+          "q": "Pourquoi devient-il difficile de conclure si deux groupes diffèrent à la fois par la lumière et par la quantité d’eau ?",
+          "a": "On ne sait plus quelle différence a produit l’effet observé.",
+          "choices": [
+            "Deux variables rendent toujours une expérience deux fois plus précise.",
+            "La croissance ne peut plus être mesurée avec des nombres.",
+            "Une expérience scientifique doit obligatoirement se faire en laboratoire."
+          ],
+          "why": "Quand plusieurs facteurs changent ensemble, on ne peut plus attribuer proprement l’effet à l’un d’eux.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        }
+      ]
+    },
+    "sci-galileo-revolution": {
+      "practice": "Imagine que tu défendes un modèle du ciel où tous les astres doivent tourner autour de la Terre. Puis une lunette montre quatre petits corps qui tournent clairement autour de Jupiter. L’observation ne prouve pas à elle seule tout le modèle de Copernic, mais elle détruit déjà une contrainte importante de l’ancien modèle.",
+      "quiz": [
+        {
+          "kind": "observation",
+          "q": "Galilée voit plusieurs petits astres changer de position autour de Jupiter nuit après nuit. Quelle conclusion minimale est justifiée ?",
+          "a": "Certains corps célestes tournent autour d’un autre astre que la Terre.",
+          "choices": [
+            "Jupiter est nécessairement au centre de tout l’Univers.",
+            "La Terre ne bouge plus du tout.",
+            "La lunette montre que toutes les orbites sont parfaitement circulaires."
+          ],
+          "why": "Les satellites de Jupiter suffisent à montrer que la Terre n’est pas l’unique centre de tous les mouvements célestes.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "model",
+          "q": "Pourquoi les phases de Vénus intéressent-elles le débat sur les modèles du Système solaire ?",
+          "a": "Leur succession dépend de la position de Vénus par rapport au Soleil et permet de tester la géométrie des modèles.",
+          "choices": [
+            "Elles permettent de mesurer directement la masse de la Terre.",
+            "Elles montrent que Vénus produit sa propre lumière.",
+            "Elles prouvent que toutes les étoiles tournent autour de Vénus."
+          ],
+          "why": "Une observation devient utile lorsqu’elle distingue des modèles qui ne prédisent pas exactement la même chose.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "instrument",
+          "q": "Deux observateurs obtiennent des images différentes avec deux lunettes. Que faut-il faire avant de conclure ?",
+          "a": "Comparer les instruments, répéter les observations et vérifier si le phénomène persiste.",
+          "choices": [
+            "Choisir l’image la plus spectaculaire.",
+            "Faire confiance à l’observateur le plus célèbre.",
+            "Moyenner les deux images sans examiner les instruments."
+          ],
+          "why": "Un instrument étend l’observation mais peut aussi introduire des défauts : il faut donc contrôler et reproduire.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "interpretation",
+          "q": "Des reliefs et des ombres apparaissent sur la Lune. Quelle idée ancienne est directement fragilisée ?",
+          "a": "L’idée que tous les corps célestes sont des sphères parfaitement lisses et immuables.",
+          "choices": [
+            "L’existence même de la Lune.",
+            "Le fait que la Terre possède une atmosphère.",
+            "La possibilité de mesurer le temps avec une horloge."
+          ],
+          "why": "Les ombres variables s’expliquent naturellement par un relief, ce qui contredit l’image d’un ciel matériellement parfait.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "reasoning",
+          "q": "Quelle leçon scientifique résume le mieux l’épisode ?",
+          "a": "Un nouvel instrument peut produire des observations qui obligent à départager ou modifier des modèles.",
+          "choices": [
+            "Une image nouvelle prouve automatiquement toute théorie proposée avec elle.",
+            "Un instrument rend les interprétations inutiles.",
+            "Une théorie devient vraie dès qu’elle est défendue contre une autorité."
+          ],
+          "why": "Le progrès vient du lien entre observation, prédictions et comparaison de modèles, pas de l’instrument seul.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        }
+      ]
+    },
+    "sci-natural-selection": {
+      "practice": "Dans une population de coléoptères, certains sont clairs et d’autres sombres. Sur un sol devenu sombre, les oiseaux repèrent plus facilement les clairs. Il n’est pas nécessaire que les coléoptères “veuillent” changer : si la couleur est héréditaire, la fréquence des variantes peut changer génération après génération.",
+      "quiz": [
+        {
+          "kind": "mechanism",
+          "q": "Des insectes sombres sont moins repérés sur un sol noir et la couleur est héréditaire. Que prévoit la sélection naturelle ?",
+          "a": "La proportion d’insectes sombres peut augmenter au fil des générations.",
+          "choices": [
+            "Chaque insecte clair décide de devenir sombre pendant sa vie.",
+            "Tous les descendants naissent sombres dès la génération suivante.",
+            "Le sol fabrique directement la mutation exacte dont chaque insecte a besoin."
+          ],
+          "why": "La sélection agit sur des variations présentes : elle change leur succès reproductif, pas les besoins conscients des individus.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "variation",
+          "q": "Pour qu’un avantage influence l’évolution d’une population, quelle condition est essentielle ?",
+          "a": "Il faut qu’au moins une partie de la variation soit transmissible aux descendants.",
+          "choices": [
+            "Il faut que tous les individus possèdent déjà exactement le même caractère.",
+            "Il faut que le caractère apparaisse seulement après la reproduction.",
+            "Il faut que l’environnement connaisse à l’avance le caractère utile."
+          ],
+          "why": "Sans transmission, un avantage individuel ne modifie pas durablement la fréquence du caractère dans les générations suivantes.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "antibiotic",
+          "q": "Avant un antibiotique, quelques bactéries sont déjà résistantes. Après traitement, que se passe-t-il le plus naturellement ?",
+          "a": "Les sensibles disparaissent davantage et les résistantes laissent proportionnellement plus de descendants.",
+          "choices": [
+            "L’antibiotique enseigne volontairement à chaque bactérie comment résister.",
+            "Toutes les bactéries deviennent résistantes au même instant.",
+            "La résistance cesse d’être héréditaire dès que l’antibiotique est présent."
+          ],
+          "why": "L’antibiotique sélectionne des différences déjà présentes ou apparues par variation, il ne crée pas un besoin dirigé.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "misconception",
+          "q": "Pourquoi « les girafes ont allongé leur cou parce qu’elles avaient besoin d’atteindre les feuilles » est-il trompeur ?",
+          "a": "Le besoin n’oriente pas la production de la variation ; le milieu favorise ensuite certaines variantes.",
+          "choices": [
+            "Parce que les individus allongeraient leur cou pendant leur vie puis transmettraient directement ce changement acquis.",
+            "Parce qu’un changement de nourriture déclencherait chez les descendants la variation précise devenue utile.",
+            "Parce que l’exercice répété du cou expliquerait à lui seul la modification héréditaire de la population."
+          ],
+          "why": "La sélection n’est pas un projet : elle trie des différences héréditaires selon leurs conséquences.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "limits",
+          "q": "Une fréquence génétique change par hasard dans une toute petite population. Est-ce forcément de la sélection naturelle ?",
+          "a": "Non. La dérive génétique peut aussi modifier les fréquences sans avantage adaptatif.",
+          "choices": [
+            "Oui, toute évolution est par définition une adaptation.",
+            "Oui, le hasard ne peut agir qu’avant la naissance de la population.",
+            "Non, car une fréquence génétique ne peut jamais changer au hasard."
+          ],
+          "why": "L’évolution regroupe plusieurs mécanismes : la sélection naturelle en est un, mais le hasard peut aussi modifier les fréquences génétiques par dérive.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        }
+      ]
+    },
+    "sci-genetics-dna-history": {
+      "practice": "Deux parents possèdent chacun une version différente d’un gène. Au lieu de chercher un caractère “dominant” dans l’absolu, demande-toi quelles versions sont transmises, comment elles s’expriment et quelles autres influences modifient le résultat. La génétique devient claire quand on sépare transmission, expression et environnement.",
+      "quiz": [
+        {
+          "kind": "inheritance",
+          "q": "Mendel croise des plantes puis compte les caractères chez leurs descendants. Qu’obtient-il directement ?",
+          "a": "Des fréquences de caractères qui permettent d’inférer des règles de transmission.",
+          "choices": [
+            "Une photographie de la double hélice.",
+            "La séquence complète de tous les gènes du pois.",
+            "La preuve que l’environnement n’influence jamais un caractère."
+          ],
+          "why": "Mendel observe des résultats de croisements ; les mécanismes moléculaires seront identifiés bien plus tard.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "complementarity",
+          "q": "Un brin d’ADN contient la séquence A-C-G-T. Quelle propriété permet de construire le brin complémentaire ?",
+          "a": "A s’apparie avec T et C avec G.",
+          "choices": [
+            "Chaque base s’apparie uniquement avec elle-même.",
+            "Les bases s’assemblent au hasard à chaque copie.",
+            "Le sucre de l’ADN choisit la base selon la température."
+          ],
+          "why": "La complémentarité fournit une règle simple grâce à laquelle chaque brin peut servir de modèle.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "evidence",
+          "q": "Une expérience montre qu’une information héréditaire passe avec l’ADN purifié. Quelle idée gagne directement du soutien ?",
+          "a": "L’ADN peut porter une information transmissible entre générations ou cellules.",
+          "choices": [
+            "Toutes les protéines sont inutiles dans les cellules.",
+            "Chaque caractère dépend d’un seul gène.",
+            "L’ADN détermine seul tout ce qui arrive à un organisme."
+          ],
+          "why": "La preuve porte sur le rôle informationnel de l’ADN, pas sur l’absence de protéines ni sur un déterminisme absolu.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "gene-environment",
+          "q": "Pourquoi deux plantes génétiquement identiques peuvent-elles atteindre des tailles différentes dans deux milieux ?",
+          "a": "Le même génome peut produire des résultats différents selon l’environnement et la régulation.",
+          "choices": [
+            "Leur ADN a nécessairement disparu dans l’un des deux milieux.",
+            "Les gènes ne jouent donc aucun rôle dans la taille.",
+            "Un organisme change volontairement ses gènes pour s’adapter."
+          ],
+          "why": "Un caractère peut dépendre à la fois de variantes génétiques et des conditions dans lesquelles elles s’expriment.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "mutation",
+          "q": "Une mutation apparaît dans un gène. Quelle affirmation est correcte ?",
+          "a": "Son effet peut être défavorable, neutre ou parfois avantageux selon le contexte.",
+          "choices": [
+            "Une mutation entraîne en général une maladie visible chez l’organisme.",
+            "Une mutation améliore habituellement l’adaptation au milieu où elle apparaît.",
+            "Une mutation apparue dans une cellule du corps est transmise aux futurs enfants de l’organisme."
+          ],
+          "why": "Une mutation est d’abord une modification de séquence ; son effet dépend de l’endroit, du fonctionnement du gène et du contexte.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        }
+      ]
+    },
+    "astro-moon-phases-eclipses-tides": {
+      "practice": "Prends une lampe pour le Soleil et une balle pour la Lune. Fais tourner la balle autour de toi : sa moitié éclairée ne change pas, mais la fraction que tu vois change. Tu viens de fabriquer les phases sans utiliser l’ombre de la Terre.",
+      "quiz": [
+        {
+          "kind": "geometry",
+          "q": "La Lune est toujours éclairée sur une moitié par le Soleil. Pourquoi voit-on pourtant des phases ?",
+          "a": "Depuis la Terre, nous voyons une fraction différente de cette moitié éclairée selon sa position sur l’orbite.",
+          "choices": [
+            "L’ombre de la Terre recouvre la Lune chaque semaine.",
+            "La Lune change réellement de forme au cours du mois.",
+            "Le Soleil éclaire la Lune seulement pendant la pleine Lune."
+          ],
+          "why": "Les phases sont un problème de géométrie entre Soleil, Terre et Lune, pas une série d’éclipses.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "prediction",
+          "q": "Si les phases étaient causées par l’ombre de la Terre, que devrait-on observer très souvent ?",
+          "a": "Un alignement Terre-Soleil-Lune comparable à une éclipse pour chaque phase.",
+          "choices": [
+            "Une Lune toujours éclairée sur une moitié.",
+            "Une rotation de la Lune sur elle-même.",
+            "Une orbite lunaire inclinée."
+          ],
+          "why": "L’hypothèse de l’ombre conduit à une prédiction qui ne correspond pas à la géométrie réelle des phases.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "rotation",
+          "q": "Pourquoi voit-on presque toujours le même hémisphère lunaire ?",
+          "a": "La Lune tourne sur elle-même en environ le même temps qu’elle accomplit une orbite autour de la Terre.",
+          "choices": [
+            "La Lune ne tourne jamais sur elle-même.",
+            "Son autre face reste toujours dans l’ombre.",
+            "La Terre cache physiquement l’autre moitié de la Lune."
+          ],
+          "why": "Une rotation synchrone fait effectuer un tour sur soi pendant un tour autour de la Terre.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "eclipse",
+          "q": "Pourquoi une nouvelle Lune ne produit-elle pas une éclipse solaire chaque mois ?",
+          "a": "L’orbite de la Lune est inclinée : l’alignement exact n’a lieu que près de certains points de son orbite.",
+          "choices": [
+            "Le diamètre apparent du Soleil varierait assez pour empêcher l’alignement durant la plupart des mois.",
+            "La rotation de la Lune interromprait régulièrement son passage entre la Terre et le Soleil.",
+            "La géométrie d’une éclipse solaire dépendrait surtout de la saison terrestre en cours."
+          ],
+          "why": "La plupart des nouvelles Lunes passent légèrement au-dessus ou au-dessous de l’alignement nécessaire.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "tides",
+          "q": "La Lune influence les marées, mais deux ports voisins n’ont pas exactement les mêmes horaires. Pourquoi ?",
+          "a": "La forme des côtes, la profondeur et les résonances locales modifient la réponse de l’océan.",
+          "choices": [
+            "La gravité de la Lune s’éteint au-dessus de certains ports.",
+            "Chaque mer possède une Lune différente.",
+            "Le Soleil n’éclaire qu’un port à la fois."
+          ],
+          "why": "La force astronomique est globale, mais la réponse de l’eau dépend fortement de la géographie locale.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        }
+      ]
+    },
+    "astro-seasons-tilt-solstice-equinox": {
+      "practice": "Imagine une lampe fixe et un globe incliné. Sans rapprocher le globe de la lampe, fais-le tourner autour : un hémisphère reçoit tour à tour des rayons plus directs et des journées plus longues. C’est l’idée essentielle des saisons.",
+      "quiz": [
+        {
+          "kind": "cause",
+          "q": "Quand c’est l’été en France, c’est l’hiver en Australie. Quel mécanisme l’explique naturellement ?",
+          "a": "L’inclinaison de l’axe terrestre favorise alternativement un hémisphère puis l’autre.",
+          "choices": [
+            "La Terre est beaucoup plus proche du Soleil pendant l’été français.",
+            "Le Soleil chauffe seulement la moitié nord de la Terre six mois par an.",
+            "La vitesse de la lumière change entre les hémisphères."
+          ],
+          "why": "Les saisons opposées dans les deux hémisphères sont une conséquence directe de l’inclinaison de l’axe.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "evidence",
+          "q": "La Terre passe au plus près du Soleil au début de janvier. Que montre ce fait ?",
+          "a": "La distance au Soleil ne peut pas être la cause principale de l’été dans l’hémisphère Nord.",
+          "choices": [
+            "Janvier est le mois le plus chaud partout sur Terre.",
+            "L’orbite terrestre est parfaitement circulaire.",
+            "La Terre ne reçoit aucune énergie solaire en juillet."
+          ],
+          "why": "Si la proximité était la cause principale, les deux hémisphères devraient connaître leurs saisons chaudes au même moment.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "sun-angle",
+          "q": "Pourquoi un Soleil plus haut dans le ciel chauffe-t-il généralement davantage une même région ?",
+          "a": "La même énergie arrive plus directement et se répartit sur une surface plus petite.",
+          "choices": [
+            "Le Soleil devient physiquement plus gros en été.",
+            "L’atmosphère disparaît quand le Soleil monte.",
+            "La Terre cesse de tourner pendant la journée."
+          ],
+          "why": "L’angle d’arrivée change la concentration de l’énergie reçue par unité de surface.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "day-length",
+          "q": "Que se passe-t-il autour du solstice d’été d’un hémisphère ?",
+          "a": "La durée du jour y atteint approximativement son maximum annuel.",
+          "choices": [
+            "La Terre atteint forcément son point le plus proche du Soleil.",
+            "Le jour et la nuit y durent exactement douze heures.",
+            "Le Soleil cesse de se lever pendant plusieurs semaines à toutes les latitudes."
+          ],
+          "why": "Le solstice correspond à un extrême de déclinaison solaire et donc de durée du jour.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "equator",
+          "q": "Pourquoi les variations saisonnières de durée du jour sont-elles faibles près de l’équateur ?",
+          "a": "La géométrie de l’inclinaison y modifie relativement peu la durée quotidienne d’éclairement.",
+          "choices": [
+            "L’équateur ne reçoit presque pas de lumière solaire.",
+            "La Terre n’est pas inclinée quand on se trouve à l’équateur.",
+            "Le Soleil reste sous l’horizon toute l’année."
+          ],
+          "why": "Près de l’équateur, jour et nuit restent proches de douze heures sur une grande partie de l’année.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        }
+      ]
+    },
+    "astro-solar-system-formation": {
+      "practice": "Les planètes tournent presque toutes dans le même sens et dans des plans voisins. Au lieu de mémoriser ce fait, demande-toi quel scénario de formation le rend naturel : un nuage qui se contracte, tourne et s’aplatit en disque fournit justement cette prédiction.",
+      "quiz": [
+        {
+          "kind": "evidence",
+          "q": "La plupart des grandes planètes orbitent dans des plans proches et dans le même sens. Quel scénario explique naturellement cette organisation ?",
+          "a": "Une formation commune dans un disque de gaz et de poussière en rotation.",
+          "choices": [
+            "Une arrivée indépendante de chaque planète depuis des directions aléatoires.",
+            "Une explosion récente de la Terre qui aurait projeté les autres planètes.",
+            "Un Soleil déjà formé qui aurait créé chaque planète à des époques sans lien."
+          ],
+          "why": "Un disque en rotation transmet une organisation commune aux corps qui s’y assemblent.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "temperature",
+          "q": "Pourquoi les matériaux glacés étaient-ils plus faciles à conserver loin du jeune Soleil ?",
+          "a": "Les températures plus basses permettaient à davantage de composés volatils de se condenser.",
+          "choices": [
+            "La gravité était absente près du Soleil.",
+            "Les roches ne pouvaient exister que loin du Soleil.",
+            "La lumière se déplaçait plus lentement dans la partie externe du disque."
+          ],
+          "why": "La température du disque détermine quels matériaux peuvent rester solides et participer à la formation des corps.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "accretion",
+          "q": "Des grains se heurtent, s’agrègent et forment progressivement des corps plus grands. Quel mécanisme est décrit ?",
+          "a": "L’accrétion.",
+          "choices": [
+            "La fission nucléaire.",
+            "La parallaxe.",
+            "La rotation synchrone."
+          ],
+          "why": "L’accrétion désigne la croissance progressive d’un corps par collisions et accumulation de matière, exactement ce que décrit la scène proposée.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "archive",
+          "q": "Pourquoi certaines météorites intéressent-elles particulièrement les astronomes ?",
+          "a": "Elles conservent des matériaux très anciens, peu transformés depuis les débuts du Système solaire.",
+          "choices": [
+            "Elles proviennent toutes du centre du Soleil.",
+            "Elles contiennent une photographie directe des premières planètes.",
+            "Elles se forment uniquement dans l’atmosphère terrestre actuelle."
+          ],
+          "why": "Des matériaux primitifs permettent de tester la composition et les conditions du disque initial.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "model",
+          "q": "Une nouvelle observation montre qu’un type de petit corps contient beaucoup plus de glace que prévu à sa distance. Que doit faire un bon modèle ?",
+          "a": "Chercher si le transport de matière ou les températures du disque doivent être mieux représentés.",
+          "choices": [
+            "Ignorer l’observation puisqu’un modèle publié ne doit plus changer.",
+            "Conclure que toute l’idée du disque est fausse à partir de ce seul cas.",
+            "Changer la définition de la glace pour conserver la prédiction initiale."
+          ],
+          "why": "Un modèle scientifique est ajusté ou précisé quand des observations robustes révèlent une limite.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        }
+      ]
+    },
+    "astro-rocky-planets": {
+      "practice": "Mercure est plus proche du Soleil que Vénus, pourtant Vénus est plus chaude. Cette seule comparaison apprend une règle essentielle : pour comprendre une planète, la distance ne suffit pas ; il faut aussi regarder son atmosphère, sa masse, son eau et son histoire géologique.",
+      "quiz": [
+        {
+          "kind": "comparison",
+          "q": "Mercure est plus proche du Soleil, mais Vénus possède la température moyenne de surface la plus élevée. Quel facteur explique surtout ce paradoxe ?",
+          "a": "L’atmosphère très épaisse de Vénus produit un effet de serre extrême.",
+          "choices": [
+            "Vénus possède deux Soleils.",
+            "Mercure ne reçoit aucune lumière pendant son orbite.",
+            "Le sol de Vénus produit sa chaleur en brûlant du carbone."
+          ],
+          "why": "Cette comparaison montre immédiatement que la distance au Soleil ne suffit pas à déterminer la température de surface.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "atmosphere",
+          "q": "Pourquoi Mercure connaît-elle de très grands écarts de température entre jour et nuit ?",
+          "a": "Elle possède très peu d’atmosphère pour stocker et redistribuer la chaleur.",
+          "choices": [
+            "Elle change de distance au Soleil toutes les quelques heures.",
+            "Elle produit sa propre lumière pendant la journée.",
+            "Sa surface est entièrement recouverte d’océans."
+          ],
+          "why": "Une atmosphère peut transporter et conserver une partie de l’énergie ; Mercure en possède très peu.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "mars",
+          "q": "Des vallées anciennes ressemblent à des réseaux creusés par des écoulements. Quelle conclusion est la plus prudente ?",
+          "a": "De l’eau liquide a probablement circulé à la surface de Mars dans le passé.",
+          "choices": [
+            "Mars possède aujourd’hui des océans identiques à ceux de la Terre.",
+            "Ces vallées prouvent l’existence passée d’une civilisation.",
+            "L’atmosphère martienne actuelle est plus épaisse que celle de la Terre."
+          ],
+          "why": "Les formes du relief soutiennent un passé plus humide sans justifier des conclusions beaucoup plus fortes.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "habitability",
+          "q": "Une planète est située dans la “zone habitable” de son étoile. Que peut-on conclure ?",
+          "a": "Sa distance pourrait permettre de l’eau liquide dans certaines conditions, mais son atmosphère et son histoire restent déterminantes.",
+          "choices": [
+            "Elle possède nécessairement des océans et de la vie.",
+            "Sa température est connue exactement sans observer son atmosphère.",
+            "Elle est forcément identique à la Terre."
+          ],
+          "why": "La zone habitable est un premier filtre énergétique, pas un certificat d’habitabilité.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        },
+        {
+          "kind": "comparison",
+          "q": "Pour comparer sérieusement le climat de deux planètes rocheuses, quelles informations sont les plus utiles ensemble ?",
+          "a": "Énergie reçue, atmosphère, masse et propriétés de surface.",
+          "choices": [
+            "Leur couleur vue depuis l’espace, car elle suffirait à résumer leur atmosphère.",
+            "Leur distance au Soleil, car elle donnerait directement leur température de surface.",
+            "Le nombre de cratères, car il déterminerait à lui seul leur climat actuel."
+          ],
+          "why": "Le climat résulte de plusieurs mécanismes qui interagissent ; une seule variable ne suffit généralement pas.",
+          "trap": "Les autres réponses correspondent à une confusion plausible, mais ne collent pas à ce que la situation permet d’observer.",
+          "evidence": "Pars de ce qui est observé, prédis ce qui devrait se passer, puis choisis l’explication la plus simple compatible avec les faits."
+        }
+      ]
+    }
+  }
+};
+  const STARTER_SCIENCE=new Set(["sci-method-proof-basics","sci-galileo-revolution","sci-natural-selection","sci-genetics-dna-history"]);
+  const STARTER_ASTRONOMY=new Set(["astro-moon-phases-eclipses-tides","astro-seasons-tilt-solstice-equinox","astro-solar-system-formation","astro-rocky-planets"]);
+  function cleanSection(section){
+    if(Array.isArray(section)) return {title:String(section[0]||''),text:String(section[1]||'')};
+    if(section&&typeof section==='object') return {title:String(section.title||section.heading||''),text:String(section.text||section.body||'')};
+    return {title:'',text:String(section||'')};
+  }
+  for(const [id,spec] of Object.entries(PAYLOAD.courses)){
+    const current=READY_LESSON_PACKS[id]||{};
+    const complete=Array.isArray(current.complete)?current.complete.map(cleanSection).filter(s=>s.text):[];
+    const withoutOldPractice=complete.filter(s=>!/^À toi de (prévoir|tester)|^Mise en pratique scientifique$/i.test(s.title||''));
+    READY_LESSON_PACKS[id]={...current,complete:[...withoutOldPractice,{title:'À toi de prévoir',text:spec.practice}],quiz:spec.quiz,contentRevision:'rc39-progressive-science',scienceExperience:{mode:'observe-predict-explain',difficultyStage:'starter',redesigned:true}};
+    try{PUBLISHED_LESSON_IDS.add(id)}catch{}
+  }
+  for(const [id,pack] of Object.entries(READY_LESSON_PACKS||{})){
+    if(id.startsWith('astro-')) pack.scienceExperience={...(pack.scienceExperience||{}),mode:'observe-model-predict',difficultyStage:STARTER_ASTRONOMY.has(id)?'starter':'progressive'};
+    else if(id.startsWith('sci-')||id.startsWith('science-')) pack.scienceExperience={...(pack.scienceExperience||{}),mode:'observe-test-explain',difficultyStage:STARTER_SCIENCE.has(id)?'starter':'progressive'};
+  }
+  function reorderAstronomy(){
+    const groupOrder=['astro-solar-system','astro-stars','astro-other-worlds','astro-exploration','astro-foundations'];
+    const labels={
+      'astro-solar-system':['1. Le ciel proche et le Système solaire','Lune → planètes','Commencer par des phénomènes familiers : phases, saisons, planètes et petits corps.'],
+      'astro-stars':['2. Le Soleil et les étoiles','Soleil → trous noirs','Comprendre notre étoile avant d’élargir aux autres étoiles et à leur évolution.'],
+      'astro-other-worlds':['3. Observer d’autres mondes','lumière → exoplanètes','Lire la lumière et apprendre comment on déduit l’existence de mondes invisibles.'],
+      'astro-exploration':['4. Explorer l’espace','orbites → missions','Fusées, orbites, Lune et exploration robotique ou humaine.'],
+      'astro-foundations':['5. L’Univers à grande échelle','distances → cosmologie','Seulement après les bases : distances cosmiques, galaxies, expansion et Univers primordial.']
+    };
+    const groups=PLANNED_DISCIPLINE_GROUPS?.astronomy;
+    if(Array.isArray(groups)){
+      groups.forEach(g=>{if(labels[g.id]){g.title=labels[g.id][0];g.range=labels[g.id][1];g.description=labels[g.id][2];}});
+      groups.sort((a,b)=>groupOrder.indexOf(a.id)-groupOrder.indexOf(b.id));
+    }
+    try{DISCIPLINE_OUTLINES.astronomy.groups=groups}catch{}
+    const worlds=PLANNED_DISCIPLINE_WORLDS?.astronomy||[];
+    const sort={
+      'astro-moon-phases':1,'astro-seasons-earth-orbit':2,'astro-formation-rocky':3,'astro-giants-moons':4,'astro-small-bodies':5,
+      'astro-sun':10,'astro-stellar-life':11,'astro-relativity-blackholes':12,
+      'astro-observation':20,'astro-exoplanet-detection':21,'astro-exoplanets-life':22,
+      'astro-spaceflight':30,'astro-apollo-space-race':31,
+      'astro-scales':40,'astro-gaia-milky-way':41,'astro-galaxies-web':42,'astro-cosmology':43
+    };
+    worlds.forEach(w=>{if(sort[w.id]!=null)w.sortStart=sort[w.id];});
+    try{DISCIPLINE_OUTLINES.astronomy.worlds=worlds}catch{}
+  }
+  reorderAstronomy();
+  try{
+    const sg=PLANNED_DISCIPLINE_GROUPS?.['science-inventions']||[];
+    const titles={
+      'sci-method':'1. Observer, tester, corriger','sci-earth-life':'2. Terre et vivant','sci-energy-matter':'3. Énergie et matière','sci-medicine-tech':'4. Médecine et techniques','sci-digital-space':'5. Informatique et espace'
+    };
+    sg.forEach(g=>{if(titles[g.id])g.title=titles[g.id];});
+  }catch{}
+  const easierMysteries={
+    'science-mystery-experimental-proof-121':{difficulty:'facile',prompt:'Deux groupes de plantes sont identiques sauf pour la lumière reçue. On mesure ensuite leur croissance et on répète l’essai. Quel type de démarche permet de tester si la lumière produit réellement une différence ?'},
+    'science-mystery-immune-memory-235':{difficulty:'facile',prompt:'Après une première rencontre avec un antigène, certaines cellules persistent. Lors d’une nouvelle rencontre, la réponse devient plus rapide et plus efficace. Quel mécanisme est décrit ?'},
+    'astronomy-mystery-synchronous-rotation-236':{difficulty:'facile',prompt:'La Lune tourne bien sur elle-même, mais elle met presque exactement autant de temps à faire ce tour qu’à tourner autour de la Terre. Quel mouvement explique que nous voyions presque toujours la même face ?'}
+  };
+  if(Array.isArray(data.mysteries)) data.mysteries.forEach(m=>{if(easierMysteries[m.id])Object.assign(m,easierMysteries[m.id],{difficultyRampRC39:'starter'});});
+  try{
+    DISCIPLINE_MODE_COPY['science-inventions']={...(DISCIPLINE_MODE_COPY['science-inventions']||{}),headline:'Observe. Prédis. Teste. Explique.',promise:'On commence par des situations simples et familières, puis les mécanismes deviennent progressivement plus exigeants. Pas de récitation de dates pour démarrer.',discoveryTitle:'Petites enquêtes scientifiques',discoveryIntro:'Une observation, une hypothèse, une prédiction : choisis ce que les faits permettent vraiment de conclure.'};
+    DISCIPLINE_MODE_COPY.astronomy={...(DISCIPLINE_MODE_COPY.astronomy||{}),headline:'Pars du ciel que tu connais, puis agrandis l’échelle.',promise:'Lune, saisons et planètes d’abord ; étoiles, exoplanètes et cosmologie ensuite. Chaque étape part d’une observation avant d’introduire le modèle.',discoveryTitle:'Le ciel comme enquête',discoveryIntro:'Regarde ce qui change, imagine ce que le modèle prédit, puis confronte-le à l’observation.'};
+  }catch{}
+  if(typeof invalidateCatalogCaches==='function')invalidateCatalogCaches();else try{lessonIndexCache=null}catch{}
+  try{window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,scienceAstronomyRC39:{starterScience:[...STARTER_SCIENCE],starterAstronomy:[...STARTER_ASTRONOMY],principles:['familiar-first','observe','predict','test','explain','progressive-difficulty']}}}catch{}
+})();
+
+;
+
+/* ===== SOURCE: content-difficulty-ramp-rc40.js ===== */
+/* HistoDaily RC40 — global discipline difficulty ramp metadata and starter content. */
+(function histodailyRc40DifficultyContent(){
+  "use strict";
+  const VERSION = "1.0.0-rc.40.0";
+
+  const starterMysteries = {
+    history: [
+      "history-mystery-industrial-revolution-236", "history-mystery-cold-war-236",
+      "mystery-1789-rc39", "mystery-napoleon", "mystery-pyramids", "mystery-athens"
+    ],
+    art: [
+      "art-mystery-linear-perspective-235", "art-mystery-composition-122", "art-mystery-cubism-177",
+      "art-mystery-chiaroscuro-236", "art-mystery-daguerreotype-233", "art-mystery-automatic-writing-237"
+    ],
+    cinema: [
+      "cinema-mystery-documentary-233", "cinema-mystery-stop-motion-234", "cinema-mystery-offscreen-sound-237",
+      "cinema-mystery-cadrage-122", "cinema-mystery-montage-177", "cinema-mystery-kuleshov-235"
+    ],
+    "science-inventions": [
+      "science-mystery-hypothesis-122", "science-mystery-experimental-proof-121",
+      "science-mystery-double-helix-233", "science-mystery-immune-memory-235",
+      "science-mystery-universal-gravity-236", "science-mystery-atomic-number-237"
+    ],
+    astronomy: [
+      "astro-mystery-aurora-186", "astro-mystery-orbit-186", "astronomy-mystery-transit-method-235",
+      "astronomy-mystery-synchronous-rotation-236", "astronomy-mystery-apollo11-236", "astronomy-mystery-solstice-237"
+    ],
+    economy: [
+      "economy-mystery-inflation-235", "economy-mystery-gdp-236", "economy-mystery-scarcity-122",
+      "economy-mystery-supply-demand-121", "economy-mystery-opportunity-cost-175", "economy-mystery-inflation-mode"
+    ],
+    geography: [
+      "geography-mystery-map-scale-121", "geography-mystery-coordinates-122", "geography-mystery-map-projection-175",
+      "geography-mystery-climate-risk-236", "geography-mystery-food-security-234", "geography-mystery-metropolization-235"
+    ],
+    music: [
+      "music-mystery-riff-236", "music-mystery-midi-237", "music-mystery-sampling-177",
+      "music-mystery-multitrack-233", "music-mystery-gregorian-chant-122", "music-mystery-swing-235"
+    ],
+    literature: [
+      "literature-mystery-windmills-232", "literature-mystery-science-fiction-236", "literature-mystery-encyclopedia-237",
+      "literature-mystery-press-232", "literature-mystery-newspeak-232", "literature-mystery-chorus-232"
+    ],
+    english: [
+      "english-mystery-actually-318", "english-mystery-eventually-318", "english-mystery-afraid-318",
+      "english-mystery-yet-318", "english-mystery-sensible-rc19", "english-mystery-one-reference-rc19"
+    ],
+    philosophy: [
+      "philo-mystery-strawman-318", "philo-mystery-control-318", "philo-mystery-validity-rc19",
+      "philo-mystery-assent-rc19", "philo-mystery-counterexample-rc19", "philo-mystery-necessary-rc19"
+    ]
+  };
+
+  const starterLessons = {
+    history: ["prehistory-hominids", "prehistory-habilis"],
+    art: ["art-read-image-basics", "art-renaissance-perspective"],
+    cinema: ["cinema-shot-frame-basics", "cinema-montage-meaning"],
+    "science-inventions": ["sci-method-proof-basics", "sci-galileo-revolution"],
+    astronomy: ["astro-moon-phases-eclipses-tides", "astro-seasons-tilt-solstice-equinox"],
+    economy: ["eco-supply-demand-basics", "eco-gdp-growth-limits"],
+    geography: ["geo-maps-scale-basics", "geo-mercator-projection"],
+    music: ["music-gregorian-polyphony", "music-baroque-opera"],
+    literature: ["lit-epic-oral-traditions", "lit-greek-tragedy"],
+    philosophy: ["philo-argument-thesis-objection", "philo-argument-validity"],
+    english: ["eng-context-inference", "eng-context-reference"]
+  };
+
+  const starterLookup = new Map();
+  Object.entries(starterMysteries).forEach(([disciplineId, ids]) => ids.forEach(id => starterLookup.set(id, disciplineId)));
+  (data.mysteries || []).forEach(mystery => {
+    const disciplineId = starterLookup.get(mystery?.id);
+    if (!disciplineId) return;
+    if (!mystery.difficultyBeforeRC40) mystery.difficultyBeforeRC40 = mystery.difficulty || "moyen";
+    mystery.difficulty = "facile";
+    mystery.difficultyRampRC40 = "discovery";
+    mystery.starterDisciplineRC40 = disciplineId;
+  });
+
+  Object.entries(starterLessons).forEach(([disciplineId, ids]) => ids.forEach((id, index) => {
+    const pack = typeof READY_LESSON_PACKS !== "undefined" ? READY_LESSON_PACKS[id] : null;
+    if (!pack) return;
+    pack.learningRampRC40 = {
+      stage: "discovery",
+      order: index + 1,
+      disciplineId,
+      principle: "comprendre avant de complexifier"
+    };
+  }));
+
+  const config = Object.freeze({
+    version: VERSION,
+    starterMysteries: Object.freeze(Object.fromEntries(Object.entries(starterMysteries).map(([id, ids]) => [id, Object.freeze([...ids])]))),
+    starterLessons: Object.freeze(Object.fromEntries(Object.entries(starterLessons).map(([id, ids]) => [id, Object.freeze([...ids])]))),
+    thresholds: Object.freeze({ discoveryPoints: 8, confidencePoints: 20, intermediatePoints: 38 }),
+    principles: Object.freeze(["foundations-first", "guided-first", "discipline-specific", "no-expert-at-start", "difficulty-earned"])
+  });
+  window.HD_GLOBAL_RAMP_RC40 = config;
+  try { window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, globalDifficultyRampRC40: true }; } catch {}
+})();
+
+;
+
+/* ===== SOURCE: content-expansion-rc42.js ===== */
+/* HistoDaily RC42 — targeted catalogue expansion for underrepresented disciplines. */
+(function histodailyRc42CatalogueExpansion(){
+  "use strict";
+  const VERSION = "1.0.0-rc.42.0";
+  if (typeof data === "undefined" || typeof READY_LESSON_PACKS === "undefined") return;
+  const courses = [
+  {
+    "chapter": "eco-externalities-public-goods",
+    "meta": {
+      "id": "eco-common-resources-rules",
+      "order": 2,
+      "title": "Ressources communes : éviter la surexploitation",
+      "shortTitle": "Ressources communes",
+      "emoji": "🌊",
+      "period": "Économie contemporaine",
+      "location": "Marchés, territoires et ressources",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Une ressource peut être précieuse pour tout le monde et pourtant être épuisée par des décisions individuellement logiques. Comprendre ce paradoxe permet de raisonner sur l’eau, les pêches, les forêts ou le climat sans réduire le problème à la bonne ou mauvaise volonté.",
+      "keyFacts": [
+        "Une ressource peut être ouverte sans être infinie — Une pâture, une nappe phréatique, une zone de pêche ou l’atmosphère peuvent être utilisées par plusieurs acteurs.",
+        "Bien public et ressource commune ne sont pas la même chose — Un bien public est difficile à réserver à ceux qui paient et l’usage d’une personne ne réduit pas forcément celui des autres : l’éclairage d’une rue en est un exemple classique.",
+        "Pourquoi le prix peut envoyer un mauvais signal — Si l’accès à une ressource est gratuit ou sous-évalué, son prix privé ne reflète pas nécessairement son coût collectif.",
+        "Il n’existe pas une solution unique — Privatiser peut parfois clarifier qui supporte les conséquences d’un usage, mais cela ne fonctionne pas pour toutes les ressources et peut créer des problèmes d’accès."
+      ],
+      "express": [
+        "Une ressource commune est difficile à réserver, mais chaque prélèvement peut réduire ce qui reste aux autres. Le problème vient de l’écart entre bénéfice privé immédiat et coût collectif.",
+        "Prix, quotas, droits d’usage ou règles locales sont différentes façons de modifier les incitations. Aucune n’est automatiquement supérieure : tout dépend de l’information et du contrôle disponibles.",
+        "Pour analyser une surexploitation, demande qui bénéficie d’une unité supplémentaire, qui en supporte le coût et quelle règle pourrait rapprocher ces deux éléments."
+      ],
+      "complete": [
+        {
+          "title": "1. Une ressource peut être ouverte sans être infinie",
+          "text": "Une pâture, une nappe phréatique, une zone de pêche ou l’atmosphère peuvent être utilisées par plusieurs acteurs. Le problème apparaît lorsque chacun reçoit presque tout le bénéfice de son usage supplémentaire alors que le coût de l’épuisement est partagé par tous. Dans ce cas, une décision raisonnable à l’échelle individuelle peut produire collectivement une surexploitation. Ce n’est donc pas une histoire de personnes « égoïstes » : c’est un problème d’incitations et de règles."
+        },
+        {
+          "title": "2. Bien public et ressource commune ne sont pas la même chose",
+          "text": "Un bien public est difficile à réserver à ceux qui paient et l’usage d’une personne ne réduit pas forcément celui des autres : l’éclairage d’une rue en est un exemple classique. Une ressource commune est également difficile à exclure, mais elle peut être épuisée : un poisson capturé n’est plus disponible pour les autres pêcheurs. Confondre les deux empêche de choisir les bons outils de gestion."
+        },
+        {
+          "title": "3. Pourquoi le prix peut envoyer un mauvais signal",
+          "text": "Si l’accès à une ressource est gratuit ou sous-évalué, son prix privé ne reflète pas nécessairement son coût collectif. Pomper un litre d’eau peut coûter très peu aujourd’hui tout en accélérant la baisse d’une nappe. Une taxe, un quota ou un droit d’usage cherche alors à faire entrer une partie de ce coût futur dans la décision présente. Mais le bon outil dépend de ce qu’on sait mesurer et contrôler."
+        },
+        {
+          "title": "4. Il n’existe pas une solution unique",
+          "text": "Privatiser peut parfois clarifier qui supporte les conséquences d’un usage, mais cela ne fonctionne pas pour toutes les ressources et peut créer des problèmes d’accès. Des quotas peuvent limiter la quantité totale mais exigent de décider comment les répartir. Des règles locales peuvent aussi fonctionner lorsque les usagers se connaissent, surveillent la ressource et acceptent des sanctions. L’économie étudie précisément ces architectures d’incitation plutôt qu’une recette universelle."
+        },
+        {
+          "title": "5. Les règles doivent résister aux contournements",
+          "text": "Une politique peut être élégante sur le papier et échouer si elle est impossible à contrôler. Un quota de pêche mal surveillé peut déplacer les captures vers une autre zone ou encourager les déclarations incomplètes. Une taxe trop facile à éviter change moins les comportements qu’espéré. Pour évaluer une politique, il faut donc regarder le mécanisme, mais aussi l’information disponible, les possibilités de fraude et la capacité de contrôle."
+        },
+        {
+          "title": "6. Le bon réflexe : identifier qui gagne et qui supporte le coût",
+          "text": "Face à une ressource menacée, commence par demander qui bénéficie d’une unité d’usage supplémentaire et qui supporte la dégradation. Puis cherche ce qui empêche spontanément les acteurs de tenir compte de ce coût. Cette méthode évite de moraliser trop vite le problème. Elle permet aussi de comparer plusieurs solutions : prix, quotas, droits d’usage, coopération locale, normes techniques ou combinaison de plusieurs instruments."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Incitation",
+          "text": "Une décision rationnelle individuellement peut devenir destructrice collectivement."
+        },
+        {
+          "label": "Rivalité",
+          "text": "Prélever une ressource commune réduit ce qui reste disponible."
+        },
+        {
+          "label": "Institutions",
+          "text": "Taxes, quotas, droits et règles locales organisent des incitations différentes."
+        },
+        {
+          "label": "Diagnostic",
+          "text": "Toujours identifier le bénéficiaire immédiat et le porteur du coût collectif."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "mécanisme",
+          "q": "Pourquoi une ressource commune peut-elle être surexploitée même par des acteurs rationnels ?",
+          "a": "Parce que chacun capte une grande partie du bénéfice de son usage alors qu’une partie du coût est répartie sur tous.",
+          "choices": [
+            "Parce que chaque usager sous-estime la dégradation, même si le bénéfice privé et le coût collectif étaient parfaitement alignés.",
+            "Parce que l’absence de propriétaire privé empêche en pratique toute forme de coordination entre les usagers.",
+            "Parce que le prix courant résume déjà l’ensemble des coûts futurs imposés aux autres usagers."
+          ],
+          "why": "Le cœur du problème est l’écart entre bénéfice privé et coût collectif : l’incitation individuelle ne reflète pas entièrement la rareté créée pour les autres.",
+          "trap": "",
+          "evidence": "« Une ressource peut être ouverte sans être infinie »"
+        },
+        {
+          "kind": "distinction",
+          "q": "Quelle différence distingue surtout une ressource commune d’un bien public ?",
+          "a": "L’usage d’une ressource commune peut réduire ce qui reste disponible pour les autres.",
+          "choices": [
+            "Un bien public est défini par son mode de financement, tandis qu’une ressource commune est définie par son propriétaire juridique.",
+            "Une ressource commune est surtout un bien sans prix, tandis qu’un bien public est un service financé par l’impôt.",
+            "Un bien public se distingue surtout parce que sa production coûte peu, alors qu’une ressource commune devient chère à exploiter."
+          ],
+          "why": "Les deux peuvent être difficiles à réserver, mais la rivalité d’usage est décisive : prélever une ressource commune diminue ce qui reste.",
+          "trap": "",
+          "evidence": "« Bien public et ressource commune ne sont pas la même chose »"
+        },
+        {
+          "kind": "application",
+          "q": "Une ville veut freiner le pompage d’une nappe phréatique. Quel diagnostic est le plus utile avant de choisir un outil ?",
+          "a": "Mesurer qui pompe, comment la nappe réagit et quels usages peuvent réellement changer.",
+          "choices": [
+            "Comparer d’abord le niveau de taxe ou de quota le plus ambitieux, même si les réactions des usagers restent mal connues.",
+            "Estimer l’effet de la règle à partir de son objectif officiel, sans mesurer comment les usagers peuvent s’adapter.",
+            "Commencer par le statut juridique de la nappe et en déduire directement le comportement futur des usagers."
+          ],
+          "why": "Une politique dépend de l’information, de la réaction des acteurs et de la capacité de contrôle ; le même instrument ne fonctionne pas dans tous les contextes.",
+          "trap": "",
+          "evidence": "« Les règles doivent résister aux contournements »"
+        },
+        {
+          "kind": "nuance",
+          "q": "Pourquoi un quota n’est-il pas automatiquement meilleur qu’une taxe ?",
+          "a": "Parce qu’il faut pouvoir fixer, répartir et contrôler le quota, tandis qu’une taxe agit autrement sur les incitations.",
+          "choices": [
+            "Parce qu’un quota agit surtout sur le prix alors qu’une taxe fixe directement la quantité autorisée.",
+            "Parce qu’une taxe permet de connaître à l’avance la quantité finale, tandis qu’un quota laisse cette quantité indéterminée.",
+            "Parce que taxe et quota diffèrent surtout par leur nom administratif, beaucoup moins par les incitations qu’ils créent."
+          ],
+          "why": "Quota et taxe répondent au même problème par des mécanismes différents ; leur efficacité dépend de l’incertitude, du contrôle et de la manière dont les acteurs s’adaptent.",
+          "trap": "",
+          "evidence": "« Il n’existe pas une solution unique »"
+        },
+        {
+          "kind": "raisonnement",
+          "q": "Dans une pêcherie, chaque bateau gagne à sortir une fois de plus, mais le stock de poissons chute. Quelle question révèle le mieux le problème économique ?",
+          "a": "Qui supporte la baisse future du stock quand un bateau capture davantage aujourd’hui ?",
+          "choices": [
+            "Quel bateau possède le moteur le plus puissant ?",
+            "Quel poisson se vend le plus cher dans les restaurants de la région ?",
+            "Quel équipage travaille le plus longtemps pendant la saison ?"
+          ],
+          "why": "La question pertinente met en relation le bénéfice immédiat d’un acteur et le coût diffus imposé aux autres utilisateurs de la ressource.",
+          "trap": "",
+          "evidence": "« Le bon réflexe : identifier qui gagne et qui supporte le coût »"
+        }
+      ],
+      "learningPath": [
+        "Une ressource peut être ouverte sans être infinie — Une pâture, une nappe phréatique, une zone de pêche ou l’atmosphère peuvent être utilisées par plusieurs acteurs.",
+        "Bien public et ressource commune ne sont pas la même chose — Un bien public est difficile à réserver à ceux qui paient et l’usage d’une personne ne réduit pas forcément celui des autres : l’éclairage d’une rue en est un exemple classique.",
+        "Pourquoi le prix peut envoyer un mauvais signal — Si l’accès à une ressource est gratuit ou sous-évalué, son prix privé ne reflète pas nécessairement son coût collectif.",
+        "Il n’existe pas une solution unique — Privatiser peut parfois clarifier qui supporte les conséquences d’un usage, mais cela ne fonctionne pas pour toutes les ressources et peut créer des problèmes d’accès."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "eco-inequality-redistribution",
+    "meta": {
+      "id": "eco-redistribution-tax-benefits",
+      "order": 2,
+      "title": "Redistribution : impôts, prestations et services publics",
+      "shortTitle": "Redistribution",
+      "emoji": "⚖️",
+      "period": "Économie contemporaine",
+      "location": "Ménages et finances publiques",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Quand on dit qu’un système « redistribue », on mélange souvent impôts, prestations et services publics. Les séparer permet de comprendre qui paie vraiment, qui reçoit, et pourquoi un taux affiché ne dit presque jamais à lui seul ce qu’un ménage supporte.",
+      "keyFacts": [
+        "Redistribution : regarder avant et après les prélèvements — Comparer les inégalités uniquement à partir des salaires bruts donne une image incomplète.",
+        "Progressif ne veut pas dire que tout le revenu est taxé au même taux — Dans un barème progressif, les tranches supérieures peuvent être taxées à un taux plus élevé sans que ce taux s’applique à l’ensemble du revenu.",
+        "Les prestations ne sont qu’une partie du système — Une redistribution peut passer par un versement monétaire, mais aussi par l’accès à l’école, aux soins, aux transports ou à d’autres services publics.",
+        "Cibler ou universaliser produit des compromis différents — Une prestation très ciblée concentre les ressources sur les ménages qui en ont le plus besoin, mais elle exige des critères, peut créer des non-recours et parfois des seuils abrupts."
+      ],
+      "express": [
+        "La redistribution se lit en comparant revenu initial, prélèvements, prestations et services financés collectivement.",
+        "Dans un impôt progressif, le taux marginal concerne la dernière tranche : il ne remplace pas le taux appliqué à tout le revenu.",
+        "Ciblage et universalité produisent des compromis différents entre concentration de l’aide, simplicité, non-recours et coût."
+      ],
+      "complete": [
+        {
+          "title": "1. Redistribution : regarder avant et après les prélèvements",
+          "text": "Comparer les inégalités uniquement à partir des salaires bruts donne une image incomplète. Les ménages paient des impôts et cotisations, reçoivent parfois des prestations monétaires et bénéficient de services financés collectivement. Le revenu disponible se rapproche davantage de ce qu’un ménage peut réellement consommer ou épargner. Pour comprendre la redistribution, il faut donc distinguer revenu initial, prélèvements, prestations et services en nature."
+        },
+        {
+          "title": "2. Progressif ne veut pas dire que tout le revenu est taxé au même taux",
+          "text": "Dans un barème progressif, les tranches supérieures peuvent être taxées à un taux plus élevé sans que ce taux s’applique à l’ensemble du revenu. Le taux marginal concerne la dernière tranche ; le taux moyen rapporte l’impôt total au revenu total. Cette distinction évite une erreur fréquente : croire qu’une petite hausse de salaire peut faire « perdre » tout le gain en faisant basculer l’ensemble du revenu dans une tranche supérieure."
+        },
+        {
+          "title": "3. Les prestations ne sont qu’une partie du système",
+          "text": "Une redistribution peut passer par un versement monétaire, mais aussi par l’accès à l’école, aux soins, aux transports ou à d’autres services publics. Deux ménages au même revenu disponible n’ont pas forcément le même niveau de vie si leurs dépenses contraintes diffèrent fortement. L’analyse économique cherche donc à mesurer plusieurs dimensions plutôt qu’à réduire la redistribution à un seul chèque ou à un seul impôt."
+        },
+        {
+          "title": "4. Cibler ou universaliser produit des compromis différents",
+          "text": "Une prestation très ciblée concentre les ressources sur les ménages qui en ont le plus besoin, mais elle exige des critères, peut créer des non-recours et parfois des seuils abrupts. Une prestation universelle est plus simple et moins stigmatisante, mais coûte davantage à niveau individuel identique. Aucun choix n’est neutre : il faut comparer efficacité redistributive, simplicité, coût administratif et effets sur les comportements."
+        },
+        {
+          "title": "5. Les incitations comptent, mais elles ne racontent pas toute l’histoire",
+          "text": "Un impôt ou une prestation peut modifier l’intérêt à travailler davantage, épargner ou investir. Cependant, les réactions réelles dépendent du marché du travail, des contraintes familiales, de l’accès aux emplois, de la santé ou du logement. Dire qu’un taux « décourage le travail » sans mesurer les comportements est donc insuffisant. L’économie empirique cherche à estimer ces effets plutôt qu’à les supposer."
+        },
+        {
+          "title": "6. Évaluer une réforme : qui paie, qui reçoit, et sur quelle durée ?",
+          "text": "Une réforme fiscale peut avantager un ménage cette année mais modifier progressivement les salaires, les prix ou les services financés. Pour l’analyser, il faut regarder la distribution des gains et pertes, pas seulement le coût budgétaire total. Le bon réflexe est de demander quels groupes sont affectés, de combien, par quel mécanisme et avec quels effets indirects plausibles. La redistribution est un système, pas une simple soustraction entre « contributeurs » et « bénéficiaires »."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Revenu disponible",
+          "text": "Il tient compte des prélèvements et prestations monétaires."
+        },
+        {
+          "label": "Taux marginal",
+          "text": "Il concerne la dernière tranche, pas tout le revenu."
+        },
+        {
+          "label": "Services publics",
+          "text": "Ils redistribuent aussi sans prendre la forme d’un virement."
+        },
+        {
+          "label": "Évaluation",
+          "text": "Comparer qui gagne, qui perd et par quel mécanisme."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "distinction",
+          "q": "Quelle différence existe entre taux marginal et taux moyen d’imposition ?",
+          "a": "Le taux marginal s’applique à la dernière tranche concernée ; le taux moyen rapporte l’impôt total au revenu total.",
+          "choices": [
+            "Le taux marginal est payé uniquement par les entreprises, tandis que le taux moyen concerne les ménages.",
+            "Le taux moyen s’applique seulement aux revenus les plus élevés, tandis que le taux marginal est identique pour tous.",
+            "Le taux marginal mesure les prestations reçues, tandis que le taux moyen mesure les cotisations sociales."
+          ],
+          "why": "Dans un barème par tranches, le dernier euro peut être soumis à un taux différent de la proportion réellement payée sur l’ensemble du revenu.",
+          "trap": "",
+          "evidence": "« Progressif ne veut pas dire que tout le revenu est taxé au même taux »"
+        },
+        {
+          "kind": "application",
+          "q": "Une personne passe légèrement dans une tranche d’impôt supérieure. Que peut-on conclure sans connaître le reste du barème ?",
+          "a": "Que seule la part de revenu située dans cette nouvelle tranche est concernée par son taux marginal.",
+          "choices": [
+            "Que la hausse du taux marginal risque de s’appliquer à la majeure partie de son revenu et d’effacer le gain salarial.",
+            "Que le franchissement de tranche modifie le taux applicable à l’ensemble de son revenu imposable.",
+            "Que son taux moyen se rapproche instantanément du taux de la nouvelle tranche, même si seule une faible part y entre."
+          ],
+          "why": "Le mécanisme des tranches protège précisément contre le saut où tout le revenu serait soudain taxé au taux de la tranche supérieure.",
+          "trap": "",
+          "evidence": "« Progressif ne veut pas dire que tout le revenu est taxé au même taux »"
+        },
+        {
+          "kind": "nuance",
+          "q": "Pourquoi les services publics comptent-ils dans l’analyse de la redistribution ?",
+          "a": "Parce qu’ils fournissent des ressources ou services financés collectivement sans prendre forcément la forme d’un revenu versé.",
+          "choices": [
+            "Parce qu’ils sont comptés comme un revenu monétaire supplémentaire versé directement à chaque ménage.",
+            "Parce que leur financement permet de traiter les prélèvements comme s’ils n’avaient plus d’effet redistributif propre.",
+            "Parce qu’on peut attribuer la même valeur économique à un service public pour chaque ménage, indépendamment de son usage."
+          ],
+          "why": "Éducation, santé ou transport peuvent modifier le niveau de vie sans apparaître comme un virement monétaire sur le compte du ménage.",
+          "trap": "",
+          "evidence": "« Les prestations ne sont qu’une partie du système »"
+        },
+        {
+          "kind": "comparaison",
+          "q": "Quel compromis oppose souvent prestation ciblée et prestation universelle ?",
+          "a": "Le ciblage concentre davantage l’aide mais exige des critères ; l’universalité simplifie l’accès mais coûte davantage à prestation identique.",
+          "choices": [
+            "Le ciblage réduit surtout les coûts administratifs parce qu’il concerne moins de personnes, alors que l’universalité exige davantage de contrôles.",
+            "L’universalité redistribue peu par construction, alors qu’un dispositif ciblé suffit généralement à corriger l’essentiel des écarts de revenu.",
+            "Les deux dispositifs se distinguent surtout par leur vocabulaire, mais conduisent à une population bénéficiaire et un coût proches."
+          ],
+          "why": "Le choix porte notamment sur concentration des ressources, simplicité, non-recours, coût administratif et coût budgétaire.",
+          "trap": "",
+          "evidence": "« Cibler ou universaliser produit des compromis différents »"
+        },
+        {
+          "kind": "raisonnement",
+          "q": "Pour juger une réforme fiscale, quelle comparaison est la plus informative ?",
+          "a": "Comparer les gains et pertes par groupes de ménages, puis examiner les mécanismes et effets indirects attendus.",
+          "choices": [
+            "Comparer uniquement le nombre de pages du nouveau texte fiscal.",
+            "Regarder seulement le montant total collecté sans identifier qui le paie.",
+            "Observer le taux le plus élevé du barème sans examiner les revenus réellement concernés."
+          ],
+          "why": "Une réforme redistributive change la répartition, pas seulement un total budgétaire ; il faut donc suivre qui paie, qui reçoit et comment les comportements peuvent évoluer.",
+          "trap": "",
+          "evidence": "« Évaluer une réforme : qui paie, qui reçoit, et sur quelle durée ? »"
+        }
+      ],
+      "learningPath": [
+        "Redistribution : regarder avant et après les prélèvements — Comparer les inégalités uniquement à partir des salaires bruts donne une image incomplète.",
+        "Progressif ne veut pas dire que tout le revenu est taxé au même taux — Dans un barème progressif, les tranches supérieures peuvent être taxées à un taux plus élevé sans que ce taux s’applique à l’ensemble du revenu.",
+        "Les prestations ne sont qu’une partie du système — Une redistribution peut passer par un versement monétaire, mais aussi par l’accès à l’école, aux soins, aux transports ou à d’autres services publics.",
+        "Cibler ou universaliser produit des compromis différents — Une prestation très ciblée concentre les ressources sur les ménages qui en ont le plus besoin, mais elle exige des critères, peut créer des non-recours et parfois des seuils abrupts."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "music-baroque",
+    "meta": {
+      "id": "music-bach-counterpoint-listening",
+      "order": 2,
+      "title": "Bach et le contrepoint : entendre plusieurs voix à la fois",
+      "shortTitle": "Bach & contrepoint",
+      "emoji": "🎼",
+      "period": "XVIIe–XVIIIe siècles",
+      "location": "Europe",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Une fugue peut d’abord donner l’impression que trop de choses se passent en même temps. Le contrepoint devient beaucoup plus accessible dès qu’on cesse d’essayer de tout entendre et qu’on suit une idée qui passe d’une voix à l’autre.",
+      "keyFacts": [
+        "Écouter plusieurs lignes en même temps — Dans beaucoup de musiques, une mélodie principale domine et les autres sons l’accompagnent.",
+        "La basse donne un sol sous les voix — Dans la musique baroque, une ligne de basse et l’harmonie qui l’accompagne fournissent souvent un socle.",
+        "Une fugue commence par une idée qui voyage — Dans une fugue, une voix expose un sujet reconnaissable ; une autre entre ensuite avec cette même idée, tandis que la première continue.",
+        "Indépendance ne veut pas dire chaos — Pour que plusieurs lignes restent lisibles, elles doivent éviter de se gêner constamment."
+      ],
+      "express": [
+        "Le contrepoint associe plusieurs lignes autonomes plutôt qu’une mélodie avec simple accompagnement.",
+        "Dans une fugue, un sujet reconnaissable circule entre les voix et sert de fil conducteur.",
+        "Écouter le grave, puis une imitation, permet de décomposer une texture dense sans connaître le solfège."
+      ],
+      "complete": [
+        {
+          "title": "1. Écouter plusieurs lignes en même temps",
+          "text": "Dans beaucoup de musiques, une mélodie principale domine et les autres sons l’accompagnent. Le contrepoint organise au contraire plusieurs lignes mélodiques qui gardent chacune une certaine autonomie tout en formant un ensemble cohérent. L’enjeu n’est pas de suivre chaque note dès la première écoute. Commence par repérer une ligne, puis écoute quand une seconde l’imite, la contredit ou poursuit son propre chemin."
+        },
+        {
+          "title": "2. La basse donne un sol sous les voix",
+          "text": "Dans la musique baroque, une ligne de basse et l’harmonie qui l’accompagne fournissent souvent un socle. Ce principe de basse continue permet aux voix supérieures de circuler avec davantage de liberté tout en gardant une direction harmonique commune. À l’écoute, tu peux chercher d’abord le mouvement grave : même lorsqu’il est discret, il aide à sentir les arrivées, les tensions et les changements de section."
+        },
+        {
+          "title": "3. Une fugue commence par une idée qui voyage",
+          "text": "Dans une fugue, une voix expose un sujet reconnaissable ; une autre entre ensuite avec cette même idée, tandis que la première continue. D’autres entrées peuvent s’ajouter. Le plaisir vient de reconnaître le sujet quand il réapparaît transformé ou déplacé. Une fugue n’est donc pas simplement « plusieurs mélodies à la fois » : elle construit une conversation organisée autour d’un matériau partagé."
+        },
+        {
+          "title": "4. Indépendance ne veut pas dire chaos",
+          "text": "Pour que plusieurs lignes restent lisibles, elles doivent éviter de se gêner constamment. Le compositeur joue sur les directions contraires, les décalages rythmiques, les consonances et les dissonances. Une voix peut monter pendant qu’une autre descend ; une tension peut être préparée puis résolue. Le contrepoint crée ainsi de la densité sans renoncer à la trajectoire de chaque partie. C’est cette combinaison qui donne l’impression d’une architecture sonore."
+        },
+        {
+          "title": "5. Bach : moins un monument qu’un laboratoire d’écoute",
+          "text": "Johann Sebastian Bach est souvent présenté comme un sommet du contrepoint, mais le nom ne doit pas remplacer l’écoute. Dans ses fugues, chorals ou inventions, cherche les entrées successives, les motifs qui passent d’une voix à l’autre et les moments où plusieurs trajectoires convergent. On comprend mieux cette musique en suivant un petit motif pendant trente secondes qu’en mémorisant une liste de formes ou de dates."
+        },
+        {
+          "title": "6. Une méthode d’écoute en trois passages",
+          "text": "Premier passage : suis uniquement la ligne la plus évidente. Deuxième : essaie de repérer une entrée ou une imitation dans une autre voix. Troisième : écoute le grave et demande-toi comment il soutient les tensions et les résolutions. Cette méthode transforme une texture qui semblait compacte en plusieurs gestes distincts. Le but n’est pas de devenir analyste, mais d’entendre que l’intérêt vient précisément de la coexistence de plusieurs directions."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Contrepoint",
+          "text": "Plusieurs lignes gardent leur identité tout en formant un ensemble."
+        },
+        {
+          "label": "Sujet",
+          "text": "Dans une fugue, c’est l’idée musicale que l’on apprend à reconnaître."
+        },
+        {
+          "label": "Basse",
+          "text": "Elle aide à sentir direction, tension et résolution."
+        },
+        {
+          "label": "Écoute",
+          "text": "Suivre une seule voix d’abord vaut mieux que vouloir tout analyser."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "écoute",
+          "q": "Qu’est-ce qui caractérise le mieux une texture contrapuntique ?",
+          "a": "Plusieurs lignes mélodiques relativement autonomes se combinent de manière organisée.",
+          "choices": [
+            "Une seule mélodie est doublée exactement à l’unisson par tous les instruments.",
+            "Le rythme disparaît pour laisser uniquement une succession d’accords statiques.",
+            "Chaque instrument joue sans tenir compte de ce que font les autres parties."
+          ],
+          "why": "Le contrepoint repose sur l’autonomie relative des lignes : elles peuvent être suivies séparément tout en participant à une même construction.",
+          "trap": "",
+          "evidence": "« Écouter plusieurs lignes en même temps »"
+        },
+        {
+          "kind": "repérage",
+          "q": "Dans une fugue, que cherches-tu d’abord pour ne pas te perdre ?",
+          "a": "Le sujet qui apparaît dans une voix puis revient dans d’autres.",
+          "choices": [
+            "Le moment où tous les instruments s’arrêtent exactement en même temps.",
+            "Une percussion régulière qui reste identique pendant toute la pièce.",
+            "Un refrain chanté qui revient avec les mêmes paroles entre chaque couplet."
+          ],
+          "why": "Le sujet fournit un repère auditif stable : reconnaître ses entrées permet de suivre la conversation entre les voix.",
+          "trap": "",
+          "evidence": "« Une fugue commence par une idée qui voyage »"
+        },
+        {
+          "kind": "mécanisme",
+          "q": "Pourquoi une ligne de basse peut-elle aider à écouter plusieurs voix ?",
+          "a": "Parce qu’elle donne un socle harmonique et rend plus perceptibles les tensions et les arrivées.",
+          "choices": [
+            "Parce qu’elle oblige toutes les autres voix à jouer exactement les mêmes notes.",
+            "Parce qu’elle remplace les mélodies dès qu’une texture devient trop complexe.",
+            "Parce qu’elle supprime toute dissonance et rend chaque accord parfaitement stable."
+          ],
+          "why": "Le grave structure le mouvement harmonique ; l’entendre permet de situer les lignes supérieures dans une direction commune.",
+          "trap": "",
+          "evidence": "« La basse donne un sol sous les voix »"
+        },
+        {
+          "kind": "nuance",
+          "q": "Pourquoi « plusieurs mélodies à la fois » ne suffit-il pas à définir une fugue ?",
+          "a": "Parce que les entrées sont organisées autour d’un sujet commun et de ses transformations.",
+          "choices": [
+            "Parce qu’une fugue interdit qu’une deuxième voix entre après la première.",
+            "Parce qu’une fugue n’utilise jamais de répétition ou d’imitation entre les voix.",
+            "Parce que toutes les fugues sont écrites pour un seul instrument monodique."
+          ],
+          "why": "La fugue ne juxtapose pas arbitrairement des lignes : elle développe un matériau reconnaissable selon un principe d’entrées et de réponses.",
+          "trap": "",
+          "evidence": "« Une fugue commence par une idée qui voyage »"
+        },
+        {
+          "kind": "pratique",
+          "q": "Quelle stratégie est la plus utile pour une première écoute d’une pièce contrapuntique dense ?",
+          "a": "Suivre une ligne, puis chercher une imitation, puis écouter le rôle du grave.",
+          "choices": [
+            "Essayer de nommer immédiatement chaque accord et chaque note de toutes les voix.",
+            "Écouter uniquement le volume général sans chercher de motif récurrent.",
+            "Lire la biographie du compositeur pendant la pièce pour éviter de manquer une date."
+          ],
+          "why": "Découper l’écoute en tâches simples réduit la charge mentale et permet d’entendre progressivement la structure des voix.",
+          "trap": "",
+          "evidence": "« Une méthode d’écoute en trois passages »"
+        }
+      ],
+      "learningPath": [
+        "Écouter plusieurs lignes en même temps — Dans beaucoup de musiques, une mélodie principale domine et les autres sons l’accompagnent.",
+        "La basse donne un sol sous les voix — Dans la musique baroque, une ligne de basse et l’harmonie qui l’accompagne fournissent souvent un socle.",
+        "Une fugue commence par une idée qui voyage — Dans une fugue, une voix expose un sujet reconnaissable ; une autre entre ensuite avec cette même idée, tandis que la première continue.",
+        "Indépendance ne veut pas dire chaos — Pour que plusieurs lignes restent lisibles, elles doivent éviter de se gêner constamment."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "music-rock-pop",
+    "meta": {
+      "id": "music-riff-groove-hook",
+      "order": 2,
+      "title": "Riff, groove, refrain : pourquoi une chanson accroche",
+      "shortTitle": "Riff & groove",
+      "emoji": "🎸",
+      "period": "XXe–XXIe siècles",
+      "location": "Musiques populaires enregistrées",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Pourquoi reconnaît-on certains morceaux en deux secondes ? Pas seulement grâce à une mélodie : un riff, un son de batterie, une ligne de basse ou un détail de production peuvent suffire. Ce cours apprend à entendre comment répétition, groove et arrangement fabriquent la mémoire musicale.",
+      "keyFacts": [
+        "Une chanson tient souvent sur quelques éléments très mémorisables — Beaucoup de morceaux pop ou rock utilisent peu de matériaux, mais les combinent avec précision.",
+        "Le groove est une relation entre les temps, pas seulement un tempo — Deux morceaux à la même vitesse peuvent donner des sensations radicalement différentes.",
+        "Répéter crée une attente ; varier empêche l’usure — Un refrain fonctionne en partie parce qu’il revient.",
+        "Couplet, pré-refrain, refrain : des fonctions plutôt que des règles — Le couplet peut développer une histoire ou varier le texte ; le refrain concentre souvent l’idée centrale ; le pré-refrain peut augmenter la tension avant l’arrivée."
+      ],
+      "express": [
+        "Riff et hook ne sont pas synonymes : le hook est ce qui accroche, quelle que soit sa forme.",
+        "Le groove vient du placement des sons autour de la pulsation, pas seulement du nombre de battements par minute.",
+        "Une chanson garde son identité grâce à la répétition tout en renouvelant l’attention par de petites variations."
+      ],
+      "complete": [
+        {
+          "title": "1. Une chanson tient souvent sur quelques éléments très mémorisables",
+          "text": "Beaucoup de morceaux pop ou rock utilisent peu de matériaux, mais les combinent avec précision. Un riff peut servir de signature instrumentale ; un refrain concentre souvent le texte et la mélodie les plus mémorisables ; un hook peut être une phrase, un son, un rythme ou un détail de production qui accroche l’oreille. La simplicité n’est donc pas l’absence de travail : elle exige de choisir ce que l’auditeur doit retenir."
+        },
+        {
+          "title": "2. Le groove est une relation entre les temps, pas seulement un tempo",
+          "text": "Deux morceaux à la même vitesse peuvent donner des sensations radicalement différentes. Le groove dépend de la manière dont batterie, basse, guitare, clavier ou voix placent leurs attaques autour de la pulsation. De minuscules décalages, accents ou silences changent la sensation de mouvement. Pour l’entendre, essaie de battre une pulsation régulière puis observe quels éléments semblent pousser vers l’avant ou se poser légèrement derrière."
+        },
+        {
+          "title": "3. Répéter crée une attente ; varier empêche l’usure",
+          "text": "Un refrain fonctionne en partie parce qu’il revient. Mais si tout reste identique, l’attention peut retomber. Les arrangements jouent donc sur l’ajout d’une deuxième voix, l’ouverture des cymbales, une guitare supplémentaire, un silence avant le retour ou une modification de dynamique. La structure d’une chanson est souvent un art de la différence dans la répétition : faire reconnaître immédiatement une section tout en donnant une raison de l’écouter encore."
+        },
+        {
+          "title": "4. Couplet, pré-refrain, refrain : des fonctions plutôt que des règles",
+          "text": "Le couplet peut développer une histoire ou varier le texte ; le refrain concentre souvent l’idée centrale ; le pré-refrain peut augmenter la tension avant l’arrivée. Mais de nombreux morceaux ignorent cette architecture, inversent les fonctions ou construisent tout sur une boucle. Il est plus utile de demander « que fait cette section dans l’énergie du morceau ? » que de forcer chaque passage dans une étiquette."
+        },
+        {
+          "title": "5. Le studio fabrique aussi le hook",
+          "text": "Une accroche peut venir d’un timbre autant que d’une mélodie : une voix filtrée, un effet de guitare, une batterie compressée ou un échantillon singulier peuvent devenir immédiatement reconnaissables. Depuis l’enregistrement multipiste, l’identité d’un morceau se construit largement au mixage et à la production. Entendre la chanson, c’est donc aussi écouter les choix de texture, d’espace et de contraste qui n’existent pas forcément avant le studio."
+        },
+        {
+          "title": "6. Une grille d’écoute simple pour n’importe quel morceau",
+          "text": "Choisis une chanson que tu connais. Repère d’abord l’élément qui te permet de la reconnaître en deux secondes : c’est probablement un hook. Ensuite, frappe la pulsation et écoute la relation basse-batterie pour sentir le groove. Enfin, compare deux refrains successifs : qu’est-ce qui a été ajouté, retiré ou intensifié ? Cette petite enquête transforme une écoute passive en observation de la fabrication du morceau."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Hook",
+          "text": "L’élément que l’oreille retient immédiatement."
+        },
+        {
+          "label": "Groove",
+          "text": "La sensation produite par le placement rythmique des différentes parties."
+        },
+        {
+          "label": "Variation",
+          "text": "Un refrain peut revenir tout en changeant d’énergie."
+        },
+        {
+          "label": "Production",
+          "text": "Le timbre et le mixage font partie de l’écriture du morceau."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "distinction",
+          "q": "Quelle différence décrit le mieux un riff et un hook ?",
+          "a": "Un riff est généralement un motif instrumental répété ; un hook est tout élément particulièrement mémorisable, instrumental ou non.",
+          "choices": [
+            "Un riff est toujours vocal tandis qu’un hook est toujours joué par une guitare électrique.",
+            "Un hook désigne uniquement le titre du morceau, alors qu’un riff désigne toutes ses paroles.",
+            "Les deux mots décrivent exactement la vitesse à laquelle le morceau est joué."
+          ],
+          "why": "Le riff est un type de motif ; le hook est une fonction de mémorisation et peut prendre plusieurs formes.",
+          "trap": "",
+          "evidence": "« Une chanson tient souvent sur quelques éléments très mémorisables »"
+        },
+        {
+          "kind": "écoute",
+          "q": "Deux chansons ont le même tempo mais ne donnent pas du tout la même sensation de mouvement. Quelle notion aide le plus à l’expliquer ?",
+          "a": "Le groove, c’est-à-dire la manière dont les attaques et accents s’organisent autour de la pulsation.",
+          "choices": [
+            "La durée totale du fichier audio, même si elle ne change pas le placement rythmique.",
+            "Le nombre de mots dans le titre, indépendamment de ce qui est joué.",
+            "La date de sortie du morceau, qui détermine automatiquement sa sensation rythmique."
+          ],
+          "why": "Le tempo donne une vitesse ; le groove dépend du placement, des accents, des silences et des relations entre les instruments.",
+          "trap": "",
+          "evidence": "« Le groove est une relation entre les temps, pas seulement un tempo »"
+        },
+        {
+          "kind": "mécanisme",
+          "q": "Pourquoi un deuxième refrain peut-il sembler plus puissant que le premier tout en gardant la même mélodie ?",
+          "a": "Parce que l’arrangement peut ajouter des couches, élargir la dynamique ou préparer différemment son arrivée.",
+          "choices": [
+            "Parce que la répétition rend le refrain subjectivement plus fort, même si l’arrangement et la dynamique restent inchangés.",
+            "Parce que le deuxième refrain est généralement transposé, ce qui suffit à créer une impression d’élargissement.",
+            "Parce que l’impression de puissance vient principalement d’une accélération du tempo au retour du refrain."
+          ],
+          "why": "La variation d’orchestration et de dynamique renouvelle une section connue sans lui faire perdre son identité.",
+          "trap": "",
+          "evidence": "« Répéter crée une attente ; varier empêche l’usure »"
+        },
+        {
+          "kind": "nuance",
+          "q": "Pourquoi les étiquettes couplet/refrain ne suffisent-elles pas à analyser toutes les chansons ?",
+          "a": "Parce que certains morceaux utilisent des boucles, des formes irrégulières ou donnent des fonctions différentes aux sections.",
+          "choices": [
+            "Parce qu’aucune chanson populaire n’utilise réellement de sections reconnaissables.",
+            "Parce que les couplets et refrains ne peuvent être distingués qu’en lisant une partition classique.",
+            "Parce que la structure ne joue aucun rôle dans l’évolution de l’énergie d’un morceau."
+          ],
+          "why": "Les catégories sont des outils ; la fonction énergétique ou narrative d’une section est souvent plus informative que son nom.",
+          "trap": "",
+          "evidence": "« Couplet, pré-refrain, refrain : des fonctions plutôt que des règles »"
+        },
+        {
+          "kind": "pratique",
+          "q": "Quel exercice révèle le mieux la fabrication d’un refrain ?",
+          "a": "Comparer deux refrains successifs et noter ce qui a été ajouté, retiré ou intensifié.",
+          "choices": [
+            "Compter uniquement le nombre de lettres du nom de l’artiste.",
+            "Écouter le morceau en coupant toute la partie rythmique puis ignorer les autres couches.",
+            "Chercher d’abord le classement commercial sans réécouter le morceau."
+          ],
+          "why": "Comparer deux occurrences d’une même section fait ressortir les choix d’arrangement qui passent facilement inaperçus.",
+          "trap": "",
+          "evidence": "« Une grille d’écoute simple pour n’importe quel morceau »"
+        }
+      ],
+      "learningPath": [
+        "Une chanson tient souvent sur quelques éléments très mémorisables — Beaucoup de morceaux pop ou rock utilisent peu de matériaux, mais les combinent avec précision.",
+        "Le groove est une relation entre les temps, pas seulement un tempo — Deux morceaux à la même vitesse peuvent donner des sensations radicalement différentes.",
+        "Répéter crée une attente ; varier empêche l’usure — Un refrain fonctionne en partie parce qu’il revient.",
+        "Couplet, pré-refrain, refrain : des fonctions plutôt que des règles — Le couplet peut développer une histoire ou varier le texte ; le refrain concentre souvent l’idée centrale ; le pré-refrain peut augmenter la tension avant l’arrivée."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "cinema-shot-frame",
+    "meta": {
+      "id": "cinema-mise-en-scene-space-light",
+      "order": 81,
+      "title": "Mise en scène : faire parler l’espace avant le dialogue",
+      "shortTitle": "Mise en scène",
+      "emoji": "🎬",
+      "period": "Langage du cinéma",
+      "location": "Plateau et espace filmé",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Un film peut montrer qu’un personnage domine, se rapproche ou se sent piégé sans lui faire prononcer une seule phrase. La mise en scène raconte avec les corps, les distances, les objets et la lumière. Apprendre à la lire donne immédiatement plus de profondeur à n’importe quelle scène.",
+      "keyFacts": [
+        "Avant le montage, le plan raconte déjà — La mise en scène désigne la manière d’organiser ce qui existe devant la caméra : acteurs, décors, objets, lumière, déplacements et relations dans l’espace.",
+        "Placer un acteur, c’est écrire une relation — Le blocking — le placement et le mouvement des acteurs — permet de raconter sans expliquer.",
+        "Profondeur et premier plan distribuent notre attention — Un cadre peut contenir plusieurs actions à différentes distances.",
+        "La lumière ne sert pas seulement à rendre visible — Une source dure peut découper les visages et accentuer les contrastes ; une lumière diffuse adoucit les volumes."
+      ],
+      "express": [
+        "La mise en scène organise tout ce qui se trouve devant la caméra avant même le montage.",
+        "Le placement et le déplacement des acteurs rendent visibles les relations entre personnages.",
+        "Profondeur, lumière et décor distribuent l’attention et peuvent raconter plusieurs choses en même temps."
+      ],
+      "complete": [
+        {
+          "title": "1. Avant le montage, le plan raconte déjà",
+          "text": "La mise en scène désigne la manière d’organiser ce qui existe devant la caméra : acteurs, décors, objets, lumière, déplacements et relations dans l’espace. Un personnage isolé au fond d’une pièce n’exprime pas la même chose que le même personnage placé au centre d’un groupe. Avant même le dialogue ou le montage, la disposition des corps peut donc rendre visibles une domination, une distance affective, une hésitation ou une alliance."
+        },
+        {
+          "title": "2. Placer un acteur, c’est écrire une relation",
+          "text": "Le blocking — le placement et le mouvement des acteurs — permet de raconter sans expliquer. Deux personnes qui parlent côte à côte mais ne se regardent pas peuvent sembler proches physiquement et éloignées émotionnellement. Un personnage qui traverse progressivement le cadre pour rejoindre un autre transforme la relation sous nos yeux. Regarde moins « qui parle ? » et davantage « qui occupe quel espace, et comment cet espace change ? »."
+        },
+        {
+          "title": "3. Profondeur et premier plan distribuent notre attention",
+          "text": "Un cadre peut contenir plusieurs actions à différentes distances. Un visage au premier plan peut réagir pendant qu’un événement important se produit derrière lui ; au contraire, une grande profondeur peut nous laisser choisir où regarder. La mise en scène organise donc parfois plusieurs informations simultanément. Elle peut aussi cacher volontairement une information derrière un corps ou un décor pour créer attente, surprise ou ambiguïté."
+        },
+        {
+          "title": "4. La lumière ne sert pas seulement à rendre visible",
+          "text": "Une source dure peut découper les visages et accentuer les contrastes ; une lumière diffuse adoucit les volumes. Mais le plus important est souvent la direction : qui est éclairé, qui reste dans l’ombre, quelle zone de la pièce attire l’œil ? Les changements de lumière peuvent accompagner une émotion sans la traduire mécaniquement. Une scène sombre n’est pas automatiquement triste ; tout dépend de la manière dont la lumière organise le regard."
+        },
+        {
+          "title": "5. Les objets et décors peuvent devenir des forces dramatiques",
+          "text": "Un couloir étroit, une table trop longue, une porte entrouverte ou un téléphone posé entre deux personnages peuvent structurer une scène. Les décors ne sont pas un fond neutre : ils imposent des chemins, séparent des corps ou créent des lignes visuelles. Un bon réflexe consiste à regarder ce qui empêcherait la scène de fonctionner si on le retirait. L’objet indispensable à la relation est souvent déjà un élément de narration."
+        },
+        {
+          "title": "6. Lire une scène sans chercher le symbole caché",
+          "text": "Analyser la mise en scène ne consiste pas à inventer une signification secrète pour chaque couleur. Commence par décrire précisément ce qui change : distance entre les personnages, direction des regards, emplacement dans le cadre, source de lumière, obstacle ou déplacement. Ensuite seulement, propose une interprétation reliée à l’action. Cette méthode garde l’analyse ancrée dans ce que le film fait réellement voir."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Mise en scène",
+          "text": "Organisation des corps, décors, objets, lumière et mouvements dans l’espace filmé."
+        },
+        {
+          "label": "Blocking",
+          "text": "Placement et déplacements des acteurs."
+        },
+        {
+          "label": "Profondeur",
+          "text": "Elle permet de faire coexister plusieurs informations dans un même plan."
+        },
+        {
+          "label": "Méthode",
+          "text": "Décrire ce qui change avant d’interpréter."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "analyse",
+          "q": "Dans une scène de dispute, deux personnages sont séparés par une grande table. Quelle observation relève directement de la mise en scène ?",
+          "a": "La table organise physiquement leur distance et peut renforcer la séparation visible entre eux.",
+          "choices": [
+            "La table indique que le réalisateur veut surtout annoncer l’issue future de leur relation, indépendamment de leurs gestes et dialogues.",
+            "La table fonctionne d’abord comme un signe de genre et renseigne davantage sur le type de film que sur la relation entre les personnages.",
+            "La géométrie du meuble commande principalement la durée des plans, même si les acteurs restent immobiles."
+          ],
+          "why": "L’analyse part de l’organisation concrète de l’espace avant de proposer une interprétation ; le décor peut matérialiser une relation sans la décider entièrement.",
+          "trap": "",
+          "evidence": "« Les objets et décors peuvent devenir des forces dramatiques »"
+        },
+        {
+          "kind": "mécanisme",
+          "q": "Pourquoi le déplacement d’un acteur dans le cadre peut-il raconter quelque chose sans dialogue ?",
+          "a": "Parce qu’il modifie sa relation spatiale avec les autres personnages et les zones du cadre.",
+          "choices": [
+            "Parce que le mouvement du corps traduit directement une évolution psychologique, même si sa relation spatiale aux autres reste identique.",
+            "Parce que le déplacement oblige généralement la caméra à couper, ce qui produit surtout un effet de montage.",
+            "Parce que la distance physique constitue à elle seule un indicateur fiable de proximité affective, quel que soit le contexte de la scène."
+          ],
+          "why": "Le blocking fait évoluer les distances, les lignes de regard et les positions de pouvoir visibles dans la scène.",
+          "trap": "",
+          "evidence": "« Placer un acteur, c’est écrire une relation »"
+        },
+        {
+          "kind": "attention",
+          "q": "Une action importante se déroule au fond du cadre pendant qu’un visage occupe le premier plan. Qu’est-ce que cette construction permet ?",
+          "a": "Faire coexister l’événement et la réaction, en répartissant notre attention dans la profondeur.",
+          "choices": [
+            "Empêcher le spectateur de percevoir la moindre relation entre les deux actions.",
+            "Transformer automatiquement le plan en documentaire, quelle que soit la fiction racontée.",
+            "Supprimer tout besoin d’éclairage puisque la profondeur crée elle-même la visibilité."
+          ],
+          "why": "La profondeur peut superposer plusieurs informations et nous faire lire simultanément événement, réaction ou concurrence entre actions.",
+          "trap": "",
+          "evidence": "« Profondeur et premier plan distribuent notre attention »"
+        },
+        {
+          "kind": "nuance",
+          "q": "Pourquoi « une scène sombre = une scène triste » est-il un mauvais raccourci ?",
+          "a": "Parce que la lumière prend son sens par sa direction, son contraste, le contexte et ce qu’elle fait regarder.",
+          "choices": [
+            "Parce que la lumière n’a jamais aucun effet sur la perception d’une scène.",
+            "Parce que seules les couleurs vives peuvent porter une signification dramatique.",
+            "Parce que les scènes sombres sont exclusivement utilisées pour les plans extérieurs de nuit."
+          ],
+          "why": "La luminosité seule ne suffit pas ; il faut observer comment la lumière organise les visages, l’espace et l’attention.",
+          "trap": "",
+          "evidence": "« La lumière ne sert pas seulement à rendre visible »"
+        },
+        {
+          "kind": "méthode",
+          "q": "Quelle est la meilleure première étape pour analyser la mise en scène ?",
+          "a": "Décrire précisément positions, déplacements, regards, lumière et obstacles avant d’interpréter.",
+          "choices": [
+            "Chercher immédiatement un symbole caché pour chaque objet visible dans le décor.",
+            "Lire le résumé du film puis décider ce que chaque plan doit forcément signifier.",
+            "Compter les coupes du montage sans regarder l’organisation de l’espace dans le plan."
+          ],
+          "why": "Une description observable protège contre la surinterprétation et permet de relier ensuite les choix visuels à l’action dramatique.",
+          "trap": "",
+          "evidence": "« Lire une scène sans chercher le symbole caché »"
+        }
+      ],
+      "learningPath": [
+        "Avant le montage, le plan raconte déjà — La mise en scène désigne la manière d’organiser ce qui existe devant la caméra : acteurs, décors, objets, lumière, déplacements et relations dans l’espace.",
+        "Placer un acteur, c’est écrire une relation — Le blocking — le placement et le mouvement des acteurs — permet de raconter sans expliquer.",
+        "Profondeur et premier plan distribuent notre attention — Un cadre peut contenir plusieurs actions à différentes distances.",
+        "La lumière ne sert pas seulement à rendre visible — Une source dure peut découper les visages et accentuer les contrastes ; une lumière diffuse adoucit les volumes."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "cinema-editing-sound",
+    "meta": {
+      "id": "cinema-sound-offscreen-silence",
+      "order": 2,
+      "title": "Son, silence, hors-champ : le film continue les yeux fermés",
+      "shortTitle": "Son & hors-champ",
+      "emoji": "🎧",
+      "period": "Langage du cinéma",
+      "location": "Bande-son et montage",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Ferme les yeux devant une scène : tu continues souvent à comprendre où tu es, qui approche et ce qui menace. Le son construit de l’espace, du suspense et des transitions. Il ne vient pas après l’image : il raconte avec elle.",
+      "keyFacts": [
+        "Un film continue quand l’image ne montre rien — Le son peut faire exister une pièce, une foule ou une menace située hors du cadre.",
+        "Son dans le monde du film ou musique pour le spectateur — Un dialogue, une radio allumée dans la scène ou le moteur d’une voiture appartiennent au monde vécu par les personnages.",
+        "Le hors-champ sonore fabrique l’attente — Ce que nous entendons sans le voir devient une promesse d’image.",
+        "Un pont sonore peut relier deux espaces ou deux temps — Le son d’une scène peut commencer avant que l’image suivante apparaisse, ou continuer après la coupe."
+      ],
+      "express": [
+        "Un son hors champ fait exister une source invisible et agrandit l’espace du film.",
+        "Le film peut jouer entre sons entendus par les personnages et musique destinée au spectateur.",
+        "Ponts sonores et silences modifient la continuité, l’attente et l’attention sans changer nécessairement l’image."
+      ],
+      "complete": [
+        {
+          "title": "1. Un film continue quand l’image ne montre rien",
+          "text": "Le son peut faire exister une pièce, une foule ou une menace située hors du cadre. Un bruit de pas derrière une porte suffit parfois à agrandir l’espace bien au-delà de ce que la caméra montre. Le cinéma ne construit donc pas seulement un champ visuel : il construit un monde sonore. Écouter ce qui vient d’ailleurs permet de comprendre comment un film suggère sans montrer et dirige notre imagination."
+        },
+        {
+          "title": "2. Son dans le monde du film ou musique pour le spectateur",
+          "text": "Un dialogue, une radio allumée dans la scène ou le moteur d’une voiture appartiennent au monde vécu par les personnages. Une musique ajoutée pour accompagner l’émotion peut n’être entendue que par le spectateur. Ces catégories sont utiles, mais les films jouent souvent avec leur frontière : une chanson commence comme musique extérieure puis on découvre sa source dans la pièce, ou l’inverse. Ce glissement change notre relation à la scène."
+        },
+        {
+          "title": "3. Le hors-champ sonore fabrique l’attente",
+          "text": "Ce que nous entendons sans le voir devient une promesse d’image. Un cri dans une autre pièce pose immédiatement une question : qui crie, pourquoi, et quand la caméra nous montrera-t-elle la source ? Le réalisateur peut retarder cette révélation ou ne jamais la donner. Le son hors-champ est donc un puissant outil de suspense, mais aussi de réalisme : un lieu semble habité parce qu’il produit des sons au-delà du cadre."
+        },
+        {
+          "title": "4. Un pont sonore peut relier deux espaces ou deux temps",
+          "text": "Le son d’une scène peut commencer avant que l’image suivante apparaisse, ou continuer après la coupe. Ce pont rend la transition plus fluide ou crée une relation d’idée entre deux moments. Entendre une sirène avant de découvrir l’ambulance prépare notre lecture ; laisser une phrase se poursuivre sur une autre image peut lui donner un nouveau sens. Le montage sonore organise donc des liens que le montage visuel seul ne produit pas."
+        },
+        {
+          "title": "5. Le silence est un contraste, pas un vide absolu",
+          "text": "Au cinéma, un « silence » contient souvent respiration, froissement ou ambiance très faible. Son efficacité vient du contraste avec ce qui précédait. Après une scène saturée de musique et de bruit, une chute sonore peut rendre un geste minuscule extrêmement présent. Le silence attire l’attention parce qu’il change brutalement notre niveau d’écoute. Il peut créer intimité, malaise ou concentration sans qu’un effet musical nous dise quoi ressentir."
+        },
+        {
+          "title": "6. Une méthode : fermer les yeux trente secondes",
+          "text": "Choisis une scène que tu connais et écoute-la brièvement sans regarder l’écran. Peux-tu deviner la taille du lieu, les distances, ce qui se passe hors champ, ou le moment où une coupe approche ? Puis regarde à nouveau et compare ce que le son t’avait fait imaginer. Cet exercice montre que la bande-son possède sa propre mise en scène et qu’elle guide constamment notre compréhension de l’espace et du récit."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Hors-champ",
+          "text": "Le son rend présent ce que la caméra ne montre pas."
+        },
+        {
+          "label": "Diégèse",
+          "text": "Certains sons appartiennent au monde vécu par les personnages."
+        },
+        {
+          "label": "Pont sonore",
+          "text": "Un son peut chevaucher une coupe et relier deux scènes."
+        },
+        {
+          "label": "Silence",
+          "text": "Son pouvoir vient souvent du contraste avec ce qui précédait."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "écoute",
+          "q": "Un personnage regarde une porte fermée et nous entendons des pas derrière. Que fait principalement le son ?",
+          "a": "Il fait exister un espace et une présence hors du cadre avant qu’ils soient montrés.",
+          "choices": [
+            "Il prépare surtout une révélation visuelle immédiate de la source sonore dans le plan suivant.",
+            "Il fonctionne comme une forme de narration extérieure dès lors que sa source reste hors de l’image.",
+            "Il fournit assez d’informations sur l’espace pour que le cadrage visuel joue ensuite un rôle secondaire."
+          ],
+          "why": "Le hors-champ sonore agrandit l’espace perçu et crée une attente sans obliger le film à montrer immédiatement la source.",
+          "trap": "",
+          "evidence": "« Le hors-champ sonore fabrique l’attente »"
+        },
+        {
+          "kind": "distinction",
+          "q": "Une chanson sort d’une radio visible dans la pièce. Comment la comprendre d’abord ?",
+          "a": "Comme un son appartenant au monde de la scène, que les personnages peuvent en principe entendre.",
+          "choices": [
+            "Comme une musique nécessairement ajoutée uniquement pour le spectateur au montage final.",
+            "Comme un silence musical puisque sa source apparaît à l’image.",
+            "Comme un bruitage sans rapport avec l’espace ou les personnages."
+          ],
+          "why": "Une source présente dans le monde filmé rend le son diégétique ; le film peut ensuite jouer avec cette frontière.",
+          "trap": "",
+          "evidence": "« Son dans le monde du film ou musique pour le spectateur »"
+        },
+        {
+          "kind": "montage",
+          "q": "Pourquoi faire commencer le son de la scène suivante avant le changement d’image ?",
+          "a": "Pour préparer ou relier la transition grâce à un pont sonore.",
+          "choices": [
+            "Pour empêcher le spectateur de comprendre que l’image va changer.",
+            "Pour garantir que les deux scènes se déroulent exactement au même endroit.",
+            "Pour supprimer le besoin de toute continuité narrative entre les deux moments."
+          ],
+          "why": "Le chevauchement son/image peut rendre une coupe fluide, anticiper un lieu ou créer une association de sens entre deux scènes.",
+          "trap": "",
+          "evidence": "« Un pont sonore peut relier deux espaces ou deux temps »"
+        },
+        {
+          "kind": "nuance",
+          "q": "Pourquoi un silence cinématographique peut-il être très expressif ?",
+          "a": "Parce que la réduction sonore contraste avec ce qui précède et rend certains détails soudain très présents.",
+          "choices": [
+            "Parce qu’un silence signifie toujours exactement la même émotion dans tous les genres.",
+            "Parce que le silence empêche le spectateur de percevoir les gestes ou les expressions.",
+            "Parce qu’il est techniquement impossible d’enregistrer une ambiance faible pendant un silence."
+          ],
+          "why": "Le silence agit surtout comme changement de régime sonore ; son sens dépend du contexte et des sons qui restent perceptibles.",
+          "trap": "",
+          "evidence": "« Le silence est un contraste, pas un vide absolu »"
+        },
+        {
+          "kind": "pratique",
+          "q": "Quel exercice aide le mieux à comprendre la mise en scène sonore ?",
+          "a": "Écouter une scène les yeux fermés puis comparer l’espace imaginé avec les images.",
+          "choices": [
+            "Regarder les sous-titres sans écouter aucun son et conclure que la bande-son est secondaire.",
+            "Compter le nombre de plans tout en coupant totalement le son du début à la fin.",
+            "Lire uniquement la liste des acteurs avant de regarder la séquence."
+          ],
+          "why": "Priver temporairement l’écoute de l’image fait apparaître tout ce que le son nous apprend sur espace, distance, rythme et hors-champ.",
+          "trap": "",
+          "evidence": "« Une méthode : fermer les yeux trente secondes »"
+        }
+      ],
+      "learningPath": [
+        "Un film continue quand l’image ne montre rien — Le son peut faire exister une pièce, une foule ou une menace située hors du cadre.",
+        "Son dans le monde du film ou musique pour le spectateur — Un dialogue, une radio allumée dans la scène ou le moteur d’une voiture appartiennent au monde vécu par les personnages.",
+        "Le hors-champ sonore fabrique l’attente — Ce que nous entendons sans le voir devient une promesse d’image.",
+        "Un pont sonore peut relier deux espaces ou deux temps — Le son d’une scène peut commencer avant que l’image suivante apparaisse, ou continuer après la coupe."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "geo-cities",
+    "meta": {
+      "id": "geo-urban-sprawl-mobility",
+      "order": 2,
+      "title": "Étalement urbain : logement, distance et mobilité",
+      "shortTitle": "Étalement urbain",
+      "emoji": "🏘️",
+      "period": "XXe–XXIe siècles",
+      "location": "Métropoles et périphéries",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Une maison moins chère à vingt kilomètres du centre peut-elle vraiment être « moins chère » si elle impose deux voitures et des trajets quotidiens ? L’étalement urbain se comprend en reliant logement, foncier, transport et accès aux services.",
+      "keyFacts": [
+        "Une ville peut grandir sans gagner beaucoup d’habitants — L’étalement urbain désigne l’extension des surfaces urbanisées vers des espaces auparavant moins bâtis.",
+        "Le prix du sol pousse certaines fonctions vers la périphérie — Au centre, le foncier est souvent plus rare et plus cher.",
+        "La mobilité relie l’habitat dispersé au reste de la ville — Plus les destinations sont éloignées et spécialisées, plus les déplacements deviennent importants.",
+        "Densité ne signifie pas forcément tours, ni étalement maisons individuelles — Une ville dense peut être composée d’immeubles de quelques étages, de rues mixtes et de petits espaces publics."
+      ],
+      "express": [
+        "L’étalement mesure l’extension de l’espace urbanisé, pas seulement la croissance du nombre d’habitants.",
+        "Prix du sol, urbanisme, crédit et infrastructures structurent fortement la localisation des ménages et activités.",
+        "Les formes urbaines créent des contraintes de mobilité et répartissent leurs coûts de manière inégale."
+      ],
+      "complete": [
+        {
+          "title": "1. Une ville peut grandir sans gagner beaucoup d’habitants",
+          "text": "L’étalement urbain désigne l’extension des surfaces urbanisées vers des espaces auparavant moins bâtis. Il peut se produire même lorsque la population augmente peu, si les logements deviennent plus grands, si les activités se dispersent ou si l’on construit à faible densité. Regarder uniquement le nombre d’habitants masque donc une dimension essentielle : combien d’espace est consommé pour loger, travailler, se déplacer et accéder aux services."
+        },
+        {
+          "title": "2. Le prix du sol pousse certaines fonctions vers la périphérie",
+          "text": "Au centre, le foncier est souvent plus rare et plus cher. Des ménages cherchent davantage d’espace résidentiel ; des entrepôts ou commerces ont besoin de grandes parcelles ; des entreprises privilégient l’accès routier. Ces choix peuvent déplacer activités et habitat vers la périphérie. Mais parler d’un simple « choix individuel » serait incomplet : les règles d’urbanisme, l’offre de transport, le crédit et l’histoire du territoire structurent fortement les options disponibles."
+        },
+        {
+          "title": "3. La mobilité relie l’habitat dispersé au reste de la ville",
+          "text": "Plus les destinations sont éloignées et spécialisées, plus les déplacements deviennent importants. Si les transports collectifs sont rares et les distances grandes, la voiture peut devenir une contrainte plutôt qu’une préférence. Cela influence le budget des ménages, les émissions et l’accès à l’emploi. À l’inverse, densifier autour de lignes de transport peut rapprocher davantage d’habitants des services, à condition que le logement reste accessible."
+        },
+        {
+          "title": "4. Densité ne signifie pas forcément tours, ni étalement maisons individuelles",
+          "text": "Une ville dense peut être composée d’immeubles de quelques étages, de rues mixtes et de petits espaces publics. Une zone pavillonnaire peut aussi accueillir des services de proximité et plusieurs formes de logement. Les oppositions caricaturales empêchent de raisonner. Ce qui compte est la combinaison entre densité, mixité des fonctions, qualité des espaces, réseaux de transport et prix du logement."
+        },
+        {
+          "title": "5. Les coûts sont répartis de manière inégale",
+          "text": "Une maison plus loin du centre peut être moins chère à l’achat mais entraîner davantage de dépenses de transport. Un changement du prix du carburant touche alors différemment un ménage dépendant de la voiture et un ménage proche d’un réseau ferré. Les politiques de limitation de l’étalement peuvent aussi renchérir le foncier si l’offre de logements n’évolue pas. L’analyse géographique doit donc regarder les effets sociaux en même temps que les effets spatiaux."
+        },
+        {
+          "title": "6. Lire une périphérie : relier formes urbaines et réseaux",
+          "text": "Sur une carte ou une photo aérienne, observe la continuité du bâti, la taille des parcelles, les axes routiers, les gares, les zones commerciales et la distance aux services. Demande ensuite quels déplacements cette organisation rend faciles ou difficiles. Cette lecture permet de comprendre l’étalement comme un système habitat-emploi-mobilité, pas seulement comme une tache urbaine qui devient plus grande."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Étalement",
+          "text": "Davantage de surface urbanisée pour organiser habitat, activités et réseaux."
+        },
+        {
+          "label": "Mobilité",
+          "text": "Les distances et alternatives disponibles conditionnent les déplacements."
+        },
+        {
+          "label": "Densité",
+          "text": "Elle peut prendre de nombreuses formes autres que les tours."
+        },
+        {
+          "label": "Équité",
+          "text": "Le coût d’une même politique varie selon la localisation et les alternatives."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "définition",
+          "q": "Qu’est-ce que l’étalement urbain mesure surtout ?",
+          "a": "L’extension des surfaces urbanisées et la manière dont les activités et logements occupent davantage d’espace.",
+          "choices": [
+            "Uniquement la hausse du nombre d’habitants à l’intérieur des limites administratives de la ville.",
+            "Seulement la construction d’immeubles de grande hauteur dans les quartiers centraux.",
+            "La quantité de transports publics présents dans une agglomération, sans lien avec le bâti."
+          ],
+          "why": "Une ville peut consommer davantage de sol sans connaître une forte croissance démographique ; surface urbanisée et population ne sont pas la même variable.",
+          "trap": "",
+          "evidence": "« Une ville peut grandir sans gagner beaucoup d’habitants »"
+        },
+        {
+          "kind": "mécanisme",
+          "q": "Pourquoi la dépendance automobile peut-elle augmenter dans une périphérie dispersée ?",
+          "a": "Parce que les distances entre logement, emploi et services augmentent alors que les alternatives collectives peuvent rester limitées.",
+          "choices": [
+            "Parce que les habitants de périphérie préfèrent nécessairement la voiture quels que soient les réseaux disponibles.",
+            "Parce que tout logement individuel interdit juridiquement l’usage du bus ou du train.",
+            "Parce que la densité faible réduit automatiquement la distance entre toutes les destinations."
+          ],
+          "why": "La forme urbaine et l’offre de transport rendent certaines mobilités plus ou moins praticables ; la voiture peut devenir une contrainte d’organisation.",
+          "trap": "",
+          "evidence": "« La mobilité relie l’habitat dispersé au reste de la ville »"
+        },
+        {
+          "kind": "nuance",
+          "q": "Pourquoi « densifier = construire des tours » est-il un mauvais raccourci ?",
+          "a": "Parce qu’une densité élevée peut aussi venir d’immeubles moyens, de parcelles compactes et d’une forte mixité des fonctions.",
+          "choices": [
+            "Parce que la densité décrit surtout la hauteur moyenne des bâtiments, plus que le nombre de logements rapporté à une surface.",
+            "Parce que les tours consomment beaucoup de sol au pied des bâtiments et produisent donc souvent une densité plus faible que les quartiers pavillonnaires.",
+            "Parce que la consommation d’espace dépend principalement de la croissance démographique, beaucoup moins de la forme des quartiers."
+          ],
+          "why": "La densité est un rapport entre population ou constructions et surface ; plusieurs formes architecturales peuvent produire des niveaux proches.",
+          "trap": "",
+          "evidence": "« Densité ne signifie pas forcément tours, ni étalement maisons individuelles »"
+        },
+        {
+          "kind": "équité",
+          "q": "Pourquoi une hausse du carburant n’affecte-t-elle pas tous les ménages de la même façon ?",
+          "a": "Parce que leur dépendance aux déplacements motorisés et leur accès aux alternatives diffèrent selon leur localisation.",
+          "choices": [
+            "Parce que le prix du carburant varie automatiquement selon le revenu déclaré de chaque ménage.",
+            "Parce que seuls les habitants des centres-villes possèdent des véhicules motorisés.",
+            "Parce que les distances domicile-travail sont identiques pour tous à l’intérieur d’une métropole."
+          ],
+          "why": "La géographie des réseaux et des lieux de vie crée des contraintes de mobilité très différentes, donc des expositions différentes à un même prix.",
+          "trap": "",
+          "evidence": "« Les coûts sont répartis de manière inégale »"
+        },
+        {
+          "kind": "lecture",
+          "q": "Sur une photo aérienne, quel ensemble d’indices aide le mieux à analyser l’étalement ?",
+          "a": "Continuité du bâti, taille des parcelles, axes, gares, zones d’activité et distance aux services.",
+          "choices": [
+            "La couleur du logo de la commune et le nombre de lettres de son nom.",
+            "Uniquement l’altitude du point le plus haut sans regarder les réseaux ni le bâti.",
+            "Le nombre de monuments historiques, indépendamment de l’organisation des logements et déplacements."
+          ],
+          "why": "L’étalement se comprend en reliant formes bâties, fonctions et réseaux de mobilité plutôt qu’en regardant une seule caractéristique.",
+          "trap": "",
+          "evidence": "« Lire une périphérie : relier formes urbaines et réseaux »"
+        }
+      ],
+      "learningPath": [
+        "Une ville peut grandir sans gagner beaucoup d’habitants — L’étalement urbain désigne l’extension des surfaces urbanisées vers des espaces auparavant moins bâtis.",
+        "Le prix du sol pousse certaines fonctions vers la périphérie — Au centre, le foncier est souvent plus rare et plus cher.",
+        "La mobilité relie l’habitat dispersé au reste de la ville — Plus les destinations sont éloignées et spécialisées, plus les déplacements deviennent importants.",
+        "Densité ne signifie pas forcément tours, ni étalement maisons individuelles — Une ville dense peut être composée d’immeubles de quelques étages, de rues mixtes et de petits espaces publics."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "geo-flows",
+    "meta": {
+      "id": "geo-migration-routes-networks-borders",
+      "order": 2,
+      "title": "Migrations : routes, réseaux et frontières",
+      "shortTitle": "Migrations",
+      "emoji": "🧭",
+      "period": "Monde contemporain",
+      "location": "Routes migratoires et territoires",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Une grande flèche sur une carte donne l’impression qu’une migration relie directement un point A à un point B. En réalité, les parcours dépendent de ressources, de réseaux, de frontières, d’étapes et de projets qui changent en route.",
+      "keyFacts": [
+        "Une migration est une trajectoire, pas une simple flèche — Les cartes représentent souvent les migrations par une flèche entre un pays de départ et un pays d’arrivée.",
+        "« Push-pull » aide à commencer, mais pas à expliquer tout — On distingue parfois des facteurs qui poussent au départ — conflit, chômage, catastrophe — et d’autres qui attirent — emploi, sécurité, famille.",
+        "Les réseaux personnels façonnent les destinations — Une destination devient plus accessible lorsqu’un proche peut fournir une information, un hébergement temporaire ou un contact professionnel.",
+        "La frontière n’est pas seulement une ligne — Visa, contrôle, mer, désert, coût du transport, accords entre États ou politiques d’asile transforment les itinéraires."
+      ],
+      "express": [
+        "Une migration est une trajectoire faite d’étapes et de temporalités, pas seulement un départ et une arrivée.",
+        "Les raisons de partir ne suffisent pas : moyens, informations, documents et réseaux conditionnent la possibilité de migrer.",
+        "Les frontières transforment les routes et les risques ; les réseaux personnels contribuent à concentrer certains flux."
+      ],
+      "complete": [
+        {
+          "title": "1. Une migration est une trajectoire, pas une simple flèche",
+          "text": "Les cartes représentent souvent les migrations par une flèche entre un pays de départ et un pays d’arrivée. Cette simplification cache les étapes, retours, détours, séjours temporaires et changements de projet. Beaucoup de mobilités sont régionales plutôt qu’intercontinentales. D’autres s’effectuent d’abord vers une ville proche. Comprendre une migration exige donc de regarder le parcours et sa durée, pas seulement deux points reliés sur une carte."
+        },
+        {
+          "title": "2. « Push-pull » aide à commencer, mais pas à expliquer tout",
+          "text": "On distingue parfois des facteurs qui poussent au départ — conflit, chômage, catastrophe — et d’autres qui attirent — emploi, sécurité, famille. Cette grille est utile mais trop simple si elle ignore les ressources nécessaires pour partir, les informations disponibles et les contraintes juridiques. Les personnes les plus exposées à une crise ne sont pas toujours celles qui peuvent migrer le plus loin. La mobilité dépend aussi de la capacité à transformer un projet en trajet réel."
+        },
+        {
+          "title": "3. Les réseaux personnels façonnent les destinations",
+          "text": "Une destination devient plus accessible lorsqu’un proche peut fournir une information, un hébergement temporaire ou un contact professionnel. Ces réseaux expliquent pourquoi des flux se concentrent parfois sur quelques villes plutôt que de se répartir uniformément. Une migration antérieure peut donc faciliter les suivantes. Ce mécanisme ne supprime ni les frontières ni les coûts, mais il modifie la carte des possibilités perçues et réelles."
+        },
+        {
+          "title": "4. La frontière n’est pas seulement une ligne",
+          "text": "Visa, contrôle, mer, désert, coût du transport, accords entre États ou politiques d’asile transforment les itinéraires. Renforcer un passage peut déplacer les routes vers un autre, parfois plus dangereux, sans supprimer le projet migratoire. La frontière fonctionne ainsi comme un ensemble de dispositifs distribués : consulats, compagnies de transport, bases de données, contrôles intérieurs et règles d’accès au travail participent aussi à la sélection des mobilités."
+        },
+        {
+          "title": "5. Partir transforme aussi le lieu d’origine",
+          "text": "Les migrants peuvent envoyer une partie de leurs revenus, transmettre des informations, investir ou maintenir des liens politiques et familiaux. Les départs peuvent alléger certaines tensions sur l’emploi mais aussi priver un territoire de compétences rares. Les effets dépendent du nombre de départs, des profils concernés et de la durée. Une migration ne relie donc pas seulement un individu à une destination : elle crée souvent un espace de relations entre plusieurs lieux."
+        },
+        {
+          "title": "6. Lire une carte migratoire sans lui faire dire trop",
+          "text": "Une grande flèche peut représenter un flux annuel, un stock de personnes nées à l’étranger ou une estimation sur plusieurs années : ce ne sont pas les mêmes choses. Vérifie toujours l’unité, la période et la définition utilisée. Demande ensuite quels trajets intermédiaires ou quelles mobilités courtes disparaissent de la représentation. La carte est un outil de synthèse puissant, mais elle peut fabriquer une impression de mouvement massif si l’on oublie son échelle et ses conventions."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Trajectoire",
+          "text": "Les migrations comportent souvent étapes, retours et changements de projet."
+        },
+        {
+          "label": "Capacité",
+          "text": "Vouloir partir et pouvoir partir sont deux choses différentes."
+        },
+        {
+          "label": "Réseaux",
+          "text": "Les contacts réduisent certains coûts et orientent les destinations."
+        },
+        {
+          "label": "Carte",
+          "text": "Toujours vérifier indicateur, période et définition avant de lire une flèche."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "nuance",
+          "q": "Pourquoi une flèche entre deux pays donne-t-elle une vision incomplète d’une migration ?",
+          "a": "Parce qu’elle masque souvent étapes, retours, durée, détours et changements de projet.",
+          "choices": [
+            "Parce qu’une migration ne relie jamais deux territoires différents.",
+            "Parce que toutes les personnes migrantes utilisent exactement le même itinéraire.",
+            "Parce que les cartes ne peuvent représenter que des déplacements touristiques."
+          ],
+          "why": "La trajectoire réelle peut comporter plusieurs lieux et temporalités ; le point de départ et la destination finale ne résument pas tout le parcours.",
+          "trap": "",
+          "evidence": "« Une migration est une trajectoire, pas une simple flèche »"
+        },
+        {
+          "kind": "raisonnement",
+          "q": "Deux régions connaissent la même crise, mais les départs internationaux sont plus nombreux dans celle où les ménages disposent de davantage de ressources et de réseaux. Quelle idée cela illustre ?",
+          "a": "Subir une forte contrainte ne suffit pas : migrer dépend aussi des moyens, informations et connexions permettant de partir.",
+          "choices": [
+            "Les crises expliquent à elles seules l’intensité des départs ; les différences de ressources jouent surtout après l’arrivée.",
+            "Les réseaux familiaux facilitent surtout l’intégration après l’arrivée, mais orientent peu la destination choisie avant le départ.",
+            "À contrainte comparable, les écarts de départs reflètent surtout des préférences culturelles différentes plutôt que des capacités matérielles."
+          ],
+          "why": "Le modèle push-pull doit être complété par la capacité à agir : coût du trajet, documents, contacts et informations conditionnent la réalisation du projet.",
+          "trap": "",
+          "evidence": "« « Push-pull » aide à commencer, mais pas à expliquer tout »"
+        },
+        {
+          "kind": "réseau",
+          "q": "Comment un réseau migratoire peut-il renforcer un flux vers une ville précise ?",
+          "a": "Des personnes déjà installées peuvent réduire l’incertitude en fournissant informations, contacts ou hébergement.",
+          "choices": [
+            "La présence d’un proche réduit suffisamment les obstacles pour que les règles de visa deviennent secondaires dans le choix du trajet.",
+            "Un réseau tend à homogénéiser presque entièrement les destinations parce que chacun reproduit le parcours des premiers migrants.",
+            "Les informations fournies par des proches réduisent surtout le coût financier du transport, davantage que l’incertitude ou l’hébergement."
+          ],
+          "why": "Les réseaux diminuent certains coûts et risques sans supprimer les contraintes institutionnelles ; ils orientent ainsi les destinations accessibles.",
+          "trap": "",
+          "evidence": "« Les réseaux personnels façonnent les destinations »"
+        },
+        {
+          "kind": "frontière",
+          "q": "Pourquoi fermer un passage ne supprime-t-il pas forcément un flux migratoire ?",
+          "a": "Parce que les itinéraires peuvent se déplacer vers d’autres routes si les raisons et capacités de partir subsistent.",
+          "choices": [
+            "Parce qu’une frontière physique n’a jamais aucun effet sur le coût ou le risque d’un trajet.",
+            "Parce que tous les États doivent laisser ouverts exactement les mêmes points de passage.",
+            "Parce qu’un trajet international est indépendant des politiques de visa ou de contrôle."
+          ],
+          "why": "Les contrôles modifient coûts, risques et routes ; ils peuvent transformer la géographie du flux plutôt que supprimer toutes les mobilités.",
+          "trap": "",
+          "evidence": "« La frontière n’est pas seulement une ligne »"
+        },
+        {
+          "kind": "carte",
+          "q": "Avant de comparer deux cartes de migrations, que faut-il vérifier en priorité ?",
+          "a": "Si elles représentent le même indicateur, la même période et la même définition des personnes comptées.",
+          "choices": [
+            "Si les flèches utilisent exactement la même couleur, quel que soit l’indicateur.",
+            "Si les deux cartes ont été imprimées sur un papier de même taille.",
+            "Si le nom des pays est écrit avec la même police de caractères."
+          ],
+          "why": "Un stock, un flux annuel et un cumul pluriannuel peuvent produire des images très différentes ; la légende et la période sont donc indispensables.",
+          "trap": "",
+          "evidence": "« Lire une carte migratoire sans lui faire dire trop »"
+        }
+      ],
+      "learningPath": [
+        "Une migration est une trajectoire, pas une simple flèche — Les cartes représentent souvent les migrations par une flèche entre un pays de départ et un pays d’arrivée.",
+        "« Push-pull » aide à commencer, mais pas à expliquer tout — On distingue parfois des facteurs qui poussent au départ — conflit, chômage, catastrophe — et d’autres qui attirent — emploi, sécurité, famille.",
+        "Les réseaux personnels façonnent les destinations — Une destination devient plus accessible lorsqu’un proche peut fournir une information, un hébergement temporaire ou un contact professionnel.",
+        "La frontière n’est pas seulement une ligne — Visa, contrôle, mer, désert, coût du transport, accords entre États ou politiques d’asile transforment les itinéraires."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "art-avantgardes",
+    "meta": {
+      "id": "art-abstraction-color-form",
+      "order": 4,
+      "title": "Abstraction : couleur, forme et rythme sans récit imposé",
+      "shortTitle": "Abstraction",
+      "emoji": "🔷",
+      "period": "XXe siècle",
+      "location": "Europe et États-Unis",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Devant une toile abstraite, la mauvaise question est souvent « qu’est-ce que ça représente ? ». La meilleure peut être : « qu’est-ce que mes yeux sont en train de faire ? ». Couleur, ligne, répétition et matière peuvent construire une expérience sans raconter une scène.",
+      "keyFacts": [
+        "Abstraire ne veut pas dire « ne rien représenter » — L’abstraction réduit, transforme ou abandonne la représentation reconnaissable pour faire travailler directement couleur, ligne, forme, rythme et matière.",
+        "La couleur peut organiser une tension sans raconter une histoire — Un rouge dense contre un bleu froid, une zone claire entourée de noir ou une série de tons proches produisent des relations visuelles avant toute interprétation symbolique.",
+        "Kandinsky : chercher une nécessité visuelle plutôt qu’un code secret — Kandinsky associe peinture, musique et intériorité, mais ses œuvres ne se résument pas à une traduction mécanique de sons en couleurs.",
+        "Mondrian : réduire pour rendre les relations visibles — Chez Mondrian, la grille, les verticales et horizontales, les rectangles et un nombre limité de couleurs ne sont pas une décoration minimaliste choisie au hasard."
+      ],
+      "express": [
+        "L’abstraction déplace l’attention de la ressemblance vers les relations entre formes, couleurs et matière.",
+        "Une couleur ne possède pas un sens universel : son effet dépend de ce qui l’entoure et de sa place dans la composition.",
+        "Kandinsky, Mondrian et les abstractions gestuelles montrent qu’il existe plusieurs façons radicalement différentes de ne pas représenter."
+      ],
+      "complete": [
+        {
+          "title": "1. Abstraire ne veut pas dire « ne rien représenter »",
+          "text": "L’abstraction réduit, transforme ou abandonne la représentation reconnaissable pour faire travailler directement couleur, ligne, forme, rythme et matière. Certaines œuvres partent d’un paysage ou d’un objet puis le simplifient ; d’autres sont non figuratives dès leur conception. Parler d’abstraction comme d’un simple refus de dessiner « correctement » manque donc le sujet : la question devient ce que l’œuvre peut construire quand la ressemblance n’est plus son principal critère."
+        },
+        {
+          "title": "2. La couleur peut organiser une tension sans raconter une histoire",
+          "text": "Un rouge dense contre un bleu froid, une zone claire entourée de noir ou une série de tons proches produisent des relations visuelles avant toute interprétation symbolique. Les artistes abstraits explorent ces effets de contraste, de poids et de vibration. Il n’existe pas un dictionnaire universel où rouge signifie toujours passion. Commence plutôt par observer comment une couleur se comporte par rapport aux autres et quelle partie du tableau elle rend dominante."
+        },
+        {
+          "title": "3. Kandinsky : chercher une nécessité visuelle plutôt qu’un code secret",
+          "text": "Kandinsky associe peinture, musique et intériorité, mais ses œuvres ne se résument pas à une traduction mécanique de sons en couleurs. Lignes, masses et directions créent des tensions qui peuvent rappeler un rythme ou un mouvement. Pour regarder ses compositions, suis une forme, observe où elle rencontre une autre, puis repère les répétitions et ruptures. Cette approche est plus féconde que d’essayer de deviner ce que « représente » chaque tache."
+        },
+        {
+          "title": "4. Mondrian : réduire pour rendre les relations visibles",
+          "text": "Chez Mondrian, la grille, les verticales et horizontales, les rectangles et un nombre limité de couleurs ne sont pas une décoration minimaliste choisie au hasard. La réduction rend extrêmement perceptibles les rapports de taille, de position et d’équilibre. Déplacer une ligne de quelques centimètres changerait toute la composition. L’abstraction montre ici qu’un vocabulaire restreint peut produire une grande complexité de relations."
+        },
+        {
+          "title": "5. Le geste et la matière ouvrent d’autres voies",
+          "text": "Toute abstraction n’est pas géométrique. Des artistes mettent au premier plan la trace du geste, l’épaisseur de la peinture, la vitesse ou la répétition. L’œuvre peut alors conserver l’empreinte d’une action plutôt qu’une image du monde. Cela change la manière de regarder : on peut imaginer le mouvement du corps, la résistance du matériau ou le temps nécessaire pour accumuler les marques visibles sur la surface."
+        },
+        {
+          "title": "6. Comment regarder une œuvre abstraite sans rester bloqué",
+          "text": "Commence par trois questions descriptives : où va ton regard en premier, quelles formes ou couleurs se répètent, et où se trouve la plus forte tension ? Ensuite, formule une hypothèse : la composition paraît-elle stable, instable, expansive, compacte ? Enfin, cherche dans l’œuvre un élément qui confirme ou contredit ton impression. Tu n’as pas besoin de trouver « la bonne histoire » ; tu dois relier ton interprétation à des relations visibles."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Abstraction",
+          "text": "La ressemblance cesse d’être le critère principal de l’œuvre."
+        },
+        {
+          "label": "Couleur",
+          "text": "Elle agit par contraste et relation, pas par dictionnaire symbolique fixe."
+        },
+        {
+          "label": "Réduction",
+          "text": "Peu d’éléments peuvent rendre chaque rapport plus intense."
+        },
+        {
+          "label": "Regard",
+          "text": "Décrire les tensions visibles avant d’inventer une interprétation."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "concept",
+          "q": "Qu’est-ce qui définit le mieux l’abstraction en art ?",
+          "a": "Le fait de faire travailler formes, couleurs, lignes ou matière sans faire de la ressemblance reconnaissable le critère principal.",
+          "choices": [
+            "L’interdiction d’utiliser toute couleur présente dans le monde réel.",
+            "L’obligation de peindre uniquement des formes géométriques à angles droits.",
+            "L’absence totale de choix de composition ou de référence à une expérience visuelle."
+          ],
+          "why": "L’abstraction peut être géométrique, gestuelle ou issue d’une simplification du réel ; son point commun est de déplacer le centre de gravité hors de la ressemblance.",
+          "trap": "",
+          "evidence": "« Abstraire ne veut pas dire « ne rien représenter » »"
+        },
+        {
+          "kind": "analyse",
+          "q": "Face à une grande zone rouge dans une toile abstraite, quelle première question est la plus solide ?",
+          "a": "Comment ce rouge contraste-t-il avec les autres couleurs et comment organise-t-il mon regard ?",
+          "choices": [
+            "Quelle émotion le rouge exprime-t-il habituellement, en supposant que sa symbolique reste stable d’une œuvre à l’autre ?",
+            "Quel objet réel cette zone pourrait-elle représenter si l’on cherchait d’abord une correspondance figurative ?",
+            "Pourquoi l’artiste a-t-il choisi une couleur isolée qui fonctionne indépendamment du reste de la composition ?"
+          ],
+          "why": "L’analyse commence par une relation observable ; attribuer immédiatement un symbole fixe à une couleur mène facilement à la surinterprétation.",
+          "trap": "",
+          "evidence": "« La couleur peut organiser une tension sans raconter une histoire »"
+        },
+        {
+          "kind": "comparaison",
+          "q": "Pourquoi un vocabulaire très réduit peut-il rendre une composition de Mondrian complexe ?",
+          "a": "Parce que chaque proportion, position et intervalle devient très perceptible quand peu d’éléments sont présents.",
+          "choices": [
+            "Parce que toutes les grilles produisent exactement le même équilibre quelle que soit leur organisation.",
+            "Parce que réduire les éléments supprime automatiquement toute décision de composition.",
+            "Parce que les rectangles remplacent la nécessité de regarder les relations entre les couleurs."
+          ],
+          "why": "La réduction augmente l’importance relative de chaque choix : une ligne ou une surface déplacée modifie l’équilibre de l’ensemble.",
+          "trap": "",
+          "evidence": "« Mondrian : réduire pour rendre les relations visibles »"
+        },
+        {
+          "kind": "nuance",
+          "q": "Qu’est-ce qui distingue une abstraction gestuelle d’une abstraction strictement géométrique ?",
+          "a": "Elle peut mettre davantage en avant la trace du mouvement, la matière et le temps de l’action.",
+          "choices": [
+            "Elle exclut toute couleur et n’utilise que le noir du support.",
+            "Elle doit nécessairement représenter fidèlement un paysage derrière les traces visibles.",
+            "Elle interdit que l’artiste contrôle la composition ou revienne sur son travail."
+          ],
+          "why": "Dans certaines abstractions, la matérialité de la peinture et l’empreinte du geste deviennent elles-mêmes le sujet de l’expérience visuelle.",
+          "trap": "",
+          "evidence": "« Le geste et la matière ouvrent d’autres voies »"
+        },
+        {
+          "kind": "méthode",
+          "q": "Quel réflexe aide le plus devant une œuvre abstraite inconnue ?",
+          "a": "Décrire répétitions, contrastes et tensions, puis relier son interprétation à ces éléments visibles.",
+          "choices": [
+            "Commencer par la biographie de l’artiste et utiliser ensuite l’œuvre pour illustrer ce récit personnel.",
+            "Chercher d’abord à rattacher les formes à des objets connus avant d’étudier leurs relations visuelles.",
+            "Considérer que l’absence de sujet reconnaissable limite fortement ce qu’on peut analyser sans information extérieure."
+          ],
+          "why": "L’absence de narration figurative ne signifie pas absence d’organisation ; observer les relations visuelles donne des appuis concrets à l’interprétation.",
+          "trap": "",
+          "evidence": "« Comment regarder une œuvre abstraite sans rester bloqué »"
+        }
+      ],
+      "learningPath": [
+        "Abstraire ne veut pas dire « ne rien représenter » — L’abstraction réduit, transforme ou abandonne la représentation reconnaissable pour faire travailler directement couleur, ligne, forme, rythme et matière.",
+        "La couleur peut organiser une tension sans raconter une histoire — Un rouge dense contre un bleu froid, une zone claire entourée de noir ou une série de tons proches produisent des relations visuelles avant toute interprétation symbolique.",
+        "Kandinsky : chercher une nécessité visuelle plutôt qu’un code secret — Kandinsky associe peinture, musique et intériorité, mais ses œuvres ne se résument pas à une traduction mécanique de sons en couleurs.",
+        "Mondrian : réduire pour rendre les relations visibles — Chez Mondrian, la grille, les verticales et horizontales, les rectangles et un nombre limité de couleurs ne sont pas une décoration minimaliste choisie au hasard."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  },
+  {
+    "chapter": "art-contemporary-practices",
+    "meta": {
+      "id": "art-installation-performance-space",
+      "order": 2,
+      "title": "Installation et performance : quand l’œuvre devient une situation",
+      "shortTitle": "Installation & performance",
+      "emoji": "🧍",
+      "period": "XXe–XXIe siècles",
+      "location": "Musées, villes et espaces publics",
+      "xp": 55,
+      "gems": 2,
+      "unlocks": [],
+      "blocks": []
+    },
+    "pack": {
+      "hook": "Que reste-t-il d’une œuvre quand elle n’est ni tableau ni sculpture, mais une pièce à traverser ou une action qui ne dure qu’une heure ? Installation et performance déplacent la question de l’objet vers l’espace, le temps, le corps et la relation avec le public.",
+      "keyFacts": [
+        "L’œuvre peut être un espace à traverser plutôt qu’un objet à regarder — Une installation organise un lieu avec des objets, images, sons, lumière ou architecture.",
+        "Une performance utilise le temps et l’action comme matériaux — Dans une performance, l’œuvre peut être une action réalisée par l’artiste, par des participants ou selon un protocole.",
+        "Le lieu peut faire partie du contenu — Une œuvre dite in situ ou site-specific est pensée pour un endroit précis : architecture, histoire, usages ou circulation du public participent à sa signification.",
+        "Participer ne signifie pas forcément être libre — Certaines œuvres demandent au public d’écrire, déplacer, choisir, marcher ou accomplir une consigne."
+      ],
+      "express": [
+        "Une installation peut faire du lieu et du parcours du spectateur une partie de l’œuvre.",
+        "Une performance utilise l’action et la durée comme matériaux et pose la question de sa documentation après coup.",
+        "Participation et site-specificité obligent à analyser qui fixe les règles et ce que le contexte change réellement."
+      ],
+      "complete": [
+        {
+          "title": "1. L’œuvre peut être un espace à traverser plutôt qu’un objet à regarder",
+          "text": "Une installation organise un lieu avec des objets, images, sons, lumière ou architecture. Le spectateur ne reste pas forcément devant une surface : il entre, contourne, écoute ou se déplace. Le sens dépend alors de la position du corps et de la durée de la visite. Photographier l’œuvre aide à la documenter, mais ne remplace pas toujours l’expérience d’échelle, d’orientation ou de proximité construite dans l’espace."
+        },
+        {
+          "title": "2. Une performance utilise le temps et l’action comme matériaux",
+          "text": "Dans une performance, l’œuvre peut être une action réalisée par l’artiste, par des participants ou selon un protocole. Elle possède un début, une durée, parfois une part d’imprévu. Le corps devient un matériau mais aussi un lieu de risque, de présence et de relation au public. Une performance peut être répétée, documentée ou réinterprétée ; la question de ce qui constitue alors « l’œuvre originale » devient elle-même intéressante."
+        },
+        {
+          "title": "3. Le lieu peut faire partie du contenu",
+          "text": "Une œuvre dite in situ ou site-specific est pensée pour un endroit précis : architecture, histoire, usages ou circulation du public participent à sa signification. Déplacer l’œuvre dans un autre lieu peut donc la transformer profondément. Cela permet aussi aux artistes de travailler hors du musée, dans une rue, un paysage ou un bâtiment abandonné. Le contexte n’est plus seulement un support : il devient l’un des matériaux de l’œuvre."
+        },
+        {
+          "title": "4. Participer ne signifie pas forcément être libre",
+          "text": "Certaines œuvres demandent au public d’écrire, déplacer, choisir, marcher ou accomplir une consigne. Cette participation peut donner une impression de liberté, mais elle reste souvent encadrée par un dispositif conçu par l’artiste. La bonne question n’est donc pas seulement « est-ce interactif ? » mais « quelles actions sont possibles, qui fixe les règles, et qu’est-ce que ma participation change réellement ? »."
+        },
+        {
+          "title": "5. Documentation et œuvre ne se confondent pas toujours",
+          "text": "Photos, vidéos, objets conservés ou témoignages permettent de connaître une performance passée. Pourtant, ces traces sélectionnent un point de vue et peuvent devenir à leur tour des œuvres exposées ou vendues. Une institution doit alors décider comment présenter quelque chose qui n’existe plus sous sa forme initiale. L’art contemporain rend visible un problème ancien : conserver une œuvre, c’est toujours aussi interpréter ce qu’on considère comme essentiel."
+        },
+        {
+          "title": "6. Lire une installation : décrire ce que le dispositif te fait faire",
+          "text": "Au lieu de demander immédiatement « est-ce beau ? », commence par observer ton comportement : dois-tu ralentir, contourner, lever la tête, entrer seul, écouter, toucher ou attendre ? Ensuite, demande pourquoi l’œuvre impose cette relation au corps et au lieu. Cette méthode fonctionne particulièrement bien lorsque l’objet isolé paraît banal. Le sens peut résider moins dans ce qui est présent que dans la situation créée entre espace, objets et spectateur."
+        }
+      ],
+      "deeper": [],
+      "takeaways": [
+        {
+          "label": "Installation",
+          "text": "L’espace et le parcours peuvent être constitutifs de l’œuvre."
+        },
+        {
+          "label": "Performance",
+          "text": "L’action, le corps et la durée deviennent des matériaux."
+        },
+        {
+          "label": "In situ",
+          "text": "Le lieu participe à la conception et au sens."
+        },
+        {
+          "label": "Participation",
+          "text": "Interagir ne signifie pas nécessairement sortir du cadre conçu par l’artiste."
+        }
+      ],
+      "quiz": [
+        {
+          "kind": "distinction",
+          "q": "Qu’est-ce qui distingue souvent une installation d’un objet autonome exposé sur un socle ?",
+          "a": "L’installation organise une expérience spatiale où le lieu et le déplacement du spectateur participent à l’œuvre.",
+          "choices": [
+            "Une installation se distingue principalement par son échelle, qui doit dépasser celle des objets autonomes exposés.",
+            "Un objet autonome garde son sens indépendamment du lieu, tandis qu’une installation dépend exclusivement de l’architecture qui l’entoure.",
+            "Une installation se reconnaît surtout au mélange de plusieurs médias techniques, même lorsque le parcours du spectateur reste secondaire."
+          ],
+          "why": "Dans une installation, la relation entre éléments, architecture, échelle et parcours est souvent constitutive de l’expérience, pas seulement décorative.",
+          "trap": "",
+          "evidence": "« L’œuvre peut être un espace à traverser plutôt qu’un objet à regarder »"
+        },
+        {
+          "kind": "temps",
+          "q": "Pourquoi le temps est-il un matériau important dans une performance ?",
+          "a": "Parce que l’action se déroule selon une durée et peut changer en fonction du corps, du public ou de l’imprévu.",
+          "choices": [
+            "Parce que toutes les performances doivent durer exactement le même nombre de minutes.",
+            "Parce que le public ne peut jamais assister directement à une performance en cours.",
+            "Parce que le temps remplace entièrement l’espace et les gestes dans ce type d’œuvre."
+          ],
+          "why": "Une performance existe dans un déroulement : début, durée, répétition, attente ou imprévu contribuent à ce que le public expérimente.",
+          "trap": "",
+          "evidence": "« Une performance utilise le temps et l’action comme matériaux »"
+        },
+        {
+          "kind": "contexte",
+          "q": "Que signifie le plus souvent qu’une œuvre est pensée in situ ?",
+          "a": "Que le lieu, son architecture ou son histoire font partie de la conception et du sens de l’œuvre.",
+          "choices": [
+            "Que l’œuvre peut être déplacée partout sans que son fonctionnement ne change.",
+            "Que l’artiste n’a utilisé aucun matériau physique pour la réaliser.",
+            "Que l’œuvre doit être installée uniquement dans le lieu de naissance de l’artiste."
+          ],
+          "why": "Une œuvre site-specific entretient une relation structurante avec son environnement ; la déplacer peut donc modifier ce qu’elle fait ou signifie.",
+          "trap": "",
+          "evidence": "« Le lieu peut faire partie du contenu »"
+        },
+        {
+          "kind": "participation",
+          "q": "Une œuvre demande au public de choisir entre trois actions prévues par l’artiste. Quelle analyse est la plus juste ?",
+          "a": "Le public participe, mais à l’intérieur d’un cadre de possibilités déjà conçu.",
+          "choices": [
+            "Le public devient le principal auteur dès qu’un choix lui est proposé, l’artiste se limitant alors à fournir le cadre matériel.",
+            "La participation réduit fortement le rôle des règles initiales, puisque le résultat dépend surtout des décisions du public.",
+            "Le fait de choisir transforme le dispositif en espace ouvert où les limites prévues par l’artiste deviennent secondaires."
+          ],
+          "why": "Une interaction peut être réelle tout en étant structurée par des règles ; analyser qui définit ces règles éclaire la relation entre œuvre et public.",
+          "trap": "",
+          "evidence": "« Participer ne signifie pas forcément être libre »"
+        },
+        {
+          "kind": "méthode",
+          "q": "Face à une installation composée d’objets banals, quelle question peut révéler le mieux son fonctionnement ?",
+          "a": "Que m’oblige-t-elle à faire dans l’espace et pourquoi organise-t-elle mon corps de cette façon ?",
+          "choices": [
+            "Quel objet coûterait le plus cher s’il était acheté séparément dans un magasin ?",
+            "Quel élément ressemble le plus à une peinture traditionnelle, même s’il n’y en a pas ?",
+            "Combien d’objets faudrait-il retirer pour que l’œuvre devienne automatiquement plus belle ?"
+          ],
+          "why": "Dans une installation, le dispositif et le parcours peuvent porter davantage de sens que la valeur ou l’apparence isolée de chaque objet.",
+          "trap": "",
+          "evidence": "« Lire une installation : décrire ce que le dispositif te fait faire »"
+        }
+      ],
+      "learningPath": [
+        "L’œuvre peut être un espace à traverser plutôt qu’un objet à regarder — Une installation organise un lieu avec des objets, images, sons, lumière ou architecture.",
+        "Une performance utilise le temps et l’action comme matériaux — Dans une performance, l’œuvre peut être une action réalisée par l’artiste, par des participants ou selon un protocole.",
+        "Le lieu peut faire partie du contenu — Une œuvre dite in situ ou site-specific est pensée pour un endroit précis : architecture, histoire, usages ou circulation du public participent à sa signification.",
+        "Participer ne signifie pas forcément être libre — Certaines œuvres demandent au public d’écrire, déplacer, choisir, marcher ou accomplir une consigne."
+      ],
+      "editorialFlow": "concept-observation-application",
+      "contentRevision": "rc42-catalogue-expansion"
+    }
+  }
+];
+  const added = [];
+  courses.forEach(entry => {
+    const lesson = entry.meta;
+    const chapter = entry.chapter;
+    // Express remains dormant in RC36+, but keep a coherent reusable summary if it returns later.
+    const expressWords = (entry.pack.express || []).join(" ").trim().split(/\s+/).filter(Boolean).length;
+    if (expressWords < 120 && Array.isArray(entry.pack.complete) && entry.pack.complete.length >= 6) {
+      entry.pack.express = [entry.pack.complete[0].text, entry.pack.complete[2].text, entry.pack.complete[5].text];
+    }
+    if (!Array.isArray(data.lessons[chapter])) data.lessons[chapter] = [];
+    if (!data.lessons[chapter].some(item => item?.id === lesson.id)) {
+      data.lessons[chapter].push(lesson);
+      data.lessons[chapter].sort((a,b) => (Number(a?.order)||999) - (Number(b?.order)||999));
+    }
+    READY_LESSON_PACKS[lesson.id] = entry.pack;
+    READY_LESSON_PACKS[lesson.id].catalogueExpansionRC42 = true;
+    READY_LESSON_PACKS[lesson.id].releaseVersion = VERSION;
+    added.push(lesson.id);
+  });
+  window.HD_RC42_CATALOGUE_EXPANSION = Object.freeze({version:VERSION, added:Object.freeze(added)});
 })();
 
 ;

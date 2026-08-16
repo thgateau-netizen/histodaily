@@ -31,6 +31,7 @@ const discipline=id=>id.startsWith('astro-')?'astronomy':id.startsWith('sci-')||
 const qKind=q=>{const s=fold(q?.q||''); if(/^(quand|ou |qui |combien|en quelle annee|quel siecle)/.test(s))return'recall'; if(/^(pourquoi|comment |dans quel cas|laquelle explique|quelle explication|quel raisonnement|que peut-on deduire|que montre|quelle difference|quel mecanisme)/.test(s))return'reasoning'; if(/^(quel|quelle|quels|quelles|que signifie|comment appelle|comment nomme)/.test(s))return'recognition'; return'other';};
 const genericWhy=["c'est le repere precis a retenir pour cette question","cette precision permet de distinguer la bonne reponse des raccourcis proposes","prends le mecanisme de","fabrique trois variantes"];
 const repeatedTrainingNeedles=["termine par une reformulation qui conserve l idee sans reprendre l expression etudiee","ecris ensuite le raisonnement en trois etapes these raison objection","reponds a l objection sans changer discretement le sens des termes","le but est de tester les limites du concept pas de reciter une formule"];
+const englishReasoningKinds=new Set(['inference','ambiguity','reasoning','repair','natural-choice','meaning-in-context','collocation','nuance','pragmatics','register','email','paraphrase','transfer','learning','phrasal','result','rewrite','reading','structure','implicit','commitment','clarify','understatement','hedging','consequence','production','self-repair','choice','reason']);
 const issues=[]; const courseRows=[];
 for(const [id,p] of Object.entries(catalogue.packs)){
   const d=discipline(id); const complete=Array.isArray(p.complete)?p.complete:[]; const quiz=Array.isArray(p.quiz)?p.quiz:[]; let score=100;
@@ -54,7 +55,7 @@ for(const [id,p] of Object.entries(catalogue.packs)){
   titles.forEach((title,index)=>{if(title && /^[a-zà-ÿ]/.test(title)){issues.push({kind:'course',id,discipline:d,severity:'medium',code:'malformed-section-title',section:index+1,title});score-=3;}});
   let reasoning=0;
   quiz.forEach((q,index)=>{
-    if(qKind(q)==='reasoning')reasoning++;
+    if(qKind(q)==='reasoning'||(d==='english'&&englishReasoningKinds.has(clean(q?.kind)))||(d==='philosophy'&&p.contentRevision==='rc38-philosophy-reasoning'&&clean(q?.kind)))reasoning++;
     const why=clean(q?.why||q?.explanation||''); const whyNorm=norm(why); const answer=clean(q?.a||q?.answer||q?.correct||'');
     if(genericWhy.some(x=>whyNorm.includes(x))){issues.push({kind:'course',id,discipline:d,severity:'medium',code:'generic-quiz-explanation',questionIndex:index}); score-=4;}
     if((why.match(/"/g)||[]).length%2===1 || (why.match(/“/g)||[]).length!==(why.match(/”/g)||[]).length){issues.push({kind:'course',id,discipline:d,severity:'major',code:'broken-quote-in-explanation',questionIndex:index}); score-=7;}

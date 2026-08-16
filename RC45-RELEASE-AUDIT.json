@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0-rc.45.0",
+  "status": "passed",
+  "scope": "runtime/package integrity after conservative UI/CSS cleanup",
+  "checks": {
+    "clientSyntax": true,
+    "fullQualityPipeline": true,
+    "ergonomicsChecks": "30/30",
+    "deadRuntimeSelectors": 0,
+    "obsoleteVisualAssetsRemoved": 8,
+    "missingRuntimeAssets": 0
+  },
+  "sizes": {
+    "histodaily.css": {
+      "bytes": 663616,
+      "gzipBytes": 118454
+    },
+    "bundles/core-rc27.js": {
+      "bytes": 1379474,
+      "gzipBytes": 355299
+    },
+    "bundles/content-rc27.js": {
+      "bytes": 2279023,
+      "gzipBytes": 604047
+    },
+    "bundles/experience-rc27.js": {
+      "bytes": 702848,
+      "gzipBytes": 177764
+    }
+  },
+  "total": {
+    "rawBytes": 5024961,
+    "gzipBytes": 1255564
+  },
+  "remainingDebt": {
+    "cssLines": 11115,
+    "important": 2397,
+    "note": "Further structural CSS consolidation intentionally deferred until reliable visual regression coverage is available."
+  }
+}

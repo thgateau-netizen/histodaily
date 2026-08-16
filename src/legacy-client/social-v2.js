@@ -5,7 +5,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.32.0";
+  const VERSION = "1.0.0-rc.47.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -628,7 +628,7 @@
   }
   function rankRowMarkup(row, { selfCard = false } = {}) {
     const name = rowName(row);
-    return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}${selfCard ? " hdsv2-self-row" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank ? `#${Number(row.rank)}` : "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${esc(rowMeta(row))} · voir le profil</small></span><b>${Number(row.score || 0)}<small> ${scoreUnit(row)}</small></b></button>`;
+    return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}${selfCard ? " hdsv2-self-row" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank ? `#${Number(row.rank)}` : "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${esc(rowMeta(row))}</small></span><b>${Number(row.score || 0)}<small> ${scoreUnit(row)}</small></b></button>`;
   }
 
   function podiumMarkup(rows = []) {
@@ -721,7 +721,7 @@
         <nav class="hdsv2-period-tabs" aria-label="Période">${[["daily", "Jour", "Aujourd’hui"], ["week", "Semaine", "Cette semaine"], ["year", "Année", "Cette année"]].map(([period, shortLabel, fullLabel]) => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}" aria-label="${fullLabel}" aria-current="${context.period === period ? "page" : "false"}">${shortLabel}</button>`).join("")}</nav>
         <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Tous</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
       </div>
-      <section class="hd34-my-rank" aria-label="Ta position"><div><span>Toi · ${esc(periodLabel(context.period))}</span><strong>${me?.rank ? `#${me.rank} · ` : ""}${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "pts"}</strong></div><button type="button" class="ghost" data-social-refresh aria-label="Actualiser le classement">↻</button>${pending ? `<small>${pending} score${pending > 1 ? "s" : ""} à envoyer</small>` : status.phase === "error" ? `<small>Actualisation indisponible</small>` : ""}</section>
+      <section class="hd34-my-rank" aria-label="Ta position"><div><span>Toi · ${esc(periodLabel(context.period))}</span><strong>${me?.rank ? `#${me.rank} · ` : ""}${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "pts"}</strong></div>${pending || status.phase === "error" ? `<button type="button" class="ghost" data-social-refresh aria-label="${status.phase === "error" ? "Réessayer l’actualisation" : "Envoyer les scores en attente"}">↻</button>` : ""}${pending ? `<small>${pending} score${pending > 1 ? "s" : ""} à envoyer</small>` : status.phase === "error" ? `<small>Actualisation indisponible</small>` : ""}</section>
       ${context.audience === "friends" ? requestMarkup() : ""}
       <section class="hdsv2-leaderboard hd34-leaderboard"><div class="hd34-leaderboard-head"><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2><small>${context.period === "year" ? "classés par XP" : context.audience === "friends" ? "dans ton cercle" : "classement général"}</small></div>${leaderboardMarkup(rows, context, status)}</section>
       ${context.audience === "friends" ? friendsMarkup({ includeAdd: true, context }) : ""}
@@ -924,7 +924,7 @@
     return `<section class="hd257-hero hd281-hero" style="--profile-accent:${esc(accent)};--level-progress:${levelPct * 3.6}deg">
       <div class="hd257-hero-glow" aria-hidden="true"></div>
       <div class="hd257-avatar hd281-avatar"><div>${esc(profileInitials())}</div><span>Niveau ${levelNumber}</span></div>
-      <div class="hd257-hero-copy hd281-hero-copy"><span class="hd281-rank-label">Rang · ${esc(levelTitle)}</span><h2>${esc(pseudo())}</h2><p>${profileDisciplineIcon(model.favorite)} ${esc(profileTitleFor(model.favorite.discipline))} · ${esc(model.favorite.discipline.title || "Culture générale")} est ton univers le plus exploré.</p></div>
+      <div class="hd257-hero-copy hd281-hero-copy"><span class="hd281-rank-label">Rang · ${esc(levelTitle)}</span><h2>${esc(pseudo())}</h2><p>${profileDisciplineIcon(model.favorite)} ${esc(profileTitleFor(model.favorite.discipline))} · ${esc(model.favorite.discipline.title || "Culture générale")} est ton domaine le plus exploré.</p></div>
       <div class="hd257-hero-numbers hd281-hero-numbers"><div><b>${xp.toLocaleString("fr-FR")}</b><small>XP accumulés</small></div><div><b>${streak}</b><small>${streak === 1 ? "jour de série" : "jours de série"}</small></div><div><b>${solved}</b><small>${solved === 1 ? "dossier résolu" : "dossiers résolus"}</small></div></div>
       <div class="hd257-level-line hd281-level-line"><div><span>Niveau ${levelNumber} · ${levelXp}/250 XP</span><b>${xpRemaining ? `${xpRemaining} XP avant le niveau ${levelNumber + 1}` : "Niveau suivant atteint"}</b></div><i role="progressbar" aria-label="Progression vers le niveau suivant" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${levelPct}"><em style="width:${levelPct}%"></em></i></div>
     </section>`;
@@ -967,7 +967,17 @@
   }
 
   function profileProgressMarkup(model) {
-    return `<section class="hd257-progress-card"><header class="hd257-section-head"><div><span>Progression</span><h2>Tes domaines</h2><p>Un aperçu concret des cours terminés dans chaque univers.</p></div><b>${model.average}%<small>moyenne</small></b></header><div class="hd257-progress-grid">${model.rows.map(item => `<button type="button" data-profile-discipline="${esc(item.discipline.id)}" style="--domain-accent:${esc(item.discipline.accent || "#f6c453")}"><span>${profileDisciplineIcon(item)}</span><div><strong>${esc(item.discipline.title)}</strong><small>${item.done}/${item.total || 0} cours</small><i><em style="width:${item.progress}%"></em></i></div><b>${item.progress}%</b></button>`).join("")}</div></section>`;
+    const ordered = [...model.rows].sort((a, b) => {
+      const aStarted = a.done > 0 ? 1 : 0;
+      const bStarted = b.done > 0 ? 1 : 0;
+      return bStarted - aStarted || b.done - a.done || b.progress - a.progress || a.index - b.index;
+    });
+    const visible = ordered.slice(0, 4);
+    const rest = ordered.slice(4);
+    const totalDone = model.rows.reduce((sum, item) => sum + Number(item.done || 0), 0);
+    const totalCourses = model.rows.reduce((sum, item) => sum + Number(item.total || 0), 0);
+    const row = item => `<button type="button" data-profile-discipline="${esc(item.discipline.id)}" style="--domain-accent:${esc(item.discipline.accent || "#f6c453")}"><span>${profileDisciplineIcon(item)}</span><div><strong>${esc(item.discipline.title)}</strong><small>${item.done}/${item.total || 0} cours</small><i><em style="width:${item.progress}%"></em></i></div></button>`;
+    return `<section class="hd257-progress-card rc44-profile-progress"><header class="hd257-section-head"><div><span>Progression</span><h2>Tes domaines</h2><p>Les domaines que tu pratiques le plus apparaissent en premier.</p></div><b>${totalDone}<small>sur ${totalCourses} cours</small></b></header><div class="hd257-progress-grid">${visible.map(row).join("")}</div>${rest.length ? `<details class="rc44-more-domains"><summary>Voir les ${rest.length} autres domaines</summary><div class="hd257-progress-grid">${rest.map(row).join("")}</div></details>` : ""}</section>`;
   }
 
   function profileCollectionsMarkup() {
@@ -1012,9 +1022,9 @@
     renderShell(`<div class="hdsv2-screen hdsv2-profile-screen hd257-profile-root hd34-profile-root">
       <header class="hd257-page-head hd34-profile-head"><div><p class="eyebrow">Profil</p><h1>${esc(pseudo())}</h1></div></header>
       ${profileHeroMarkup(model)}
-      <section class="hd257-dashboard">${profileRhythmMarkup()}${profileCommunityMarkup(s)}</section>
+      <section class="hd257-dashboard rc44-profile-dashboard">${profileRhythmMarkup()}</section>
       ${profileProgressMarkup(model)}
-      <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("spark")}</span><div><b>Carte de curiosité et collections</b><small>Affinités, univers explorés et trophées</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileOrbitMarkup(model)}${profileCollectionsMarkup()}</div></details>
+      <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("spark")}</span><div><b>Carte de curiosité et collections</b><small>Affinités, domaines explorés et trophées</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileOrbitMarkup(model)}${profileCollectionsMarkup()}</div></details>
       <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("trophy")}</span><div><b>Succès</b><small>Objectifs débloqués et prochain défi</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileAchievementsMarkup(s)}</div></details>
       ${profileDetailsMarkup(s)}
     </div>`);

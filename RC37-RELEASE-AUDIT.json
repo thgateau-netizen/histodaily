@@ -1,0 +1,82 @@
+{
+  "version": "1.0.0-rc.37.0",
+  "status": "passed",
+  "release": "English situational redesign",
+  "english": {
+    "version": "1.0.0-rc.37.0",
+    "status": "passed",
+    "philosophy": "L’anglais est traité comme une compétence d’usage: scène → intention/forme naturelle → production, et non comme une fiche de connaissances.",
+    "coverage": {
+      "courses": 16,
+      "quizQuestions": 80,
+      "labs": 16,
+      "labsWithAudio": 15,
+      "mysteries": 14
+    },
+    "designSignals": {
+      "contextualQuizQuestions": 71,
+      "directTranslationQuestions": 0,
+      "questionKinds": [
+        "ambiguity",
+        "bad-news",
+        "choice",
+        "clarify",
+        "collocation",
+        "commitment",
+        "consequence",
+        "context",
+        "contrast",
+        "email",
+        "grammar",
+        "hedging",
+        "implicit",
+        "inference",
+        "learning",
+        "logic",
+        "meaning-in-context",
+        "natural-choice",
+        "nuance",
+        "paraphrase",
+        "phrasal",
+        "pragmatics",
+        "production",
+        "reading",
+        "reason",
+        "reasoning",
+        "reference",
+        "register",
+        "repair",
+        "result",
+        "rewrite",
+        "self-repair",
+        "strategy",
+        "structure",
+        "transfer",
+        "understatement",
+        "usage",
+        "writing"
+      ],
+      "englishAnswerOptions": "320/320",
+      "productionPrompts": 16,
+      "modelResponses": 16
+    },
+    "guardrails": {
+      "maxDirectTranslationQuestions": 2,
+      "minContextualQuizQuestions": 68,
+      "minQuestionKinds": 12,
+      "minAudioLabs": 14,
+      "requiredProductionLabs": 16,
+      "requiredScenarioMysteries": 14
+    },
+    "warnings": [],
+    "errors": []
+  },
+  "global": {
+    "quality": "passed",
+    "contentBlockingErrors": 0,
+    "contentWarnings": 0,
+    "editorialIssues": 0,
+    "courses": 209,
+    "mysteries": 158
+  }
+}

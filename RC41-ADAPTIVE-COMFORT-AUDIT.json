@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0-rc.47.0",
+  "status": "passed",
+  "principle": "La difficulté monte avec l’expérience, mais peut rester plus douce localement si les résultats montrent que l’utilisateur n’est pas encore confortable. Aucun écran supplémentaire.",
+  "metrics": [
+    "quiz accuracy",
+    "recent mystery attempts",
+    "recent hint usage"
+  ],
+  "behavior": {
+    "noEvidence": "aucune pénalisation et aucune accélération",
+    "lightSupport": "advanced est plafonné à intermediate ; guidage possible jusqu’à 24 mystères",
+    "strongSupport": "intermediate/advanced sont plafonnés à confidence ; guidage possible jusqu’à 30 mystères",
+    "strongPerformance": "aucun ralentissement artificiel"
+  },
+  "scenarios": {
+    "fresh": {
+      "id": "history",
+      "comfort": 75,
+      "support": "none",
+      "quiz": {
+        "answered": 0,
+        "correct": 0,
+        "lessons": 0,
+        "accuracy": null,
+        "evidence": false
+      },
+      "mysteries": {
+        "solved": 0,
+        "sampled": 0,
+        "avgTries": null,
+        "hintRate": null,
+        "firstTryRate": null,
+        "evidence": false
+      },
+      "hasEvidence": false
+    },
+    "strong": {
+      "id": "history",
+      "comfort": 97,
+      "support": "none",
+      "quiz": {
+        "answered": 20,
+        "correct": 19,
+        "lessons": 4,
+        "accuracy": 0.95,
+        "evidence": true
+      },
+      "mysteries": {
+        "solved": 22,
+        "sampled": 8,
+        "avgTries": 1,
+        "hintRate": 0,
+        "firstTryRate": 1,
+        "evidence": true
+      },
+      "hasEvidence": true
+    },
+    "light": {
+      "id": "economy",
+      "comfort": 65,
+      "support": "light",
+      "quiz": {
+        "answered": 20,
+        "correct": 13,
+        "lessons": 4,
+        "accuracy": 0.65,
+        "evidence": true
+      },
+      "mysteries": {
+        "solved": 22,
+        "sampled": 8,
+        "avgTries": 2,
+        "hintRate": 0.75,
+        "firstTryRate": 0,
+        "evidence": true
+      },
+      "hasEvidence": true
+    },
+    "struggling": {
+      "id": "geography",
+      "comfort": 33,
+      "support": "strong",
+      "quiz": {
+        "answered": 20,
+        "correct": 8,
+        "lessons": 4,
+        "accuracy": 0.4,
+        "evidence": true
+      },
+      "mysteries": {
+        "solved": 22,
+        "sampled": 8,
+        "avgTries": 4,
+        "hintRate": 1,
+        "firstTryRate": 0,
+        "evidence": true
+      },
+      "hasEvidence": true
+    }
+  },
+  "errors": []
+}

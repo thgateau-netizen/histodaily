@@ -1,0 +1,124 @@
+{
+  "version": "1.0.0-rc.47.0",
+  "status": "passed-with-known-product-risks",
+  "scope": "Qualité globale hors contenu : backend/frontend parity, robustesse, performance, PWA, sécurité navigateur, données, observabilité, architecture et maintenabilité.",
+  "fixedInRC46": [
+    {
+      "priority": "P0 corrigé RC46",
+      "area": "Classements / backend",
+      "issue": "158 mystères client contre 17 serveur ; validation quotidienne incompatible avec la rotation personnalisée.",
+      "action": "Catalogue serveur aligné sur les 158 mystères, validation par catalogue, une seule expédition classée par jour, déduplication historique par journée."
+    },
+    {
+      "priority": "P0 corrigé RC46",
+      "area": "Cohérence release",
+      "issue": "Backend encore estampillé RC32 et health indiquant 74 cours.",
+      "action": "Versions alignées sur 1.0.0-rc.47.0, health = 219 cours / 158 mystères."
+    },
+    {
+      "priority": "P1 corrigé RC46",
+      "area": "Sécurité navigateur",
+      "issue": "CSP script autorisait 'unsafe-inline' pour un seul flag inline.",
+      "action": "Flag déplacé dans le bundle externe et script-src limité à self."
+    },
+    {
+      "priority": "P1 corrigé RC46",
+      "area": "Déploiement",
+      "issue": "catalogue-export-temp.json (≈2,5 Mo, contenu de travail) pouvait être servi par Vercel.",
+      "action": "Exclu via .vercelignore."
+    }
+  ],
+  "remainingWeaknesses": [
+    {
+      "priority": "P1 restant",
+      "area": "Identité / triche",
+      "issue": "Pas d’authentification forte ; XP/profil viennent du client.",
+      "action": "Introduire une vraie identité authentifiée ou des jetons serveur avant classement public sérieux."
+    },
+    {
+      "priority": "P1 restant",
+      "area": "Sauvegarde",
+      "issue": "Progression fine non synchronisée dans le cloud.",
+      "action": "Ajouter un stockage serveur versionné de la progression une fois l’identité sécurisée."
+    },
+    {
+      "priority": "P1 restant",
+      "area": "Données personnelles",
+      "issue": "Pas de suppression autonome des données serveur.",
+      "action": "Prévoir suppression/export côté compte après authentification."
+    },
+    {
+      "priority": "P2 restant",
+      "area": "Performance",
+      "issue": "≈1.2 MiB gzip de CSS+JS initiaux ; les 219 cours sont chargés d’emblée.",
+      "action": "Découper le catalogue par discipline et charger à la demande."
+    },
+    {
+      "priority": "P2 restant",
+      "area": "Observabilité",
+      "issue": "412 catch vides côté client.",
+      "action": "Centraliser les erreurs attendues et journaliser les erreurs inattendues avec contexte."
+    },
+    {
+      "priority": "P2 restant",
+      "area": "Architecture",
+      "issue": "59 modules hérités, 17 MutationObserver, 140 écritures globales.",
+      "action": "Remplacer progressivement les wrappers historiques par quelques modules stables, écran par écran."
+    },
+    {
+      "priority": "P2 restant",
+      "area": "Abus API",
+      "issue": "Pas de rate limiting détecté.",
+      "action": "Limiter score/profil/amis/push côté edge/DB avant exposition publique."
+    }
+  ],
+  "metrics": {
+    "courses": 219,
+    "clientMysteries": 158,
+    "serverMysteries": 158,
+    "clientSourceModules": 59,
+    "cssBytes": 666076,
+    "cssLines": 11136,
+    "cssImportant": 2397,
+    "initialCssJsGzipBytes": 1260337,
+    "initialCssJsGzipMiB": 1.2,
+    "bundles": {
+      "bundles/core-rc27.js": {
+        "bytes": 1379507,
+        "gzipBytes": 355326
+      },
+      "bundles/content-rc27.js": {
+        "bytes": 2279023,
+        "gzipBytes": 604047
+      },
+      "bundles/experience-rc27.js": {
+        "bytes": 719196,
+        "gzipBytes": 182033
+      }
+    },
+    "clientWindowGlobals": 140,
+    "clientMutationObservers": 17,
+    "clientEventListeners": 352,
+    "clientCatchBlocks": 784,
+    "clientEmptyCatchBlocks": 412,
+    "backendCatchBlocks": 244,
+    "backendFunctionReassignments": 52,
+    "localStorageWrites": 54,
+    "localStorageReads": 35
+  },
+  "parity": {
+    "missingServerIds": [],
+    "extraServerIds": []
+  },
+  "warnings": [
+    "IDENTITY_AUTH: identité sociale fondée sur playerId/code ami, sans authentification de compte forte. Un client modifié peut usurper des statistiques. Bloquant avant ouverture publique compétitive.",
+    "CLOUD_PROGRESS: progression détaillée (cours/quiz/mystères) locale uniquement. Le changement d’appareil dépend de la sauvegarde JSON manuelle.",
+    "DATA_DELETION: aucune suppression autonome des données serveur ; administration requise. À résoudre avant diffusion publique large.",
+    "RATE_LIMIT: aucune limitation de débit applicative détectée sur les routes publiques/sociales.",
+    "STARTUP_WEIGHT: CSS + JS initiaux ≈ 1.2 MiB gzip, tout téléchargé au démarrage ; le contenu n’est pas encore chargé à la demande.",
+    "OBSERVABILITY: 412 catch vides côté client ; beaucoup de défauts peuvent être masqués au lieu d’être diagnostiqués.",
+    "RUNTIME_COMPLEXITY: 17 occurrences de MutationObserver et 140 écritures globales window.* : architecture encore très patchée.",
+    "CSS_DEBT: 2397 !important subsistent malgré RC45."
+  ],
+  "errors": []
+}

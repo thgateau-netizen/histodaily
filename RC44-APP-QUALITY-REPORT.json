@@ -1,0 +1,93 @@
+{
+  "version": "1.0.0-rc.44.0",
+  "scope": "app UX/quality only; editorial content excluded from decision-making",
+  "critical_findings_fixed": [
+    {
+      "area": "home",
+      "issue": "two competing actions before daily loop completion",
+      "fix": "secondary next-action card only after completion"
+    },
+    {
+      "area": "expedition",
+      "issue": "bottom navigation plus top back control",
+      "fix": "immersive mystery flow without bottom navigation"
+    },
+    {
+      "area": "expedition",
+      "issue": "nested clue/solution cards",
+      "fix": "flattened clue and solution into dossier"
+    },
+    {
+      "area": "courses",
+      "issue": "duplicated percent/count progress and unnecessary filters",
+      "fix": "concrete counts; filters only for 5+ lessons"
+    },
+    {
+      "area": "reader",
+      "issue": "TOC on short courses",
+      "fix": "TOC only at 8+ sections"
+    },
+    {
+      "area": "quiz",
+      "issue": "intro layer, persistent reset, mastery percentage, up to four completion actions",
+      "fix": "question-first quiz; reset only in failure state; no mastery percentage; max two success actions"
+    },
+    {
+      "area": "ranking",
+      "issue": "redundant profile affordance and always-visible refresh",
+      "fix": "row itself is the affordance; refresh only for error/pending sync"
+    },
+    {
+      "area": "profile",
+      "issue": "community and 11 domains visible at once",
+      "fix": "learning-first profile; top four domains then progressive disclosure"
+    },
+    {
+      "area": "pwa",
+      "issue": "legacy artwork precached on install",
+      "fix": "removed old artwork from optional precache"
+    }
+  ],
+  "ergonomics_checks": {
+    "passed": 30,
+    "total": 30
+  },
+  "remaining_structural_debt": {
+    "css": {
+      "bytes": 781632,
+      "lines": 11449,
+      "important": 2866,
+      "boxShadow": 417,
+      "borderRadius": 1066,
+      "backdropFilter": 73,
+      "zIndex": 197,
+      "transitions": 96,
+      "animations": 119,
+      "mediaQueries": 246
+    },
+    "bundles": {
+      "bundles/core-rc27.js": {
+        "bytes": 1379474,
+        "gzipBytes": 355299
+      },
+      "bundles/content-rc27.js": {
+        "bytes": 2279023,
+        "gzipBytes": 604047
+      },
+      "bundles/experience-rc27.js": {
+        "bytes": 702848,
+        "gzipBytes": 177764
+      }
+    },
+    "initialRawBytes": 5142977,
+    "initialGzipBytes": 1274199
+  },
+  "warnings": [
+    "Dette CSS élevée: 2866 déclarations !important. À consolider dans une future passe structurelle avec validation visuelle.",
+    "Feuille CSS historique volumineuse: 11449 lignes. Ne pas supprimer agressivement sans couverture visuelle navigateur."
+  ],
+  "browser_visual_validation": {
+    "status": "not_available_in_environment",
+    "note": "Chromium local est bloqué par la politique de l’environnement; aucune validation pixel-perfect automatisée n’est revendiquée."
+  }
+}

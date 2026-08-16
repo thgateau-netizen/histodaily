@@ -1,7 +1,7 @@
 /* HistoDaily RC36 — lean learning flow. Express remains in data/code, dormant in the current UI. */
 (() => {
   "use strict";
-  const VERSION = "1.0.0-rc.36.0";
+  const VERSION = "1.0.0-rc.39.0";
   document.documentElement.classList.add("hd36-lean-flow");
   try {
     if (typeof state === "object" && state) {

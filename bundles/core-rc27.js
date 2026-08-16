@@ -1,5 +1,5 @@
-/* HistoDaily 1.0.0-rc.36.0 — generated bundle. Source order is intentional. */
-window.HD_BUILD_MANIFEST = Object.freeze({"version":"1.0.0-rc.36.0","architecture":"bundled-rc27","bundles":3});
+/* HistoDaily 1.0.0-rc.47.0 — generated bundle. Source order is intentional. */
+window.HD_BUILD_MANIFEST = Object.freeze({"version":"1.0.0-rc.47.0","architecture":"bundled-rc27","bundles":3});
 
 /* ===== SOURCE: lessons-lite.js ===== */
 const HISTODAILY_CONTENT_VERSION = "1.0.0-beta.207";
@@ -1509,6 +1509,7 @@ window.HISTODAILY_DATA_MODE = "public-core";
 ;
 
 /* ===== SOURCE: app-bootstrap.js ===== */
+window.HD_SOCIAL_V2_ONLY = true;
 /* HistoDaily LTS — configuration, onboarding, icônes et illustrations */
 
 try { document.documentElement.classList.add("hd326-coherence"); } catch {}
@@ -1516,8 +1517,8 @@ try { document.documentElement.classList.add("hd326-coherence"); } catch {}
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-rc.32.0",
-  assetsVersion: "1.0.0-rc.32.0",
+  version: "1.0.0-rc.47.0",
+  assetsVersion: "1.0.0-rc.47.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -1667,7 +1668,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-rc.32.0",
+  version: "1.0.0-rc.47.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;
@@ -9772,7 +9773,7 @@ function renderMystery() {
     <header class="topbar hd300-expedition-topbar"><button data-home aria-label="Retour à l’accueil">←</button><div><p class="eyebrow">${today ? "Expédition du jour" : "Expédition d’archive"}</p><h1>${escapeHtml(mysteryDisplayTitle(mystery))}</h1></div></header>
 
     <section class="card mystery-card big quick-mystery case-file-card hd300-expedition-card ${solved ? "is-solved" : "is-active"}">
-      <div class="hd300-expedition-status"><span>${solved ? "✓ Résolue" : "À résoudre"}</span><small>${escapeHtml(difficulty)}</small></div>
+      <div class="hd300-expedition-status ${solved ? "is-solved" : "is-open"}">${solved ? `<span>✓ Résolue</span>` : ""}<small>${escapeHtml(difficulty)}</small></div>
       <section class="hd325-dossier" aria-label="Dossier de l’expédition">
         <div class="hd325-dossier-kicker">
           <span>Le dossier</span>
@@ -18272,15 +18273,17 @@ function renderShell(content) {
   applyPerformanceMode();
   applyDisciplineTheme();
   const immersiveLesson = state.tab === "lesson";
+  const immersiveMystery = state.tab === "mystery";
+  const immersiveFlow = immersiveLesson || immersiveMystery;
   const motionClass = beta113ConsumeMotionClass();
-  const navMarkup = immersiveLesson ? "" : `<nav class="bottom-nav hd183-bottom-nav" aria-label="Navigation principale">
+  const navMarkup = immersiveFlow ? "" : `<nav class="bottom-nav hd183-bottom-nav" aria-label="Navigation principale">
         ${navButton("home", "home", "Accueil")}
         ${navButton("learn", "courses", "Cours")}
         ${navButton("rank", "ranking", "Classement")}
         ${navButton("profile", "profile", "Profil")}
       </nav>`;
   app.innerHTML = `
-    <main id="main-content" tabindex="-1" class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${motionClass} ${immersiveLesson ? "course-fullscreen-shell" : ""}">
+    <main id="main-content" tabindex="-1" class="app-shell tab-${state.tab} discipline-${activeDisciplineId()} ${motionClass} ${immersiveLesson ? "course-fullscreen-shell" : ""} ${immersiveMystery ? "mystery-focus-shell" : ""}">
       ${systemStatusMarkup()}
       ${content}
       ${navMarkup}

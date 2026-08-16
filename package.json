@@ -1,6 +1,6 @@
 {
   "name": "histodaily",
-  "version": "1.0.0-rc.36.0",
+  "version": "1.0.0-rc.47.0",
   "private": true,
   "description": "HistoDaily PWA",
   "engines": {
@@ -12,11 +12,24 @@
   "scripts": {
     "build:client": "node scripts/build-client.mjs",
     "check:client": "node --check bundles/core-rc27.js && node --check bundles/content-rc27.js && node --check bundles/experience-rc27.js",
-    "quality:check": "node scripts/quality-check.mjs && node scripts/content-quality-audit.mjs && node scripts/editorial-depth-audit.mjs && node scripts/ui-flow-audit.mjs && node scripts/product-polish-audit.mjs && node scripts/lean-flow-audit.mjs",
+    "quality:check": "node scripts/quality-check.mjs && node scripts/content-quality-audit.mjs && node scripts/editorial-depth-audit.mjs && node scripts/english-experience-audit.mjs && node scripts/philosophy-experience-audit.mjs && node scripts/ui-flow-audit.mjs && node scripts/product-polish-audit.mjs && node scripts/lean-flow-audit.mjs && node scripts/science-astronomy-experience-audit.mjs && node scripts/global-difficulty-ramp-audit.mjs && node scripts/adaptive-comfort-audit.mjs && node scripts/personalized-path-audit.mjs && node scripts/catalogue-expansion-audit.mjs && node scripts/daily-freshness-audit.mjs && node scripts/ergonomics-quality-audit.mjs && node scripts/ui-css-cleanup-audit.mjs && node scripts/product-health-audit.mjs && node scripts/daily-hook-audit.mjs && node scripts/daily-hook-behavior-test.mjs",
     "content:audit": "node scripts/content-quality-audit.mjs",
     "editorial:audit": "node scripts/editorial-depth-audit.mjs",
     "ui:audit": "node scripts/ui-flow-audit.mjs",
     "polish:audit": "node scripts/product-polish-audit.mjs",
-    "lean:audit": "node scripts/lean-flow-audit.mjs"
+    "lean:audit": "node scripts/lean-flow-audit.mjs",
+    "english:audit": "node scripts/english-experience-audit.mjs",
+    "philosophy:audit": "node scripts/philosophy-experience-audit.mjs",
+    "science-astronomy:audit": "node scripts/science-astronomy-experience-audit.mjs",
+    "global-ramp:audit": "node scripts/global-difficulty-ramp-audit.mjs",
+    "comfort:audit": "node scripts/adaptive-comfort-audit.mjs",
+    "path:audit": "node scripts/personalized-path-audit.mjs",
+    "catalogue:audit": "node scripts/catalogue-expansion-audit.mjs",
+    "freshness:audit": "node scripts/daily-freshness-audit.mjs",
+    "ergonomics:audit": "node scripts/ergonomics-quality-audit.mjs",
+    "architecture:audit": "node scripts/ui-css-cleanup-audit.mjs",
+    "product:health": "node scripts/product-health-audit.mjs",
+    "daily-hook:audit": "node scripts/daily-hook-audit.mjs",
+    "daily-hook:behavior": "node scripts/daily-hook-behavior-test.mjs"
   }
 }

@@ -1,72 +1,74 @@
 {
-  "version": "1.0.0-rc.36.0",
+  "version": "1.0.0-rc.47.0",
   "catalogue": {
-    "courses": 209,
+    "courses": 219,
     "mysteries": 158,
-    "quizQuestions": 1045
+    "quizQuestions": 1095
   },
   "targets": {
     "completeWordsFloor": 280,
+    "englishCompleteWordsFloor": 200,
+    "philosophyCompleteWordsFloor": 220,
     "completeSectionsFloor": 4,
     "visibleExpressWords": 120,
     "quizQuestions": 5,
     "quizExplanationWords": 12,
     "mysteryPromptWords": 20,
     "mysteryExplanationWords": 20,
-    "note": "La longueur est un garde-fou secondaire, pas une note éditoriale."
+    "note": "La longueur est un garde-fou secondaire, pas une note éditoriale. L’anglais et la philosophie ont des planchers volontairement plus courts : dans ces disciplines, une partie de la valeur pédagogique vient de la pratique, de la production, du raisonnement et de l’interaction plutôt que d’un volume de texte explicatif."
   },
   "summaryByDiscipline": {
     "art": {
-      "courses": 12,
-      "avgCompleteWords": 405,
+      "courses": 14,
+      "avgCompleteWords": 406,
       "minCompleteWords": 292,
-      "avgSections": 6.8,
-      "avgVisibleExpressWords": 148,
+      "avgSections": 6.7,
+      "avgVisibleExpressWords": 157,
       "errors": 0,
       "warnings": 0
     },
     "astronomy": {
       "courses": 27,
-      "avgCompleteWords": 367,
+      "avgCompleteWords": 374,
       "minCompleteWords": 325,
-      "avgSections": 8.4,
+      "avgSections": 8.5,
       "avgVisibleExpressWords": 144,
       "errors": 0,
       "warnings": 0
     },
     "cinema": {
-      "courses": 11,
-      "avgCompleteWords": 401,
+      "courses": 13,
+      "avgCompleteWords": 403,
       "minCompleteWords": 299,
-      "avgSections": 6.5,
-      "avgVisibleExpressWords": 147,
+      "avgSections": 6.4,
+      "avgVisibleExpressWords": 156,
       "errors": 0,
       "warnings": 0
     },
     "economy": {
-      "courses": 10,
-      "avgCompleteWords": 395,
+      "courses": 12,
+      "avgCompleteWords": 397,
       "minCompleteWords": 306,
-      "avgSections": 6.8,
-      "avgVisibleExpressWords": 156,
+      "avgSections": 6.7,
+      "avgVisibleExpressWords": 164,
       "errors": 0,
       "warnings": 0
     },
     "english": {
       "courses": 16,
-      "avgCompleteWords": 342,
-      "minCompleteWords": 278,
-      "avgSections": 7.2,
-      "avgVisibleExpressWords": 145,
+      "avgCompleteWords": 256,
+      "minCompleteWords": 219,
+      "avgSections": 5,
+      "avgVisibleExpressWords": 152,
       "errors": 0,
-      "warnings": 1
+      "warnings": 0
     },
     "geography": {
-      "courses": 11,
-      "avgCompleteWords": 386,
+      "courses": 13,
+      "avgCompleteWords": 389,
       "minCompleteWords": 312,
-      "avgSections": 7.1,
-      "avgVisibleExpressWords": 148,
+      "avgSections": 6.9,
+      "avgVisibleExpressWords": 155,
       "errors": 0,
       "warnings": 0
     },
@@ -89,49 +91,38 @@
       "warnings": 0
     },
     "music": {
-      "courses": 10,
-      "avgCompleteWords": 381,
+      "courses": 12,
+      "avgCompleteWords": 384,
       "minCompleteWords": 306,
-      "avgSections": 6.8,
-      "avgVisibleExpressWords": 155,
+      "avgSections": 6.7,
+      "avgVisibleExpressWords": 162,
       "errors": 0,
       "warnings": 0
     },
     "philosophy": {
       "courses": 16,
-      "avgCompleteWords": 330,
-      "minCompleteWords": 282,
-      "avgSections": 7.1,
+      "avgCompleteWords": 276,
+      "minCompleteWords": 238,
+      "avgSections": 7,
       "avgVisibleExpressWords": 144,
       "errors": 0,
       "warnings": 0
     },
     "science-inventions": {
       "courses": 16,
-      "avgCompleteWords": 379,
-      "minCompleteWords": 302,
-      "avgSections": 7.1,
+      "avgCompleteWords": 391,
+      "minCompleteWords": 308,
+      "avgSections": 7.4,
       "avgVisibleExpressWords": 153,
       "errors": 0,
       "warnings": 0
     }
   },
-  "issueCounts": {
-    "course-short": 1
-  },
+  "issueCounts": {},
   "blockingErrors": 0,
-  "warnings": 1,
+  "warnings": 0,
   "editorialSignals": {
-    "absoluteDistractorPhrases": 704
+    "absoluteDistractorPhrases": 708
   },
-  "issues": [
-    {
-      "severity": "warning",
-      "code": "course-short",
-      "lessonId": "eng-connectors-concession",
-      "discipline": "english",
-      "value": 278,
-      "target": 280
-    }
-  ]
+  "issues": []
 }

@@ -1,3 +1,4 @@
+window.HD_SOCIAL_V2_ONLY = true;
 /* HistoDaily LTS — configuration, onboarding, icônes et illustrations */
 
 try { document.documentElement.classList.add("hd326-coherence"); } catch {}
@@ -5,8 +6,8 @@ try { document.documentElement.classList.add("hd326-coherence"); } catch {}
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-rc.32.0",
-  assetsVersion: "1.0.0-rc.32.0",
+  version: "1.0.0-rc.47.0",
+  assetsVersion: "1.0.0-rc.47.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -156,7 +157,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-rc.32.0",
+  version: "1.0.0-rc.47.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;

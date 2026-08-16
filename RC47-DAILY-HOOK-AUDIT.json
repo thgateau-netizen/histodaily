@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-rc.47.0",
+  "status": "passed",
+  "checks": {
+    "dailyRitualEndsOnClaim": true,
+    "courseIsOptionalDeepDive": true,
+    "solutionHasTakeaway": true,
+    "tomorrowTeaserIsExactAssignment": true,
+    "tomorrowTeaserAvoidsRecentMysteries": true,
+    "dailyRouteNoLongerPromisesCourseQuiz": true,
+    "retentionInstrumentationExists": true,
+    "pushPromiseMatchesShortRitual": true,
+    "dailyHookBundledLast": true,
+    "dailyHookStylesPresent": true
+  },
+  "errors": []
+}

@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0-rc.42.0",
+  "status": "passed",
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158,
+    "quizQuestions": 1095
+  },
+  "addedCourses": 10,
+  "expandedDisciplines": [
+    "economy",
+    "music",
+    "cinema",
+    "geography",
+    "art"
+  ],
+  "courseCounts": {
+    "history": 64,
+    "art": 14,
+    "cinema": 13,
+    "science-inventions": 16,
+    "economy": 12,
+    "geography": 13,
+    "music": 12,
+    "astronomy": 27,
+    "literature": 16,
+    "philosophy": 16,
+    "english": 16
+  },
+  "quality": {
+    "contentErrors": 0,
+    "contentWarnings": 0,
+    "editorialIssues": 0,
+    "catalogueExpansionErrors": 0
+  },
+  "regressionsChecked": [
+    "english",
+    "philosophy",
+    "science-astronomy",
+    "global-difficulty",
+    "adaptive-comfort",
+    "personalized-path",
+    "ui-flow",
+    "product-polish",
+    "lean-flow"
+  ],
+  "httpSmokeTest": {
+    "index": 200,
+    "serviceWorker": 200,
+    "coreBundle": 200,
+    "contentBundle": 200,
+    "experienceBundle": 200,
+    "visualAsset": 200
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0-rc.39.0",
+  "status": "passed",
+  "focus": "Sciences & Astronomie — familiar-first and progressive difficulty",
+  "catalogue": {
+    "courses": 209,
+    "mysteries": 158,
+    "quizQuestions": 1045
+  },
+  "scienceAstronomy": {
+    "version": "1.0.0-rc.39.0",
+    "status": "passed",
+    "principle": "Démarrage familier et rassurant, puis difficulté progressive. Sciences : observation → hypothèse → prédiction → test → explication. Astronomie : ciel proche → modèles → échelles cosmiques.",
+    "coverage": {
+      "scienceCourses": 16,
+      "astronomyCourses": 27,
+      "starterScienceCourses": 4,
+      "starterAstronomyCourses": 4,
+      "starterScienceMysteries": 6,
+      "starterAstronomyMysteries": 6
+    },
+    "difficultyRamp": {
+      "firstSolvedMysteries": "facile jusqu’à 8 réussites en Sciences/Astronomie",
+      "intermediate": "facile+moyen jusqu’à 24 réussites",
+      "advanced": "difficile ensuite disponible"
+    },
+    "astronomyStart": [
+      "astro-moon-phases",
+      "astro-seasons-earth-orbit",
+      "astro-formation-rocky",
+      "astro-giants-moons"
+    ],
+    "signals": {
+      "starterRecallQuestions": 0,
+      "scienceAppliedQuestions": 20,
+      "astronomyAppliedQuestions": 20
+    },
+    "warnings": [],
+    "errors": []
+  },
+  "quality": {
+    "blockingErrors": 0,
+    "plausibilityWarnings": 0,
+    "editorialIssues": 0,
+    "qualityStatus": "passed"
+  },
+  "compatibility": {
+    "englishRC37": "passed",
+    "philosophyRC38": "passed",
+    "uiFlow": "passed",
+    "productPolish": "passed",
+    "leanFlow": "passed"
+  },
+  "preservesProgressIds": true
+}

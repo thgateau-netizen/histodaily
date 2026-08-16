@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0-rc.41.0",
+  "status": "failed",
+  "checks": {
+    "runtimeVersionAligned": true,
+    "cacheVersionAligned": false,
+    "cssAssetsChecked": 18,
+    "pwaAssetsChecked": 19,
+    "activeSvgPlaceholders": [],
+    "genericQuizQuestions": 0,
+    "qualityModuleBundled": true,
+    "englishRedesignBundled": true,
+    "philosophyRedesignBundled": true,
+    "scienceAstronomyRedesignBundled": true,
+    "globalDifficultyRampBundled": true
+  },
+  "warnings": [],
+  "errors": [
+    "service-worker: cache RC40 absent"
+  ]
+}

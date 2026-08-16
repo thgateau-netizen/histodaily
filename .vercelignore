@@ -2,5 +2,8 @@
 src/
 scripts/
 docs/
-RC*-AUDIT.json
-RC*-MANIFEST.json
+RC*.json
+RC*.md
+
+# Export de travail généré par les audits, jamais servi en production.
+catalogue-export-temp.json

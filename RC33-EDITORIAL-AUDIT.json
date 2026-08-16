@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.36.0",
+  "version": "1.0.0-rc.47.0",
   "methodology": {
     "note": "Audit qualitatif structurel : redondance, remplissage générique, spécificité des exercices, qualité des explications de quiz, plausibilité minimale des distracteurs, cohérence des sections, intégrité des formulations et mystères qui ne doivent jamais révéler leur réponse. La longueur n’entre pas dans le score.",
     "interpretation": "La bande A signifie qu’aucun défaut couvert par cette grille n’a été détecté. Elle ne constitue ni une certification factuelle phrase par phrase ni une note absolue de qualité littéraire.",
@@ -20,22 +20,22 @@
     ]
   },
   "catalogue": {
-    "courses": 209,
+    "courses": 219,
     "mysteries": 158,
-    "quizQuestions": 1045
+    "quizQuestions": 1095
   },
   "courseGrades": {
-    "A": 209
+    "A": 219
   },
   "mysteryGrades": {
     "A": 158
   },
   "byDiscipline": {
     "art": {
-      "courses": 12,
+      "courses": 14,
       "courseAverage": 100,
       "courseGrades": {
-        "A": 12
+        "A": 14
       },
       "mysteries": 12,
       "mysteryAverage": 100,
@@ -56,10 +56,10 @@
       }
     },
     "cinema": {
-      "courses": 11,
+      "courses": 13,
       "courseAverage": 100,
       "courseGrades": {
-        "A": 11
+        "A": 13
       },
       "mysteries": 11,
       "mysteryAverage": 100,
@@ -68,10 +68,10 @@
       }
     },
     "economy": {
-      "courses": 10,
+      "courses": 12,
       "courseAverage": 100,
       "courseGrades": {
-        "A": 10
+        "A": 12
       },
       "mysteries": 11,
       "mysteryAverage": 100,
@@ -92,10 +92,10 @@
       }
     },
     "geography": {
-      "courses": 11,
+      "courses": 13,
       "courseAverage": 100,
       "courseGrades": {
-        "A": 11
+        "A": 13
       },
       "mysteries": 12,
       "mysteryAverage": 100,
@@ -128,10 +128,10 @@
       }
     },
     "music": {
-      "courses": 10,
+      "courses": 12,
       "courseAverage": 100,
       "courseGrades": {
-        "A": 10
+        "A": 12
       },
       "mysteries": 11,
       "mysteryAverage": 100,
@@ -164,9 +164,7 @@
       }
     }
   },
-  "issueCounts": {
-    "intentional-reference-resolution": 1
-  },
+  "issueCounts": {},
   "priorityItems": [
     {
       "id": "prehistory-hominids",
@@ -569,14 +567,5 @@
       "kind": "course"
     }
   ],
-  "issues": [
-    {
-      "kind": "mystery",
-      "id": "english-mystery-one-reference-rc19",
-      "discipline": "english",
-      "severity": "info",
-      "code": "intentional-reference-resolution",
-      "answer": "Charger"
-    }
-  ]
+  "issues": []
 }

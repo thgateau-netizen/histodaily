@@ -1,0 +1,58 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
+
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,'..');
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'RC39-BUNDLE-MANIFEST.json'),'utf8'));
+const readSource=n=>fs.readFileSync(path.join(root,'src','legacy-client',n),'utf8');
+const noop=()=>{};
+const element=new Proxy({style:{},dataset:{},classList:{add:noop,remove:noop,toggle:noop,contains:()=>false},appendChild:noop,append:noop,remove:noop,setAttribute:noop,addEventListener:noop,querySelector:()=>null,querySelectorAll:()=>[]},{get:(t,p)=>p in t?t[p]:noop});
+const document={readyState:'loading',body:element,documentElement:element,head:element,getElementById:()=>element,querySelector:()=>null,querySelectorAll:()=>[],createElement:()=>Object.create(element),createTextNode:()=>({}),addEventListener:noop};
+const storage={getItem:()=>null,setItem:noop,removeItem:noop,clear:noop};
+const quiet={log:noop,warn:noop,error:noop,info:noop,debug:noop};
+const win={document,addEventListener:noop,removeEventListener:noop,setTimeout:()=>0,clearTimeout:noop,setInterval:()=>0,clearInterval:noop,queueMicrotask:noop,localStorage:storage,sessionStorage:storage,location:{href:'http://audit/',pathname:'/',search:'',hash:'',origin:'http://audit',reload:noop},history:{pushState:noop,replaceState:noop},navigator:{onLine:true,language:'fr-FR',serviceWorker:{register:async()=>({})}},matchMedia:()=>({matches:false,addEventListener:noop}),innerWidth:390,innerHeight:844};
+const sandbox={console:quiet,window:win,document,localStorage:storage,sessionStorage:storage,navigator:win.navigator,location:win.location,history:win.history,setTimeout:win.setTimeout,clearTimeout:noop,setInterval:win.setInterval,clearInterval:noop,queueMicrotask:noop,fetch:async()=>({ok:false,status:404,json:async()=>({}),text:async()=>''}),AbortController:globalThis.AbortController,URL,URLSearchParams,TextEncoder,TextDecoder,Blob,Response,Request,Headers,crypto:globalThis.crypto,Intl,Date,Math,JSON,Object,Array,Set,Map,WeakMap,Promise,RegExp,String,Number,Boolean,Error,TypeError,performance:{now:()=>0},requestAnimationFrame:()=>0,cancelAnimationFrame:noop,alert:noop,confirm:()=>false,prompt:()=>null,CSS:{escape:String},structuredClone:globalThis.structuredClone,HD_ART:{}};
+sandbox.globalThis=sandbox;win.window=win;win.globalThis=sandbox;
+const ctx=vm.createContext(sandbox);
+for(const group of ['core','content']) for(const source of manifest.sources[group]||[]) vm.runInContext(readSource(source),ctx,{filename:source,timeout:10000});
+const catalogue=JSON.parse(vm.runInContext(`JSON.stringify({packs:READY_LESSON_PACKS,mysteries:data.mysteries||[],worlds:PLANNED_DISCIPLINE_WORLDS||{},groups:PLANNED_DISCIPLINE_GROUPS||{},meta:window.HistoDaily?.scienceAstronomyRC39||null})`,ctx));
+const science=Object.entries(catalogue.packs).filter(([id])=>id.startsWith('sci-')||id.startsWith('science-'));
+const astronomy=Object.entries(catalogue.packs).filter(([id])=>id.startsWith('astro-'));
+const starterScience=['sci-method-proof-basics','sci-galileo-revolution','sci-natural-selection','sci-genetics-dna-history'];
+const starterAstronomy=['astro-moon-phases-eclipses-tides','astro-seasons-tilt-solstice-equinox','astro-solar-system-formation','astro-rocky-planets'];
+const starterScienceMysteries=['science-mystery-hypothesis-122','science-mystery-experimental-proof-121','science-mystery-double-helix-233','science-mystery-immune-memory-235','science-mystery-universal-gravity-236','science-mystery-atomic-number-237'];
+const starterAstronomyMysteries=['astro-mystery-aurora-186','astro-mystery-orbit-186','astronomy-mystery-transit-method-235','astronomy-mystery-synchronous-rotation-236','astronomy-mystery-apollo11-236','astronomy-mystery-solstice-237'];
+const errors=[];const warnings=[];const pass=(c,m)=>{if(!c)errors.push(m)};
+const packs=catalogue.packs;const mysteries=new Map((catalogue.mysteries||[]).map(m=>[m.id,m]));
+pass(catalogue.meta?.principles?.includes('familiar-first'),'RC39 metadata familiar-first absente');
+for(const id of [...starterScience,...starterAstronomy]){
+  const p=packs[id]; pass(!!p,`Cours starter absent: ${id}`); if(!p)continue;
+  pass(p.scienceExperience?.difficultyStage==='starter',`${id}: difficulté starter non marquée`);
+  pass((p.quiz||[]).length===5,`${id}: quiz != 5 questions`);
+  pass((p.quiz||[]).every(q=>String(q.kind||'').length>0),`${id}: type de raisonnement manquant`);
+  pass((p.quiz||[]).every(q=>String(q.why||'').split(/\s+/).length>=10),`${id}: explication trop courte`);
+}
+const starterQuestions=[...starterScience,...starterAstronomy].flatMap(id=>(packs[id]?.quiz||[]).map(q=>String(q.q||'')));
+const rawRecall=starterQuestions.filter(q=>/(à quel siècle|en quelle année|qui a découvert|comment s'appelle)/i.test(q));
+pass(rawRecall.length===0,`Questions de récitation dans le démarrage: ${rawRecall.length}`);
+for(const id of starterScienceMysteries) pass(mysteries.get(id)?.difficulty==='facile',`Mystère science starter pas facile: ${id}`);
+for(const id of starterAstronomyMysteries) pass(mysteries.get(id)?.difficulty==='facile',`Mystère astro starter pas facile: ${id}`);
+const astroGroups=(catalogue.groups?.astronomy||[]).map(g=>g.id);
+pass(astroGroups[0]==='astro-solar-system',`Astronomie commence par ${astroGroups[0]||'rien'} au lieu du ciel proche/Système solaire`);
+pass(astroGroups.at(-1)==='astro-foundations',`Cosmologie ne vient pas en dernier groupe (${astroGroups.at(-1)||'rien'})`);
+const astroWorlds=[...(catalogue.worlds?.astronomy||[])].sort((a,b)=>(a.sortStart||0)-(b.sortStart||0));
+const firstAstro=astroWorlds.filter(w=>w.group==='astro-solar-system').slice(0,4).map(w=>w.id);
+pass(JSON.stringify(firstAstro)===JSON.stringify(['astro-moon-phases','astro-seasons-earth-orbit','astro-formation-rocky','astro-giants-moons']),`Ordre astro début inattendu: ${firstAstro.join(', ')}`);
+const rotation=fs.readFileSync(path.join(root,'src','legacy-client','daily-rotation-rc29.js'),'utf8');
+pass(rotation.includes('solvedCount < 8 ? new Set(["facile"])'),'Rampe douce sciences/astronomie (<8 = facile) absente');
+pass(rotation.includes('solvedCount < 24 ? new Set(["facile", "moyen"])'),'Rampe douce sciences/astronomie (<24 = facile+moyen) absente');
+const scienceApplied=starterScience.flatMap(id=>(packs[id]?.quiz||[])).filter(q=>['experiment','prediction','evidence','revision','interpretation','observation','model','instrument','reasoning','mechanism','variation','antibiotic','misconception','limits','inheritance','complementarity','gene-environment','mutation'].includes(q.kind)).length;
+const astroApplied=starterAstronomy.flatMap(id=>(packs[id]?.quiz||[])).filter(q=>['geometry','prediction','rotation','eclipse','tides','cause','evidence','sun-angle','day-length','equator','temperature','accretion','archive','model','comparison','atmosphere','mars','habitability'].includes(q.kind)).length;
+pass(scienceApplied>=18,`Science starter appliquée: ${scienceApplied}/20`);
+pass(astroApplied>=18,`Astronomie starter appliquée: ${astroApplied}/20`);
+const report={version:JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version,status:errors.length?'failed':'passed',principle:'Démarrage familier et rassurant, puis difficulté progressive. Sciences : observation → hypothèse → prédiction → test → explication. Astronomie : ciel proche → modèles → échelles cosmiques.',coverage:{scienceCourses:science.length,astronomyCourses:astronomy.length,starterScienceCourses:starterScience.length,starterAstronomyCourses:starterAstronomy.length,starterScienceMysteries:starterScienceMysteries.length,starterAstronomyMysteries:starterAstronomyMysteries.length},difficultyRamp:{firstSolvedMysteries:'facile jusqu’à 8 réussites en Sciences/Astronomie',intermediate:'facile+moyen jusqu’à 24 réussites',advanced:'difficile ensuite disponible'},astronomyStart:firstAstro,signals:{starterRecallQuestions:rawRecall.length,scienceAppliedQuestions:scienceApplied,astronomyAppliedQuestions:astroApplied},warnings,errors};
+fs.writeFileSync(path.join(root,'RC39-SCIENCE-ASTRONOMY-AUDIT.json'),JSON.stringify(report,null,2));
+if(errors.length){console.error(errors.join('\n'));process.exit(1)}
+console.log(`Science/Astronomy audit passed: ${science.length} science courses, ${astronomy.length} astronomy courses; starters are gentle and applied.`);

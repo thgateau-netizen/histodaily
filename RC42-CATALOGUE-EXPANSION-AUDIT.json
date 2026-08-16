@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0-rc.47.0",
+  "status": "passed",
+  "principle": "Élargir les catalogues courts avec peu de cours mais de vrais sujets complémentaires, sans gonfler les disciplines déjà riches.",
+  "addedCourses": {
+    "economy": [
+      {
+        "id": "eco-common-resources-rules",
+        "title": "Ressources communes : éviter la surexploitation"
+      },
+      {
+        "id": "eco-redistribution-tax-benefits",
+        "title": "Redistribution : impôts, prestations et services publics"
+      }
+    ],
+    "music": [
+      {
+        "id": "music-bach-counterpoint-listening",
+        "title": "Bach et le contrepoint : entendre plusieurs voix à la fois"
+      },
+      {
+        "id": "music-riff-groove-hook",
+        "title": "Riff, groove, refrain : pourquoi une chanson accroche"
+      }
+    ],
+    "cinema": [
+      {
+        "id": "cinema-mise-en-scene-space-light",
+        "title": "Mise en scène : faire parler l’espace avant le dialogue"
+      },
+      {
+        "id": "cinema-sound-offscreen-silence",
+        "title": "Son, silence, hors-champ : le film continue les yeux fermés"
+      }
+    ],
+    "geography": [
+      {
+        "id": "geo-urban-sprawl-mobility",
+        "title": "Étalement urbain : logement, distance et mobilité"
+      },
+      {
+        "id": "geo-migration-routes-networks-borders",
+        "title": "Migrations : routes, réseaux et frontières"
+      }
+    ],
+    "art": [
+      {
+        "id": "art-abstraction-color-form",
+        "title": "Abstraction : couleur, forme et rythme sans récit imposé"
+      },
+      {
+        "id": "art-installation-performance-space",
+        "title": "Installation et performance : quand l’œuvre devient une situation"
+      }
+    ]
+  },
+  "courseCounts": {
+    "history": 64,
+    "art": 14,
+    "cinema": 13,
+    "science-inventions": 16,
+    "economy": 12,
+    "geography": 13,
+    "music": 12,
+    "astronomy": 27,
+    "literature": 16,
+    "philosophy": 16,
+    "english": 16
+  },
+  "minimums": {
+    "economy": 12,
+    "music": 12,
+    "cinema": 13,
+    "geography": 13,
+    "art": 14
+  },
+  "errors": []
+}

@@ -14,9 +14,30 @@ const pass = (condition, message) => { if (!condition) errors.push(message); };
 for (const rel of ['index.html','manifest.webmanifest','service-worker.js']) {
   pass(read(rel).includes(version), `${rel}: version ${version} absente`);
 }
-pass(read('service-worker.js').includes('histodaily-rc36-lean-flow-v1'), 'service-worker: cache RC35 absent');
-pass(read('RC36-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js'), 'bundle manifest: content-editorial-rc33.js absent');
+pass(read('service-worker.js').includes('histodaily-rc47-daily-hook-v1'), 'service-worker: cache RC46 absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js'), 'bundle manifest: content-editorial-rc33.js absent');
 pass(read('bundles/content-rc27.js').includes('SOURCE: content-editorial-rc33.js'), 'bundle réel: content-editorial-rc33.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('content-english-redesign-rc37.js'), 'bundle manifest: content-english-redesign-rc37.js absent');
+pass(read('bundles/content-rc27.js').includes('SOURCE: content-english-redesign-rc37.js'), 'bundle réel: content-english-redesign-rc37.js absent');
+
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('content-philosophy-redesign-rc38.js'), 'bundle manifest: content-philosophy-redesign-rc38.js absent');
+pass(read('bundles/content-rc27.js').includes('SOURCE: content-philosophy-redesign-rc38.js'), 'bundle réel: content-philosophy-redesign-rc38.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('content-science-astronomy-rc39.js'), 'bundle manifest: content-science-astronomy-rc39.js absent');
+pass(read('bundles/content-rc27.js').includes('SOURCE: content-science-astronomy-rc39.js'), 'bundle réel: content-science-astronomy-rc39.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('content-difficulty-ramp-rc40.js'), 'bundle manifest: content-difficulty-ramp-rc40.js absent');
+pass(read('bundles/content-rc27.js').includes('SOURCE: content-difficulty-ramp-rc40.js'), 'bundle réel: content-difficulty-ramp-rc40.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('global-difficulty-ramp-rc40.js'), 'bundle manifest: global-difficulty-ramp-rc40.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('personalized-path-rc41.js'), 'bundle manifest: personalized-path-rc41.js absent');
+pass(read('bundles/experience-rc27.js').includes('SOURCE: personalized-path-rc41.js'), 'bundle experience: personalized-path-rc41.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('adaptive-comfort-rc41.js'), 'bundle manifest: adaptive-comfort-rc41.js absent');
+pass(read('bundles/experience-rc27.js').includes('SOURCE: adaptive-comfort-rc41.js'), 'bundle experience: adaptive-comfort-rc41.js absent');
+pass(read('bundles/experience-rc27.js').includes('SOURCE: global-difficulty-ramp-rc40.js'), 'bundle réel: global-difficulty-ramp-rc40.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('content-expansion-rc42.js'), 'bundle manifest: content-expansion-rc42.js absent');
+pass(read('bundles/content-rc27.js').includes('SOURCE: content-expansion-rc42.js'), 'bundle réel: content-expansion-rc42.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('daily-freshness-rc43.js'), 'bundle manifest: daily-freshness-rc43.js absent');
+pass(read('bundles/experience-rc27.js').includes('SOURCE: daily-freshness-rc43.js'), 'bundle réel: daily-freshness-rc43.js absent');
+pass(read('RC47-BUNDLE-MANIFEST.json').includes('daily-hook-rc47.js'), 'bundle manifest: daily-hook-rc47.js absent');
+pass(read('bundles/experience-rc27.js').includes('SOURCE: daily-hook-rc47.js'), 'bundle réel: daily-hook-rc47.js absent');
 
 const css = read('histodaily.css');
 const cssUrls = [...css.matchAll(/url\(['"]?([^)'"?#]+)[^)]*\)/g)].map(m => m[1]).filter(v => !v.startsWith('data:') && !v.startsWith('http'));
@@ -47,17 +68,29 @@ const result = {
   status: errors.length ? 'failed' : 'passed',
   checks: {
     runtimeVersionAligned: !errors.some(e => e.includes('version')),
-    cacheVersionAligned: sw.includes('histodaily-rc36-lean-flow-v1'),
+    cacheVersionAligned: sw.includes('histodaily-rc47-daily-hook-v1'),
     cssAssetsChecked: new Set(cssUrls).size,
     pwaAssetsChecked: new Set(swAssets).size,
     activeSvgPlaceholders: placeholderRefs.filter(ref => css.includes(ref) || sw.includes(ref)),
     genericQuizQuestions: generic,
-    qualityModuleBundled: read('RC36-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js') && read('bundles/content-rc27.js').includes('SOURCE: content-editorial-rc33.js')
+    qualityModuleBundled: read('RC47-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js') && read('bundles/content-rc27.js').includes('SOURCE: content-editorial-rc33.js'),
+    englishRedesignBundled: read('RC47-BUNDLE-MANIFEST.json').includes('content-english-redesign-rc37.js') && read('bundles/content-rc27.js').includes('SOURCE: content-english-redesign-rc37.js'),
+    philosophyRedesignBundled: read('RC47-BUNDLE-MANIFEST.json').includes('content-philosophy-redesign-rc38.js') && read('bundles/content-rc27.js').includes('SOURCE: content-philosophy-redesign-rc38.js'),
+    scienceAstronomyRedesignBundled: read('RC47-BUNDLE-MANIFEST.json').includes('content-science-astronomy-rc39.js') && read('bundles/content-rc27.js').includes('SOURCE: content-science-astronomy-rc39.js'),
+    globalDifficultyRampBundled: read('RC47-BUNDLE-MANIFEST.json').includes('content-difficulty-ramp-rc40.js') && read('bundles/content-rc27.js').includes('SOURCE: content-difficulty-ramp-rc40.js') && read('bundles/experience-rc27.js').includes('SOURCE: global-difficulty-ramp-rc40.js'),
+    personalizedPathBundled: read('RC47-BUNDLE-MANIFEST.json').includes('personalized-path-rc41.js') && read('bundles/experience-rc27.js').includes('SOURCE: personalized-path-rc41.js'),
+    adaptiveComfortBundled: read('RC47-BUNDLE-MANIFEST.json').includes('adaptive-comfort-rc41.js') && read('bundles/experience-rc27.js').includes('SOURCE: adaptive-comfort-rc41.js'),
+    catalogueExpansionBundled: read('RC47-BUNDLE-MANIFEST.json').includes('content-expansion-rc42.js') && read('bundles/content-rc27.js').includes('SOURCE: content-expansion-rc42.js'),
+    dailyFreshnessBundled: read('RC47-BUNDLE-MANIFEST.json').includes('daily-freshness-rc43.js') && read('bundles/experience-rc27.js').includes('SOURCE: daily-freshness-rc43.js'),
+    dailyHookBundled: read('RC47-BUNDLE-MANIFEST.json').includes('daily-hook-rc47.js') && read('bundles/experience-rc27.js').includes('SOURCE: daily-hook-rc47.js')
   },
   warnings,
   errors
 };
-fs.writeFileSync(path.join(root,'RC36-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
+fs.writeFileSync(path.join(root,'RC47-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
+fs.writeFileSync(path.join(root,'RC45-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
+fs.writeFileSync(path.join(root,'RC44-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
+fs.writeFileSync(path.join(root,'RC43-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

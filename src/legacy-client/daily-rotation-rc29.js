@@ -6,11 +6,21 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.32.0";
+  const VERSION = "1.0.0-rc.47.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
     "mystery-neolithic-agriculture", "mystery-nile", "mystery-minoens", "mystery-1789-rc39"
+  ]);
+  const STARTER_SCIENCE = new Set([
+    "science-mystery-hypothesis-122", "science-mystery-experimental-proof-121",
+    "science-mystery-double-helix-233", "science-mystery-immune-memory-235",
+    "science-mystery-universal-gravity-236", "science-mystery-atomic-number-237"
+  ]);
+  const STARTER_ASTRONOMY = new Set([
+    "astro-mystery-aurora-186", "astro-mystery-orbit-186",
+    "astronomy-mystery-transit-method-235", "astronomy-mystery-synchronous-rotation-236",
+    "astronomy-mystery-apollo11-236", "astronomy-mystery-solstice-237"
   ]);
 
   function assignmentMap(){
@@ -47,12 +57,19 @@
 
   function preferredPool(id, rawPool){
     const solvedCount = typeof rc17SolvedMysteryCount === "function" ? rc17SolvedMysteryCount(id) : 0;
-    const starter = solvedCount < 8 && id === "history" ? rawPool.filter(item => STARTER_HISTORY.has(item.id)) : [];
-    const allowed = solvedCount < 4
-      ? new Set(["facile"])
-      : solvedCount < 30
-        ? new Set(["facile", "moyen"])
-        : new Set(["facile", "moyen", "difficile"]);
+    let starterSet = null;
+    let starterLimit = 0;
+    if (id === "history") { starterSet = STARTER_HISTORY; starterLimit = 8; }
+    else if (id === "science-inventions") { starterSet = STARTER_SCIENCE; starterLimit = 6; }
+    else if (id === "astronomy") { starterSet = STARTER_ASTRONOMY; starterLimit = 6; }
+    const starter = starterSet && solvedCount < starterLimit ? rawPool.filter(item => starterSet.has(item.id)) : [];
+
+    // RC39 : sciences/astronomie montent plus doucement. Les premiers dossiers
+    // doivent surtout apprendre le geste de raisonnement, pas sanctionner le jargon.
+    const gentleDiscipline = id === "science-inventions" || id === "astronomy";
+    const allowed = gentleDiscipline
+      ? (solvedCount < 8 ? new Set(["facile"]) : solvedCount < 24 ? new Set(["facile", "moyen"]) : new Set(["facile", "moyen", "difficile"]))
+      : (solvedCount < 4 ? new Set(["facile"]) : solvedCount < 30 ? new Set(["facile", "moyen"]) : new Set(["facile", "moyen", "difficile"]));
     const adapted = rawPool.filter(item => allowed.has(item.difficulty || "moyen"));
     const nonExpert = rawPool.filter(item => (item.difficulty || "moyen") !== "expert");
     return starter.length ? starter : (adapted.length ? adapted : (nonExpert.length ? nonExpert : rawPool));

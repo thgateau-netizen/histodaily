@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0-rc.43.0",
+  "name": "Daily Freshness & Clear Finish",
+  "status": "pass",
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  },
+  "daily_freshness": {
+    "disciplines": 11,
+    "recent_window_days": 10,
+    "same_day_stable": true,
+    "next_day_changes_when_possible": true,
+    "solved_avoided_while_unseen_exists": true,
+    "same_lesson_adjacent_avoided_when_possible": true
+  },
+  "home_completion": {
+    "repeat_cta_removed": true,
+    "tomorrow_message": true,
+    "optional_next_action_only": true
+  },
+  "quality_pipeline": "pass, 0 warnings",
+  "http_smoke_test": {
+    "index": 200,
+    "css": 200,
+    "core_bundle": 200,
+    "content_bundle": 200,
+    "experience_bundle": 200,
+    "service_worker": 200,
+    "manifest": 200,
+    "hero_history": 200
+  }
+}

@@ -11,6 +11,7 @@ const module = read('src/legacy-client/product-polish-rc35.js');
 const build = read('scripts/build-client.mjs');
 const onboarding = read('src/legacy-client/onboarding-v275.js');
 const bundle = read('bundles/experience-rc27.js');
+const finalLayer = read('src/legacy-client/daily-freshness-rc43.js');
 const errors = [];
 const checks = {};
 const pass = (name, condition, detail) => {
@@ -18,7 +19,7 @@ const pass = (name, condition, detail) => {
   if (!condition) errors.push(`${name}: ${detail}`);
 };
 
-pass('polishModuleBeforeLeanFlow', /'quality-pass-rc31\.js','product-polish-rc35\.js','lean-flow-rc36\.js'\]/.test(build), 'La couche RC35 doit rester après les anciens polish et juste avant la simplification RC36.');
+pass('polishModuleBeforeLeanFlow', /'quality-pass-rc31\.js','product-polish-rc35\.js','lean-flow-rc36\.js'/.test(build), 'La couche RC35 doit rester après les anciens polish et juste avant la simplification RC36.');
 pass('polishModuleInBundle', bundle.includes('SOURCE: product-polish-rc35.js'), 'Le module RC35 doit exister dans le bundle réellement servi.');
 pass('consistentDesignTokens', css.includes('--hd35-radius-card:18px') && css.includes('--hd35-line:'), 'Les écrans doivent partager les mêmes tokens de surface et de rayon.');
 pass('mobileHeroReduced', css.includes('.rc24-hero{min-height:438px}') && css.includes('.rc24-hero{min-height:420px}'), 'Le hero mobile ne doit plus monopoliser presque tout le premier écran.');
@@ -33,7 +34,7 @@ pass('detailsStateAccessible', module.includes('aria-expanded') && module.includ
 pass('activeNavCurrentPage', module.includes('aria-current", "page"') && module.includes('removeAttribute("aria-current")'), 'La navigation doit annoncer uniquement l’onglet actif comme page courante.');
 pass('noBlockingLoadingOverlay', !css.includes('hd35-loading-overlay') && !module.includes('hd35-loading-overlay'), 'Le feedback de chargement ne doit pas ajouter un écran bloquant.');
 pass('firstRunSingleDecision', onboarding.includes('hd35-onboarding-one') && !onboarding.includes('hd275-step-count') && !onboarding.includes('data-hd275-back'), 'La première ouverture doit conduire directement au choix de l’univers puis à l’expédition.');
-pass('releaseVersionExposed', module.includes(`const VERSION = "${pkg.version}"`) && module.includes('version: VERSION'), 'La couche finale doit exposer la vraie version du build.');
+pass('releaseVersionExposed', finalLayer.includes(`const VERSION = "${pkg.version}"`) && finalLayer.includes('version:VERSION'), 'La dernière couche d’expérience doit exposer la vraie version du build.');
 
 const result = {
   version: pkg.version,

@@ -1,7 +1,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.36.0";
+  const VERSION = "1.0.0-rc.47.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -52,10 +52,12 @@
     if (!solved) return {index:1,type:"mystery",kicker:"Expédition du jour",title:mysteryTitle(mystery),text:mysteryTeaserText(mystery),action:"Commencer l’expédition"};
     if (lesson && !read) return {index:2,type:"lesson",view:"complete",kicker:"Étape 2 · Comprendre",title:titleOf(lesson),text:"Trouvé. Comprends maintenant pourquoi cette réponse tient.",action:"Comprendre"};
     if (lesson && !quiz) return {index:3,type:"lesson",view:"quiz",kicker:"Étape 3 · Vérifier",title:"Ancre ce que tu viens d’apprendre",text:`5 questions pour ancrer l’essentiel de « ${titleOf(lesson)} ».`,action:"Faire le quiz"};
-    return {index:4,type:lesson?"lesson":"mystery",view:"complete",kicker:"Parcours du jour terminé",title:"Bien joué — la boucle est complète",text:"Expédition, cours et quiz : rituel terminé.",action:lesson?"Revoir le cours":"Revoir l’expédition"};
+    return {index:4,type:"complete",view:"complete",kicker:"C’est fait pour aujourd’hui",title:"À demain pour un nouveau dossier",text:"Ta session est enregistrée. Si tu as encore envie d’apprendre, une suggestion facultative t’attend juste dessous.",action:""};
   }
   function memoryApi(){ return window.HistoDaily?.memory || null; }
   function nextAction(id, linkedLesson){
+    const personalized = safe(() => window.HistoDailyPersonalizedPathRC41?.nextAction?.(id, linkedLesson), null);
+    if (personalized) return personalized;
     const mem = memoryApi();
     const due = safe(() => mem?.validReviewEntries?.(id), []) || [];
     if (due.length) return {kind:"review",eyebrow:"À faire maintenant",title:`${due.length} notion${due.length>1?"s":""} à revoir`,meta:`Séance courte · ${Math.min(5,due.length)} rappel${Math.min(5,due.length)>1?"s":""} max`,action:"Réviser",count:due.length};
@@ -95,19 +97,21 @@
     const linked = mystery?.lessonId ? safe(() => lessonById(mystery.lessonId), null) : null;
     const s = stage(mystery, linked);
     const next = nextAction(id, linked);
+    const nextDisciplineId = next?.disciplineId || id;
+    const nextDiscipline = discipline(nextDisciplineId);
     const streak = Math.max(0, Number(safe(() => currentStreakValue(), state?.streak || 0)) || 0);
     const lvl = Number(safe(() => level(), 1)) || 1;
     const greeting = String(state?.pseudo||"").trim() && !/^invité$/i.test(String(state.pseudo)) ? `Bonjour ${String(state.pseudo).trim()}` : "Bonjour";
     const routeIndex = clamp(s.index,1,3);
     const steps = ["Expédition","Cours","Quiz"];
     const heroClass = artIds.has(id) ? ` has-art art-${esc(id)}` : "";
-    const nextThumbClass = artIds.has(id) ? ` art-${esc(id)}` : "";
+    const nextThumbClass = artIds.has(nextDisciplineId) ? ` art-${esc(nextDisciplineId)}` : "";
 
     document.documentElement.classList.add("hd324-premium-home");
     renderShell(`<div class="rc24-home" style="--world:${esc(d.accent||"#f5c451")}" data-rc24-discipline="${esc(id)}">
       <header class="rc24-head">
         <div class="rc24-brand"><span>✦ HISTODAILY</span><h1>${esc(greeting)}</h1></div>
-        <div class="rc24-metrics"><button type="button" data-rc24-profile><span>🔥</span><b>${streak}</b></button><button type="button" data-rc24-profile><span>♛</span><b>Niv. ${lvl}</b></button></div>
+        <div class="rc24-metrics" aria-label="Statut du profil"><span class="rc44-metric" aria-label="${streak} jour${streak > 1 ? "s" : ""} de série"><span aria-hidden="true">🔥</span><b>${streak}</b></span><span class="rc44-metric" aria-label="Niveau ${lvl}"><span aria-hidden="true">♛</span><b>Niv. ${lvl}</b></span></div>
       </header>
 
       <section class="rc24-hero${heroClass}" aria-labelledby="rc24-hero-title">
@@ -118,28 +122,27 @@
           <p>${esc(s.kicker)}</p>
           <h2 id="rc24-hero-title">${esc(s.title)}</h2>
           <span>${esc(s.text)}</span>
-          <button type="button" class="rc24-hero-cta" data-rc24-primary><b>${esc(s.action)}</b><i>→</i></button>
+          ${s.type!=="complete" ? `<button type="button" class="rc24-hero-cta" data-rc24-primary><b>${esc(s.action)}</b><i>→</i></button>` : `<div class="rc43-done-note"><span>✓</span><b>Nouveau dossier demain</b></div>`}
         </div>
         <div class="rc24-route" aria-label="Parcours du jour">${steps.map((label,i)=>{const step=i+1;const status=s.index>3||step<routeIndex?"done":step===routeIndex?"current":"future";return `<div class="${status}"><i>${status==="done"?"✓":step}</i><span>${label}</span></div>`;}).join("")}</div>
       </section>
 
-      <section class="rc24-dashboard" aria-label="Ta progression">
+      ${s.type === "complete" ? `<section class="rc24-dashboard rc44-optional-next" aria-label="Continuer si tu en as envie">
         <button type="button" class="rc24-next" data-rc24-next>
-          <span class="rc24-next-thumb${nextThumbClass}" aria-hidden="true">${next.kind==="review"?"↻":icon(d)}</span>
-          <span class="rc24-next-copy"><small>${esc(next.eyebrow)}</small><b>${esc(next.title)}</b><em>${esc(next.meta)}</em></span>
+          <span class="rc24-next-thumb${nextThumbClass}" aria-hidden="true">${next.kind==="review"?"↻":icon(nextDiscipline)}</span>
+          <span class="rc24-next-copy"><small>Encore envie ?</small><b>${esc(next.title)}</b><em>${esc(next.meta)}</em></span>
           <span class="rc24-next-arrow">→</span>
         </button>
-      </section>
+      </section>` : ""}
 
       <details class="rc24-universes">
-        <summary><span>Univers</span><b>${esc(disciplineName(d))}</b><em>Changer</em></summary>
+        <summary><span>Discipline</span><b>${esc(disciplineName(d))}</b><em>Changer</em></summary>
         ${universeMarkup(id)}
       </details>
     </div>`);
 
     const shell = document.querySelector(".app-shell.tab-home");
     shell?.classList.add("rc24-home-shell");
-    shell?.querySelectorAll("[data-rc24-profile]").forEach(b => b.addEventListener("click",()=>setState({tab:"profile"})));
     shell?.querySelector("[data-rc24-catalog]")?.addEventListener("click",()=>openCatalog(id));
     shell?.querySelector("[data-rc24-primary]")?.addEventListener("click",()=>{
       if (s.type==="mystery") return setState({tab:"mystery",currentMysteryId:mystery?.id||null,currentMysteryDiscipline:id,currentDiscipline:id});
@@ -149,7 +152,7 @@
       return setState({tab:"mystery"});
     });
     shell?.querySelector("[data-rc24-next]")?.addEventListener("click",()=>{
-      if (next.kind==="review") return safe(()=>memoryApi()?.openReviewSession?.(id),null);
+      if (next.kind==="review") return safe(()=>memoryApi()?.openReviewSession?.(next.disciplineId || id),null);
       if (next.kind==="lesson" && next.lesson) return openLesson(next.lesson,"complete");
       return openCatalog(id);
     });

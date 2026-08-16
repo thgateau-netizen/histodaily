@@ -1,0 +1,153 @@
+{
+  "version": "1.0.0-rc.40.0",
+  "status": "passed",
+  "release": "Global Difficulty Ramp",
+  "coverage": {
+    "starterMysteries": 66,
+    "starterLessons": 22,
+    "perDiscipline": {
+      "history": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "art": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "cinema": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "science-inventions": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "astronomy": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "economy": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "geography": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "music": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "literature": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "philosophy": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      },
+      "english": {
+        "starterMysteries": 6,
+        "starterLessons": 2
+      }
+    }
+  },
+  "stages": {
+    "discovery": "facile + pool découverte guidé",
+    "confidence": "facile + moyen",
+    "intermediate": "facile + moyen + difficile",
+    "advanced": "expert autorisé"
+  },
+  "freshAccountBehavior": {
+    "history": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "mystery-athens",
+      "difficulty": "facile"
+    },
+    "art": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "art-mystery-composition-122",
+      "difficulty": "facile"
+    },
+    "cinema": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "cinema-mystery-cadrage-122",
+      "difficulty": "facile"
+    },
+    "science-inventions": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "science-mystery-atomic-number-237",
+      "difficulty": "facile"
+    },
+    "astronomy": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "astronomy-mystery-synchronous-rotation-236",
+      "difficulty": "facile"
+    },
+    "economy": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "economy-mystery-opportunity-cost-175",
+      "difficulty": "facile"
+    },
+    "geography": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "geography-mystery-food-security-234",
+      "difficulty": "facile"
+    },
+    "music": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "music-mystery-multitrack-233",
+      "difficulty": "facile"
+    },
+    "literature": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "literature-mystery-chorus-232",
+      "difficulty": "facile"
+    },
+    "philosophy": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "philo-mystery-counterexample-rc19",
+      "difficulty": "facile"
+    },
+    "english": {
+      "stage": "discovery",
+      "solved": 0,
+      "lessons": 0,
+      "mysteryId": "english-mystery-one-reference-rc19",
+      "difficulty": "facile"
+    }
+  },
+  "regressions": {
+    "qualityWarnings": 0,
+    "qualityErrors": 0,
+    "courses": 209,
+    "mysteries": 158,
+    "englishAudit": "passed",
+    "philosophyAudit": "passed",
+    "scienceAstronomyAudit": "passed",
+    "uiFlowAudit": "passed",
+    "productPolishAudit": "passed",
+    "leanFlowAudit": "passed"
+  },
+  "principle": "Chaque discipline commence doucement indépendamment du niveau global du compte."
+}

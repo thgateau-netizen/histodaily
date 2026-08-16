@@ -1,0 +1,128 @@
+{
+  "version": "1.0.0-rc.42.0",
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158,
+    "quizQuestions": 1095
+  },
+  "targets": {
+    "completeWordsFloor": 280,
+    "englishCompleteWordsFloor": 200,
+    "philosophyCompleteWordsFloor": 220,
+    "completeSectionsFloor": 4,
+    "visibleExpressWords": 120,
+    "quizQuestions": 5,
+    "quizExplanationWords": 12,
+    "mysteryPromptWords": 20,
+    "mysteryExplanationWords": 20,
+    "note": "La longueur est un garde-fou secondaire, pas une note éditoriale. L’anglais et la philosophie ont des planchers volontairement plus courts : dans ces disciplines, une partie de la valeur pédagogique vient de la pratique, de la production, du raisonnement et de l’interaction plutôt que d’un volume de texte explicatif."
+  },
+  "summaryByDiscipline": {
+    "art": {
+      "courses": 14,
+      "avgCompleteWords": 406,
+      "minCompleteWords": 292,
+      "avgSections": 6.7,
+      "avgVisibleExpressWords": 157,
+      "errors": 0,
+      "warnings": 0
+    },
+    "astronomy": {
+      "courses": 27,
+      "avgCompleteWords": 374,
+      "minCompleteWords": 325,
+      "avgSections": 8.5,
+      "avgVisibleExpressWords": 144,
+      "errors": 0,
+      "warnings": 0
+    },
+    "cinema": {
+      "courses": 13,
+      "avgCompleteWords": 403,
+      "minCompleteWords": 299,
+      "avgSections": 6.4,
+      "avgVisibleExpressWords": 156,
+      "errors": 0,
+      "warnings": 0
+    },
+    "economy": {
+      "courses": 12,
+      "avgCompleteWords": 397,
+      "minCompleteWords": 306,
+      "avgSections": 6.7,
+      "avgVisibleExpressWords": 164,
+      "errors": 0,
+      "warnings": 0
+    },
+    "english": {
+      "courses": 16,
+      "avgCompleteWords": 256,
+      "minCompleteWords": 219,
+      "avgSections": 5,
+      "avgVisibleExpressWords": 152,
+      "errors": 0,
+      "warnings": 0
+    },
+    "geography": {
+      "courses": 13,
+      "avgCompleteWords": 389,
+      "minCompleteWords": 312,
+      "avgSections": 6.9,
+      "avgVisibleExpressWords": 155,
+      "errors": 0,
+      "warnings": 0
+    },
+    "history": {
+      "courses": 64,
+      "avgCompleteWords": 397,
+      "minCompleteWords": 304,
+      "avgSections": 9.2,
+      "avgVisibleExpressWords": 139,
+      "errors": 0,
+      "warnings": 0
+    },
+    "literature": {
+      "courses": 16,
+      "avgCompleteWords": 362,
+      "minCompleteWords": 310,
+      "avgSections": 7.7,
+      "avgVisibleExpressWords": 145,
+      "errors": 0,
+      "warnings": 0
+    },
+    "music": {
+      "courses": 12,
+      "avgCompleteWords": 384,
+      "minCompleteWords": 306,
+      "avgSections": 6.7,
+      "avgVisibleExpressWords": 162,
+      "errors": 0,
+      "warnings": 0
+    },
+    "philosophy": {
+      "courses": 16,
+      "avgCompleteWords": 276,
+      "minCompleteWords": 238,
+      "avgSections": 7,
+      "avgVisibleExpressWords": 144,
+      "errors": 0,
+      "warnings": 0
+    },
+    "science-inventions": {
+      "courses": 16,
+      "avgCompleteWords": 391,
+      "minCompleteWords": 308,
+      "avgSections": 7.4,
+      "avgVisibleExpressWords": 153,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "issueCounts": {},
+  "blockingErrors": 0,
+  "warnings": 0,
+  "editorialSignals": {
+    "absoluteDistractorPhrases": 708
+  },
+  "issues": []
+}

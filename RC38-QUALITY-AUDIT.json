@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-rc.38.0",
+  "status": "passed",
+  "checks": {
+    "runtimeVersionAligned": true,
+    "cacheVersionAligned": true,
+    "cssAssetsChecked": 18,
+    "pwaAssetsChecked": 19,
+    "activeSvgPlaceholders": [],
+    "genericQuizQuestions": 0,
+    "qualityModuleBundled": true,
+    "englishRedesignBundled": true,
+    "philosophyRedesignBundled": true
+  },
+  "warnings": [],
+  "errors": []
+}

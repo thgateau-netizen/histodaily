@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0-rc.47.0",
+  "status": "passed",
+  "checks": {
+    "dailyDone": true,
+    "teaserExists": true,
+    "teaserDiffersFromToday": true,
+    "exactTomorrowAssignment": true,
+    "teaserStoreMatchesTomorrow": true,
+    "analyticsSnapshotAvailable": true
+  },
+  "selectedTomorrow": "m2",
+  "assignmentKey": "2026-08-17|history",
+  "errors": []
+}

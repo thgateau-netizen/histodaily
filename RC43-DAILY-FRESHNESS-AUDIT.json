@@ -1,0 +1,153 @@
+{
+  "version": "1.0.0-rc.43.0",
+  "scope": "daily freshness + clear completion",
+  "disciplines": 11,
+  "checks": 33,
+  "issues": [],
+  "simulation": {
+    "history": {
+      "days": 12,
+      "unique": 12,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "mystery-1789-rc39",
+        "mystery-athens",
+        "mystery-pyramids",
+        "history-mystery-industrial-revolution-236",
+        "mystery-myceniens",
+        "history-mystery-cold-war-236"
+      ]
+    },
+    "art": {
+      "days": 12,
+      "unique": 12,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "art-mystery-cubism-177",
+        "art-mystery-automatic-writing-237",
+        "art-mystery-composition-122",
+        "art-mystery-linear-perspective-235",
+        "art-mystery-daguerreotype-233",
+        "art-mystery-bauhaus-course-234"
+      ]
+    },
+    "cinema": {
+      "days": 11,
+      "unique": 11,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "cinema-mystery-cadrage-122",
+        "cinema-mystery-offscreen-sound-237",
+        "cinema-mystery-stop-motion-234",
+        "cinema-mystery-montage-177",
+        "cinema-mystery-kuleshov-235",
+        "cinema-mystery-documentary-233"
+      ]
+    },
+    "science-inventions": {
+      "days": 12,
+      "unique": 12,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "science-mystery-hypothesis-122",
+        "science-mystery-universal-gravity-236",
+        "science-mystery-atomic-number-237",
+        "science-mystery-immune-memory-235",
+        "science-mystery-antibiogram-234",
+        "science-mystery-double-helix-233"
+      ]
+    },
+    "astronomy": {
+      "days": 12,
+      "unique": 12,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "astro-mystery-aurora-186",
+        "astronomy-mystery-synchronous-rotation-236",
+        "astronomy-mystery-solstice-237",
+        "astronomy-mystery-transit-method-235",
+        "astro-mystery-horizon-186",
+        "astro-mystery-black-hole-231"
+      ]
+    },
+    "economy": {
+      "days": 11,
+      "unique": 11,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "economy-mystery-gdp-236",
+        "economy-mystery-scarcity-122",
+        "economy-mystery-inflation-235",
+        "economy-mystery-inflation-mode",
+        "economy-mystery-gini-237",
+        "economy-mystery-free-rider-234"
+      ]
+    },
+    "geography": {
+      "days": 12,
+      "unique": 12,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "geography-mystery-food-security-234",
+        "geography-mystery-metropolization-235",
+        "geography-mystery-coordinates-122",
+        "geography-mystery-climate-risk-236",
+        "geography-mystery-submarine-cable-233",
+        "geography-mystery-demographic-inertia-237"
+      ]
+    },
+    "music": {
+      "days": 11,
+      "unique": 11,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "music-mystery-midi-237",
+        "music-mystery-riff-236",
+        "music-mystery-sampling-177",
+        "music-mystery-swing-235",
+        "music-mystery-multitrack-233",
+        "music-mystery-gregorian-chant-122"
+      ]
+    },
+    "literature": {
+      "days": 12,
+      "unique": 12,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "literature-mystery-chorus-232",
+        "literature-mystery-windmills-232",
+        "literature-mystery-encyclopedia-237",
+        "literature-mystery-newspeak-232",
+        "literature-mystery-soliloquy-233",
+        "literature-mystery-magical-realism-233"
+      ]
+    },
+    "english": {
+      "days": 12,
+      "unique": 12,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "english-mystery-afraid-318",
+        "english-mystery-actually-318",
+        "english-mystery-sensible-rc19",
+        "english-mystery-yet-318",
+        "english-mystery-one-reference-rc19",
+        "english-mystery-soft-disagree-318"
+      ]
+    },
+    "philosophy": {
+      "days": 12,
+      "unique": 12,
+      "adjacentLessonRepeats": 0,
+      "firstSix": [
+        "philo-mystery-counterexample-rc19",
+        "philo-mystery-necessary-rc19",
+        "philo-mystery-validity-rc19",
+        "philo-mystery-assent-rc19",
+        "philo-mystery-cogito-318",
+        "philo-mystery-cogito-rc19"
+      ]
+    }
+  },
+  "status": "pass"
+}

@@ -28,7 +28,7 @@ pass('storedExpressStateMigrated', app.includes('new Set(["complete", "quiz"])')
 pass('expressDataPreserved', /\bexpress\s*:/.test(content), 'Le contenu Express doit rester stocké pour une éventuelle réactivation future.');
 pass('onboardingNoExpress', !/Lire l.express|express lié/i.test(bootstrap), 'Le texte d’aide ne doit plus expliquer une fonctionnalité dormante.');
 pass('dashboardUsesFreedSpace', css.includes('.rc24-dashboard{display:grid;grid-template-columns:1fr;gap:10px}'), 'La suppression de la carte de maîtrise doit libérer toute la largeur de la prochaine action.');
-pass('leanLayerLast', /'product-polish-rc35\.js','lean-flow-rc36\.js'\]/.test(build), 'La normalisation RC36 doit être la dernière source du bundle expérience.');
+pass('leanLayerLast', /'product-polish-rc35\.js','lean-flow-rc36\.js','adaptive-comfort-rc41\.js','global-difficulty-ramp-rc40\.js'/.test(build), 'RC36 reste la dernière couche d’interface; RC41/RC40 peuvent suivre uniquement pour la logique adaptative et de difficulté.');
 pass('leanLayerBundled', bundle.includes('SOURCE: lean-flow-rc36.js'), 'La normalisation RC36 doit être réellement servie dans le bundle.');
 const result={version:pkg.version,status:errors.length?'failed':'passed',principle:'Expédition → Comprendre → Cours → Quiz; aucune métrique abstraite inutile sur l’accueil',checks,errors};
 fs.writeFileSync(path.join(root,'RC36-LEAN-FLOW-AUDIT.json'),JSON.stringify(result,null,2));

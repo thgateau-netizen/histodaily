@@ -1,0 +1,61 @@
+{
+  "version": "1.0.0-rc.46.0",
+  "status": "passed-with-known-product-risks",
+  "scope": "global app quality outside content",
+  "checks": {
+    "clientBundlesSyntax": true,
+    "fullQualityPipeline": true,
+    "clientServerMysteryParity": "158/158",
+    "personalizedDailyScoreAcceptedByCatalogue": true,
+    "oneRankedMysteryPerDayGuard": true,
+    "historicalDailyScoreDeduplication": true,
+    "runtimeBackendVersionAligned": true,
+    "scriptCspUnsafeInlineRemoved": true,
+    "temporaryCatalogueExcludedFromVercel": true,
+    "contentUntouched": true
+  },
+  "metrics": {
+    "courses": 219,
+    "clientMysteries": 158,
+    "serverMysteries": 158,
+    "clientSourceModules": 58,
+    "cssBytes": 663616,
+    "cssLines": 11115,
+    "cssImportant": 2397,
+    "initialCssJsGzipBytes": 1255592,
+    "initialCssJsGzipMiB": 1.2,
+    "bundles": {
+      "bundles/core-rc27.js": {
+        "bytes": 1379507,
+        "gzipBytes": 355326
+      },
+      "bundles/content-rc27.js": {
+        "bytes": 2279023,
+        "gzipBytes": 604047
+      },
+      "bundles/experience-rc27.js": {
+        "bytes": 702848,
+        "gzipBytes": 177765
+      }
+    },
+    "clientWindowGlobals": 138,
+    "clientMutationObservers": 17,
+    "clientEventListeners": 349,
+    "clientCatchBlocks": 779,
+    "clientEmptyCatchBlocks": 408,
+    "backendCatchBlocks": 244,
+    "backendFunctionReassignments": 52,
+    "localStorageWrites": 53,
+    "localStorageReads": 34
+  },
+  "knownRisks": [
+    "Pas d’authentification forte ; XP/profil viennent du client.",
+    "Progression fine non synchronisée dans le cloud.",
+    "Pas de suppression autonome des données serveur.",
+    "≈1.2 MiB gzip de CSS+JS initiaux ; les 219 cours sont chargés d’emblée.",
+    "408 catch vides côté client.",
+    "58 modules hérités, 17 MutationObserver, 138 écritures globales.",
+    "Pas de rate limiting détecté."
+  ],
+  "validationNote": "Score parity was unit-tested with a local web-push stub because node_modules is not shipped in the source ZIP; Vercel installs web-push from package-lock."
+}

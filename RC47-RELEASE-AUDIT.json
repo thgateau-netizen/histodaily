@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0-rc.47.0",
+  "status": "passed",
+  "dailyHookChecks": 10,
+  "dailyHookTotal": 10,
+  "behaviorChecks": 6,
+  "behaviorTotal": 6,
+  "qualityStatus": "passed",
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  },
+  "keyBehavior": {
+    "dailyCompletion": "mystery solve / daily claim",
+    "deepDive": "optional course + quiz",
+    "tomorrowTeaser": "exact pre-assigned mystery",
+    "retentionSignals": [
+      "app_open",
+      "mystery_start",
+      "mystery_solved",
+      "deep_dive",
+      "push_open",
+      "D1",
+      "D3",
+      "D7"
+    ]
+  },
+  "knownLimitation": "Push server copy is curiosity-oriented but cannot yet send the exact personalized teaser selected locally."
+}

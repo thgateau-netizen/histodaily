@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.36.0",
+  "version": "1.0.0-rc.47.0",
   "status": "passed",
   "principle": "Expédition → Comprendre → Cours → Quiz; aucune métrique abstraite inutile sur l’accueil",
   "checks": {
@@ -49,7 +49,7 @@
     },
     "leanLayerLast": {
       "pass": true,
-      "detail": "La normalisation RC36 doit être la dernière source du bundle expérience."
+      "detail": "RC36 reste la dernière couche d’interface; RC41/RC40 peuvent suivre uniquement pour la logique adaptative et de difficulté."
     },
     "leanLayerBundled": {
       "pass": true,

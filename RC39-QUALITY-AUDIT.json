@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0-rc.39.0",
+  "status": "passed",
+  "checks": {
+    "runtimeVersionAligned": true,
+    "cacheVersionAligned": true,
+    "cssAssetsChecked": 18,
+    "pwaAssetsChecked": 19,
+    "activeSvgPlaceholders": [],
+    "genericQuizQuestions": 0,
+    "qualityModuleBundled": true,
+    "englishRedesignBundled": true,
+    "philosophyRedesignBundled": true,
+    "scienceAstronomyRedesignBundled": true
+  },
+  "warnings": [],
+  "errors": []
+}
