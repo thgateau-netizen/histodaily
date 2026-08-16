@@ -14,8 +14,8 @@ const pass = (condition, message) => { if (!condition) errors.push(message); };
 for (const rel of ['index.html','manifest.webmanifest','service-worker.js']) {
   pass(read(rel).includes(version), `${rel}: version ${version} absente`);
 }
-pass(read('service-worker.js').includes('histodaily-rc31-quality-v1'), 'service-worker: cache RC31 absent');
-pass(read('scripts/build-client.mjs').includes('quality-pass-rc31.js'), 'build: quality-pass-rc31.js non bundle');
+pass(read('service-worker.js').includes('histodaily-rc32-content-quality-v1'), 'service-worker: cache RC32 absent');
+pass(read('scripts/build-client.mjs').includes('content-homogenize-rc32.js'), 'build: content-homogenize-rc32.js non bundle');
 
 const css = read('histodaily.css');
 const cssUrls = [...css.matchAll(/url\(['"]?([^)'"?#]+)[^)]*\)/g)].map(m => m[1]).filter(v => !v.startsWith('data:') && !v.startsWith('http'));
@@ -46,17 +46,17 @@ const result = {
   status: errors.length ? 'failed' : 'passed',
   checks: {
     runtimeVersionAligned: !errors.some(e => e.includes('version')),
-    cacheVersionAligned: sw.includes('histodaily-rc31-quality-v1'),
+    cacheVersionAligned: sw.includes('histodaily-rc32-content-quality-v1'),
     cssAssetsChecked: new Set(cssUrls).size,
     pwaAssetsChecked: new Set(swAssets).size,
     activeSvgPlaceholders: placeholderRefs.filter(ref => css.includes(ref) || sw.includes(ref)),
     genericQuizQuestions: generic,
-    qualityModuleBundled: read('scripts/build-client.mjs').includes('quality-pass-rc31.js')
+    qualityModuleBundled: read('scripts/build-client.mjs').includes('content-homogenize-rc32.js')
   },
   warnings,
   errors
 };
-fs.writeFileSync(path.join(root,'RC31-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
+fs.writeFileSync(path.join(root,'RC32-QUALITY-AUDIT.json'), JSON.stringify(result,null,2));
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

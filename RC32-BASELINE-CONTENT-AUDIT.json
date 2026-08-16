@@ -1,0 +1,6750 @@
+{
+  "version": "1.0.0-rc.31.0",
+  "catalogue": {
+    "courses": 209,
+    "mysteries": 158,
+    "quizQuestions": 1045
+  },
+  "targets": {
+    "completeWords": 420,
+    "completeSections": 6,
+    "visibleExpressWords": 120,
+    "quizQuestions": 5,
+    "quizExplanationWords": 12,
+    "mysteryPromptWords": 20,
+    "mysteryExplanationWords": 20
+  },
+  "summaryByDiscipline": {
+    "art": {
+      "courses": 12,
+      "avgCompleteWords": 373,
+      "minCompleteWords": 263,
+      "avgSections": 4.9,
+      "avgVisibleExpressWords": 146,
+      "errors": 45,
+      "warnings": 7
+    },
+    "astronomy": {
+      "courses": 27,
+      "avgCompleteWords": 302,
+      "minCompleteWords": 252,
+      "avgSections": 5.4,
+      "avgVisibleExpressWords": 139,
+      "errors": 79,
+      "warnings": 2
+    },
+    "cinema": {
+      "courses": 11,
+      "avgCompleteWords": 373,
+      "minCompleteWords": 267,
+      "avgSections": 4.9,
+      "avgVisibleExpressWords": 143,
+      "errors": 36,
+      "warnings": 5
+    },
+    "economy": {
+      "courses": 10,
+      "avgCompleteWords": 361,
+      "minCompleteWords": 273,
+      "avgSections": 4.9,
+      "avgVisibleExpressWords": 156,
+      "errors": 38,
+      "warnings": 4
+    },
+    "english": {
+      "courses": 16,
+      "avgCompleteWords": 398,
+      "minCompleteWords": 352,
+      "avgSections": 7.3,
+      "avgVisibleExpressWords": 109,
+      "errors": 58,
+      "warnings": 0
+    },
+    "geography": {
+      "courses": 11,
+      "avgCompleteWords": 349,
+      "minCompleteWords": 292,
+      "avgSections": 5,
+      "avgVisibleExpressWords": 145,
+      "errors": 41,
+      "warnings": 3
+    },
+    "history": {
+      "courses": 64,
+      "avgCompleteWords": 366,
+      "minCompleteWords": 267,
+      "avgSections": 7.6,
+      "avgVisibleExpressWords": 119,
+      "errors": 252,
+      "warnings": 7
+    },
+    "literature": {
+      "courses": 16,
+      "avgCompleteWords": 312,
+      "minCompleteWords": 255,
+      "avgSections": 4.7,
+      "avgVisibleExpressWords": 145,
+      "errors": 63,
+      "warnings": 0
+    },
+    "music": {
+      "courses": 10,
+      "avgCompleteWords": 348,
+      "minCompleteWords": 255,
+      "avgSections": 4.8,
+      "avgVisibleExpressWords": 154,
+      "errors": 32,
+      "warnings": 4
+    },
+    "philosophy": {
+      "courses": 16,
+      "avgCompleteWords": 404,
+      "minCompleteWords": 357,
+      "avgSections": 7.4,
+      "avgVisibleExpressWords": 109,
+      "errors": 52,
+      "warnings": 2
+    },
+    "science-inventions": {
+      "courses": 16,
+      "avgCompleteWords": 343,
+      "minCompleteWords": 256,
+      "avgSections": 4.9,
+      "avgVisibleExpressWords": 150,
+      "errors": 60,
+      "warnings": 2
+    }
+  },
+  "issueCounts": {
+    "express-short": 77,
+    "quiz-explanation-short": 280,
+    "quiz-explanation-repeats-answer": 59,
+    "course-short": 171,
+    "distractor-length-giveaway": 36,
+    "sections-few": 106,
+    "duplicate-question": 24,
+    "mystery-explanation-short": 20,
+    "mystery-prompt-short": 22
+  },
+  "blockingErrors": 759,
+  "warnings": 36,
+  "editorialSignals": {
+    "absoluteDistractorPhrases": 865
+  },
+  "issues": [
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "prehistory-hominids",
+      "discipline": "history",
+      "value": 94,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "prehistory-hominids",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "prehistory-hominids",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "prehistory-hominids",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "prehistory-habilis",
+      "discipline": "history",
+      "value": 97,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "prehistory-habilis",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "prehistory-fire",
+      "discipline": "history",
+      "value": 92,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "prehistory-fire",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "prehistory-hunt",
+      "discipline": "history",
+      "value": 82,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "prehistory-hunt",
+      "discipline": "history",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "prehistory-agriculture",
+      "discipline": "history",
+      "value": 94,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "prehistory-agriculture",
+      "discipline": "history",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "prehistory-sapiens",
+      "discipline": "history",
+      "value": 87,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "civilizations-fertile-crescent",
+      "discipline": "history",
+      "value": 300,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "civilizations-fertile-crescent",
+      "discipline": "history",
+      "value": 84,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "civilizations-fertile-crescent",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "civilizations-fertile-crescent",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "civilizations-fertile-crescent",
+      "discipline": "history",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "aegean-mediterranean-minoens-crete",
+      "discipline": "history",
+      "value": 349,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "aegean-mediterranean-minoens-crete",
+      "discipline": "history",
+      "value": 117,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "aegean-mediterranean-minoens-crete",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "aegean-mediterranean-minoens-crete",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "aegean-mediterranean-minoens-crete",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "value": 327,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "value": 106,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "aegean-mediterranean-effondrement-egeen",
+      "discipline": "history",
+      "value": 322,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "aegean-mediterranean-effondrement-egeen",
+      "discipline": "history",
+      "value": 104,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "aegean-mediterranean-effondrement-egeen",
+      "discipline": "history",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "aegean-mediterranean-effondrement-egeen",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "aegean-mediterranean-effondrement-egeen",
+      "discipline": "history",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "egypt-nile",
+      "discipline": "history",
+      "value": 343,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "egypt-nile",
+      "discipline": "history",
+      "value": 97,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-nile",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-nile",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-nile",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "egypt-two-lands",
+      "discipline": "history",
+      "value": 364,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-two-lands",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-two-lands",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-two-lands",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "egypt-pharaoh-maat",
+      "discipline": "history",
+      "value": 327,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "egypt-pharaoh-maat",
+      "discipline": "history",
+      "value": 98,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-pharaoh-maat",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "egypt-pharaoh-maat",
+      "discipline": "history",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-pharaoh-maat",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "egypt-pyramids",
+      "discipline": "history",
+      "value": 294,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "egypt-pyramids",
+      "discipline": "history",
+      "value": 87,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-pyramids",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "egypt-pyramids",
+      "discipline": "history",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "egypt-ramses",
+      "discipline": "history",
+      "value": 346,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-ramses",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-ramses",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-ramses",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-ramses",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "egypt-connected",
+      "discipline": "history",
+      "value": 355,
+      "target": 420
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "egypt-connected",
+      "discipline": "history",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-connected",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "egypt-connected",
+      "discipline": "history",
+      "questionIndex": 1,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-connected",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "greece-athens-democracy",
+      "discipline": "history",
+      "value": 300,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "greece-athens-democracy",
+      "discipline": "history",
+      "value": 87,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "greece-athens-democracy",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "greece-persian-wars",
+      "discipline": "history",
+      "value": 364,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "greece-peloponnesian-war",
+      "discipline": "history",
+      "value": 339,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "greece-peloponnesian-war",
+      "discipline": "history",
+      "value": 107,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "greece-peloponnesian-war",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "greece-peloponnesian-war",
+      "discipline": "history",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "greece-peloponnesian-war",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "rome-foundation-kings",
+      "discipline": "history",
+      "value": 359,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-foundation-kings",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-foundation-kings",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-foundation-kings",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-foundation-kings",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "rome-italy-expansion",
+      "discipline": "history",
+      "value": 310,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "rome-italy-expansion",
+      "discipline": "history",
+      "value": 116,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-italy-expansion",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-italy-expansion",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "rome-punic-wars",
+      "discipline": "history",
+      "value": 327,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "rome-punic-wars",
+      "discipline": "history",
+      "value": 114,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-punic-wars",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-punic-wars",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-punic-wars",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "rome-punic-wars",
+      "discipline": "history",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "rome-republic-crisis",
+      "discipline": "history",
+      "value": 334,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "rome-republic-crisis",
+      "discipline": "history",
+      "value": 118,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-republic-crisis",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-republic-crisis",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "rome-republic-crisis",
+      "discipline": "history",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "rome-augustus-principate",
+      "discipline": "history",
+      "value": 304,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "rome-augustus-principate",
+      "discipline": "history",
+      "value": 96,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "rome-augustus-principate",
+      "discipline": "history",
+      "questionIndex": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-augustus-principate",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "rome-augustus-principate",
+      "discipline": "history",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-augustus-principate",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "rome-augustus-principate",
+      "discipline": "history",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "rome-christianity-late-empire",
+      "discipline": "history",
+      "value": 343,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "rome-christianity-late-empire",
+      "discipline": "history",
+      "value": 110,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "rome-christianity-late-empire",
+      "discipline": "history",
+      "questionIndex": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-christianity-late-empire",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-christianity-late-empire",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-scandinavie",
+      "discipline": "history",
+      "value": 106,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-scandinavie",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-scandinavie",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-scandinavie",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-navires-vikings",
+      "discipline": "history",
+      "value": 71,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "northern-viking-worlds-navires-vikings",
+      "discipline": "history",
+      "questionIndex": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "northern-viking-worlds-colonisation-atlantique",
+      "discipline": "history",
+      "value": 297,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-colonisation-atlantique",
+      "discipline": "history",
+      "value": 82,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-colonisation-atlantique",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "northern-viking-worlds-viking-commerce",
+      "discipline": "history",
+      "value": 385,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-viking-commerce",
+      "discipline": "history",
+      "value": 96,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "northern-viking-worlds-christianisation-nord",
+      "discipline": "history",
+      "value": 347,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-christianisation-nord",
+      "discipline": "history",
+      "value": 94,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-christianisation-nord",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "northern-viking-worlds-vie-quotidienne",
+      "discipline": "history",
+      "value": 341,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-vie-quotidienne",
+      "discipline": "history",
+      "value": 101,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-vie-quotidienne",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-vie-quotidienne",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "northern-viking-worlds-vie-quotidienne",
+      "discipline": "history",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "northern-viking-worlds-societe-droit-femmes",
+      "discipline": "history",
+      "value": 345,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-societe-droit-femmes",
+      "discipline": "history",
+      "value": 102,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-societe-droit-femmes",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "northern-viking-worlds-croyances-sagas-runes",
+      "discipline": "history",
+      "value": 351,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-croyances-sagas-runes",
+      "discipline": "history",
+      "value": 100,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-croyances-sagas-runes",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "atlantic-revolutions-revolution-francaise-1789",
+      "discipline": "history",
+      "value": 342,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "atlantic-revolutions-revolution-francaise-1789",
+      "discipline": "history",
+      "value": 107,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "atlantic-revolutions-revolution-francaise-1789",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "atlantic-revolutions-revolution-francaise-1789",
+      "discipline": "history",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "1789-crisis",
+      "discipline": "history",
+      "value": 388,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "1789-crisis",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "1789-crisis",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "rights-new-france",
+      "discipline": "history",
+      "value": 367,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "rights-new-france",
+      "discipline": "history",
+      "value": 113,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rights-new-france",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "republic-terror-war",
+      "discipline": "history",
+      "value": 305,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "republic-terror-war",
+      "discipline": "history",
+      "value": 116,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "republic-terror-war",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "republic-terror-war",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "republic-terror-war",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "napoleon-empire",
+      "discipline": "history",
+      "value": 353,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "napoleon-empire",
+      "discipline": "history",
+      "value": 111,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "napoleon-empire",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "napoleon-empire",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "europe-after-napoleon",
+      "discipline": "history",
+      "value": 332,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "europe-after-napoleon",
+      "discipline": "history",
+      "value": 101,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "europe-after-napoleon",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "europe-after-napoleon",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "russian-revolution-postwar",
+      "discipline": "history",
+      "value": 321,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "second-world-war-detail-resistances-collaborations",
+      "discipline": "history",
+      "value": 320,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "second-world-war-detail-resistances-collaborations",
+      "discipline": "history",
+      "value": 101,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "second-world-war-detail-resistances-collaborations",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "second-world-war-detail-resistances-collaborations",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "second-world-war-detail-resistances-collaborations",
+      "discipline": "history",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-read-image-basics",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "art-read-image-basics",
+      "discipline": "art",
+      "value": 117,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-read-image-basics",
+      "discipline": "art",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-shot-frame-basics",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "cinema-shot-frame-basics",
+      "discipline": "cinema",
+      "value": 115,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "cinema-shot-frame-basics",
+      "discipline": "cinema",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "cinema-shot-frame-basics",
+      "discipline": "cinema",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "cinema-shot-frame-basics",
+      "discipline": "cinema",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-method-proof-basics",
+      "discipline": "science-inventions",
+      "value": 417,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-method-proof-basics",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "sci-method-proof-basics",
+      "discipline": "science-inventions",
+      "value": 104,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "sci-method-proof-basics",
+      "discipline": "science-inventions",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-method-proof-basics",
+      "discipline": "science-inventions",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-supply-demand-basics",
+      "discipline": "economy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-supply-demand-basics",
+      "discipline": "economy",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-supply-demand-basics",
+      "discipline": "economy",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-supply-demand-basics",
+      "discipline": "economy",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-maps-scale-basics",
+      "discipline": "geography",
+      "value": 415,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-maps-scale-basics",
+      "discipline": "geography",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "geo-maps-scale-basics",
+      "discipline": "geography",
+      "value": 117,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-renaissance-perspective",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-renaissance-perspective",
+      "discipline": "art",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-early-lumiere-melies",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "cinema-early-lumiere-melies",
+      "discipline": "cinema",
+      "value": 115,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "cinema-early-lumiere-melies",
+      "discipline": "cinema",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-galileo-revolution",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-galileo-revolution",
+      "discipline": "science-inventions",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-galileo-revolution",
+      "discipline": "science-inventions",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "music-gregorian-polyphony",
+      "discipline": "music",
+      "value": 412,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-gregorian-polyphony",
+      "discipline": "music",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-gregorian-polyphony",
+      "discipline": "music",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-gregorian-polyphony",
+      "discipline": "music",
+      "questionIndex": 2,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-impressionism-modern-life",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-impressionism-modern-life",
+      "discipline": "art",
+      "questionIndex": 0,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "art-impressionism-modern-life",
+      "discipline": "art",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-impressionism-modern-life",
+      "discipline": "art",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-impressionism-modern-life",
+      "discipline": "art",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-hollywood-studio-system",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "cinema-hollywood-studio-system",
+      "discipline": "cinema",
+      "value": 115,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "cinema-hollywood-studio-system",
+      "discipline": "cinema",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-pasteur-microbes-vaccines",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "sci-pasteur-microbes-vaccines",
+      "discipline": "science-inventions",
+      "value": 111,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-pasteur-microbes-vaccines",
+      "discipline": "science-inventions",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eco-inflation-money-value",
+      "discipline": "economy",
+      "value": 413,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-inflation-money-value",
+      "discipline": "economy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-inflation-money-value",
+      "discipline": "economy",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-inflation-money-value",
+      "discipline": "economy",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-inflation-money-value",
+      "discipline": "economy",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-mercator-projection",
+      "discipline": "geography",
+      "value": 387,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-mercator-projection",
+      "discipline": "geography",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-mercator-projection",
+      "discipline": "geography",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "geo-mercator-projection",
+      "discipline": "geography",
+      "questionIndex": 0
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-jazz-birth",
+      "discipline": "music",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "music-jazz-birth",
+      "discipline": "music",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "music-jazz-birth",
+      "discipline": "music",
+      "questionIndex": 1,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "civilizations-uruk-writing-state",
+      "discipline": "history",
+      "value": 349,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "civilizations-uruk-writing-state",
+      "discipline": "history",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "civilizations-hammurabi-babylon-law",
+      "discipline": "history",
+      "value": 370,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "civilizations-hammurabi-babylon-law",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "civilizations-hammurabi-babylon-law",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "egypt-kingdoms-dynasties",
+      "discipline": "history",
+      "value": 343,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "egypt-kingdoms-dynasties",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "greece-alexander-hellenistic-kingdoms",
+      "discipline": "history",
+      "value": 334,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "greece-alexander-hellenistic-kingdoms",
+      "discipline": "history",
+      "value": 109,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "greece-alexander-hellenistic-kingdoms",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "greece-alexander-hellenistic-kingdoms",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "greece-alexander-hellenistic-kingdoms",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "rome-caesar-civil-wars",
+      "discipline": "history",
+      "value": 338,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-caesar-civil-wars",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "rome-caesar-civil-wars",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "northern-viking-worlds-kings-kingdoms",
+      "discipline": "history",
+      "value": 325,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-kings-kingdoms",
+      "discipline": "history",
+      "value": 111,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-kings-kingdoms",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-kings-kingdoms",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "northern-viking-worlds-kings-kingdoms",
+      "discipline": "history",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "northern-viking-worlds-normandy-england-kiev",
+      "discipline": "history",
+      "value": 335,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "northern-viking-worlds-normandy-england-kiev",
+      "discipline": "history",
+      "value": 107,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "northern-viking-worlds-normandy-england-kiev",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "medieval-west-clovis-merovingians",
+      "discipline": "history",
+      "value": 322,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "medieval-west-clovis-merovingians",
+      "discipline": "history",
+      "value": 109,
+      "target": 120
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "medieval-west-clovis-merovingians",
+      "discipline": "history",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "medieval-west-clovis-merovingians",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "medieval-west-clovis-merovingians",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "value": 328,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "value": 109,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "value": 324,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "value": 114,
+      "target": 120
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-haitian-revolution",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-haitian-revolution",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-haitian-revolution",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-cubism-multiple-viewpoints",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-cubism-multiple-viewpoints",
+      "discipline": "art",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-cubism-multiple-viewpoints",
+      "discipline": "art",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-montage-meaning",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-natural-selection",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-natural-selection",
+      "discipline": "science-inventions",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-inflation-interest-rates",
+      "discipline": "economy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-inflation-interest-rates",
+      "discipline": "economy",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-inflation-interest-rates",
+      "discipline": "economy",
+      "questionIndex": 2,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-containers-chokepoints",
+      "discipline": "geography",
+      "value": 413,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-containers-chokepoints",
+      "discipline": "geography",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "geo-containers-chokepoints",
+      "discipline": "geography",
+      "questionIndex": 0
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-hiphop-sampling",
+      "discipline": "music",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "art-dada-readymade",
+      "discipline": "art",
+      "value": 352,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-dada-readymade",
+      "discipline": "art",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-dada-readymade",
+      "discipline": "art",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "art-dada-readymade",
+      "discipline": "art",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-dada-readymade",
+      "discipline": "art",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "art-dada-readymade",
+      "discipline": "art",
+      "questionIndex": 2,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-dada-readymade",
+      "discipline": "art",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "art-dada-readymade",
+      "discipline": "art",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "art-street-art-public-space",
+      "discipline": "art",
+      "value": 352,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-street-art-public-space",
+      "discipline": "art",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "art-street-art-public-space",
+      "discipline": "art",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 3
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-street-art-public-space",
+      "discipline": "art",
+      "questionIndex": 2,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-street-art-public-space",
+      "discipline": "art",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-street-art-public-space",
+      "discipline": "art",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "art-street-art-public-space",
+      "discipline": "art",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "value": 324,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "questionIndex": 2,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "cinema-blockbuster-system",
+      "discipline": "cinema",
+      "value": 398,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-blockbuster-system",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "cinema-blockbuster-system",
+      "discipline": "cinema",
+      "value": 119,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "cinema-blockbuster-system",
+      "discipline": "cinema",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "cinema-blockbuster-system",
+      "discipline": "cinema",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 2
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-radioactivity-atom",
+      "discipline": "science-inventions",
+      "value": 347,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-radioactivity-atom",
+      "discipline": "science-inventions",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-radioactivity-atom",
+      "discipline": "science-inventions",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "sci-radioactivity-atom",
+      "discipline": "science-inventions",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-computers-microprocessor",
+      "discipline": "science-inventions",
+      "value": 330,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-computers-microprocessor",
+      "discipline": "science-inventions",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "sci-computers-microprocessor",
+      "discipline": "science-inventions",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eco-bank-money-creation",
+      "discipline": "economy",
+      "value": 370,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-bank-money-creation",
+      "discipline": "economy",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "eco-bank-money-creation",
+      "discipline": "economy",
+      "questionIndex": 2,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-bank-money-creation",
+      "discipline": "economy",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "eco-bank-money-creation",
+      "discipline": "economy",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eco-great-depression",
+      "discipline": "economy",
+      "value": 329,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-great-depression",
+      "discipline": "economy",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "eco-great-depression",
+      "discipline": "economy",
+      "questionIndex": 3,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "eco-great-depression",
+      "discipline": "economy",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-metropolization",
+      "discipline": "geography",
+      "value": 312,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-metropolization",
+      "discipline": "geography",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "geo-metropolization",
+      "discipline": "geography",
+      "value": 118,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-metropolization",
+      "discipline": "geography",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-metropolization",
+      "discipline": "geography",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-risk-vulnerability",
+      "discipline": "geography",
+      "value": 346,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-risk-vulnerability",
+      "discipline": "geography",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "geo-risk-vulnerability",
+      "discipline": "geography",
+      "questionIndex": 0
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "geo-risk-vulnerability",
+      "discipline": "geography",
+      "questionIndex": 0,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "geo-risk-vulnerability",
+      "discipline": "geography",
+      "questionIndex": 3,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "geo-risk-vulnerability",
+      "discipline": "geography",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "music-baroque-opera",
+      "discipline": "music",
+      "value": 340,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-baroque-opera",
+      "discipline": "music",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "music-baroque-opera",
+      "discipline": "music",
+      "value": 119,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-baroque-opera",
+      "discipline": "music",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "music-baroque-opera",
+      "discipline": "music",
+      "questionIndex": 2,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "music-baroque-opera",
+      "discipline": "music",
+      "questionIndex": 3,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "music-studio-instrument",
+      "discipline": "music",
+      "value": 348,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-studio-instrument",
+      "discipline": "music",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-observable-universe",
+      "discipline": "astronomy",
+      "value": 284,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-observable-universe",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-observable-universe",
+      "discipline": "astronomy",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-light-years-distances",
+      "discipline": "astronomy",
+      "value": 273,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-light-years-distances",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-light-years-distances",
+      "discipline": "astronomy",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-light-years-distances",
+      "discipline": "astronomy",
+      "questionIndex": 4,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-big-bang",
+      "discipline": "astronomy",
+      "value": 278,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-big-bang",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-expansion-dark-universe",
+      "discipline": "astronomy",
+      "value": 277,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-expansion-dark-universe",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-expansion-dark-universe",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-star-birth-fusion",
+      "discipline": "astronomy",
+      "value": 285,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-star-birth-fusion",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-star-birth-fusion",
+      "discipline": "astronomy",
+      "questionIndex": 2,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-stellar-deaths",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-sun-structure",
+      "discipline": "astronomy",
+      "value": 260,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-sun-structure",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-sun-structure",
+      "discipline": "astronomy",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-sun-structure",
+      "discipline": "astronomy",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "astro-sun-structure",
+      "discipline": "astronomy",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-solar-activity-auroras",
+      "discipline": "astronomy",
+      "value": 330,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-solar-activity-auroras",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "astro-solar-activity-auroras",
+      "discipline": "astronomy",
+      "questionIndex": 3,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-solar-activity-auroras",
+      "discipline": "astronomy",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "astro-solar-activity-auroras",
+      "discipline": "astronomy",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-solar-system-formation",
+      "discipline": "astronomy",
+      "value": 327,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-rocky-planets",
+      "discipline": "astronomy",
+      "value": 260,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-rocky-planets",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-rocky-planets",
+      "discipline": "astronomy",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-giant-planets",
+      "discipline": "astronomy",
+      "value": 294,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-ocean-moons",
+      "discipline": "astronomy",
+      "value": 297,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "astro-ocean-moons",
+      "discipline": "astronomy",
+      "value": 119,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-ocean-moons",
+      "discipline": "astronomy",
+      "questionIndex": 2,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-ocean-moons",
+      "discipline": "astronomy",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-asteroids-comets",
+      "discipline": "astronomy",
+      "value": 296,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-meteors-impacts",
+      "discipline": "astronomy",
+      "value": 307,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "astro-meteors-impacts",
+      "discipline": "astronomy",
+      "questionIndex": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-exoplanet-detection",
+      "discipline": "astronomy",
+      "value": 300,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-exoplanet-detection",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-exoplanet-detection",
+      "discipline": "astronomy",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-habitable-zone-biosignatures",
+      "discipline": "astronomy",
+      "value": 310,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-habitable-zone-biosignatures",
+      "discipline": "astronomy",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "astro-habitable-zone-biosignatures",
+      "discipline": "astronomy",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "astro-habitable-zone-biosignatures",
+      "discipline": "astronomy",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-telescopes-spectrum",
+      "discipline": "astronomy",
+      "value": 299,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-telescopes-spectrum",
+      "discipline": "astronomy",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-telescopes-spectrum",
+      "discipline": "astronomy",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-space-telescopes",
+      "discipline": "astronomy",
+      "value": 307,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "astro-space-telescopes",
+      "discipline": "astronomy",
+      "value": 116,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-space-telescopes",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "astro-space-telescopes",
+      "discipline": "astronomy",
+      "questionIndex": 3,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-rockets-orbits",
+      "discipline": "astronomy",
+      "value": 313,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-rockets-orbits",
+      "discipline": "astronomy",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-moon-mars-exploration",
+      "discipline": "astronomy",
+      "value": 252,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-moon-mars-exploration",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-epic-oral-traditions",
+      "discipline": "literature",
+      "value": 322,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-epic-oral-traditions",
+      "discipline": "literature",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-epic-oral-traditions",
+      "discipline": "literature",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-epic-oral-traditions",
+      "discipline": "literature",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-greek-tragedy",
+      "discipline": "literature",
+      "value": 289,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-greek-tragedy",
+      "discipline": "literature",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-greek-tragedy",
+      "discipline": "literature",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-greek-tragedy",
+      "discipline": "literature",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-medieval-epic-romance",
+      "discipline": "literature",
+      "value": 271,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-medieval-epic-romance",
+      "discipline": "literature",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-medieval-epic-romance",
+      "discipline": "literature",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "lit-medieval-epic-romance",
+      "discipline": "literature",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-humanism-printing",
+      "discipline": "literature",
+      "value": 348,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-humanism-printing",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-humanism-printing",
+      "discipline": "literature",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-humanism-printing",
+      "discipline": "literature",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-humanism-printing",
+      "discipline": "literature",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-humanism-printing",
+      "discipline": "literature",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-don-quixote-modern-novel",
+      "discipline": "literature",
+      "value": 294,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-don-quixote-modern-novel",
+      "discipline": "literature",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-classical-theatre",
+      "discipline": "literature",
+      "value": 285,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-classical-theatre",
+      "discipline": "literature",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-romanticism",
+      "discipline": "literature",
+      "value": 356,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-romanticism",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-romanticism",
+      "discipline": "literature",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-romanticism",
+      "discipline": "literature",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-romanticism",
+      "discipline": "literature",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-realism-naturalism",
+      "discipline": "literature",
+      "value": 360,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-realism-naturalism",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-poetry-modernity",
+      "discipline": "literature",
+      "value": 294,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-poetry-modernity",
+      "discipline": "literature",
+      "value": 4,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-poetry-modernity",
+      "discipline": "literature",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-dystopia",
+      "discipline": "literature",
+      "value": 342,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-dystopia",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-dystopia",
+      "discipline": "literature",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-argument-thesis-objection",
+      "discipline": "philosophy",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-argument-thesis-objection",
+      "discipline": "philosophy",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-argument-thesis-objection",
+      "discipline": "philosophy",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-fact-opinion-value",
+      "discipline": "philosophy",
+      "value": 384,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-fact-opinion-value",
+      "discipline": "philosophy",
+      "questionIndex": 0,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "philo-fact-opinion-value",
+      "discipline": "philosophy",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-fact-opinion-value",
+      "discipline": "philosophy",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-socrates-questioning",
+      "discipline": "philosophy",
+      "value": 374,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-socrates-questioning",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-socrates-questioning",
+      "discipline": "philosophy",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-stoic-control",
+      "discipline": "philosophy",
+      "value": 395,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-stoic-control",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-stoic-control",
+      "discipline": "philosophy",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-stoic-control",
+      "discipline": "philosophy",
+      "questionIndex": 4,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "philo-stoic-control",
+      "discipline": "philosophy",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-descartes-doubt",
+      "discipline": "philosophy",
+      "value": 384,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-hume-causality",
+      "discipline": "philosophy",
+      "value": 388,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-hume-causality",
+      "discipline": "philosophy",
+      "value": 110,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-hume-causality",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-hume-causality",
+      "discipline": "philosophy",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "philo-hume-causality",
+      "discipline": "philosophy",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-hume-causality",
+      "discipline": "philosophy",
+      "questionIndex": 4,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-ethics-principles-consequences",
+      "discipline": "philosophy",
+      "value": 390,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-ethics-principles-consequences",
+      "discipline": "philosophy",
+      "value": 112,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-ethics-principles-consequences",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "philo-ethics-principles-consequences",
+      "discipline": "philosophy",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-social-contract-liberty",
+      "discipline": "philosophy",
+      "value": 372,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-social-contract-liberty",
+      "discipline": "philosophy",
+      "value": 107,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-social-contract-liberty",
+      "discipline": "philosophy",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-social-contract-liberty",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-context-inference",
+      "discipline": "english",
+      "value": 409,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-context-inference",
+      "discipline": "english",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-false-friends-core",
+      "discipline": "english",
+      "value": 381,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-false-friends-core",
+      "discipline": "english",
+      "value": 113,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-still-yet-already-even",
+      "discipline": "english",
+      "value": 384,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-still-yet-already-even",
+      "discipline": "english",
+      "value": 114,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-still-yet-already-even",
+      "discipline": "english",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eng-still-yet-already-even",
+      "discipline": "english",
+      "questionIndex": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-still-yet-already-even",
+      "discipline": "english",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eng-still-yet-already-even",
+      "discipline": "english",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-polite-register",
+      "discipline": "english",
+      "value": 390,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-polite-register",
+      "discipline": "english",
+      "value": 117,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-polite-register",
+      "discipline": "english",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eng-polite-register",
+      "discipline": "english",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-polite-register",
+      "discipline": "english",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eng-polite-register",
+      "discipline": "english",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-phrasal-context",
+      "discipline": "english",
+      "value": 374,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-phrasal-context",
+      "discipline": "english",
+      "value": 110,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-phrasal-context",
+      "discipline": "english",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-paraphrase-repair",
+      "discipline": "english",
+      "value": 378,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-paraphrase-repair",
+      "discipline": "english",
+      "value": 115,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-connectors-logic",
+      "discipline": "english",
+      "value": 387,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-connectors-logic",
+      "discipline": "english",
+      "value": 106,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-implicit-meaning",
+      "discipline": "english",
+      "value": 392,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-implicit-meaning",
+      "discipline": "english",
+      "value": 114,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-implicit-meaning",
+      "discipline": "english",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-context-reference",
+      "discipline": "english",
+      "value": 374,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-context-reference",
+      "discipline": "english",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-false-friends-second-wave",
+      "discipline": "english",
+      "value": 363,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-false-friends-second-wave",
+      "discipline": "english",
+      "value": 100,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-false-friends-second-wave",
+      "discipline": "english",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-small-words-just-quite",
+      "discipline": "english",
+      "value": 103,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-small-words-just-quite",
+      "discipline": "english",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eng-register-email-directness",
+      "discipline": "english",
+      "value": 352,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-register-email-directness",
+      "discipline": "english",
+      "value": 96,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-register-email-directness",
+      "discipline": "english",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-phrasal-get",
+      "discipline": "english",
+      "value": 105,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-phrasal-get",
+      "discipline": "english",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-phrasal-get",
+      "discipline": "english",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eng-phrasal-get",
+      "discipline": "english",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "value": 100,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-connectors-concession",
+      "discipline": "english",
+      "value": 95,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-connectors-concession",
+      "discipline": "english",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "eng-implicit-understatement",
+      "discipline": "english",
+      "value": 101,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-implicit-understatement",
+      "discipline": "english",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eng-implicit-understatement",
+      "discipline": "english",
+      "questionIndex": 4,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-argument-validity",
+      "discipline": "philosophy",
+      "value": 357,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-argument-validity",
+      "discipline": "philosophy",
+      "value": 91,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "value": 92,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-socrates-definition",
+      "discipline": "philosophy",
+      "value": 86,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-socrates-definition",
+      "discipline": "philosophy",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "value": 414,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "value": 94,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-descartes-cogito",
+      "discipline": "philosophy",
+      "value": 106,
+      "target": 120
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "philo-descartes-cogito",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-hume-induction",
+      "discipline": "philosophy",
+      "value": 100,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-hume-induction",
+      "discipline": "philosophy",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-hume-induction",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "value": 100,
+      "target": 120
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "express-short",
+      "lessonId": "philo-social-contract-comparison",
+      "discipline": "philosophy",
+      "value": 99,
+      "target": 120
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "philo-social-contract-comparison",
+      "discipline": "philosophy",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-reformations-print-culture",
+      "discipline": "history",
+      "value": 294,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-reformations-print-culture",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-reformations-print-culture",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-reformations-print-culture",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "history-reformations-print-culture",
+      "discipline": "history",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-early-modern-empires-comparison",
+      "discipline": "history",
+      "value": 356,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-early-modern-empires-comparison",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-early-modern-empires-comparison",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-atlantic-slavery-plantations",
+      "discipline": "history",
+      "value": 267,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-atlantic-slavery-plantations",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-atlantic-slavery-plantations",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-atlantic-slavery-plantations",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "art-photography-new-vision",
+      "discipline": "art",
+      "value": 263,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-photography-new-vision",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-photography-new-vision",
+      "discipline": "art",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-photography-new-vision",
+      "discipline": "art",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "cinema-documentary-truth",
+      "discipline": "cinema",
+      "value": 267,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-documentary-truth",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-genetics-dna-history",
+      "discipline": "science-inventions",
+      "value": 256,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-genetics-dna-history",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-genetics-dna-history",
+      "discipline": "science-inventions",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "value": 265,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "questionIndex": 0,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-black-holes-relativity",
+      "discipline": "astronomy",
+      "value": 274,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-black-holes-relativity",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-black-holes-relativity",
+      "discipline": "astronomy",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-galaxies-cosmic-web",
+      "discipline": "astronomy",
+      "value": 339,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-galaxies-cosmic-web",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-galaxies-cosmic-web",
+      "discipline": "astronomy",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eco-comparative-advantage-trade",
+      "discipline": "economy",
+      "value": 342,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-comparative-advantage-trade",
+      "discipline": "economy",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eco-comparative-advantage-trade",
+      "discipline": "economy",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "value": 346,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "music-recording-studio-industry",
+      "discipline": "music",
+      "value": 275,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-recording-studio-industry",
+      "discipline": "music",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-recording-studio-industry",
+      "discipline": "music",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-shakespeare-stage-language",
+      "discipline": "literature",
+      "value": 255,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-shakespeare-stage-language",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-shakespeare-stage-language",
+      "discipline": "literature",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-shakespeare-stage-language",
+      "discipline": "literature",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-shakespeare-stage-language",
+      "discipline": "literature",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-shakespeare-stage-language",
+      "discipline": "literature",
+      "questionIndex": 4,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-magical-realism-memory",
+      "discipline": "literature",
+      "value": 260,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-magical-realism-memory",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-magical-realism-memory",
+      "discipline": "literature",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-indian-ocean-monsoon-networks",
+      "discipline": "history",
+      "value": 389,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-indian-ocean-monsoon-networks",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-indian-ocean-monsoon-networks",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-meiji-restoration-industrial-japan",
+      "discipline": "history",
+      "value": 333,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-meiji-restoration-industrial-japan",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-meiji-restoration-industrial-japan",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-meiji-restoration-industrial-japan",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "art-islamic-space-calligraphy-pattern",
+      "discipline": "art",
+      "value": 393,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-islamic-space-calligraphy-pattern",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "art-bauhaus-modern-design",
+      "discipline": "art",
+      "value": 352,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-bauhaus-modern-design",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-bauhaus-modern-design",
+      "discipline": "art",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-bauhaus-modern-design",
+      "discipline": "art",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "cinema-animation-movement-techniques",
+      "discipline": "cinema",
+      "value": 363,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-animation-movement-techniques",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "science-plate-tectonics-evidence",
+      "discipline": "science-inventions",
+      "value": 339,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "science-plate-tectonics-evidence",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "science-plate-tectonics-evidence",
+      "discipline": "science-inventions",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "science-antibiotics-resistance-public-health",
+      "discipline": "science-inventions",
+      "value": 384,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "science-antibiotics-resistance-public-health",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "science-antibiotics-resistance-public-health",
+      "discipline": "science-inventions",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "science-antibiotics-resistance-public-health",
+      "discipline": "science-inventions",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "science-antibiotics-resistance-public-health",
+      "discipline": "science-inventions",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "science-antibiotics-resistance-public-health",
+      "discipline": "science-inventions",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-gaia-milky-way-map",
+      "discipline": "astronomy",
+      "value": 353,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-gaia-milky-way-map",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-gaia-milky-way-map",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eco-externalities-public-goods-policy",
+      "discipline": "economy",
+      "value": 367,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-externalities-public-goods-policy",
+      "discipline": "economy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-externalities-public-goods-policy",
+      "discipline": "economy",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-externalities-public-goods-policy",
+      "discipline": "economy",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-global-food-systems",
+      "discipline": "geography",
+      "value": 378,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-global-food-systems",
+      "discipline": "geography",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "music-beethoven-symphony-public",
+      "discipline": "music",
+      "value": 358,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-beethoven-symphony-public",
+      "discipline": "music",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-modernism-stream-consciousness",
+      "discipline": "literature",
+      "value": 360,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-modernism-stream-consciousness",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-mali-songhai-sahel",
+      "discipline": "history",
+      "value": 287,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-mali-songhai-sahel",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-mali-songhai-sahel",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-mali-songhai-sahel",
+      "discipline": "history",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "history-mali-songhai-sahel",
+      "discipline": "history",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-haiti-revolution-slavery",
+      "discipline": "history",
+      "value": 267,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-haiti-revolution-slavery",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-haiti-revolution-slavery",
+      "discipline": "history",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-haiti-revolution-slavery",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-haiti-revolution-slavery",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "value": 276,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "questionIndex": 1,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "cinema-montage-continuity-collision",
+      "discipline": "cinema",
+      "value": 281,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-montage-continuity-collision",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-vaccination-immune-memory",
+      "discipline": "science-inventions",
+      "value": 280,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-vaccination-immune-memory",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-vaccination-immune-memory",
+      "discipline": "science-inventions",
+      "questionIndex": 2,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-electromagnetism-fields-induction",
+      "discipline": "science-inventions",
+      "value": 365,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-electromagnetism-fields-induction",
+      "discipline": "science-inventions",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "sci-electromagnetism-fields-induction",
+      "discipline": "science-inventions",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-electromagnetism-fields-induction",
+      "discipline": "science-inventions",
+      "questionIndex": 3,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-electromagnetism-fields-induction",
+      "discipline": "science-inventions",
+      "questionIndex": 4,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-exoplanets-methods-habitability",
+      "discipline": "astronomy",
+      "value": 274,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-exoplanets-methods-habitability",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-exoplanets-methods-habitability",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-exoplanets-methods-habitability",
+      "discipline": "astronomy",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eco-inflation-prices-central-bank",
+      "discipline": "economy",
+      "value": 273,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-inflation-prices-central-bank",
+      "discipline": "economy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-inflation-prices-central-bank",
+      "discipline": "economy",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eco-inflation-prices-central-bank",
+      "discipline": "economy",
+      "questionIndex": 2
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-metropolization-networks-segregation",
+      "discipline": "geography",
+      "value": 347,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-metropolization-networks-segregation",
+      "discipline": "geography",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "geo-metropolization-networks-segregation",
+      "discipline": "geography",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "value": 255,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "questionIndex": 0,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "questionIndex": 3,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-negritude-cesaire-senghor-damas",
+      "discipline": "literature",
+      "value": 351,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-negritude-cesaire-senghor-damas",
+      "discipline": "literature",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-negritude-cesaire-senghor-damas",
+      "discipline": "literature",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-industrial-revolution-steam-factory",
+      "discipline": "history",
+      "value": 329,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-industrial-revolution-steam-factory",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-industrial-revolution-steam-factory",
+      "discipline": "history",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-cold-war-bipolar-world",
+      "discipline": "history",
+      "value": 290,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-cold-war-bipolar-world",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "history-cold-war-bipolar-world",
+      "discipline": "history",
+      "questionIndex": 4,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "art-baroque-light-movement-power",
+      "discipline": "art",
+      "value": 362,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-baroque-light-movement-power",
+      "discipline": "art",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "art-baroque-light-movement-power",
+      "discipline": "art",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "art-baroque-light-movement-power",
+      "discipline": "art",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "cinema-new-wave-auteur-street-editing",
+      "discipline": "cinema",
+      "value": 287,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-new-wave-auteur-street-editing",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "cinema-new-wave-auteur-street-editing",
+      "discipline": "cinema",
+      "questionIndex": 2,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 0
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "cinema-new-wave-auteur-street-editing",
+      "discipline": "cinema",
+      "questionIndex": 3,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-newton-motion-universal-gravitation",
+      "discipline": "science-inventions",
+      "value": 295,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-newton-motion-universal-gravitation",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-newton-motion-universal-gravitation",
+      "discipline": "science-inventions",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-quantum-quanta-probability",
+      "discipline": "science-inventions",
+      "value": 293,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-quantum-quanta-probability",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-moon-phases-eclipses-tides",
+      "discipline": "astronomy",
+      "value": 313,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-moon-phases-eclipses-tides",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-space-race-apollo-11",
+      "discipline": "astronomy",
+      "value": 287,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-space-race-apollo-11",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eco-gdp-growth-limits",
+      "discipline": "economy",
+      "value": 323,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-gdp-growth-limits",
+      "discipline": "economy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-climate-change-unequal-territories",
+      "discipline": "geography",
+      "value": 292,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-climate-change-unequal-territories",
+      "discipline": "geography",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-climate-change-unequal-territories",
+      "discipline": "geography",
+      "questionIndex": 1,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "music-rock-blues-studio-youth",
+      "discipline": "music",
+      "value": 272,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-rock-blues-studio-youth",
+      "discipline": "music",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-rock-blues-studio-youth",
+      "discipline": "music",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-rock-blues-studio-youth",
+      "discipline": "music",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-science-fiction-worlds-critique",
+      "discipline": "literature",
+      "value": 307,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-science-fiction-worlds-critique",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-science-fiction-worlds-critique",
+      "discipline": "literature",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-decolonization-india-algeria-bandung",
+      "discipline": "history",
+      "value": 345,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-decolonization-india-algeria-bandung",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-decolonization-india-algeria-bandung",
+      "discipline": "history",
+      "questionIndex": 2,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "history-european-integration-coal-eu",
+      "discipline": "history",
+      "value": 324,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "history-european-integration-coal-eu",
+      "discipline": "history",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "history-european-integration-coal-eu",
+      "discipline": "history",
+      "questionIndex": 3,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "art-surrealism-dream-automatism-image",
+      "discipline": "art",
+      "value": 279,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "art-surrealism-dream-automatism-image",
+      "discipline": "art",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "art-surrealism-dream-automatism-image",
+      "discipline": "art",
+      "questionIndex": 1,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "cinema-sound-voice-microphone-musical",
+      "discipline": "cinema",
+      "value": 307,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "cinema-sound-voice-microphone-musical",
+      "discipline": "cinema",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "cinema-sound-voice-microphone-musical",
+      "discipline": "cinema",
+      "questionIndex": 3
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-relativity-spacetime-gravity",
+      "discipline": "science-inventions",
+      "value": 314,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-relativity-spacetime-gravity",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "sci-periodic-table-mendeleev-elements",
+      "discipline": "science-inventions",
+      "value": 287,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "sci-periodic-table-mendeleev-elements",
+      "discipline": "science-inventions",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-periodic-table-mendeleev-elements",
+      "discipline": "science-inventions",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "sci-periodic-table-mendeleev-elements",
+      "discipline": "science-inventions",
+      "questionIndex": 4,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "astro-seasons-tilt-solstice-equinox",
+      "discipline": "astronomy",
+      "value": 307,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "astro-seasons-tilt-solstice-equinox",
+      "discipline": "astronomy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-seasons-tilt-solstice-equinox",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "astro-seasons-tilt-solstice-equinox",
+      "discipline": "astronomy",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "eco-inequality-income-wealth-redistribution",
+      "discipline": "economy",
+      "value": 324,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "eco-inequality-income-wealth-redistribution",
+      "discipline": "economy",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-inequality-income-wealth-redistribution",
+      "discipline": "economy",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "eco-inequality-income-wealth-redistribution",
+      "discipline": "economy",
+      "questionIndex": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "eco-inequality-income-wealth-redistribution",
+      "discipline": "economy",
+      "questionIndex": 2,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-demographic-transition-fertility-aging",
+      "discipline": "geography",
+      "value": 303,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-demographic-transition-fertility-aging",
+      "discipline": "geography",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-demographic-transition-fertility-aging",
+      "discipline": "geography",
+      "questionIndex": 0,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-demographic-transition-fertility-aging",
+      "discipline": "geography",
+      "questionIndex": 1,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "warning",
+      "code": "distractor-length-giveaway",
+      "lessonId": "geo-demographic-transition-fertility-aging",
+      "discipline": "geography",
+      "questionIndex": 3,
+      "lengthGiveaway": true,
+      "absoluteDistractors": 1
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "geo-demographic-transition-fertility-aging",
+      "discipline": "geography",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "geo-energy-transition-networks-minerals",
+      "discipline": "geography",
+      "value": 302,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "geo-energy-transition-networks-minerals",
+      "discipline": "geography",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "geo-energy-transition-networks-minerals",
+      "discipline": "geography",
+      "questionIndex": 4,
+      "value": 11,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "music-electronic-tape-synth-house-techno",
+      "discipline": "music",
+      "value": 298,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "music-electronic-tape-synth-house-techno",
+      "discipline": "music",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "music-electronic-tape-synth-house-techno",
+      "discipline": "music",
+      "questionIndex": 4,
+      "value": 10,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-repeats-answer",
+      "lessonId": "music-electronic-tape-synth-house-techno",
+      "discipline": "music",
+      "questionIndex": 4
+    },
+    {
+      "severity": "error",
+      "code": "course-short",
+      "lessonId": "lit-enlightenment-critique-encyclopedia",
+      "discipline": "literature",
+      "value": 302,
+      "target": 420
+    },
+    {
+      "severity": "error",
+      "code": "sections-few",
+      "lessonId": "lit-enlightenment-critique-encyclopedia",
+      "discipline": "literature",
+      "value": 5,
+      "target": 6
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-enlightenment-critique-encyclopedia",
+      "discipline": "literature",
+      "questionIndex": 0,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-enlightenment-critique-encyclopedia",
+      "discipline": "literature",
+      "questionIndex": 1,
+      "value": 8,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "quiz-explanation-short",
+      "lessonId": "lit-enlightenment-critique-encyclopedia",
+      "discipline": "literature",
+      "questionIndex": 4,
+      "value": 9,
+      "target": 12
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "prehistory-fire",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 4
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "prehistory-hunt",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 4
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "egypt-nile",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 4
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "atlantic-revolutions-revolution-francaise-1789",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 4
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "prehistory-sapiens",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "egypt-connected",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "aegean-mediterranean-minoens-crete",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "republic-terror-war",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "egypt-pyramids",
+      "discipline": "history",
+      "questionIndex": 3,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "rome-italy-expansion",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "northern-viking-worlds-navires-vikings",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 4
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "northern-viking-worlds-viking-commerce",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 4
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "northern-viking-worlds-christianisation-nord",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 4
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "northern-viking-worlds-vie-quotidienne",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 4
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "northern-viking-worlds-christianisation-nord",
+      "discipline": "history",
+      "questionIndex": 3,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "northern-viking-worlds-croyances-sagas-runes",
+      "discipline": "history",
+      "questionIndex": 4,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "cinema-montage-meaning",
+      "discipline": "cinema",
+      "questionIndex": 1,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "cinema-montage-continuity-collision",
+      "discipline": "cinema",
+      "questionIndex": 0,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "cinema-montage-meaning",
+      "discipline": "cinema",
+      "questionIndex": 2,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "cinema-montage-continuity-collision",
+      "discipline": "cinema",
+      "questionIndex": 2,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "astro-exoplanet-detection",
+      "discipline": "astronomy",
+      "questionIndex": 2,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "astro-exoplanets-methods-habitability",
+      "discipline": "astronomy",
+      "questionIndex": 0,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "philo-ethics-principles-consequences",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "duplicate-question",
+      "lessonId": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "questionIndex": 1,
+      "duplicates": 2
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "mystery-pyramids",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "mystery-minoens",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "mystery-viking-longship",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "art-mystery-composition-122",
+      "discipline": "art",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "economy-mystery-scarcity-122",
+      "discipline": "economy",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "geography-mystery-coordinates-122",
+      "discipline": "geography",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "history-mystery-toussaint-177",
+      "discipline": "history",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "cinema-mystery-montage-177",
+      "discipline": "cinema",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "science-mystery-natural-selection-177",
+      "discipline": "science-inventions",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "economy-mystery-policy-rate-177",
+      "discipline": "economy",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "geography-mystery-malacca-177",
+      "discipline": "geography",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "astro-mystery-cmb-186",
+      "discipline": "astronomy",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "astro-mystery-transit-186",
+      "discipline": "astronomy",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "literature-mystery-press-232",
+      "discipline": "literature",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "literature-mystery-press-232",
+      "discipline": "literature",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "literature-mystery-spleen-232",
+      "discipline": "literature",
+      "value": 16,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "literature-mystery-newspeak-232",
+      "discipline": "literature",
+      "value": 17,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "english-mystery-actually-318",
+      "discipline": "english",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "english-mystery-actually-318",
+      "discipline": "english",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "english-mystery-eventually-318",
+      "discipline": "english",
+      "value": 14,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "english-mystery-afraid-318",
+      "discipline": "english",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "english-mystery-afraid-318",
+      "discipline": "english",
+      "value": 17,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "english-mystery-yet-318",
+      "discipline": "english",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "english-mystery-getover-rc19",
+      "discipline": "english",
+      "value": 17,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "english-mystery-clarify-rc19",
+      "discipline": "english",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "philo-mystery-assent-rc19",
+      "discipline": "philosophy",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "history-mystery-95-theses-233",
+      "discipline": "history",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "science-mystery-double-helix-233",
+      "discipline": "science-inventions",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "geography-mystery-submarine-cable-233",
+      "discipline": "geography",
+      "value": 17,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "art-mystery-bauhaus-course-234",
+      "discipline": "art",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "science-mystery-magnetic-stripes-234",
+      "discipline": "science-inventions",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "literature-mystery-stream-consciousness-234",
+      "discipline": "literature",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "history-mystery-mansa-musa-235",
+      "discipline": "history",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "cinema-mystery-jump-cut-236",
+      "discipline": "cinema",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "science-mystery-quantum-236",
+      "discipline": "science-inventions",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "music-mystery-riff-236",
+      "discipline": "music",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "art-mystery-automatic-writing-237",
+      "discipline": "art",
+      "value": 18,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "science-mystery-time-dilation-237",
+      "discipline": "science-inventions",
+      "value": 17,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-explanation-short",
+      "mysteryId": "science-mystery-atomic-number-237",
+      "discipline": "science-inventions",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "economy-mystery-gini-237",
+      "discipline": "economy",
+      "value": 19,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "music-mystery-midi-237",
+      "discipline": "music",
+      "value": 17,
+      "target": 20
+    },
+    {
+      "severity": "error",
+      "code": "mystery-prompt-short",
+      "mysteryId": "literature-mystery-encyclopedia-237",
+      "discipline": "literature",
+      "value": 18,
+      "target": 20
+    }
+  ]
+}

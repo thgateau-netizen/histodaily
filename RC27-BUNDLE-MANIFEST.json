@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.31.0",
+  "version": "1.0.0-rc.32.0",
   "bundleOrder": [
     "core-rc27.js",
     "content-rc27.js",
@@ -31,7 +31,8 @@
       "content-humanize-240.js",
       "content-cleanup-241.js",
       "content-audit-v267.js",
-      "mystery-clarity-v272.js"
+      "mystery-clarity-v272.js",
+      "content-homogenize-rc32.js"
     ],
     "experience": [
       "app-runtime.js",
@@ -60,5 +61,5 @@
   "loadedScriptFilesBefore": 43,
   "loadedBundleFilesAfter": 3,
   "sourceFilesPreservedUnder": "src/legacy-client",
-  "qualityPass": "RC31"
+  "qualityPass": "RC32 content homogenization"
 }

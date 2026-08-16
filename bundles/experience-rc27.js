@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.31.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.32.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -7042,7 +7042,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.31.0";
+  const VERSION = "1.0.0-rc.32.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -11157,7 +11157,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.31.0";
+  const VERSION = "1.0.0-rc.32.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11340,7 +11340,7 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.31.0";
+  const VERSION = "1.0.0-rc.32.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
@@ -11472,7 +11472,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.31.0";
+  const VERSION = "1.0.0-rc.32.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 

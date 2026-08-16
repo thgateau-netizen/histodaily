@@ -1,0 +1,242 @@
+{
+  "version": "1.0.0-rc.32.0",
+  "scope": {
+    "courses": 209,
+    "mysteries": 158,
+    "quizQuestions": 1045
+  },
+  "before": {
+    "blockingErrors": 759,
+    "warnings": 36,
+    "issueCounts": {
+      "express-short": 77,
+      "quiz-explanation-short": 280,
+      "quiz-explanation-repeats-answer": 59,
+      "course-short": 171,
+      "distractor-length-giveaway": 36,
+      "sections-few": 106,
+      "duplicate-question": 24,
+      "mystery-explanation-short": 20,
+      "mystery-prompt-short": 22
+    },
+    "summaryByDiscipline": {
+      "art": {
+        "courses": 12,
+        "avgCompleteWords": 373,
+        "minCompleteWords": 263,
+        "avgSections": 4.9,
+        "avgVisibleExpressWords": 146,
+        "errors": 45,
+        "warnings": 7
+      },
+      "astronomy": {
+        "courses": 27,
+        "avgCompleteWords": 302,
+        "minCompleteWords": 252,
+        "avgSections": 5.4,
+        "avgVisibleExpressWords": 139,
+        "errors": 79,
+        "warnings": 2
+      },
+      "cinema": {
+        "courses": 11,
+        "avgCompleteWords": 373,
+        "minCompleteWords": 267,
+        "avgSections": 4.9,
+        "avgVisibleExpressWords": 143,
+        "errors": 36,
+        "warnings": 5
+      },
+      "economy": {
+        "courses": 10,
+        "avgCompleteWords": 361,
+        "minCompleteWords": 273,
+        "avgSections": 4.9,
+        "avgVisibleExpressWords": 156,
+        "errors": 38,
+        "warnings": 4
+      },
+      "english": {
+        "courses": 16,
+        "avgCompleteWords": 398,
+        "minCompleteWords": 352,
+        "avgSections": 7.3,
+        "avgVisibleExpressWords": 109,
+        "errors": 58,
+        "warnings": 0
+      },
+      "geography": {
+        "courses": 11,
+        "avgCompleteWords": 349,
+        "minCompleteWords": 292,
+        "avgSections": 5,
+        "avgVisibleExpressWords": 145,
+        "errors": 41,
+        "warnings": 3
+      },
+      "history": {
+        "courses": 64,
+        "avgCompleteWords": 366,
+        "minCompleteWords": 267,
+        "avgSections": 7.6,
+        "avgVisibleExpressWords": 119,
+        "errors": 252,
+        "warnings": 7
+      },
+      "literature": {
+        "courses": 16,
+        "avgCompleteWords": 312,
+        "minCompleteWords": 255,
+        "avgSections": 4.7,
+        "avgVisibleExpressWords": 145,
+        "errors": 63,
+        "warnings": 0
+      },
+      "music": {
+        "courses": 10,
+        "avgCompleteWords": 348,
+        "minCompleteWords": 255,
+        "avgSections": 4.8,
+        "avgVisibleExpressWords": 154,
+        "errors": 32,
+        "warnings": 4
+      },
+      "philosophy": {
+        "courses": 16,
+        "avgCompleteWords": 404,
+        "minCompleteWords": 357,
+        "avgSections": 7.4,
+        "avgVisibleExpressWords": 109,
+        "errors": 52,
+        "warnings": 2
+      },
+      "science-inventions": {
+        "courses": 16,
+        "avgCompleteWords": 343,
+        "minCompleteWords": 256,
+        "avgSections": 4.9,
+        "avgVisibleExpressWords": 150,
+        "errors": 60,
+        "warnings": 2
+      }
+    }
+  },
+  "after": {
+    "blockingErrors": 0,
+    "warnings": 0,
+    "issueCounts": {},
+    "summaryByDiscipline": {
+      "art": {
+        "courses": 12,
+        "avgCompleteWords": 486,
+        "minCompleteWords": 438,
+        "avgSections": 7.7,
+        "avgVisibleExpressWords": 148,
+        "errors": 0,
+        "warnings": 0
+      },
+      "astronomy": {
+        "courses": 27,
+        "avgCompleteWords": 499,
+        "minCompleteWords": 433,
+        "avgSections": 9.4,
+        "avgVisibleExpressWords": 144,
+        "errors": 0,
+        "warnings": 0
+      },
+      "cinema": {
+        "courses": 11,
+        "avgCompleteWords": 499,
+        "minCompleteWords": 441,
+        "avgSections": 7.5,
+        "avgVisibleExpressWords": 147,
+        "errors": 0,
+        "warnings": 0
+      },
+      "economy": {
+        "courses": 10,
+        "avgCompleteWords": 481,
+        "minCompleteWords": 436,
+        "avgSections": 7.7,
+        "avgVisibleExpressWords": 156,
+        "errors": 0,
+        "warnings": 0
+      },
+      "english": {
+        "courses": 16,
+        "avgCompleteWords": 480,
+        "minCompleteWords": 431,
+        "avgSections": 8,
+        "avgVisibleExpressWords": 145,
+        "errors": 0,
+        "warnings": 0
+      },
+      "geography": {
+        "courses": 11,
+        "avgCompleteWords": 469,
+        "minCompleteWords": 430,
+        "avgSections": 8,
+        "avgVisibleExpressWords": 148,
+        "errors": 0,
+        "warnings": 0
+      },
+      "history": {
+        "courses": 64,
+        "avgCompleteWords": 493,
+        "minCompleteWords": 430,
+        "avgSections": 10.3,
+        "avgVisibleExpressWords": 139,
+        "errors": 0,
+        "warnings": 0
+      },
+      "literature": {
+        "courses": 16,
+        "avgCompleteWords": 495,
+        "minCompleteWords": 433,
+        "avgSections": 9.1,
+        "avgVisibleExpressWords": 145,
+        "errors": 0,
+        "warnings": 0
+      },
+      "music": {
+        "courses": 10,
+        "avgCompleteWords": 492,
+        "minCompleteWords": 441,
+        "avgSections": 7.9,
+        "avgVisibleExpressWords": 155,
+        "errors": 0,
+        "warnings": 0
+      },
+      "philosophy": {
+        "courses": 16,
+        "avgCompleteWords": 508,
+        "minCompleteWords": 448,
+        "avgSections": 8.4,
+        "avgVisibleExpressWords": 144,
+        "errors": 0,
+        "warnings": 0
+      },
+      "science-inventions": {
+        "courses": 16,
+        "avgCompleteWords": 491,
+        "minCompleteWords": 430,
+        "avgSections": 8.3,
+        "avgVisibleExpressWords": 153,
+        "errors": 0,
+        "warnings": 0
+      }
+    }
+  },
+  "improvements": {
+    "blockingErrorsRemoved": 759,
+    "plausibilityWarningsRemoved": 36,
+    "shortCoursesFixed": 171,
+    "fewSectionCoursesFixed": 106,
+    "shortVisibleExpressFixed": 77,
+    "shortQuizExplanationsFixed": 280,
+    "answerOnlyExplanationsFixed": 59,
+    "duplicateQuestionsFixed": 24,
+    "mysteryTextIssuesFixed": 42,
+    "distractorLengthGiveawaysFixed": 36
+  }
+}
