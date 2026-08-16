@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.47.0",
+  "version": "1.0.0-rc.48.0",
   "status": "passed_with_structural_debt",
   "scope": "ergonomie, navigation, densité, mobile, états, accessibilité, cohérence visuelle, performance perçue et dette UI — contenu exclu",
   "checks": {
@@ -83,7 +83,7 @@
       "pass": true,
       "detail": "Le premier cache ne doit pas télécharger des visuels historiques inutiles."
     },
-    "rc47BuildManifestIsGenerated": {
+    "rc48BuildManifestIsGenerated": {
       "pass": true,
       "detail": "Les outils de release doivent décrire la version réellement livrée."
     },
@@ -147,12 +147,12 @@
         "gzipBytes": 604047
       },
       "bundles/experience-rc27.js": {
-        "bytes": 719196,
-        "gzipBytes": 182033
+        "bytes": 720617,
+        "gzipBytes": 182514
       }
     },
-    "initialRawBytes": 5043802,
-    "initialGzipBytes": 1260337
+    "initialRawBytes": 5045223,
+    "initialGzipBytes": 1260818
   },
   "warnings": [
     "Feuille CSS historique volumineuse: 11136 lignes. Ne pas supprimer agressivement sans couverture visuelle navigateur."

@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0-rc.48.0",
+  "status": "passed",
+  "bug": "daily result leaked across discipline switch",
+  "fixes": [
+    "home completion scoped to active discipline daily mystery",
+    "hero artwork scoped to active discipline",
+    "optional deep dive scoped to active discipline mystery",
+    "tomorrow teaser stored by day+discipline",
+    "safe migration of RC47 day-only teaser records"
+  ],
+  "regressionScenario": {
+    "version": "1.0.0-rc.48.0",
+    "status": "passed",
+    "checks": {
+      "historyDailyDone": true,
+      "scienceNotDoneAfterSwitch": true,
+      "historyTeaserExists": true,
+      "scienceTeaserExists": true,
+      "historyExactTomorrowAssignment": true,
+      "scienceExactTomorrowAssignment": true,
+      "teaserStoreScopedByDiscipline": true,
+      "noCrossDisciplineTeaser": true,
+      "analyticsSnapshotAvailable": true
+    },
+    "historyTomorrow": "h2",
+    "scienceTomorrow": "s2",
+    "errors": []
+  },
+  "qualityStatus": "passed",
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  }
+}

@@ -62,7 +62,7 @@
     {
       "priority": "P2 restant",
       "area": "Architecture",
-      "issue": "59 modules hérités, 17 MutationObserver, 140 écritures globales.",
+      "issue": "59 modules hérités, 17 MutationObserver, 141 écritures globales.",
       "action": "Remplacer progressivement les wrappers historiques par quelques modules stables, écran par écran."
     },
     {
@@ -80,7 +80,7 @@
     "cssBytes": 666076,
     "cssLines": 11136,
     "cssImportant": 2397,
-    "initialCssJsGzipBytes": 1260337,
+    "initialCssJsGzipBytes": 1260818,
     "initialCssJsGzipMiB": 1.2,
     "bundles": {
       "bundles/core-rc27.js": {
@@ -92,11 +92,11 @@
         "gzipBytes": 604047
       },
       "bundles/experience-rc27.js": {
-        "bytes": 719196,
-        "gzipBytes": 182033
+        "bytes": 720617,
+        "gzipBytes": 182514
       }
     },
-    "clientWindowGlobals": 140,
+    "clientWindowGlobals": 141,
     "clientMutationObservers": 17,
     "clientEventListeners": 352,
     "clientCatchBlocks": 784,
@@ -117,7 +117,7 @@
     "RATE_LIMIT: aucune limitation de débit applicative détectée sur les routes publiques/sociales.",
     "STARTUP_WEIGHT: CSS + JS initiaux ≈ 1.2 MiB gzip, tout téléchargé au démarrage ; le contenu n’est pas encore chargé à la demande.",
     "OBSERVABILITY: 412 catch vides côté client ; beaucoup de défauts peuvent être masqués au lieu d’être diagnostiqués.",
-    "RUNTIME_COMPLEXITY: 17 occurrences de MutationObserver et 140 écritures globales window.* : architecture encore très patchée.",
+    "RUNTIME_COMPLEXITY: 17 occurrences de MutationObserver et 141 écritures globales window.* : architecture encore très patchée.",
     "CSS_DEBT: 2397 !important subsistent malgré RC45."
   ],
   "errors": []

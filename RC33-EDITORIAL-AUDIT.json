@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.47.0",
+  "version": "1.0.0-rc.48.0",
   "methodology": {
     "note": "Audit qualitatif structurel : redondance, remplissage générique, spécificité des exercices, qualité des explications de quiz, plausibilité minimale des distracteurs, cohérence des sections, intégrité des formulations et mystères qui ne doivent jamais révéler leur réponse. La longueur n’entre pas dans le score.",
     "interpretation": "La bande A signifie qu’aucun défaut couvert par cette grille n’a été détecté. Elle ne constitue ni une certification factuelle phrase par phrase ni une note absolue de qualité littéraire.",

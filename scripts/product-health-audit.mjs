@@ -109,7 +109,7 @@ const result = {
   warnings,
   errors
 };
-fs.writeFileSync(path.join(root, 'RC47-PRODUCT-HEALTH-AUDIT.json'), JSON.stringify(result, null, 2) + '\n');
+fs.writeFileSync(path.join(root, 'RC48-PRODUCT-HEALTH-AUDIT.json'), JSON.stringify(result, null, 2) + '\n');
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

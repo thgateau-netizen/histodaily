@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.47.0",
+  "version": "1.0.0-rc.48.0",
   "status": "passed",
   "principle": "La difficulté monte avec l’expérience, mais peut rester plus douce localement si les résultats montrent que l’utilisateur n’est pas encore confortable. Aucun écran supplémentaire.",
   "metrics": [

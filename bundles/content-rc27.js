@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.47.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.48.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: content-library.js ===== */
 /* HistoDaily LTS — bibliothèque de contenus publiés */

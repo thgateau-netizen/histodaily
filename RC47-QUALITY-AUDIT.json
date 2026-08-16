@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0-rc.47.0",
-  "status": "passed",
+  "version": "1.0.0-rc.48.0",
+  "status": "failed",
   "checks": {
     "runtimeVersionAligned": true,
     "cacheVersionAligned": true,
@@ -17,8 +17,11 @@
     "adaptiveComfortBundled": true,
     "catalogueExpansionBundled": true,
     "dailyFreshnessBundled": true,
-    "dailyHookBundled": true
+    "dailyHookBundled": false
   },
   "warnings": [],
-  "errors": []
+  "errors": [
+    "bundle manifest: daily-hook-rc47.js absent",
+    "bundle réel: daily-hook-rc47.js absent"
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.47.0",
+  "version": "1.0.0-rc.48.0",
   "status": "passed",
   "principle": "Chaque discipline recommence doucement pour un nouvel utilisateur : bases/familier → confiance → application → difficulté réelle. La progression est locale à la discipline, pas au niveau global du compte.",
   "disciplines": 11,

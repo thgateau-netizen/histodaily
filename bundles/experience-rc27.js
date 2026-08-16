@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.47.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.48.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -7053,7 +7053,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.47.0";
+  const VERSION = "1.0.0-rc.48.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -11244,7 +11244,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.47.0";
+  const VERSION = "1.0.0-rc.48.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11425,7 +11425,7 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.47.0";
+  const VERSION = "1.0.0-rc.48.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
@@ -11574,7 +11574,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.47.0";
+  const VERSION = "1.0.0-rc.48.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -12144,7 +12144,7 @@
 */
 (function histodailyRc43DailyFreshness(){
   "use strict";
-  const VERSION = "1.0.0-rc.47.0";
+  const VERSION = "1.0.0-rc.48.0";
   const RECENT_DAYS = 10;
   const HARD_RECENT_ID_DAYS = 7;
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
@@ -12294,16 +12294,16 @@
 
 ;
 
-/* ===== SOURCE: daily-hook-rc47.js ===== */
-/* HistoDaily RC47 — Daily Hook.
+/* ===== SOURCE: daily-hook-rc48.js ===== */
+/* HistoDaily RC48 — Daily Hook discipline sync.
    The daily expedition is now a complete ritual by itself.
    Course + quiz remain available as an optional deep dive.
    Also prepares an exact next-day teaser and records local D1/D3/D7 retention signals.
 */
-(function histodailyRc47DailyHook(){
+(function histodailyRc48DailyHook(){
   "use strict";
-  const VERSION = "1.0.0-rc.47.0";
-  const ANALYTICS_KEY = "histodaily_retention_rc47";
+  const VERSION = "1.0.0-rc.48.0";
+  const ANALYTICS_KEY = "histodaily_retention_rc47"; // keep the same analytics history across the bug-fix release
   const TEASER_HISTORY_LIMIT = 120;
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -12325,12 +12325,23 @@
     return hash>>>0;
   }
   function disciplineId(raw){ return safe(()=>disciplineById(raw || "history").id, String(raw || "history")); }
+  // The score/streak claim is global for a calendar day, but the home experience is
+  // discipline-scoped. RC47 incorrectly used the global claim to decide what the
+  // selected discipline should display, which made a solved History dossier leak
+  // into Sciences, Art, etc.
   function todayClaimRecord(){ return safe(()=>state.dailyClaims?.[dateKey(0)] || state.dailyHistory?.[dateKey(0)], null); }
   function claimedMystery(){
     const claim=todayClaimRecord();
     return claim?.mysteryId ? safe(()=>mysteryById(claim.mysteryId), null) : null;
   }
-  function dailyDone(){ return Boolean(todayClaimRecord()); }
+  function dailyMysteryFor(rawId=activeDisciplineId()){
+    const id=disciplineId(rawId);
+    return safe(()=>mysteryForDisciplineDayOffset(id,0), safe(()=>dailyMystery(),null));
+  }
+  function dailyDone(rawId=activeDisciplineId()){
+    const mystery=dailyMysteryFor(rawId);
+    return Boolean(mystery?.id && safe(()=>mysterySolved(mystery.id), Boolean(state.solvedMysteries?.[mystery.id])));
+  }
 
   function analyticsRead(){
     try { const raw=JSON.parse(localStorage.getItem(ANALYTICS_KEY)||"null"); if(raw&&typeof raw==="object") return raw; } catch {}
@@ -12406,7 +12417,7 @@
     const recent=new Set(recentAssignedIds(canonical,10));
     const fresh=candidates.filter(item=>!recent.has(String(item.id)));
     if(fresh.length) candidates=fresh;
-    const todayId=map[todayAssignmentKey(canonical)] || claimedMystery()?.id || "";
+    const todayId=map[todayAssignmentKey(canonical)] || dailyMysteryFor(canonical)?.id || "";
     if(todayId && candidates.length>1){ const changed=candidates.filter(item=>item.id!==todayId); if(changed.length)candidates=changed; }
     if(!candidates.length) return null;
     candidates=[...candidates].sort((a,b)=>stableHash(`${dateKey(1)}|${canonical}|${a.id}|rc47`)-stableHash(`${dateKey(1)}|${canonical}|${b.id}|rc47`));
@@ -12423,16 +12434,24 @@
     if(!state.dailyTomorrowTeasers || typeof state.dailyTomorrowTeasers!=="object" || Array.isArray(state.dailyTomorrowTeasers)) state.dailyTomorrowTeasers={};
     return state.dailyTomorrowTeasers;
   }
-  function ensureTomorrowTeaser(mystery=claimedMystery()){
+  function teaserKey(day,id){ return `${day}|${disciplineId(id)}`; }
+  function ensureTomorrowTeaser(mystery=dailyMysteryFor()){
     if(!mystery) return null;
     const today=dateKey(0); const store=teaserStore();
-    const saved=store[today];
-    if(saved?.mysteryId){ const found=safe(()=>mysteryById(saved.mysteryId),null); if(found) return found; }
     const id=disciplineId(safe(()=>mysteryDisciplineId(mystery), mystery.disciplineId||mystery.discipline||activeDisciplineId()));
+    const key=teaserKey(today,id);
+    let saved=store[key];
+    // One-time compatibility with RC47's day-only teaser key. Only migrate it
+    // when it belongs to the same discipline; otherwise ignore it completely.
+    if(!saved && store[today]?.disciplineId===id){ saved=store[today]; store[key]=saved; }
+    if(saved?.mysteryId){
+      const found=safe(()=>mysteryById(saved.mysteryId),null);
+      if(found && disciplineId(safe(()=>mysteryDisciplineId(found), found.disciplineId||found.discipline||id))===id) return found;
+    }
     const next=chooseTomorrow(id);
     if(next?.id){
-      store[today]={ mysteryId:next.id, disciplineId:id, forDay:dateKey(1), createdAt:Date.now() };
-      const keys=Object.keys(store).sort(); if(keys.length>60)keys.slice(0,keys.length-60).forEach(old=>delete store[old]);
+      store[key]={ mysteryId:next.id, disciplineId:id, forDay:dateKey(1), createdAt:Date.now() };
+      const keys=Object.keys(store).sort(); if(keys.length>120)keys.slice(0,keys.length-120).forEach(old=>delete store[old]);
       state.dailyTomorrowTeasers=store; safe(()=>queueSaveState?.(80));
     }
     return next;
@@ -12492,14 +12511,17 @@
   function enhanceHome(){
     const home=document.querySelector(".rc24-home"); if(!home)return;
     const hero=home.querySelector(".rc24-hero"); if(!hero)return;
-    const claim=todayClaimRecord();
-    if(!claim){
+    const activeId=disciplineId(activeDisciplineId());
+    const mystery=dailyMysteryFor(activeId);
+    const solved=Boolean(mystery?.id && safe(()=>mysterySolved(mystery.id), Boolean(state.solvedMysteries?.[mystery.id])));
+    if(!solved){
       const route=hero.querySelector(".rc24-route"); if(route){ route.classList.add("rc47-ritual-note"); route.innerHTML="<span><b>2–4 min</b> · un dossier, une révélation</span>"; }
-      const primary=hero.querySelector("[data-rc24-primary]"); if(primary)primary.addEventListener("click",()=>{ const m=safe(()=>dailyMystery(),null); record("mystery_start",{mysteryId:m?.id||"",disciplineId:activeDisciplineId(),source:"home"}); },{once:true});
+      const primary=hero.querySelector("[data-rc24-primary]"); if(primary)primary.addEventListener("click",()=>{ const m=dailyMysteryFor(activeId); record("mystery_start",{mysteryId:m?.id||"",disciplineId:activeId,source:"home"}); },{once:true});
       return;
     }
-    const mystery=claimedMystery() || safe(()=>dailyMystery(),null);
-    const claimedDiscipline=disciplineId(safe(()=>mysteryDisciplineId(mystery), mystery?.disciplineId||mystery?.discipline||activeDisciplineId()));
+    // Everything below is derived from the currently selected discipline. Never
+    // reuse the global daily claim here: it may belong to another discipline.
+    const claimedDiscipline=activeId;
     const discipline=safe(()=>disciplineById(claimedDiscipline),null);
     if(discipline?.accent) home.style.setProperty("--world",discipline.accent);
     [...hero.classList].filter(name=>name.startsWith("art-")).forEach(name=>hero.classList.remove(name));
@@ -12518,7 +12540,7 @@
   }
 
   const previousSubmitGuess=typeof submitGuess==="function"?submitGuess:null;
-  if(previousSubmitGuess) submitGuess=function rc47SubmitGuess(event){
+  if(previousSubmitGuess) submitGuess=function rc48SubmitGuess(event){
     const mystery=safe(()=>currentMystery(),null); const wasSolved=Boolean(mystery?.id&&safe(()=>mysterySolved(mystery.id),false));
     const result=previousSubmitGuess(event);
     window.setTimeout(()=>{
@@ -12529,17 +12551,18 @@
   };
 
   const previousRenderMystery=typeof renderMystery==="function"?renderMystery:null;
-  if(previousRenderMystery) renderMystery=function rc47RenderMystery(){const out=previousRenderMystery();window.setTimeout(enhanceSolvedMystery,0);return out;};
+  if(previousRenderMystery) renderMystery=function rc48RenderMystery(){const out=previousRenderMystery();window.setTimeout(enhanceSolvedMystery,0);return out;};
   const previousRenderHome=typeof renderHome==="function"?renderHome:null;
-  if(previousRenderHome) renderHome=function rc47RenderHome(){const out=previousRenderHome();window.setTimeout(enhanceHome,0);return out;};
+  if(previousRenderHome) renderHome=function rc48RenderHome(){const out=previousRenderHome();window.setTimeout(enhanceHome,0);return out;};
 
   record("app_open",{source:new URLSearchParams(location.search).get("source")||"direct"});
   if(new URLSearchParams(location.search).get("source")?.startsWith("push")) record("push_open",{source:new URLSearchParams(location.search).get("source")});
-  if(dailyDone()) ensureTomorrowTeaser(claimedMystery());
+  if(dailyDone()) ensureTomorrowTeaser(dailyMysteryFor());
 
-  const api=Object.freeze({ version:VERSION, dailyDone, ensureTomorrowTeaser, teaserText, retentionSnapshot, record });
-  window.HistoDailyDailyHookRC47=api;
-  try { window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,dailyHookRC47:true,dailyHook:api}; } catch {}
+  const api=Object.freeze({ version:VERSION, dailyDone, dailyMysteryFor, ensureTomorrowTeaser, teaserText, retentionSnapshot, record });
+  window.HistoDailyDailyHookRC48=api;
+  window.HistoDailyDailyHookRC47=api; // compatibility alias
+  try { window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,dailyHookRC47:true,dailyHookRC48:true,dailyHook:api}; } catch {}
   try { if(state?.tab==="home") window.setTimeout(()=>{renderHome();},0); else if(state?.tab==="mystery") window.setTimeout(enhanceSolvedMystery,0); } catch {}
 })();
 

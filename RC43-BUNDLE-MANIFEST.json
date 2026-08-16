@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.47.0",
+  "version": "1.0.0-rc.48.0",
   "bundleOrder": [
     "core-rc27.js",
     "content-rc27.js",
@@ -69,9 +69,9 @@
       "adaptive-comfort-rc41.js",
       "global-difficulty-ramp-rc40.js",
       "daily-freshness-rc43.js",
-      "daily-hook-rc47.js"
+      "daily-hook-rc48.js"
     ]
   },
-  "uiPass": "RC47 Daily Hook",
-  "importantFix": "Daily expedition becomes a complete ritual; exact tomorrow teaser; optional deep dive; local D1/D3/D7 instrumentation"
+  "uiPass": "RC48 Discipline Sync",
+  "importantFix": "Daily hook discipline-scoped; switching discipline reloads its own daily state, teaser and deep dive"
 }
