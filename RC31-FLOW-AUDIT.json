@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0-rc.31.0",
+  "focus": "core learning flow quality",
+  "flow": [
+    "home",
+    "expedition",
+    "lesson",
+    "quiz",
+    "memory",
+    "next action"
+  ],
+  "changes": {
+    "quizCompletion": "single result surface instead of duplicated status panels",
+    "masteryFeedback": "live lesson mastery and spaced-memory state shown after validation",
+    "nextAction": "next unfinished lesson, review when due, or home",
+    "retryFlow": "targeted reread + retry instead of restart-from-zero language",
+    "editorialCleanup": 3
+  },
+  "validation": {
+    "jsMjsSyntaxFiles": 67,
+    "qualityCheck": "passed",
+    "qualityWarnings": 0,
+    "qualityErrors": 0,
+    "activeSvgPlaceholders": [],
+    "genericQuizQuestions": 0,
+    "cssAssetsChecked": 18,
+    "pwaAssetsChecked": 19
+  }
+}

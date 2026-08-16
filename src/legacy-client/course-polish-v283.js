@@ -63,7 +63,7 @@
     const seal = perfect ? '★★★' : snapshot.passed ? '★★☆' : '★☆☆';
     return `<section class="hd283-quiz-result-hero ${snapshot.passed ? 'good' : 'retry'}" aria-label="Résultat du quiz">
       <div class="hd283-result-seal" aria-label="${percent} pour cent"><strong>${percent}%</strong><span>${seal}</span></div>
-      <div class="hd283-result-copy"><span class="card-label">Bilan de la révision</span><h2>${esc(title)}</h2><p>${esc(copy)}</p></div>
+      <div class="hd283-result-copy"><span class="card-label">Bilan du cours</span><h2>${esc(title)}</h2><p>${esc(copy)}</p></div>
       <div class="hd283-result-metrics"><span><b>${snapshot.correct}/${snapshot.total}</b> bonnes réponses</span><span><b>${wrong}</b> point${wrong > 1 ? 's' : ''} à revoir</span><span><b>${snapshot.threshold}/${snapshot.total}</b> seuil de validation</span></div>
     </section>`;
   }

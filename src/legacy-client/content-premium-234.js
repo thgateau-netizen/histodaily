@@ -732,7 +732,7 @@
       },
       {
         "kind": "figuration",
-        "q": "Quelle affirmation est la plus juste ?",
+        "q": "Que peut-on réellement dire de la figuration dans les arts des sociétés musulmanes ?",
         "a": "La figuration existe, mais ses usages varient selon les contextes religieux, politiques et matériels.",
         "choices": [
           "Toute image humaine est absente de toutes les sociétés musulmanes.",

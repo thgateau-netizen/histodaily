@@ -3463,7 +3463,7 @@
       },
       {
         "kind": "forme",
-        "q": "Quelle affirmation est la plus juste ?",
+        "q": "Le néoréalisme italien est-il vraiment un cinéma sans mise en scène ?",
         "a": "Les décors réels et acteurs non professionnels sont fréquents, mais coexistent avec scénarios, musique et acteurs professionnels.",
         "choices": [
           "Tous les films sont des documentaires sans scénario.",
@@ -4426,7 +4426,7 @@
       },
       {
         "kind": "climat",
-        "q": "Quelle affirmation est la plus juste ?",
+        "q": "Quel rôle le climat joue-t-il dans l’ampleur des catastrophes ?",
         "a": "Le climat modifie certains aléas, mais inégalités et aménagement déterminent largement les dommages.",
         "choices": [
           "Il explique seul toutes les catastrophes.",

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.27.0",
+  "version": "1.0.0-rc.31.0",
   "bundleOrder": [
     "core-rc27.js",
     "content-rc27.js",
@@ -53,10 +53,12 @@
       "stability-v286.js",
       "notifications-v288.js",
       "adaptive-path-rc22.js",
-      "home-premium-rc24.js"
+      "home-premium-rc24.js",
+      "quality-pass-rc31.js"
     ]
   },
   "loadedScriptFilesBefore": 43,
   "loadedBundleFilesAfter": 3,
-  "sourceFilesPreservedUnder": "src/legacy-client"
+  "sourceFilesPreservedUnder": "src/legacy-client",
+  "qualityPass": "RC31"
 }

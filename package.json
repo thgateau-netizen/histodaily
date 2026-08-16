@@ -1,6 +1,6 @@
 {
   "name": "histodaily",
-  "version": "1.0.0-rc.30.0",
+  "version": "1.0.0-rc.31.0",
   "private": true,
   "description": "HistoDaily PWA",
   "engines": {
@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build:client": "node scripts/build-client.mjs",
-    "check:client": "node --check bundles/core-rc27.js && node --check bundles/content-rc27.js && node --check bundles/experience-rc27.js"
+    "check:client": "node --check bundles/core-rc27.js && node --check bundles/content-rc27.js && node --check bundles/experience-rc27.js",
+    "quality:check": "node scripts/quality-check.mjs"
   }
 }

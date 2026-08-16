@@ -6,7 +6,7 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.30.0";
+  const VERSION = "1.0.0-rc.31.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",

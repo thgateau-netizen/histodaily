@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.30.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.31.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: content-library.js ===== */
 /* HistoDaily LTS — bibliothèque de contenus publiés */
@@ -3466,7 +3466,7 @@
       },
       {
         "kind": "forme",
-        "q": "Quelle affirmation est la plus juste ?",
+        "q": "Le néoréalisme italien est-il vraiment un cinéma sans mise en scène ?",
         "a": "Les décors réels et acteurs non professionnels sont fréquents, mais coexistent avec scénarios, musique et acteurs professionnels.",
         "choices": [
           "Tous les films sont des documentaires sans scénario.",
@@ -4429,7 +4429,7 @@
       },
       {
         "kind": "climat",
-        "q": "Quelle affirmation est la plus juste ?",
+        "q": "Quel rôle le climat joue-t-il dans l’ampleur des catastrophes ?",
         "a": "Le climat modifie certains aléas, mais inégalités et aménagement déterminent largement les dommages.",
         "choices": [
           "Il explique seul toutes les catastrophes.",
@@ -18070,7 +18070,7 @@
       },
       {
         "kind": "figuration",
-        "q": "Quelle affirmation est la plus juste ?",
+        "q": "Que peut-on réellement dire de la figuration dans les arts des sociétés musulmanes ?",
         "a": "La figuration existe, mais ses usages varient selon les contextes religieux, politiques et matériels.",
         "choices": [
           "Toute image humaine est absente de toutes les sociétés musulmanes.",
