@@ -5,7 +5,7 @@
 */
 (function histodailyRc49DailyHook(){
   "use strict";
-  const VERSION = "1.0.0-rc.49.0";
+  const VERSION = "1.0.0-rc.50.0";
   const ANALYTICS_KEY = "histodaily_retention_rc47"; // keep the same analytics history across the bug-fix release
   const TEASER_HISTORY_LIMIT = 120;
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
@@ -230,7 +230,11 @@
     if(!lesson)return "";
     const done=safe(()=>lessonDone(lesson.id),false);
     const title=clean(safe(()=>buildLessonContent(lesson)?.title,lesson.title||"Approfondir le sujet"));
-    return `<section class="rc47-deep-dive" aria-label="Approfondissement facultatif"><button type="button" data-rc47-deep-dive="${esc(lesson.id)}"><span><small>${done?"Pour aller plus loin":"Si tu as 5 minutes de plus"}</small><b>${done?"Revoir le sujet":"Approfondir le sujet"}</b><em>${esc(title)}</em></span><i>→</i></button></section>`;
+    const did=safe(()=>lessonDisciplineId(lesson),mystery?.discipline||"");
+    const english=did==="english";
+    const kicker=done?"Pour aller plus loin":(english?"6 expressions utiles · 5 min":"Si tu as 5 minutes de plus");
+    const action=done?"Revoir le sujet":(english?"Pratiquer l’anglais":"Approfondir le sujet");
+    return `<section class="rc47-deep-dive" aria-label="Approfondissement facultatif"><button type="button" data-rc47-deep-dive="${esc(lesson.id)}"><span><small>${kicker}</small><b>${action}</b><em>${esc(title)}</em></span><i>→</i></button></section>`;
   }
   function enhanceHome(){
     const home=document.querySelector(".rc24-home"); if(!home)return;

@@ -11133,3 +11133,16 @@ html.hd35-polish .hd35-onboarding-one .hd275-next{width:100%!important;min-heigh
 .rc47-deep-dive>button i{font-style:normal;font-size:1.2rem;color:var(--accent,#f5c451)}
 @media(max-width:600px){.rc47-home-teaser{margin-top:12px;padding:11px 12px}.rc47-deep-dive>button{padding:14px 15px;border-radius:16px}.rc47-tomorrow-teaser{padding:14px 15px}}
 .rc47-optional-label{display:block;margin:10px 0 6px;color:var(--muted,#9ca9b5);font-size:.75rem;font-weight:700}
+
+
+/* RC50 — English daily value: the short ritual already teaches reusable language. */
+.eng50-daily-pack{margin:18px 0 6px;padding:16px;border:1px solid color-mix(in srgb,var(--world,#46c7f2) 32%,rgba(255,255,255,.08));border-radius:20px;background:linear-gradient(145deg,rgba(70,199,242,.09),rgba(255,255,255,.025))}
+.eng50-daily-pack>span{display:block;margin-bottom:11px;font-size:.76rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#66d8ff}
+.eng50-daily-pack ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.eng50-daily-pack li{display:grid;gap:2px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.07)}
+.eng50-daily-pack li:last-child{padding-bottom:0;border-bottom:0}
+.eng50-daily-pack b{font-size:1rem;color:#eef9ff}
+.eng50-daily-pack small{font-size:.82rem;line-height:1.35;color:var(--muted,#aebbd0)}
+.tab-lesson.discipline-english .deep-reading-block:first-of-type{border-color:rgba(70,199,242,.28);background:linear-gradient(145deg,rgba(70,199,242,.08),rgba(255,255,255,.02))}
+.tab-lesson.discipline-english .deep-reading-block:first-of-type .deep-reading-text p{padding:9px 0;margin:0;border-bottom:1px solid rgba(255,255,255,.06)}
+.tab-lesson.discipline-english .deep-reading-block:first-of-type .deep-reading-text p:last-child{border-bottom:0}

@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-rc.50.0",
+  "status": "passed",
+  "focus": "English value per session",
+  "english": {
+    "courses": 16,
+    "targetExpressions": 96,
+    "quizQuestions": 80,
+    "labs": 16,
+    "labsWithAudio": 16,
+    "mysteries": 14,
+    "dailyReusableChunks": 42
+  },
+  "checks": {
+    "clientBundlesSyntax": "passed",
+    "fullQualityPipeline": "passed",
+    "coursesWithSixReusableChunks": "16/16",
+    "dailyEnglishMysteriesWithThreeChunks": "14/14",
+    "singleWordMissionGuardrail": "passed",
+    "homeEnglishDeepDiveValueLabel": "present",
+    "englishDailyPackResultUI": "present"
+  },
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  },
+  "notes": "RC50 changes the English learning unit from isolated vocabulary to communicative packs. Existing lesson IDs are preserved."
+}

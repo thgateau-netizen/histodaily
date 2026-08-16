@@ -2,7 +2,7 @@
    English starter mysteries must feel like real situations, not meta-instructions. */
 (function histodailyRc49EnglishMysteries(){
   "use strict";
-  const VERSION="1.0.0-rc.49.0";
+  const VERSION="1.0.0-rc.50.0";
   const updates={
     "english-mystery-actually-318":{
       title:"Tu corriges sans insister",missionQuestion:"Ton collègue se trompe. Que réponds-tu ?",

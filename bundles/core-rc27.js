@@ -1,5 +1,5 @@
-/* HistoDaily 1.0.0-rc.49.0 — generated bundle. Source order is intentional. */
-window.HD_BUILD_MANIFEST = Object.freeze({"version":"1.0.0-rc.49.0","architecture":"bundled-rc27","bundles":3});
+/* HistoDaily 1.0.0-rc.50.0 — generated bundle. Source order is intentional. */
+window.HD_BUILD_MANIFEST = Object.freeze({"version":"1.0.0-rc.50.0","architecture":"bundled-rc27","bundles":3});
 
 /* ===== SOURCE: lessons-lite.js ===== */
 const HISTODAILY_CONTENT_VERSION = "1.0.0-beta.207";
@@ -1517,8 +1517,8 @@ try { document.documentElement.classList.add("hd326-coherence"); } catch {}
 /* ===== app-core.js ===== */
 
 window.HISTODAILY_CORE = {
-  version: "1.0.0-rc.49.0",
-  assetsVersion: "1.0.0-rc.49.0",
+  version: "1.0.0-rc.50.0",
+  assetsVersion: "1.0.0-rc.50.0",
   storageKey: "histodaily_state",
   legacyStorageKeys: ["histodaily_v100_state", "histodaily_v100_state_backup", "histodaily_state_backup", "histodaily_beta_state", "histodaily_save"],
   scoring: {
@@ -1668,7 +1668,7 @@ window.HISTODAILY_CORE = {
 /* ===== app-onboarding.js ===== */
 
 window.HISTODAILY_ONBOARDING = {
-  version: "1.0.0-rc.49.0",
+  version: "1.0.0-rc.50.0",
   sessionTip({ state = {}, data = {}, readyIds = [], counts = {} } = {}) {
     const solved = Object.keys(state.solvedMysteries || {}).length;
     const completed = Object.keys(state.completedLessons || {}).length;
@@ -9733,6 +9733,16 @@ function rc17GuidedChoices(mystery) {
     .map(rc17ChoiceLabel);
 }
 
+function rc50EnglishDailyPackMarkup(mystery = {}) {
+  if (mystery?.discipline !== "english" || !Array.isArray(mystery.englishDailyPack) || !mystery.englishDailyPack.length) return "";
+  const items = mystery.englishDailyPack.slice(0, 3).filter(item => item?.phrase);
+  if (!items.length) return "";
+  return `<section class="eng50-daily-pack" aria-label="Expressions anglaises à garder">
+    <span>3 expressions à garder</span>
+    <ul>${items.map(item => `<li><b>${escapeHtml(item.phrase)}</b>${item.use ? `<small>${escapeHtml(item.use)}</small>` : ""}</li>`).join("")}</ul>
+  </section>`;
+}
+
 function renderMystery() {
   const mystery = currentMystery();
   if (!mystery) return renderShell(`<div class="card"><p>Aucune expédition chargée.</p></div>`);
@@ -9791,6 +9801,7 @@ function renderMystery() {
         <strong>${escapeHtml(mystery.answer)}</strong>
         ${mysterySolvedTitleLine(mystery)}
         <p>${escapeHtml(mystery.explanation || "")}</p>
+        ${rc50EnglishDailyPackMarkup(mystery)}
         <div class="hd300-result-line"><b>${solvedData.score || mysteryScore(mystery.id)} XP</b><span>${paidHints ? `${paidHints} indice${paidHints > 1 ? "s" : ""} payant${paidHints > 1 ? "s" : ""}` : "indice de départ offert"}</span><span>${solvedData.tries || tries || 1} essai${(solvedData.tries || tries || 1) > 1 ? "s" : ""}</span>${solvedData.guided ? "<span>mode guidé</span>" : ""}</div>
         ${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}
         ${lesson ? `<div class="hd34-solved-next"><button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="complete">Comprendre →</button><button class="ghost" data-home-stop>Retour à l’accueil</button></div>` : `<div class="hd34-solved-next"><button data-home-stop>Retour à l’accueil</button></div>`}

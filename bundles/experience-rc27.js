@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.49.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.50.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -7053,7 +7053,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.49.0";
+  const VERSION = "1.0.0-rc.50.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -11244,7 +11244,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.49.0";
+  const VERSION = "1.0.0-rc.50.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11425,7 +11425,7 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.49.0";
+  const VERSION = "1.0.0-rc.50.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
@@ -11574,7 +11574,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.49.0";
+  const VERSION = "1.0.0-rc.50.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -12144,7 +12144,7 @@
 */
 (function histodailyRc43DailyFreshness(){
   "use strict";
-  const VERSION = "1.0.0-rc.49.0";
+  const VERSION = "1.0.0-rc.50.0";
   const RECENT_DAYS = 10;
   const HARD_RECENT_ID_DAYS = 7;
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
@@ -12302,7 +12302,7 @@
 */
 (function histodailyRc49DailyHook(){
   "use strict";
-  const VERSION = "1.0.0-rc.49.0";
+  const VERSION = "1.0.0-rc.50.0";
   const ANALYTICS_KEY = "histodaily_retention_rc47"; // keep the same analytics history across the bug-fix release
   const TEASER_HISTORY_LIMIT = 120;
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
@@ -12527,7 +12527,11 @@
     if(!lesson)return "";
     const done=safe(()=>lessonDone(lesson.id),false);
     const title=clean(safe(()=>buildLessonContent(lesson)?.title,lesson.title||"Approfondir le sujet"));
-    return `<section class="rc47-deep-dive" aria-label="Approfondissement facultatif"><button type="button" data-rc47-deep-dive="${esc(lesson.id)}"><span><small>${done?"Pour aller plus loin":"Si tu as 5 minutes de plus"}</small><b>${done?"Revoir le sujet":"Approfondir le sujet"}</b><em>${esc(title)}</em></span><i>→</i></button></section>`;
+    const did=safe(()=>lessonDisciplineId(lesson),mystery?.discipline||"");
+    const english=did==="english";
+    const kicker=done?"Pour aller plus loin":(english?"6 expressions utiles · 5 min":"Si tu as 5 minutes de plus");
+    const action=done?"Revoir le sujet":(english?"Pratiquer l’anglais":"Approfondir le sujet");
+    return `<section class="rc47-deep-dive" aria-label="Approfondissement facultatif"><button type="button" data-rc47-deep-dive="${esc(lesson.id)}"><span><small>${kicker}</small><b>${action}</b><em>${esc(title)}</em></span><i>→</i></button></section>`;
   }
   function enhanceHome(){
     const home=document.querySelector(".rc24-home"); if(!home)return;

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.49.0",
+  "version": "1.0.0-rc.50.0",
   "status": "passed",
   "method": "Conservative static reachability: a CSS rule is pruned only when every class/id token in its selector is absent from all runtime HTML and client JS sources/bundles.",
   "baselineRC44": {
@@ -9,15 +9,15 @@
     "obsoleteVisualBytes": 60182
   },
   "rc45": {
-    "cssBytes": 665838,
-    "cssLines": 11136,
+    "cssBytes": 667147,
+    "cssLines": 11149,
     "important": 2397,
-    "cssGzipBytes": 118899,
+    "cssGzipBytes": 119159,
     "deadSelectorsDetected": 0
   },
   "improvement": {
-    "cssBytesRemoved": 115361,
-    "cssPercent": 14.8,
+    "cssBytesRemoved": 114052,
+    "cssPercent": 14.6,
     "importantRemoved": 469,
     "importantPercent": 16.4,
     "obsoleteVisualAssetsRemoved": 8,

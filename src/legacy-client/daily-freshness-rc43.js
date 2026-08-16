@@ -4,7 +4,7 @@
 */
 (function histodailyRc43DailyFreshness(){
   "use strict";
-  const VERSION = "1.0.0-rc.49.0";
+  const VERSION = "1.0.0-rc.50.0";
   const RECENT_DAYS = 10;
   const HARD_RECENT_ID_DAYS = 7;
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;

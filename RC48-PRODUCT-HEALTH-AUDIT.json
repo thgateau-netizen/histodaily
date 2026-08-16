@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.49.0",
+  "version": "1.0.0-rc.50.0",
   "status": "passed-with-known-product-risks",
   "scope": "Qualité globale hors contenu : backend/frontend parity, robustesse, performance, PWA, sécurité navigateur, données, observabilité, architecture et maintenabilité.",
   "fixedInRC46": [
@@ -13,7 +13,7 @@
       "priority": "P0 corrigé RC46",
       "area": "Cohérence release",
       "issue": "Backend encore estampillé RC32 et health indiquant 74 cours.",
-      "action": "Versions alignées sur 1.0.0-rc.49.0, health = 219 cours / 158 mystères."
+      "action": "Versions alignées sur 1.0.0-rc.50.0, health = 219 cours / 158 mystères."
     },
     {
       "priority": "P1 corrigé RC46",
@@ -50,19 +50,19 @@
     {
       "priority": "P2 restant",
       "area": "Performance",
-      "issue": "≈1.21 MiB gzip de CSS+JS initiaux ; les 219 cours sont chargés d’emblée.",
+      "issue": "≈1.23 MiB gzip de CSS+JS initiaux ; les 219 cours sont chargés d’emblée.",
       "action": "Découper le catalogue par discipline et charger à la demande."
     },
     {
       "priority": "P2 restant",
       "area": "Observabilité",
-      "issue": "413 catch vides côté client.",
+      "issue": "417 catch vides côté client.",
       "action": "Centraliser les erreurs attendues et journaliser les erreurs inattendues avec contexte."
     },
     {
       "priority": "P2 restant",
       "area": "Architecture",
-      "issue": "60 modules hérités, 17 MutationObserver, 143 écritures globales.",
+      "issue": "61 modules hérités, 17 MutationObserver, 145 écritures globales.",
       "action": "Remplacer progressivement les wrappers historiques par quelques modules stables, écran par écran."
     },
     {
@@ -76,31 +76,31 @@
     "courses": 219,
     "clientMysteries": 158,
     "serverMysteries": 158,
-    "clientSourceModules": 60,
-    "cssBytes": 665838,
-    "cssLines": 11136,
+    "clientSourceModules": 61,
+    "cssBytes": 667147,
+    "cssLines": 11149,
     "cssImportant": 2397,
-    "initialCssJsGzipBytes": 1265578,
-    "initialCssJsGzipMiB": 1.21,
+    "initialCssJsGzipBytes": 1288258,
+    "initialCssJsGzipMiB": 1.23,
     "bundles": {
       "bundles/core-rc27.js": {
-        "bytes": 1379507,
-        "gzipBytes": 355326
+        "bytes": 1380150,
+        "gzipBytes": 355525
       },
       "bundles/content-rc27.js": {
-        "bytes": 2292595,
-        "gzipBytes": 608584
+        "bytes": 2373436,
+        "gzipBytes": 630720
       },
       "bundles/experience-rc27.js": {
-        "bytes": 721473,
-        "gzipBytes": 182769
+        "bytes": 721710,
+        "gzipBytes": 182854
       }
     },
-    "clientWindowGlobals": 143,
+    "clientWindowGlobals": 145,
     "clientMutationObservers": 17,
     "clientEventListeners": 352,
-    "clientCatchBlocks": 785,
-    "clientEmptyCatchBlocks": 413,
+    "clientCatchBlocks": 793,
+    "clientEmptyCatchBlocks": 417,
     "backendCatchBlocks": 244,
     "backendFunctionReassignments": 52,
     "localStorageWrites": 54,
@@ -115,9 +115,9 @@
     "CLOUD_PROGRESS: progression détaillée (cours/quiz/mystères) locale uniquement. Le changement d’appareil dépend de la sauvegarde JSON manuelle.",
     "DATA_DELETION: aucune suppression autonome des données serveur ; administration requise. À résoudre avant diffusion publique large.",
     "RATE_LIMIT: aucune limitation de débit applicative détectée sur les routes publiques/sociales.",
-    "STARTUP_WEIGHT: CSS + JS initiaux ≈ 1.21 MiB gzip, tout téléchargé au démarrage ; le contenu n’est pas encore chargé à la demande.",
-    "OBSERVABILITY: 413 catch vides côté client ; beaucoup de défauts peuvent être masqués au lieu d’être diagnostiqués.",
-    "RUNTIME_COMPLEXITY: 17 occurrences de MutationObserver et 143 écritures globales window.* : architecture encore très patchée.",
+    "STARTUP_WEIGHT: CSS + JS initiaux ≈ 1.23 MiB gzip, tout téléchargé au démarrage ; le contenu n’est pas encore chargé à la demande.",
+    "OBSERVABILITY: 417 catch vides côté client ; beaucoup de défauts peuvent être masqués au lieu d’être diagnostiqués.",
+    "RUNTIME_COMPLEXITY: 17 occurrences de MutationObserver et 145 écritures globales window.* : architecture encore très patchée.",
     "CSS_DEBT: 2397 !important subsistent malgré RC45."
   ],
   "errors": []

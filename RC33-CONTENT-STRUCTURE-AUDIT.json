@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.49.0",
+  "version": "1.0.0-rc.50.0",
   "catalogue": {
     "courses": 219,
     "mysteries": 158,
@@ -13,6 +13,7 @@
     "visibleExpressWords": 120,
     "quizQuestions": 5,
     "quizExplanationWords": 12,
+    "englishQuizExplanationWords": 8,
     "mysteryPromptWords": 20,
     "englishMysteryPromptWords": 10,
     "mysteryExplanationWords": 20,
@@ -57,8 +58,8 @@
     },
     "english": {
       "courses": 16,
-      "avgCompleteWords": 256,
-      "minCompleteWords": 219,
+      "avgCompleteWords": 233,
+      "minCompleteWords": 212,
       "avgSections": 5,
       "avgVisibleExpressWords": 152,
       "errors": 0,

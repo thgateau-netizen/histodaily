@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.49.0",
+  "version": "1.0.0-rc.50.0",
   "status": "passed_with_structural_debt",
   "scope": "ergonomie, navigation, densité, mobile, états, accessibilité, cohérence visuelle, performance perçue et dette UI — contenu exclu",
   "checks": {
@@ -83,7 +83,7 @@
       "pass": true,
       "detail": "Le premier cache ne doit pas télécharger des visuels historiques inutiles."
     },
-    "rc49BuildManifestIsGenerated": {
+    "rc50BuildManifestIsGenerated": {
       "pass": true,
       "detail": "Les outils de release doivent décrire la version réellement livrée."
     },
@@ -126,11 +126,11 @@
   },
   "technicalDebt": {
     "css": {
-      "bytes": 665838,
-      "lines": 11136,
+      "bytes": 667147,
+      "lines": 11149,
       "important": 2397,
       "boxShadow": 353,
-      "borderRadius": 853,
+      "borderRadius": 854,
       "backdropFilter": 65,
       "zIndex": 149,
       "transitions": 85,
@@ -139,23 +139,23 @@
     },
     "bundles": {
       "bundles/core-rc27.js": {
-        "bytes": 1379507,
-        "gzipBytes": 355326
+        "bytes": 1380150,
+        "gzipBytes": 355525
       },
       "bundles/content-rc27.js": {
-        "bytes": 2292595,
-        "gzipBytes": 608584
+        "bytes": 2373436,
+        "gzipBytes": 630720
       },
       "bundles/experience-rc27.js": {
-        "bytes": 721473,
-        "gzipBytes": 182769
+        "bytes": 721710,
+        "gzipBytes": 182854
       }
     },
-    "initialRawBytes": 5059413,
-    "initialGzipBytes": 1265578
+    "initialRawBytes": 5142443,
+    "initialGzipBytes": 1288258
   },
   "warnings": [
-    "Feuille CSS historique volumineuse: 11136 lignes. Ne pas supprimer agressivement sans couverture visuelle navigateur."
+    "Feuille CSS historique volumineuse: 11149 lignes. Ne pas supprimer agressivement sans couverture visuelle navigateur."
   ],
   "errors": [],
   "browserValidation": {
