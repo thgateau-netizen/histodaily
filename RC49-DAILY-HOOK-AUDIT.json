@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-rc.49.0",
+  "status": "passed",
+  "checks": {
+    "dailyRitualIsDisciplineScoped": true,
+    "homeNeverReusesGlobalClaim": true,
+    "tomorrowTeaserScopedByDiscipline": true,
+    "legacyTeaserMigrationIsSafe": true,
+    "courseIsOptionalDeepDive": true,
+    "homeDeepDiveHasOwnRouter": true,
+    "solutionHasTakeaway": true,
+    "tomorrowTeaserIsExactAssignment": true,
+    "retentionInstrumentationExists": true,
+    "pushPromiseMatchesShortRitual": true,
+    "dailyHookBundledLast": true,
+    "dailyHookStylesPresent": true,
+    "solvedBadgeNotDuplicated": true
+  },
+  "errors": []
+}

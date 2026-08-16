@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0-rc.49.0",
+  "status": "passed",
+  "fixes": [
+    "home deep-dive routing",
+    "single solved label",
+    "English mystery clarity pass"
+  ],
+  "checks": {
+    "clientSyntax": "passed",
+    "qualityPipeline": "passed",
+    "dailyHook": "13/13",
+    "deepDiveBehavior": "passed",
+    "englishAudit": "passed",
+    "catalogue": "219 courses / 158 mysteries"
+  },
+  "knownLimit": "No pixel-perfect browser screenshot validation in this environment; reported paths are covered by state/behavior and static audits."
+}

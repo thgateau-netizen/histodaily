@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.48.0",
+  "version": "1.0.0-rc.49.0",
   "status": "passed-with-known-product-risks",
   "scope": "Qualité globale hors contenu : backend/frontend parity, robustesse, performance, PWA, sécurité navigateur, données, observabilité, architecture et maintenabilité.",
   "fixedInRC46": [
@@ -13,7 +13,7 @@
       "priority": "P0 corrigé RC46",
       "area": "Cohérence release",
       "issue": "Backend encore estampillé RC32 et health indiquant 74 cours.",
-      "action": "Versions alignées sur 1.0.0-rc.48.0, health = 219 cours / 158 mystères."
+      "action": "Versions alignées sur 1.0.0-rc.49.0, health = 219 cours / 158 mystères."
     },
     {
       "priority": "P1 corrigé RC46",
@@ -50,19 +50,19 @@
     {
       "priority": "P2 restant",
       "area": "Performance",
-      "issue": "≈1.2 MiB gzip de CSS+JS initiaux ; les 219 cours sont chargés d’emblée.",
+      "issue": "≈1.21 MiB gzip de CSS+JS initiaux ; les 219 cours sont chargés d’emblée.",
       "action": "Découper le catalogue par discipline et charger à la demande."
     },
     {
       "priority": "P2 restant",
       "area": "Observabilité",
-      "issue": "412 catch vides côté client.",
+      "issue": "413 catch vides côté client.",
       "action": "Centraliser les erreurs attendues et journaliser les erreurs inattendues avec contexte."
     },
     {
       "priority": "P2 restant",
       "area": "Architecture",
-      "issue": "59 modules hérités, 17 MutationObserver, 141 écritures globales.",
+      "issue": "60 modules hérités, 17 MutationObserver, 143 écritures globales.",
       "action": "Remplacer progressivement les wrappers historiques par quelques modules stables, écran par écran."
     },
     {
@@ -76,31 +76,31 @@
     "courses": 219,
     "clientMysteries": 158,
     "serverMysteries": 158,
-    "clientSourceModules": 59,
-    "cssBytes": 666076,
+    "clientSourceModules": 60,
+    "cssBytes": 665838,
     "cssLines": 11136,
     "cssImportant": 2397,
-    "initialCssJsGzipBytes": 1260818,
-    "initialCssJsGzipMiB": 1.2,
+    "initialCssJsGzipBytes": 1265578,
+    "initialCssJsGzipMiB": 1.21,
     "bundles": {
       "bundles/core-rc27.js": {
         "bytes": 1379507,
         "gzipBytes": 355326
       },
       "bundles/content-rc27.js": {
-        "bytes": 2279023,
-        "gzipBytes": 604047
+        "bytes": 2292595,
+        "gzipBytes": 608584
       },
       "bundles/experience-rc27.js": {
-        "bytes": 720617,
-        "gzipBytes": 182514
+        "bytes": 721473,
+        "gzipBytes": 182769
       }
     },
-    "clientWindowGlobals": 141,
+    "clientWindowGlobals": 143,
     "clientMutationObservers": 17,
     "clientEventListeners": 352,
-    "clientCatchBlocks": 784,
-    "clientEmptyCatchBlocks": 412,
+    "clientCatchBlocks": 785,
+    "clientEmptyCatchBlocks": 413,
     "backendCatchBlocks": 244,
     "backendFunctionReassignments": 52,
     "localStorageWrites": 54,
@@ -115,9 +115,9 @@
     "CLOUD_PROGRESS: progression détaillée (cours/quiz/mystères) locale uniquement. Le changement d’appareil dépend de la sauvegarde JSON manuelle.",
     "DATA_DELETION: aucune suppression autonome des données serveur ; administration requise. À résoudre avant diffusion publique large.",
     "RATE_LIMIT: aucune limitation de débit applicative détectée sur les routes publiques/sociales.",
-    "STARTUP_WEIGHT: CSS + JS initiaux ≈ 1.2 MiB gzip, tout téléchargé au démarrage ; le contenu n’est pas encore chargé à la demande.",
-    "OBSERVABILITY: 412 catch vides côté client ; beaucoup de défauts peuvent être masqués au lieu d’être diagnostiqués.",
-    "RUNTIME_COMPLEXITY: 17 occurrences de MutationObserver et 141 écritures globales window.* : architecture encore très patchée.",
+    "STARTUP_WEIGHT: CSS + JS initiaux ≈ 1.21 MiB gzip, tout téléchargé au démarrage ; le contenu n’est pas encore chargé à la demande.",
+    "OBSERVABILITY: 413 catch vides côté client ; beaucoup de défauts peuvent être masqués au lieu d’être diagnostiqués.",
+    "RUNTIME_COMPLEXITY: 17 occurrences de MutationObserver et 143 écritures globales window.* : architecture encore très patchée.",
     "CSS_DEBT: 2397 !important subsistent malgré RC45."
   ],
   "errors": []

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.48.0",
+  "version": "1.0.0-rc.49.0",
   "status": "passed",
   "checks": {
     "runtimeVersionAligned": true,
@@ -10,6 +10,7 @@
     "genericQuizQuestions": 0,
     "qualityModuleBundled": true,
     "englishRedesignBundled": true,
+    "englishMysteryClarityBundled": true,
     "philosophyRedesignBundled": true,
     "scienceAstronomyRedesignBundled": true,
     "globalDifficultyRampBundled": true,

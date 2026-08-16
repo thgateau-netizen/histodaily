@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.48.0",
+  "version": "1.0.0-rc.49.0",
   "bundleOrder": [
     "core-rc27.js",
     "content-rc27.js",
@@ -38,7 +38,8 @@
       "content-philosophy-redesign-rc38.js",
       "content-science-astronomy-rc39.js",
       "content-difficulty-ramp-rc40.js",
-      "content-expansion-rc42.js"
+      "content-expansion-rc42.js",
+      "content-english-mysteries-rc49.js"
     ],
     "experience": [
       "app-runtime.js",
@@ -69,9 +70,9 @@
       "adaptive-comfort-rc41.js",
       "global-difficulty-ramp-rc40.js",
       "daily-freshness-rc43.js",
-      "daily-hook-rc48.js"
+      "daily-hook-rc49.js"
     ]
   },
-  "uiPass": "RC48 Discipline Sync",
-  "importantFix": "Daily hook discipline-scoped; switching discipline reloads its own daily state, teaser and deep dive"
+  "uiPass": "RC49 Flow & English Clarity",
+  "importantFix": "Home deep-dive routing fixed; duplicate solved badge removed; English mystery prompts clarified"
 }

@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
-const source=fs.readFileSync(path.join(root,'src/legacy-client/daily-hook-rc48.js'),'utf8');
+const source=fs.readFileSync(path.join(root,'src/legacy-client/daily-hook-rc49.js'),'utf8');
 const store=new Map();
 const mysteries=[
   {id:'h1',disciplineId:'history',difficulty:'facile',missionQuestion:'Pourquoi le premier dossier histoire ?'},
@@ -28,13 +28,15 @@ const context={
   dailyMystery:()=>currentDaily(active),
   mysterySolved:id=>Boolean(state.solvedMysteries[id]),mysteryById:id=>mysteries.find(x=>x.id===id)||null,
   mysteryDisciplineId:m=>m.disciplineId,queueSaveState:()=>{},
+  curatedLessonById:id=>id==='lesson-eng'?{id:'lesson-eng'}:null,lessonById:id=>id==='lesson-eng'?{id:'lesson-eng'}:null,
+  lessonWorld:()=>({id:'eng-world',group:'eng-group'}),lessonDisciplineId:()=> 'english',setState:patch=>Object.assign(state,patch),
   localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},
   window:{HistoDailyDifficultyRC40:{stageFor:()=> 'discovery',allowedFor:()=>['facile'],starterMysteries:id=>pools(id).map(x=>x.id)},setTimeout:()=>{}},
 };
 context.window.window=context.window;
 vm.createContext(context);
-vm.runInContext(source,context,{filename:'daily-hook-rc48.js'});
-const api=context.window.HistoDailyDailyHookRC48;
+vm.runInContext(source,context,{filename:'daily-hook-rc49.js'});
+const api=context.window.HistoDailyDailyHookRC49;
 const historyTeaser=api.ensureTomorrowTeaser(currentDaily('history'));
 const historyKey=`${tomorrow()}|history`;
 const historyStoreKey=`${today}|history`;
@@ -46,7 +48,9 @@ const scienceTeaser=api.ensureTomorrowTeaser(currentDaily('science-inventions'))
 const scienceKey=`${tomorrow()}|science-inventions`;
 const scienceStoreKey=`${today}|science-inventions`;
 
+const deepDiveOpened=api.openDeepDiveLesson('lesson-eng');
 const checks={
+  homeDeepDiveRoutesToCourse:deepDiveOpened===true && state.tab==='lesson' && state.currentLessonId==='lesson-eng' && state.lessonView==='complete',
   historyDailyDone:api.dailyDone('history')===true,
   scienceNotDoneAfterSwitch:scienceDoneBefore===false,
   historyTeaserExists:Boolean(historyTeaser?.id),
@@ -59,5 +63,5 @@ const checks={
 };
 const errors=Object.entries(checks).filter(([,ok])=>!ok).map(([key])=>key);
 const result={version:JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version,status:errors.length?'failed':'passed',checks,historyTomorrow:historyTeaser?.id||null,scienceTomorrow:scienceTeaser?.id||null,errors};
-fs.writeFileSync(path.join(root,'RC48-DAILY-HOOK-BEHAVIOR-AUDIT.json'),JSON.stringify(result,null,2)+'\n');
-if(errors.length){console.error(errors.join('\n'));process.exit(1);}console.log('RC48 Daily Hook discipline switch behavior test passed.');
+fs.writeFileSync(path.join(root,'RC49-DAILY-HOOK-BEHAVIOR-AUDIT.json'),JSON.stringify(result,null,2)+'\n');
+if(errors.length){console.error(errors.join('\n'));process.exit(1);}console.log('RC49 Daily Hook discipline switch + deep-dive behavior test passed.');

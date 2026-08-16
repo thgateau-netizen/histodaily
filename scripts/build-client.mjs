@@ -11,8 +11,8 @@ const version = pkg.version;
 
 const groups = {
   'core-rc27.js': ['lessons-lite.js','app-bootstrap.js','sound-ui.js','app.js'],
-  'content-rc27.js': ['content-library.js','content-literature.js','content-philosophy.js','content-english.js','content-english-rc19.js','content-philosophy-rc19.js','content-foundations-depth-rc19.js','discipline-labs-rc19.js','discipline-mysteries-rc19.js','content-premium-233.js','content-premium-234.js','content-premium-235.js','content-premium-236.js','content-premium-237.js','content-coherence-239.js','content-humanize-240.js','content-cleanup-241.js','content-audit-v267.js','mystery-clarity-v272.js','content-homogenize-rc32.js','content-editorial-rc33.js','content-english-redesign-rc37.js','content-philosophy-redesign-rc38.js','content-science-astronomy-rc39.js','content-difficulty-ramp-rc40.js','content-expansion-rc42.js'],
-  'experience-rc27.js': ['app-runtime.js','visual-v4.js','engagement-v263.js','mobile-layout.js','social-v2.js','streak-v265.js','archive-mobile-v268.js','course-mobile-v269.js','onboarding-v275.js','release-polish-v278.js','release-center-v279.js','polish-v280.js','course-polish-v283.js','course-interactions-rc20.js','launch-readiness-v284.js','performance-accessibility-v285.js','stability-v286.js','notifications-v288.js','adaptive-path-rc22.js','personalized-path-rc41.js','home-premium-rc24.js','daily-rotation-rc29.js','quality-pass-rc31.js','product-polish-rc35.js','lean-flow-rc36.js','adaptive-comfort-rc41.js','global-difficulty-ramp-rc40.js','daily-freshness-rc43.js','daily-hook-rc48.js']
+  'content-rc27.js': ['content-library.js','content-literature.js','content-philosophy.js','content-english.js','content-english-rc19.js','content-philosophy-rc19.js','content-foundations-depth-rc19.js','discipline-labs-rc19.js','discipline-mysteries-rc19.js','content-premium-233.js','content-premium-234.js','content-premium-235.js','content-premium-236.js','content-premium-237.js','content-coherence-239.js','content-humanize-240.js','content-cleanup-241.js','content-audit-v267.js','mystery-clarity-v272.js','content-homogenize-rc32.js','content-editorial-rc33.js','content-english-redesign-rc37.js','content-philosophy-redesign-rc38.js','content-science-astronomy-rc39.js','content-difficulty-ramp-rc40.js','content-expansion-rc42.js','content-english-mysteries-rc49.js'],
+  'experience-rc27.js': ['app-runtime.js','visual-v4.js','engagement-v263.js','mobile-layout.js','social-v2.js','streak-v265.js','archive-mobile-v268.js','course-mobile-v269.js','onboarding-v275.js','release-polish-v278.js','release-center-v279.js','polish-v280.js','course-polish-v283.js','course-interactions-rc20.js','launch-readiness-v284.js','performance-accessibility-v285.js','stability-v286.js','notifications-v288.js','adaptive-path-rc22.js','personalized-path-rc41.js','home-premium-rc24.js','daily-rotation-rc29.js','quality-pass-rc31.js','product-polish-rc35.js','lean-flow-rc36.js','adaptive-comfort-rc41.js','global-difficulty-ramp-rc40.js','daily-freshness-rc43.js','daily-hook-rc49.js']
 };
 
 fs.mkdirSync(outRoot, { recursive: true });
@@ -38,9 +38,10 @@ const manifest = {
     content: groups['content-rc27.js'],
     experience: groups['experience-rc27.js']
   },
-  uiPass: 'RC48 Discipline Sync',
-  importantFix: 'Daily hook discipline-scoped; switching discipline reloads its own daily state, teaser and deep dive'
+  uiPass: 'RC49 Flow & English Clarity',
+  importantFix: 'Home deep-dive routing fixed; duplicate solved badge removed; English mystery prompts clarified'
 };
+fs.writeFileSync(path.join(root, 'RC49-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
 fs.writeFileSync(path.join(root, 'RC48-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
 fs.writeFileSync(path.join(root, 'RC47-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
 fs.writeFileSync(path.join(root, 'RC46-BUNDLE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');

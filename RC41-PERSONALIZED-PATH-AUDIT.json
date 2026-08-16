@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.48.0",
+  "version": "1.0.0-rc.49.0",
   "status": "passed",
   "principle": "Une seule prochaine action, choisie selon mémoire → continuité → équilibre léger → parcours courant. Aucun nouveau widget.",
   "tests": {

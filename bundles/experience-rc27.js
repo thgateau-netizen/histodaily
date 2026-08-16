@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.48.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.49.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -7053,7 +7053,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.48.0";
+  const VERSION = "1.0.0-rc.49.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -11244,7 +11244,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.48.0";
+  const VERSION = "1.0.0-rc.49.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11425,7 +11425,7 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.48.0";
+  const VERSION = "1.0.0-rc.49.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
@@ -11574,7 +11574,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.48.0";
+  const VERSION = "1.0.0-rc.49.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -12144,7 +12144,7 @@
 */
 (function histodailyRc43DailyFreshness(){
   "use strict";
-  const VERSION = "1.0.0-rc.48.0";
+  const VERSION = "1.0.0-rc.49.0";
   const RECENT_DAYS = 10;
   const HARD_RECENT_ID_DAYS = 7;
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
@@ -12294,15 +12294,15 @@
 
 ;
 
-/* ===== SOURCE: daily-hook-rc48.js ===== */
-/* HistoDaily RC48 — Daily Hook discipline sync.
+/* ===== SOURCE: daily-hook-rc49.js ===== */
+/* HistoDaily RC49 — Daily Hook flow fixes.
    The daily expedition is now a complete ritual by itself.
    Course + quiz remain available as an optional deep dive.
    Also prepares an exact next-day teaser and records local D1/D3/D7 retention signals.
 */
-(function histodailyRc48DailyHook(){
+(function histodailyRc49DailyHook(){
   "use strict";
-  const VERSION = "1.0.0-rc.48.0";
+  const VERSION = "1.0.0-rc.49.0";
   const ANALYTICS_KEY = "histodaily_retention_rc47"; // keep the same analytics history across the bug-fix release
   const TEASER_HISTORY_LIMIT = 120;
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
@@ -12501,6 +12501,27 @@
     }
   }
 
+  function openDeepDiveLesson(lessonId){
+    const id=String(lessonId||"");
+    if(!id)return false;
+    const lesson=safe(()=>curatedLessonById(id), safe(()=>lessonById(id),null));
+    if(!lesson)return false;
+    const world=safe(()=>lessonWorld(lesson),{})||{};
+    const did=safe(()=>lessonDisciplineId(lesson),activeDisciplineId())||activeDisciplineId();
+    // Do not rely on a local `openLesson` helper from another renderer: those helpers
+    // live inside their own function/IIFE and are not available from the home hook.
+    setState({
+      tab:"lesson",
+      currentLessonId:lesson.id,
+      currentDiscipline:did,
+      currentWorld:world.id||state.currentWorld,
+      currentGroup:world.group||state.currentGroup,
+      lessonView:"complete",
+      lessonFocus:"complete"
+    });
+    return true;
+  }
+
   function optionalDeepDiveMarkup(mystery){
     const lesson=mystery?.lessonId?safe(()=>lessonById(mystery.lessonId),null):null;
     if(!lesson)return "";
@@ -12535,12 +12556,12 @@
     home.querySelector(".rc44-optional-next")?.remove();
     home.querySelector(".rc47-deep-dive")?.remove();
     const deep=optionalDeepDiveMarkup(mystery);
-    if(deep){hero.insertAdjacentHTML("afterend",deep);const btn=home.querySelector("[data-rc47-deep-dive]");btn?.addEventListener("click",()=>{record("deep_dive",{mysteryId:mystery?.id||"",lessonId:btn.dataset.rc47DeepDive,source:"home"});const lesson=safe(()=>lessonById(btn.dataset.rc47DeepDive),null);if(lesson)openLesson(lesson,"complete");});}
+    if(deep){hero.insertAdjacentHTML("afterend",deep);const btn=home.querySelector("[data-rc47-deep-dive]");btn?.addEventListener("click",()=>{const lessonId=btn.dataset.rc47DeepDive||"";record("deep_dive",{mysteryId:mystery?.id||"",lessonId,source:"home"});openDeepDiveLesson(lessonId);});}
     if(tomorrow)record("teaser_seen",{mysteryId:tomorrow.id,source:"home"});
   }
 
   const previousSubmitGuess=typeof submitGuess==="function"?submitGuess:null;
-  if(previousSubmitGuess) submitGuess=function rc48SubmitGuess(event){
+  if(previousSubmitGuess) submitGuess=function rc49SubmitGuess(event){
     const mystery=safe(()=>currentMystery(),null); const wasSolved=Boolean(mystery?.id&&safe(()=>mysterySolved(mystery.id),false));
     const result=previousSubmitGuess(event);
     window.setTimeout(()=>{
@@ -12551,18 +12572,19 @@
   };
 
   const previousRenderMystery=typeof renderMystery==="function"?renderMystery:null;
-  if(previousRenderMystery) renderMystery=function rc48RenderMystery(){const out=previousRenderMystery();window.setTimeout(enhanceSolvedMystery,0);return out;};
+  if(previousRenderMystery) renderMystery=function rc49RenderMystery(){const out=previousRenderMystery();window.setTimeout(enhanceSolvedMystery,0);return out;};
   const previousRenderHome=typeof renderHome==="function"?renderHome:null;
-  if(previousRenderHome) renderHome=function rc48RenderHome(){const out=previousRenderHome();window.setTimeout(enhanceHome,0);return out;};
+  if(previousRenderHome) renderHome=function rc49RenderHome(){const out=previousRenderHome();window.setTimeout(enhanceHome,0);return out;};
 
   record("app_open",{source:new URLSearchParams(location.search).get("source")||"direct"});
   if(new URLSearchParams(location.search).get("source")?.startsWith("push")) record("push_open",{source:new URLSearchParams(location.search).get("source")});
   if(dailyDone()) ensureTomorrowTeaser(dailyMysteryFor());
 
-  const api=Object.freeze({ version:VERSION, dailyDone, dailyMysteryFor, ensureTomorrowTeaser, teaserText, retentionSnapshot, record });
-  window.HistoDailyDailyHookRC48=api;
+  const api=Object.freeze({ version:VERSION, dailyDone, dailyMysteryFor, ensureTomorrowTeaser, teaserText, retentionSnapshot, record, openDeepDiveLesson });
+  window.HistoDailyDailyHookRC49=api;
+  window.HistoDailyDailyHookRC48=api; // compatibility alias
   window.HistoDailyDailyHookRC47=api; // compatibility alias
-  try { window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,dailyHookRC47:true,dailyHookRC48:true,dailyHook:api}; } catch {}
+  try { window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,dailyHookRC47:true,dailyHookRC48:true,dailyHookRC49:true,dailyHook:api}; } catch {}
   try { if(state?.tab==="home") window.setTimeout(()=>{renderHome();},0); else if(state?.tab==="mystery") window.setTimeout(enhanceSolvedMystery,0); } catch {}
 })();
 

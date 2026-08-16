@@ -47,6 +47,11 @@ const audio=labs.filter(l=>clean(l.speak)).length;
 pass(audio>=14,`Audio/TTS: ${audio}/16 pauses (<14)`);
 pass(mysteries.length===14,`Expéditions anglaises: ${mysteries.length}/14`);
 pass(mysteries.every(m=>m.englishScenarioRC37===true),'Toutes les expéditions anglaises ne sont pas des scènes RC37');
+pass(mysteries.every(m=>m.englishScenarioRC49===true),'Toutes les expéditions anglaises ne portent pas la passe de clarté RC49');
+const oldMetaPhrases=/le mot recherché doit|regarde ce que la personne essaie de faire|les mauvaises réponses restent proches en surface|choisis la formulation ou l.interprétation qui convient à la scène/i;
+pass(mysteries.every(m=>!oldMetaPhrases.test([m.missionQuestion,m.prompt,...(m.clues||[])].join(' '))),'Des formulations méta/génériques subsistent dans les mystères anglais');
+const uniqueClueSets=new Set(mysteries.map(m=>(m.clues||[]).join('|'))).size;
+pass(uniqueClueSets>=12,`Indices anglais trop répétitifs: ${uniqueClueSets}/14 jeux distincts`);
 pass(mysteries.every(m=>looksEnglish(m.answer)),'Certaines réponses d’expédition anglaise ne demandent pas une formulation/interprétation en anglais');
 const shortChoices=quiz.filter(x=>(x.choices||[]).some(c=>words(c).length<2)).length;
 if(shortChoices>8) warnings.push(`${shortChoices} questions ont au moins un distracteur très court; vérifier qu’il s’agit bien d’un test de collocation/structure.`);
@@ -56,7 +61,7 @@ const report={
  philosophy:'L’anglais est traité comme une compétence d’usage: scène → intention/forme naturelle → production, et non comme une fiche de connaissances.',
  coverage:{courses:english.length,quizQuestions:quiz.length,labs:labs.length,labsWithAudio:audio,mysteries:mysteries.length},
  designSignals:{contextualQuizQuestions:contextualPrompts,directTranslationQuestions:translationPrompts.length,questionKinds:[...kinds].sort(),englishAnswerOptions:`${answerChoiceEnglish}/${totalOptions}`,productionPrompts:labs.filter(l=>clean(l.productionPrompt)).length,modelResponses:labs.filter(l=>clean(l.modelResponse)).length},
- guardrails:{maxDirectTranslationQuestions:2,minContextualQuizQuestions:68,minQuestionKinds:12,minAudioLabs:14,requiredProductionLabs:16,requiredScenarioMysteries:14},
+ guardrails:{maxDirectTranslationQuestions:2,minContextualQuizQuestions:68,minQuestionKinds:12,minAudioLabs:14,requiredProductionLabs:16,requiredScenarioMysteries:14,requiredClarityPassRC49:14,minDistinctClueSets:12},
  warnings,errors
 };
 fs.writeFileSync(path.join(root,'RC37-ENGLISH-EXPERIENCE-AUDIT.json'),JSON.stringify(report,null,2));

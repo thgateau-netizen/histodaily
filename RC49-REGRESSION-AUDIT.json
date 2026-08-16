@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-rc.49.0",
+  "status": "passed",
+  "reportedRegressions": {
+    "homeDeepDive": "fixed — direct state routing to linked lesson",
+    "duplicateSolvedBadge": "fixed — legacy CSS pseudo-label removed",
+    "englishMysteryClarity": "fixed — 14/14 English mysteries receive RC49 scenario-specific wording"
+  },
+  "tests": {
+    "dailyHookChecks": "13/13",
+    "homeDeepDiveBehavior": true,
+    "disciplineSwitchBehavior": true,
+    "englishExperienceAudit": true,
+    "fullQualityPipeline": true
+  },
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.48.0",
+  "version": "1.0.0-rc.49.0",
   "status": "passed",
   "philosophy": "L’anglais est traité comme une compétence d’usage: scène → intention/forme naturelle → production, et non comme une fiche de connaissances.",
   "coverage": {
@@ -62,7 +62,9 @@
     "minQuestionKinds": 12,
     "minAudioLabs": 14,
     "requiredProductionLabs": 16,
-    "requiredScenarioMysteries": 14
+    "requiredScenarioMysteries": 14,
+    "requiredClarityPassRC49": 14,
+    "minDistinctClueSets": 12
   },
   "warnings": [],
   "errors": []
