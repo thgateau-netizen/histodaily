@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0-rc.30.0",
+  "issue": "profile XP existed while yearly ranking could remain zero",
+  "metrics": {
+    "daily": "ranked daily expedition points",
+    "week": "ranked weekly expedition points",
+    "year": "profile XP"
+  },
+  "migration": "automatic from existing hd_profiles.xp; no database migration",
+  "tests": {
+    "existing_profile_with_640_xp_and_no_expedition_score": {
+      "expected_year_score": 640,
+      "result": "pass"
+    },
+    "zero_xp_profile": {
+      "expected_year_score": 0,
+      "result": "pass"
+    },
+    "annual_sort_uses_xp": "pass",
+    "client_annual_unit_is_XP": "pass",
+    "public_profile_annual_unit_is_XP": "pass"
+  },
+  "current_year_note": "HistoDaily launched in 2026; profile XP is a valid recovery baseline for the current year."
+}

@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.29.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.30.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -7042,7 +7042,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.18.0";
+  const VERSION = "1.0.0-rc.30.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -7154,11 +7154,13 @@
 
   function localSelfRow(period = "daily") {
     const entries = localRankedEntries(period);
+    const annual = safePeriod(period) === "year";
     return {
       id: meId(), playerId: meId(), friendCode: meCode(), code: meCode(),
       name: pseudo(), pseudo: pseudo(), me: true, rank: 0,
-      score: entries.reduce((sum, item) => sum + item.score, 0),
-      solvedInPeriod: entries.length,
+      score: annual ? Number(state?.xp || 0) : entries.reduce((sum, item) => sum + item.score, 0),
+      scoreMetric: annual ? "xp" : "mystery-points",
+      solvedInPeriod: annual ? solvedTotal() : entries.length,
       level: levelValue(), xp: Number(state?.xp || 0), solved: solvedTotal(), solvedCount: solvedTotal(),
       streak: Number(state?.streak || 0), localFallback: true
     };
@@ -7225,7 +7227,7 @@
         outgoing: Array.isArray(current.requests?.outgoing) ? current.requests.outgoing : []
       },
       friends: Array.isArray(current.friends) ? current.friends : [],
-      leaderboards: current.leaderboards && typeof current.leaderboards === "object" ? current.leaderboards : {},
+      leaderboards: !versionChanged && current.leaderboards && typeof current.leaderboards === "object" ? current.leaderboards : {},
       leaderboardStatus: current.leaderboardStatus && typeof current.leaderboardStatus === "object" ? current.leaderboardStatus : {},
       publicProfiles: !versionChanged && current.publicProfiles && typeof current.publicProfiles === "object" ? current.publicProfiles : {}
     };
@@ -7467,9 +7469,14 @@
         friendCode: code(row.friendCode || row.friend_code || ""),
         code: code(row.friendCode || row.friend_code || ""),
         score: Number(row.score || 0),
+        scoreMetric: row.scoreMetric || json.scoreMetric || (period === "year" ? "xp" : "mystery-points"),
         rank: Number(row.rank || 0),
         solvedInPeriod: Number(row.solvedInPeriod || 0),
         solved: Number(row.solvedCount || row.solved_count || 0),
+        solvedCount: Number(row.solvedCount || row.solved_count || 0),
+        xp: Number(row.xp || 0),
+        level: Number(row.level || 1),
+        streak: Number(row.streak || 0),
         me: Boolean(row.me || (row.playerId || row.player_id) === meId())
       })) : [];
       s.leaderboards[key] = rows;
@@ -7639,20 +7646,26 @@
       const name = friend.pseudo || friend.name || "Ami";
       const details = [`Niveau ${Number(friend.level || 1)}`, `${Number(friend.solvedCount || friend.solved || friend.solved_count || 0)} dossiers`];
       if (Number(friend.streak || 0) > 0) details.push(`${Number(friend.streak)} j de série`);
-      return `<div class="hdsv2-friend-row"><button type="button" class="hdsv2-friend-main" data-social-profile="${esc(friend.playerId || friend.id || friend.friendCode)}"><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span><strong>${esc(name)}</strong><small>${esc(details.join(" · "))}</small></span></button><div class="hdsv2-friend-period">${periodRow ? `<b>${Number(periodRow.score || 0)} pts</b><small>${periodRow.rank ? `#${Number(periodRow.rank)} entre amis` : "Pas encore classé"}</small>` : `<b>—</b><small>${context ? `Aucun score ${periodShort(context.period)}` : esc(friend.friendCode || friend.code || "")}</small>`}</div><button type="button" class="ghost hdsv2-remove" data-social-remove="${esc(friend.playerId || friend.id || "")}" aria-label="Retirer ${esc(name)}">Retirer</button></div>`;
+      return `<div class="hdsv2-friend-row"><button type="button" class="hdsv2-friend-main" data-social-profile="${esc(friend.playerId || friend.id || friend.friendCode)}"><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span><strong>${esc(name)}</strong><small>${esc(details.join(" · "))}</small></span></button><div class="hdsv2-friend-period">${periodRow ? `<b>${Number(periodRow.score || 0)} ${scoreUnit(periodRow)}</b><small>${periodRow.rank ? `#${Number(periodRow.rank)} entre amis` : "Pas encore classé"}</small>` : `<b>—</b><small>${context ? `Aucun score ${periodShort(context.period)}` : esc(friend.friendCode || friend.code || "")}</small>`}</div><button type="button" class="ghost hdsv2-remove" data-social-remove="${esc(friend.playerId || friend.id || "")}" aria-label="Retirer ${esc(name)}">Retirer</button></div>`;
     }).join("")}</div>` : `<div class="hdsv2-empty hdsv2-empty-friends"><span class="hdsv2-empty-icon" aria-hidden="true">◎</span><strong>Ton cercle est prêt à grandir</strong><p>Ajoute un proche pour comparer vos expéditions, même lorsqu’il n’a encore aucun point.</p>${includeAdd ? `<button type="button" class="ghost" data-focus-add-friend>Entrer un code ami</button>` : ""}</div>`;
     return `${addCard}<section class="card hdsv2-card hdsv2-friends-card"><div class="hdsv2-section-head"><div><span class="card-label">Ton cercle</span><h2>${s.friends.length} ami${s.friends.length > 1 ? "s" : ""} confirmé${s.friends.length > 1 ? "s" : ""}</h2><p>${s.friends.length ? "Ouvre un profil pour découvrir sa progression complète." : "Les relations confirmées apparaîtront ici."}</p></div></div>${list}</section>`;
   }
 
   function rowName(row = {}) { return row.name || row.pseudo || "Joueur"; }
   function rowTarget(row = {}) { return row.playerId || row.id || row.friendCode || row.code || ""; }
+  function isXpRanking(row = {}) { return row.scoreMetric === "xp"; }
+  function scoreUnit(row = {}) { return isXpRanking(row) ? "XP" : "pts"; }
   function rowMeta(row = {}) {
+    if (isXpRanking(row)) {
+      const solved = Number(row.solvedCount || row.solved || 0);
+      return `Niveau ${Number(row.level || 1)} · ${solved} dossier${solved > 1 ? "s" : ""} résolu${solved > 1 ? "s" : ""}`;
+    }
     const solved = Number(row.solvedInPeriod || 0);
     return `${solved} dossier${solved > 1 ? "s" : ""} compté${solved > 1 ? "s" : ""}`;
   }
   function rankRowMarkup(row, { selfCard = false } = {}) {
     const name = rowName(row);
-    return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}${selfCard ? " hdsv2-self-row" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank ? `#${Number(row.rank)}` : "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${esc(rowMeta(row))} · voir le profil</small></span><b>${Number(row.score || 0)}<small> pts</small></b></button>`;
+    return `<button type="button" class="hdsv2-rank-row${row.me ? " me" : ""}${selfCard ? " hdsv2-self-row" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="Ouvrir le profil de ${esc(name)}"><span class="hdsv2-rank-number">${row.rank ? `#${Number(row.rank)}` : "—"}</span><span class="hdsv2-avatar">${esc(name.charAt(0).toUpperCase())}</span><span class="hdsv2-rank-player"><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><small>${esc(rowMeta(row))} · voir le profil</small></span><b>${Number(row.score || 0)}<small> ${scoreUnit(row)}</small></b></button>`;
   }
 
   function podiumMarkup(rows = []) {
@@ -7663,7 +7676,7 @@
       const rank = Number(row.rank || 0);
       const name = rowName(row);
       const medal = rank === 1 ? "1" : rank === 2 ? "2" : "3";
-      return `<button type="button" class="hdsv2-podium-card rank-${rank}${row.me ? " me" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="${esc(name)}, ${rank}${rank === 1 ? "er" : "e"} du classement"><span class="hdsv2-podium-medal">${medal}</span><span class="hdsv2-podium-avatar">${esc(name.charAt(0).toUpperCase())}</span><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><b>${Number(row.score || 0)} pts</b><small>${esc(rowMeta(row))}</small></button>`;
+      return `<button type="button" class="hdsv2-podium-card rank-${rank}${row.me ? " me" : ""}" data-social-profile="${esc(rowTarget(row))}" aria-label="${esc(name)}, ${rank}${rank === 1 ? "er" : "e"} du classement"><span class="hdsv2-podium-medal">${medal}</span><span class="hdsv2-podium-avatar">${esc(name.charAt(0).toUpperCase())}</span><strong>${esc(name)}${row.me ? " · toi" : ""}</strong><b>${Number(row.score || 0)} ${scoreUnit(row)}</b><small>${esc(rowMeta(row))}</small></button>`;
     }).join("")}</div>`;
   }
 
@@ -7743,7 +7756,7 @@
       <header class="hdsv2-topbar"><div><p class="eyebrow">Classements</p><h1>${esc(periodLabel(context.period))}</h1></div><button type="button" class="hdsv2-profile-shortcut" data-open-profile aria-label="Ouvrir le profil">${esc(pseudo().charAt(0).toUpperCase() || "P")}</button></header>
       <nav class="hdsv2-period-tabs" aria-label="Période">${[["daily", "Jour", "Aujourd’hui"], ["week", "Semaine", "Cette semaine"], ["year", "Année", "Cette année"]].map(([period, shortLabel, fullLabel]) => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}" aria-label="${fullLabel}" aria-current="${context.period === period ? "page" : "false"}">${shortLabel}</button>`).join("")}</nav>
       <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Tous</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
-      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">Ta performance · ${esc(audienceLabel)}</span><h2>${Number(me?.score || 0)} points</h2><p>${context.audience === "friends" ? `Ta place parmi ${Math.max(1, s.friends.length + 1)} joueur${s.friends.length ? "s" : ""} de ton cercle.` : `Total de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" class="ghost" data-social-refresh>Mettre à jour</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${Number(me?.solvedInPeriod || 0)}</b><span>dossiers comptés</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div><div class="hdsv2-sync-line"><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${pending ? `<span class="hdsv2-sync-pill pending"><i></i>${pending} score${pending > 1 ? "s" : ""} à envoyer</span>` : `<span class="hdsv2-sync-pill ok">✓ aucun score en attente</span>`}</div>${context.period === "daily" && context.audience === "general" ? `<small class="hdsv2-zero-friends">Tous les joueurs inscrits sont affichés, y compris ceux qui n’ont pas encore marqué de point aujourd’hui.</small>` : ""}${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score ${Number(status.zeroScoreFriendCount) > 1 ? "restent" : "reste"} visible${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""}.</small>` : ""}</section>
+      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">${context.period === "year" ? "Ta progression" : "Ta performance"} · ${esc(audienceLabel)}</span><h2>${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "points"}</h2><p>${context.period === "year" ? "L’année classe la progression réelle : cours, quiz, révisions, ateliers et expéditions alimentent ton XP." : context.audience === "friends" ? `Ta place parmi ${Math.max(1, s.friends.length + 1)} joueur${s.friends.length ? "s" : ""} de ton cercle.` : `Total de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" class="ghost" data-social-refresh>Mettre à jour</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${context.period === "year" ? Number(me?.level || levelValue()) : Number(me?.solvedInPeriod || 0)}</b><span>${context.period === "year" ? "niveau" : "dossiers comptés"}</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div>${context.period === "year" ? `<small class="hdsv2-zero-friends">L’XP déjà visible sur les profils est reprise automatiquement : un joueur actif n’apparaît plus artificiellement à 0.</small>` : ""}<div class="hdsv2-sync-line"><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${pending ? `<span class="hdsv2-sync-pill pending"><i></i>${pending} score${pending > 1 ? "s" : ""} à envoyer</span>` : `<span class="hdsv2-sync-pill ok">✓ aucun score en attente</span>`}</div>${context.period === "daily" && context.audience === "general" ? `<small class="hdsv2-zero-friends">Tous les joueurs inscrits sont affichés, y compris ceux qui n’ont pas encore marqué de point aujourd’hui.</small>` : ""}${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score ${Number(status.zeroScoreFriendCount) > 1 ? "restent" : "reste"} visible${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""}.</small>` : ""}</section>
       ${context.audience === "friends" ? requestMarkup() : ""}
       <section class="card hdsv2-card hdsv2-leaderboard"><div class="hdsv2-section-head hdsv2-ranking-head"><div><span class="card-label">${context.audience === "friends" ? "Entre amis" : "Classement général"}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2><p>${context.audience === "friends" ? "Ta position reste affichée au-dessus du classement, même loin du podium." : "Le podium met en avant les trois premiers, puis la liste complète continue juste dessous."}</p></div></div>${leaderboardMarkup(rows, context, status)}</section>
       ${context.audience === "friends" ? friendsMarkup({ includeAdd: true, context }) : ""}
@@ -8225,7 +8238,7 @@
     const record = social().publicProfiles[id] || {};
     const player = record.profile;
     const body = player
-      ? `<section class="card hdsv2-card hdsv2-profile-summary hd273-public-card"><div class="hdsv2-profile-hero"><div class="hdsv2-profile-avatar">${esc((player.pseudo || "J").charAt(0).toUpperCase())}</div><div><span class="card-label">Profil public</span><h2>${esc(player.pseudo || "Joueur")}</h2><p>Niveau ${Number(player.level || 1)} · ${Number(player.xp || 0)} XP</p></div></div><div class="hd273-public-stats"><div><b>${Number(player.streak || 0)}</b><span>jours de série</span></div><div><b>${Number(player.solvedCount || 0)}</b><span>dossiers résolus</span></div></div><div class="hd273-score-grid">${[['daily', 'Aujourd’hui'], ['week', 'Semaine'], ['year', 'Année']].map(([period, label]) => `<div><span>${label}</span><b>${Number(player.scores?.[period] || 0)} pts</b><small>${Number(player.ranks?.[period] || 0) ? `#${Number(player.ranks[period])} au général` : "Pas encore classé"}</small></div>`).join("")}</div>${player.partial ? `<p class="hd274-partial-profile">Données partielles : une actualisation complétera ce profil dès que le serveur répondra.</p>` : ""}</section>${publicProfileActionMarkup(player, id)}${social().feedback ? `<p class="hdsv2-feedback hd273-profile-feedback" role="status">${esc(social().feedback)}</p>` : ""}`
+      ? `<section class="card hdsv2-card hdsv2-profile-summary hd273-public-card"><div class="hdsv2-profile-hero"><div class="hdsv2-profile-avatar">${esc((player.pseudo || "J").charAt(0).toUpperCase())}</div><div><span class="card-label">Profil public</span><h2>${esc(player.pseudo || "Joueur")}</h2><p>Niveau ${Number(player.level || 1)} · ${Number(player.xp || 0)} XP</p></div></div><div class="hd273-public-stats"><div><b>${Number(player.streak || 0)}</b><span>jours de série</span></div><div><b>${Number(player.solvedCount || 0)}</b><span>dossiers résolus</span></div></div><div class="hd273-score-grid">${[['daily', 'Aujourd’hui'], ['week', 'Semaine'], ['year', 'Année']].map(([period, label]) => `<div><span>${label}</span><b>${Number(player.scores?.[period] || 0)} ${period === 'year' ? 'XP' : 'pts'}</b><small>${Number(player.ranks?.[period] || 0) ? `#${Number(player.ranks[period])} au général` : "Pas encore classé"}</small></div>`).join("")}</div>${player.partial ? `<p class="hd274-partial-profile">Données partielles : une actualisation complétera ce profil dès que le serveur répondra.</p>` : ""}</section>${publicProfileActionMarkup(player, id)}${social().feedback ? `<p class="hdsv2-feedback hd273-profile-feedback" role="status">${esc(social().feedback)}</p>` : ""}`
       : record.phase === "error"
         ? `<section class="card hdsv2-card"><div class="hdsv2-empty error"><strong>Profil indisponible</strong><p>${esc(record.message || "Le serveur n’a pas répondu.")}</p><button type="button" data-public-profile-retry>Réessayer</button></div></section>`
         : `<section class="card hdsv2-card"><div class="hdsv2-loading"><span></span><span></span><span></span><p>${esc(record.message || "Chargement du profil partagé…")}</p></div></section>`;
@@ -11144,7 +11157,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.29.0";
+  const VERSION = "1.0.0-rc.30.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11327,7 +11340,7 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.29.0";
+  const VERSION = "1.0.0-rc.30.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
