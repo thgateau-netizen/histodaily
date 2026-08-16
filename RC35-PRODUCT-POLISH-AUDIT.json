@@ -1,0 +1,72 @@
+{
+  "version": "1.0.0-rc.35.0",
+  "status": "passed",
+  "principle": "désirable, fluide, évident; la hiérarchie remplace les explications",
+  "checks": {
+    "polishModuleLoadedLast": {
+      "pass": true,
+      "detail": "La couche RC35 doit être chargée après les anciens polish, sans être réécrasée."
+    },
+    "polishModuleInBundle": {
+      "pass": true,
+      "detail": "Le module RC35 doit exister dans le bundle réellement servi."
+    },
+    "consistentDesignTokens": {
+      "pass": true,
+      "detail": "Les écrans doivent partager les mêmes tokens de surface et de rayon."
+    },
+    "mobileHeroReduced": {
+      "pass": true,
+      "detail": "Le hero mobile ne doit plus monopoliser presque tout le premier écran."
+    },
+    "navigationRowsFlattened": {
+      "pass": true,
+      "detail": "Chapitres et cours doivent se lire comme une liste, pas des cartes imbriquées."
+    },
+    "readerTypographyPrioritized": {
+      "pass": true,
+      "detail": "La lecture doit privilégier la typographie au chrome."
+    },
+    "rankingListFlattened": {
+      "pass": true,
+      "detail": "La longue liste de classement ne doit pas ressembler à un empilement de cartes."
+    },
+    "secondaryProfileSurfacesQuiet": {
+      "pass": true,
+      "detail": "Les modules secondaires du profil doivent rester visuellement secondaires."
+    },
+    "bottomNavSafeArea": {
+      "pass": true,
+      "detail": "Le dock mobile doit respecter la safe area iOS."
+    },
+    "focusVisibleStrong": {
+      "pass": true,
+      "detail": "Le focus clavier doit rester évident malgré le polish visuel."
+    },
+    "reducedMotionRespected": {
+      "pass": true,
+      "detail": "Les micro-interactions doivent être coupées si l’utilisateur réduit les animations."
+    },
+    "detailsStateAccessible": {
+      "pass": true,
+      "detail": "Les panneaux repliables doivent exposer leur état sans ajout d’aide textuelle."
+    },
+    "activeNavCurrentPage": {
+      "pass": true,
+      "detail": "La navigation doit annoncer uniquement l’onglet actif comme page courante."
+    },
+    "noBlockingLoadingOverlay": {
+      "pass": true,
+      "detail": "Le feedback de chargement ne doit pas ajouter un écran bloquant."
+    },
+    "firstRunSingleDecision": {
+      "pass": true,
+      "detail": "La première ouverture doit conduire directement au choix de l’univers puis à l’expédition."
+    },
+    "releaseVersionExposed": {
+      "pass": true,
+      "detail": "La couche finale doit exposer la vraie version du build."
+    }
+  },
+  "errors": []
+}

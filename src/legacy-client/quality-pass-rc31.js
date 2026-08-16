@@ -2,7 +2,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.32.0";
+  const VERSION = "1.0.0-rc.35.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -72,10 +72,10 @@
     const memory = memoryStatus(lesson);
     const next = nextLesson(lesson);
     const nextTitle = next ? String(next.title || "Cours suivant") : "";
-    return `<section class="rc31-completion" aria-label="Suite du parcours">
+    return `<section class="rc31-completion hd34-course-result" aria-label="Bilan et suite du parcours">
       <div class="rc31-completion-memory">
         <div class="rc31-mastery-ring" style="--rc31-mastery:${memory.mastery}" aria-label="Maîtrise ${memory.mastery} pour cent"><strong>${memory.mastery}%</strong><span>maîtrise</span></div>
-        <div><span class="card-label">Ce qui se passe maintenant</span><h3>${esc(memory.label)}</h3><p>${esc(memory.detail)}</p></div>
+        <div><span class="card-label">Bilan · ${snapshot.correct}/${snapshot.total}</span><h3>${snapshot.correct === snapshot.total ? "Parfaitement validé" : "Cours validé"}</h3><p><strong>${esc(memory.label)}.</strong> ${esc(memory.detail)}</p></div>
       </div>
       <div class="rc31-completion-actions">
         ${memory.due ? `<button type="button" data-rc31-review="${esc(lessonDiscipline(lesson))}">Réviser maintenant</button>` : ""}
@@ -101,14 +101,7 @@
       const hero = fragment.querySelector(".hd283-quiz-result-hero");
       const quiz = fragment.querySelector(".beta165-quiz-runner,.final-quiz");
 
-      if (hero) {
-        const label = hero.querySelector(".card-label");
-        if (label) label.textContent = "Bilan du cours";
-        const title = hero.querySelector("h2");
-        if (title && snapshot.passed) title.textContent = snapshot.correct === snapshot.total ? "Parfaitement validé" : "Cours validé";
-        const copy = hero.querySelector("p");
-        if (copy && snapshot.passed) copy.textContent = "Tu as validé l’essentiel. La maîtrise se consolide maintenant avec des rappels espacés, pas avec une relecture immédiate.";
-      }
+      hero?.remove();
 
       if (quiz) {
         quiz.classList.add("rc31-quiz-finish");

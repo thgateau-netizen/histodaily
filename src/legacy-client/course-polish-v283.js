@@ -75,21 +75,6 @@
       let html = String(previousRenderLessonText(lesson, content) || '');
       const memory = takeawayText(lesson, content);
 
-      if (view === 'express') {
-        const card = `<aside class="hd283-memory-card"><span>La phrase à garder</span><p>${esc(memory)}</p></aside>`;
-        if (!html.includes('hd283-memory-card')) {
-          html = html.replace(/<section class="lesson-next-choice"/, `${card}<section class="lesson-next-choice"`);
-        }
-      }
-
-      if (view === 'complete') {
-        const blocks = Array.isArray(content?.complete) ? content.complete.filter(Boolean).length : 0;
-        const guide = `<div class="hd283-reading-guide"><span>Lecture guidée</span><p>${blocks || 'Plusieurs'} parties courtes : avance à ton rythme, le sommaire reste accessible en haut du cours.</p></div>`;
-        if (!html.includes('hd283-reading-guide')) {
-          html = html.replace(/(<section class="complete-course-panel"[^>]*>)/, `$1${guide}`);
-        }
-      }
-
       if (view === 'quiz') {
         const snapshot = quizSnapshot(lesson, content);
         html = html.replace(/class="quiz-section isolated-quiz final-quiz/, `class="quiz-section isolated-quiz final-quiz hd283-quiz-surface${snapshot.finished ? ' hd283-quiz-complete' : ''}`);
@@ -162,11 +147,6 @@
     const view = ['express', 'complete', 'quiz'].includes(state?.lessonView) ? state.lessonView : 'express';
     shell.dataset.hd283View = view;
 
-    const header = shell.querySelector('.hd214-reader-header,.lesson-full-topbar');
-    if (header && view !== 'quiz' && !header.querySelector('.hd283-reader-progress')) {
-      header.insertAdjacentHTML('beforeend', `<div class="hd283-reader-progress" role="progressbar" aria-label="Progression dans la lecture" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span><i></i></span><small>${view === 'complete' ? 'Début du cours' : 'Lecture express'}</small><b>0%</b></div>`);
-    }
-
     shell.querySelectorAll('.deep-reading-block').forEach((section, index) => {
       section.style.setProperty('--hd283-section-order', String(index));
     });
@@ -175,15 +155,12 @@
     if (result) result.setAttribute('tabindex', '-1');
 
     installSectionObserver(shell);
-    scheduleProgress();
   }
 
   function run() {
     try { enhanceLesson(); } catch (error) { try { console.warn('HistoDaily RC8 course polish', error); } catch {} }
   }
 
-  window.addEventListener('scroll', scheduleProgress, { passive: true });
-  window.addEventListener('resize', scheduleProgress, { passive: true });
   const observer = new MutationObserver(() => window.requestAnimationFrame(run));
   observer.observe(document.documentElement, { childList: true, subtree: true });
   window.addEventListener('DOMContentLoaded', run, { once: true });

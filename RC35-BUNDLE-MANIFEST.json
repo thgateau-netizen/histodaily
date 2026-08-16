@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.33.0",
+  "version": "1.0.0-rc.35.0",
   "bundleOrder": [
     "core-rc27.js",
     "content-rc27.js",
@@ -56,11 +56,11 @@
       "notifications-v288.js",
       "adaptive-path-rc22.js",
       "home-premium-rc24.js",
-      "quality-pass-rc31.js"
+      "daily-rotation-rc29.js",
+      "quality-pass-rc31.js",
+      "product-polish-rc35.js"
     ]
   },
-  "loadedScriptFilesBefore": 43,
-  "loadedBundleFilesAfter": 3,
-  "sourceFilesPreservedUnder": "src/legacy-client",
-  "qualityPass": "RC33 qualitative editorial review"
+  "uiPass": "RC35 product polish / mobile consistency",
+  "importantFix": "final visual interaction layer loaded last; RC33 editorial patch remains bundled"
 }

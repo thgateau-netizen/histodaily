@@ -50,37 +50,23 @@
     const disciplines = readyDisciplines().map(disciplineInfo);
     const selected = disciplines.find(item => item.id === selectedDiscipline) || disciplines[0];
     if (selected) selectedDiscipline = selected.id;
-    const commonTop = `<div class="hd275-onboarding-top"><div class="hd275-logo"><i>⌛</i><span>HistoDaily</span></div><span class="hd275-step-count">${step + 1} / 2</span></div>`;
-    let content = "";
-    if (step === 0) content = `${commonTop}
+    return `<div class="hd275-onboarding-inner hd35-onboarding-one" style="--hd275-accent:${esc(selected?.accent || "#f6c453")}">
+      <div class="hd275-onboarding-top"><div class="hd275-logo"><i>⌛</i><span>HistoDaily</span></div></div>
       <p class="hd275-kicker">Ta dose quotidienne de culture</p>
-      <h1>Un dossier.<br>Trois choix.<br>Quelques minutes.</h1>
-      <p class="hd275-lead">Tu lis une situation, tu déduis la meilleure réponse, puis l’app t’explique le pourquoi. Les premières expéditions sont volontairement accessibles.</p>
-      <div class="hd275-flow hd310-onboarding-flow">
-        <article><span>1</span><div><b>Déduis</b><small>Un contexte et un premier indice sont déjà visibles.</small></div></article>
-        <article><span>2</span><div><b>Choisis</b><small>Au début, trois propositions évitent l’effet « question de concours ».</small></div></article>
-        <article><span>3</span><div><b>Comprends</b><small>La réponse ouvre ensuite le résumé, le cours et le quiz.</small></div></article>
-      </div>`;
-    if (step === 1) content = `${commonTop}
-      <p class="hd275-kicker">Choisis ton premier univers</p>
-      <h1>Par quoi veux-tu commencer ?</h1>
-      <p class="hd275-lead">Ce choix règle seulement ton accueil. Tous les autres univers restent accessibles à tout moment.</p>
-      <div class="hd275-disciplines">${disciplines.map(item => `<button type="button" class="hd275-discipline ${item.id === selectedDiscipline ? "is-selected" : ""}" data-hd275-discipline="${esc(item.id)}" style="--discipline-accent:${esc(item.accent || "#f6c453")}"><span>${item.icon}</span><div><b>${esc(item.title)}</b><small>${item.lessons} cours disponibles</small></div></button>`).join("")}</div>
-      ${selected?.id === "english" ? '<div class="hd275-selected-note"><b>Anglais</b><span>Contexte, écoute, registre, reformulation et implicite — pas de listes de mots à réciter.</span></div>' : selected?.id === "philosophy" ? '<div class="hd275-selected-note"><b>Philosophie</b><span>Arguments, distinctions, objections et expériences de pensée avant la récitation d’auteurs.</span></div>' : ""}`;
-    return `<div class="hd275-onboarding-inner" style="--hd275-accent:${esc(selected?.accent || "#f6c453")}">${content}
-      <div class="hd275-actions">${step > 0 ? '<button type="button" class="hd275-back" data-hd275-back>Retour</button>' : ""}<button type="button" class="hd275-next" data-hd275-next>${step < 1 ? "Continuer" : (replayMode ? "Fermer" : "Lancer mon expédition")}</button></div>
-      ${step === 1 && !replayMode ? '<button type="button" class="hd275-skip" data-hd275-home>Voir d’abord l’accueil</button>' : ""}
-      <div class="hd275-dots" aria-hidden="true">${[0,1].map(index => `<i class="${index === step ? "is-active" : ""}"></i>`).join("")}</div>
+      <h1>Un dossier.<br>Quelques minutes.<br>Une chose retenue.</h1>
+      <p class="hd275-lead">Lis le contexte, choisis la réponse qui te paraît la plus logique, puis comprends pourquoi. Commence simplement par l’univers qui t’attire.</p>
+      <div class="hd275-disciplines">${disciplines.map(item => `<button type="button" class="hd275-discipline ${item.id === selectedDiscipline ? "is-selected" : ""}" data-hd275-discipline="${esc(item.id)}" style="--discipline-accent:${esc(item.accent || "#f6c453")}"><span>${item.icon}</span><div><b>${esc(item.title)}</b><small>${item.lessons} cours</small></div></button>`).join("")}</div>
+      ${selected?.id === "english" ? '<div class="hd275-selected-note"><b>Anglais</b><span>Comprendre le sens, le registre et l’implicite — pas réciter des listes de mots.</span></div>' : selected?.id === "philosophy" ? '<div class="hd275-selected-note"><b>Philosophie</b><span>Raisonner, distinguer et objecter avant de réciter des auteurs.</span></div>' : ""}
+      <div class="hd275-actions"><button type="button" class="hd275-next" data-hd275-next>${replayMode ? "Fermer" : "Lancer mon expédition"}</button></div>
+      ${!replayMode ? '<button type="button" class="hd275-skip" data-hd275-home>Voir d’abord l’accueil</button>' : ""}
     </div>`;
   }
 
   function bindOverlay(){
     overlay?.querySelector("[data-hd275-next]")?.addEventListener("click", () => {
-      if (step < 1) { step += 1; draw(); }
-      else if (replayMode) close();
+      if (replayMode) close();
       else complete("mystery");
     });
-    overlay?.querySelector("[data-hd275-back]")?.addEventListener("click", () => { step = Math.max(0, step - 1); draw(); });
     overlay?.querySelector("[data-hd275-home]")?.addEventListener("click", () => complete("home"));
     overlay?.querySelectorAll("[data-hd275-discipline]").forEach(button => button.addEventListener("click", () => {
       selectedDiscipline = button.dataset.hd275Discipline || "history";

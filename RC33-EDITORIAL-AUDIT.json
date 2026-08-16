@@ -1,0 +1,582 @@
+{
+  "version": "1.0.0-rc.35.0",
+  "methodology": {
+    "note": "Audit qualitatif structurel : redondance, remplissage générique, spécificité des exercices, qualité des explications de quiz, plausibilité minimale des distracteurs, cohérence des sections, intégrité des formulations et mystères qui ne doivent jamais révéler leur réponse. La longueur n’entre pas dans le score.",
+    "interpretation": "La bande A signifie qu’aucun défaut couvert par cette grille n’a été détecté. Elle ne constitue ni une certification factuelle phrase par phrase ni une note absolue de qualité littéraire.",
+    "courseDimensions": [
+      "distinctiveness",
+      "pedagogical-specificity",
+      "quiz-explanation-quality",
+      "reasoning-balance",
+      "distractor-plausibility",
+      "section-coherence",
+      "language-integrity"
+    ],
+    "mysteryDimensions": [
+      "answer-concealment",
+      "clue-distinctiveness",
+      "explanation-value",
+      "text-integrity"
+    ]
+  },
+  "catalogue": {
+    "courses": 209,
+    "mysteries": 158,
+    "quizQuestions": 1045
+  },
+  "courseGrades": {
+    "A": 209
+  },
+  "mysteryGrades": {
+    "A": 158
+  },
+  "byDiscipline": {
+    "art": {
+      "courses": 12,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 12
+      },
+      "mysteries": 12,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 12
+      }
+    },
+    "astronomy": {
+      "courses": 27,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 27
+      },
+      "mysteries": 17,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 17
+      }
+    },
+    "cinema": {
+      "courses": 11,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 11
+      },
+      "mysteries": 11,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 11
+      }
+    },
+    "economy": {
+      "courses": 10,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 10
+      },
+      "mysteries": 11,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 11
+      }
+    },
+    "english": {
+      "courses": 16,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 16
+      },
+      "mysteries": 14,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 14
+      }
+    },
+    "geography": {
+      "courses": 11,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 11
+      },
+      "mysteries": 12,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 12
+      }
+    },
+    "history": {
+      "courses": 64,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 64
+      },
+      "mysteries": 29,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 29
+      }
+    },
+    "literature": {
+      "courses": 16,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 16
+      },
+      "mysteries": 12,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 12
+      }
+    },
+    "music": {
+      "courses": 10,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 10
+      },
+      "mysteries": 11,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 11
+      }
+    },
+    "philosophy": {
+      "courses": 16,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 16
+      },
+      "mysteries": 14,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 14
+      }
+    },
+    "science-inventions": {
+      "courses": 16,
+      "courseAverage": 100,
+      "courseGrades": {
+        "A": 16
+      },
+      "mysteries": 15,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 15
+      }
+    }
+  },
+  "issueCounts": {
+    "intentional-reference-resolution": 1
+  },
+  "priorityItems": [
+    {
+      "id": "prehistory-hominids",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 6,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "prehistory-habilis",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 6,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "prehistory-fire",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 6,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "prehistory-hunt",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 6,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "prehistory-agriculture",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 6,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "prehistory-sapiens",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 6,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "civilizations-fertile-crescent",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "aegean-mediterranean-minoens-crete",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "aegean-mediterranean-effondrement-egeen",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "egypt-nile",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "egypt-two-lands",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "egypt-pharaoh-maat",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 12,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    },
+    {
+      "id": "egypt-pyramids",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "egypt-ramses",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 12,
+      "quizQuestions": 5,
+      "reasoningQuestions": 4,
+      "kind": "course"
+    },
+    {
+      "id": "egypt-connected",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "greece-athens-democracy",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "greece-persian-wars",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 12,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "greece-peloponnesian-war",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 12,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "rome-foundation-kings",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "rome-italy-expansion",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 12,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "rome-punic-wars",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 12,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "rome-republic-crisis",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "rome-augustus-principate",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "rome-christianity-late-empire",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-scandinavie",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 7,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-raids-vikings",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-navires-vikings",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-colonisation-atlantique",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-viking-commerce",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-christianisation-nord",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-vie-quotidienne",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-societe-droit-femmes",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "northern-viking-worlds-croyances-sagas-runes",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 12,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "atlantic-revolutions-revolution-francaise-1789",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    },
+    {
+      "id": "1789-crisis",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 12,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "rights-new-france",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "republic-terror-war",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "napoleon-empire",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "europe-after-napoleon",
+      "discipline": "history",
+      "score": 100,
+      "grade": "A",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    }
+  ],
+  "issues": [
+    {
+      "kind": "mystery",
+      "id": "english-mystery-one-reference-rc19",
+      "discipline": "english",
+      "severity": "info",
+      "code": "intentional-reference-resolution",
+      "answer": "Charger"
+    }
+  ]
+}

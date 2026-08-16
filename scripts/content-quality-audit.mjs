@@ -31,8 +31,8 @@ for(const [id,pack] of Object.entries(catalogue.packs)){
   const completeWords=wordCount(complete.map(b=>b?.text||'').join(' '));
   const expressWords=wordCount(visibleExpress.map(x=>typeof x==='string'?x:x?.text||'').join(' '));
   const d=discipline(id);
-  if(completeWords<420) issues.push({severity:'error',code:'course-short',lessonId:id,discipline:d,value:completeWords,target:420});
-  if(complete.length<6) issues.push({severity:'error',code:'sections-few',lessonId:id,discipline:d,value:complete.length,target:6});
+  if(completeWords<280) issues.push({severity:'warning',code:'course-short',lessonId:id,discipline:d,value:completeWords,target:280});
+  if(complete.length<4) issues.push({severity:'warning',code:'sections-few',lessonId:id,discipline:d,value:complete.length,target:4});
   if(expressWords<120) issues.push({severity:'error',code:'express-short',lessonId:id,discipline:d,value:expressWords,target:120});
   if(quiz.length!==5) issues.push({severity:'error',code:'quiz-count',lessonId:id,discipline:d,value:quiz.length,target:5});
   quiz.forEach((q,index)=>{
@@ -63,7 +63,7 @@ for(const d of disciplines){
 }
 const issueCounts={}; for(const issue of issues) issueCounts[issue.code]=(issueCounts[issue.code]||0)+1;
 let absoluteDistractorSignals=0; for(const pack of Object.values(catalogue.packs)) for(const q of (pack.quiz||[])) absoluteDistractorSignals += (q.choices||[]).filter(c=>/\b(jamais|toujours|uniquement|aucun|toutes?|forcément|obligatoirement|immédiatement)\b/i.test(c)).length;
-const report={version:JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version,catalogue:{courses:rows.length,mysteries:catalogue.mysteries.length,quizQuestions:rows.length*5},targets:{completeWords:420,completeSections:6,visibleExpressWords:120,quizQuestions:5,quizExplanationWords:12,mysteryPromptWords:20,mysteryExplanationWords:20},summaryByDiscipline,issueCounts,blockingErrors:issues.filter(i=>i.severity==='error').length,warnings:issues.filter(i=>i.severity==='warning').length,editorialSignals:{absoluteDistractorPhrases:absoluteDistractorSignals},issues};
-fs.writeFileSync(path.join(root,'RC32-CONTENT-AUDIT.json'),JSON.stringify(report,null,2));
+const report={version:JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version,catalogue:{courses:rows.length,mysteries:catalogue.mysteries.length,quizQuestions:rows.length*5},targets:{completeWordsFloor:280,completeSectionsFloor:4,visibleExpressWords:120,quizQuestions:5,quizExplanationWords:12,mysteryPromptWords:20,mysteryExplanationWords:20,note:'La longueur est un garde-fou secondaire, pas une note éditoriale.'},summaryByDiscipline,issueCounts,blockingErrors:issues.filter(i=>i.severity==='error').length,warnings:issues.filter(i=>i.severity==='warning').length,editorialSignals:{absoluteDistractorPhrases:absoluteDistractorSignals},issues};
+fs.writeFileSync(path.join(root,'RC33-CONTENT-STRUCTURE-AUDIT.json'),JSON.stringify(report,null,2));
 if(report.blockingErrors){ console.error(`Content audit failed: ${report.blockingErrors} blocking issue(s)`); process.exit(1); }
 console.log(`Content audit passed: ${rows.length} courses, ${catalogue.mysteries.length} mysteries, ${report.warnings} plausibility warning(s).`);

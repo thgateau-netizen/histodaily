@@ -1,12 +1,12 @@
-const CACHE_NAME = "histodaily-rc32-content-quality-v1";
-const APP_VERSION = "1.0.0-rc.32.0";
+const CACHE_NAME = "histodaily-rc35-product-polish-v1";
+const APP_VERSION = "1.0.0-rc.35.0";
 const CRITICAL_ASSETS = [
   "/",
   "/index.html",
-  "/histodaily.css?v=1.0.0-rc.32.0",
-  "/bundles/core-rc27.js?v=1.0.0-rc.32.0",
-  "/bundles/content-rc27.js?v=1.0.0-rc.32.0",
-  "/bundles/experience-rc27.js?v=1.0.0-rc.32.0",
+  "/histodaily.css?v=1.0.0-rc.35.0",
+  "/bundles/core-rc27.js?v=1.0.0-rc.35.0",
+  "/bundles/content-rc27.js?v=1.0.0-rc.35.0",
+  "/bundles/experience-rc27.js?v=1.0.0-rc.35.0",
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-192.png",

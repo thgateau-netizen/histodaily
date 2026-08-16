@@ -1,7 +1,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.32.0";
+  const VERSION = "1.0.0-rc.35.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -114,7 +114,7 @@
       <section class="rc24-hero${heroClass}" aria-labelledby="rc24-hero-title">
         <div class="rc24-hero-image" aria-hidden="true"></div>
         <div class="rc24-hero-vignette" aria-hidden="true"></div>
-        <div class="rc24-hero-top"><span>Aujourd’hui · ${esc(disciplineName(d))}</span><small>${s.index>3?"✓":`${routeIndex}/3`}</small></div>
+        <div class="rc24-hero-top"><span>Aujourd’hui · ${esc(disciplineName(d))}</span></div>
         <div class="rc24-hero-content">
           <p>${esc(s.kicker)}</p>
           <h2 id="rc24-hero-title">${esc(s.title)}</h2>

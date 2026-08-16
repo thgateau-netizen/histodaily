@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0-rc.35.0",
+  "goal": "désirable, fluide, instinctif",
+  "weakPoints": [
+    {"area":"first-run","before":"2-step explanatory onboarding","after":"one decision screen: promise + universe + launch"},
+    {"area":"home","before":"mobile hero around 480px","after":"438px, 420px on small phones"},
+    {"area":"course-library","before":"chapters and lessons visually behaved as floating cards","after":"flat navigation rows with quiet surfaces"},
+    {"area":"visual-system","before":"multiple inherited radii/shadows/surface languages","after":"final RC35 tokens and scoped overrides"},
+    {"area":"reader","before":"content still visually competed with interface blocks","after":"typography and text rhythm are the dominant layer"},
+    {"area":"ranking","before":"podium followed by a second stack of card-like rows","after":"strong podium + flat long list"},
+    {"area":"profile","before":"collapsed secondary modules still looked first-class","after":"secondary folds intentionally quieter"},
+    {"area":"navigation","before":"several inherited bottom-nav variants","after":"one consistent safe-area aware dock"},
+    {"area":"feedback","before":"interaction feedback varied by component age","after":"short consistent press/transition/pending feedback"}
+  ],
+  "verification": {
+    "uiFlowChecks": 15,
+    "productPolishChecks": 16,
+    "clientBundles": 3,
+    "courses": 209,
+    "mysteries": 158,
+    "quizQuestions": 1045,
+    "headlessScreenshot": "not available: local Chromium timed out"
+  }
+}

@@ -7597,7 +7597,7 @@ function renderLessonText(lesson, content) {
   const expressBits = Array.isArray(content.express) && content.express.length ? content.express.slice(0, 3) : [content.hook || "Sujet à replacer dans son contexte."];
   const labels = Array.isArray(content.expressLabels) && content.expressLabels.length ? content.expressLabels : ["Le sujet", "Ce qui change", "La nuance"];
   const expressCards = expressBits.map((bit, index) => `<div><b>${index + 1} · ${escapeHtml(labels[index] || `Point ${index + 1}`)}</b><p>${escapeHtml(bit)}</p></div>`).join("");
-  return `${toolbar}${lead}${keyFactsMarkup}
+  return `${toolbar}${lead}
     <section class="express-coach-card rc26-express" data-focus-target="express">
       <div class="section-title-row rc26-section-head"><h2>Les 3 idées essentielles</h2><small>lecture courte</small></div>
       <div class="express-steps clean-express">${expressCards}</div>
@@ -7729,14 +7729,14 @@ function renderMystery() {
         <p>${escapeHtml(mystery.explanation || "")}</p>
         <div class="hd300-result-line"><b>${solvedData.score || mysteryScore(mystery.id)} XP</b><span>${paidHints ? `${paidHints} indice${paidHints > 1 ? "s" : ""} payant${paidHints > 1 ? "s" : ""}` : "indice de départ offert"}</span><span>${solvedData.tries || tries || 1} essai${(solvedData.tries || tries || 1) > 1 ? "s" : ""}</span>${solvedData.guided ? "<span>mode guidé</span>" : ""}</div>
         ${rewardLine ? `<p class="reward-feedback">${escapeHtml(rewardLine)}</p>` : ""}
+        ${lesson ? `<div class="hd34-solved-next"><button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="express">Comprendre la réponse →</button><button class="ghost" data-home-stop>Retour à l’accueil</button></div>` : `<div class="hd34-solved-next"><button data-home-stop>Retour à l’accueil</button></div>`}
       </div>` : `<section class="hd300-answer-zone hd325-answer-zone rc26-answer-zone ${guidedMode ? "is-guided" : "is-free"}">
-        <span class="rc26-your-turn">À toi</span>
-        ${guidedMode && guidedChoices.length >= 3 ? `<div class="hd310-choice-grid rc26-choice-grid" role="group" aria-label="Propositions de réponse">${guidedChoices.map((choice, index) => `<button type="button" class="hd310-answer-choice" data-guided-answer="${escapeHtml(choice)}"><i>${String.fromCharCode(65 + index)}</i><span>${escapeHtml(choice)}</span></button>`).join("")}</div>` : ""}
-        <form class="guess hd300-guess rc26-guess ${guidedMode ? "hd310-guided-form" : ""}" data-guess>
+        <span class="rc26-your-turn">${guidedMode ? "Choisis ta réponse" : "Ta réponse"}</span>
+        ${guidedMode && guidedChoices.length >= 3 ? `<div class="hd310-choice-grid rc26-choice-grid" role="group" aria-label="Propositions de réponse">${guidedChoices.map((choice, index) => `<button type="button" class="hd310-answer-choice" data-guided-answer="${escapeHtml(choice)}"><i>${String.fromCharCode(65 + index)}</i><span>${escapeHtml(choice)}</span></button>`).join("")}</div><form class="sr-only hd34-guided-submit-bridge" data-guess aria-hidden="true"><input name="mysteryGuess" data-guess-input type="text" tabindex="-1"/><button type="submit" tabindex="-1">Valider</button></form>` : `<form class="guess hd300-guess rc26-guess" data-guess>
           <label class="sr-only" for="mystery-guess">Réponse à l’expédition</label>
           <input id="mystery-guess" name="mysteryGuess" data-guess-input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="done" placeholder="Ta réponse…" required aria-required="true" />
           <button type="submit" data-guess-submit>Valider</button>
-        </form>
+        </form>`}
         <details class="rc26-assist">
           <summary><span>Besoin d’un coup de pouce ?</span><small>${remainingHints ? `${remainingHints} indice${remainingHints > 1 ? "s" : ""} disponible${remainingHints > 1 ? "s" : ""}` : "options de réponse"}</small></summary>
           <div class="rc26-assist-body">
@@ -7748,16 +7748,8 @@ function renderMystery() {
       </section>`}
     </section>
 
-    ${solved && lesson ? `<section class="card after-mystery hd300-next-step">
-      <div><span class="card-label">Étape suivante</span><h2>${HD_ICONS.lesson(lesson, lessonWorld(lesson), disciplineForLessonObject(lesson))} Comprendre la réponse</h2><p>${escapeHtml(lesson.title)}</p></div>
-      <div class="after-actions">
-        <button data-open-lesson="${escapeHtml(lesson.id)}" data-focus="express">Continuer avec le résumé</button>
-        <button class="ghost" data-home-stop>Retour à l’accueil</button>
-      </div>
-    </section>` : ""}
-
-    <details class="hd300-expedition-more">
-      <summary>Archives et classement</summary>
+    <details class="hd300-expedition-more hd34-expedition-more">
+      <summary>Voir les archives</summary>
       <div class="hd300-expedition-more-body">
         ${archiveBacklogMarkup()}
         <section class="mystery-shelf archive-shelf" data-archive-shelf>
@@ -7765,7 +7757,6 @@ function renderMystery() {
           ${state.archiveFeedback ? `<p class="archive-feedback">${escapeHtml(state.archiveFeedback)}</p>` : ""}
           ${archives.map(entry => archiveCard(entry)).join("")}
         </section>
-        <section class="card small-leader social-teaser"><div class="section-title-row"><h2>Classement du jour</h2><button class="ghost mini-button" data-go-rank>Voir</button></div>${leaderboardRows("daily").slice(0,5).map(row => `<div><span>${row.rank}. ${escapeHtml(row.name)}</span><strong>${row.score}</strong></div>`).join("")}</section>
         ${solved ? shareResultMarkup(mystery.id) : ""}
       </div>
     </details>`);

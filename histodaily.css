@@ -11134,3 +11134,238 @@ html.hd287-redesign body::before{
 .rc31-mastery-ring strong{font-size:1.14rem;line-height:1}.rc31-mastery-ring span{font-size:.67rem;color:var(--muted,#aeb9c6);margin-top:3px}
 .rc31-completion-actions{display:flex;gap:10px;flex-wrap:wrap}.rc31-completion-actions button{min-height:44px}.rc31-completion-actions .rc31-secondary{margin-left:auto}
 @media(max-width:620px){.rc31-completion-memory{grid-template-columns:72px 1fr}.rc31-mastery-ring{width:70px;height:70px}.rc31-completion-actions{display:grid;grid-template-columns:1fr}.rc31-completion-actions .rc31-secondary{margin-left:0}}
+
+/* =========================================================
+   HistoDaily RC34 — instinctive flow / visual de-layering
+   Goal: one decision per surface, secondary detail on demand.
+   ========================================================= */
+
+/* Course library: keep the discipline switch available without turning it into a permanent rail. */
+.hd34-discipline-picker{margin:0 0 14px;border:1px solid rgba(255,255,255,.075);border-radius:17px;background:rgba(255,255,255,.032);overflow:hidden}
+.hd34-discipline-picker>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:50px;padding:10px 13px;list-style:none;cursor:pointer}
+.hd34-discipline-picker>summary::-webkit-details-marker{display:none}
+.hd34-discipline-picker>summary>span{display:flex;align-items:center;gap:9px;min-width:0;color:var(--text)}
+.hd34-discipline-picker>summary>span>b{font-size:.86rem}.hd34-discipline-picker>summary>span>small{color:var(--muted);font-size:.65rem;font-weight:800}
+.hd34-discipline-picker>summary>em{color:var(--accent);font-size:.7rem;font-style:normal;font-weight:900}
+.hd34-discipline-picker[open]>summary{border-bottom:1px solid rgba(255,255,255,.06)}
+.hd34-discipline-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:10px}
+.hd34-discipline-grid button{display:grid;grid-template-columns:30px minmax(0,1fr);grid-template-areas:"icon name" "icon progress";gap:1px 8px;align-items:center;min-height:48px;padding:8px 10px;border:1px solid rgba(255,255,255,.065);border-radius:13px;background:rgba(255,255,255,.025);color:var(--text);text-align:left}
+.hd34-discipline-grid button>span{grid-area:icon;display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:color-mix(in srgb,var(--hd214-accent) 15%,rgba(255,255,255,.035));color:var(--hd214-accent)}
+.hd34-discipline-grid button>b{grid-area:name;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.74rem}.hd34-discipline-grid button>small{grid-area:progress;color:var(--muted);font-size:.58rem;font-weight:800}
+.hd34-discipline-grid button.active{border-color:color-mix(in srgb,var(--hd214-accent) 50%,rgba(255,255,255,.08));background:color-mix(in srgb,var(--hd214-accent) 10%,rgba(255,255,255,.025))}
+
+.hd214-chapter-index-screen .hd214-continue-card{margin:2px 0 14px}
+.hd214-chapter-index-screen .hd214-chapters{margin-top:0}
+.hd214-chapter-index-screen .hd214-section-heading{margin:0 2px 8px}
+.hd214-chapter-index-screen .hd214-section-heading h2{font-size:1.04rem}
+
+/* Theme page: a single context header instead of chapter card + world card + repeated heading. */
+.hd34-theme-context{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:2px 0 10px;padding:3px 2px 10px;border-bottom:1px solid rgba(255,255,255,.075)}
+.hd34-theme-context>div:first-child{min-width:0}.hd34-theme-context span{color:var(--hd214-world-accent);font-size:.62rem;font-weight:950;text-transform:uppercase;letter-spacing:.07em}.hd34-theme-context h2{margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1.13rem}
+.hd34-theme-progress{display:grid;grid-template-columns:auto;justify-items:end;min-width:78px}.hd34-theme-progress strong{font-size:.82rem}.hd34-theme-progress small{color:var(--muted);font-size:.56rem}.hd34-theme-progress i{display:block;width:72px;height:4px;margin-top:5px;overflow:hidden;border-radius:99px;background:rgba(255,255,255,.07)}.hd34-theme-progress i b{display:block;height:100%;border-radius:inherit;background:var(--hd214-world-accent)}
+.hd34-lessons-section{margin-top:0!important;padding-top:0!important;border-top:0!important}
+.hd34-lessons-section>.hd214-lesson-filters{margin:0 0 8px}
+
+/* Reader: the header tabs are the stage indicator. Do not repeat another toolbar/progress strip inside the article. */
+.hd34-reader-tabs{margin-top:7px!important;background:rgba(255,255,255,.025)!important}
+.hd34-reader-tabs button{display:grid!important;gap:0!important;align-content:center!important;min-height:42px!important}
+.hd34-reader-tabs button b{font-size:.69rem}.hd34-reader-tabs button small{font-size:.52rem;font-weight:750;opacity:.72}
+.hd34-reader-tabs button.active small{opacity:.72;color:inherit}
+.hd34-reader-page{width:min(100% - 28px,680px)!important;margin:12px auto 0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.hd34-reader-page>.lesson-hook,.hd34-reader-page>.rc26-course-lead{margin:0 0 10px!important}
+.hd34-reader-page .express-coach-card{margin-top:8px!important}
+.hd34-reader-page .complete-course-panel>.section-title-row{display:none!important}
+.hd34-reader-footer{grid-template-columns:1fr!important;width:min(100% - 28px,680px)!important;margin-top:12px!important;padding-top:12px!important}
+.hd34-reader-footer>button{width:100%!important}
+.hd34-reader-toc{margin:0 0 10px;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(255,255,255,.025);overflow:hidden}
+.hd34-reader-toc>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;list-style:none;cursor:pointer;color:var(--text);font-size:.73rem;font-weight:900}
+.hd34-reader-toc>summary::-webkit-details-marker{display:none}.hd34-reader-toc>summary small{color:var(--muted);font-size:.6rem}
+.hd34-reader-toc>nav{display:grid;gap:5px;padding:0 8px 8px}.hd34-reader-toc>nav button{display:flex!important;justify-content:flex-start!important;gap:8px!important;min-height:38px!important;padding:7px 9px!important;border-radius:11px!important;background:rgba(255,255,255,.025)!important;text-align:left!important}.hd34-reader-toc>nav button span{flex:0 0 auto;color:var(--accent)}
+
+/* Expedition: guided mode has one obvious action; after success the next step stays inside the result. */
+.hd34-solved-next{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.075)}
+.hd34-solved-next button{min-height:46px;border-radius:14px}.hd34-expedition-more{margin-top:10px!important}
+
+/* Ranking: controls + one compact personal line + the actual ranking. */
+.hd34-rank-screen{display:grid;gap:10px!important}
+.hd34-rank-topbar{margin-bottom:0!important}
+.hd34-rank-controls{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.85fr);gap:8px;align-items:center}
+.hd34-rank-controls .hdsv2-period-tabs,.hd34-rank-controls .hdsv2-audience-tabs{margin:0!important}
+.hd34-my-rank{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(255,255,255,.03)}
+.hd34-my-rank>div{display:grid;min-width:0;margin-right:auto}.hd34-my-rank span{color:var(--muted);font-size:.59rem;font-weight:850;text-transform:uppercase;letter-spacing:.07em}.hd34-my-rank strong{margin-top:1px;font-size:.95rem}.hd34-my-rank>button{width:38px;height:38px;min-height:38px;padding:0;border-radius:12px}.hd34-my-rank>small{color:#e4b75a;font-size:.58rem;font-weight:800}
+.hd34-leaderboard{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+.hd34-leaderboard-head{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:4px 2px 7px}.hd34-leaderboard-head h2{margin:0;font-size:1.02rem}.hd34-leaderboard-head small{color:var(--muted);font-size:.62rem}
+.hd34-leaderboard .hdsv2-podium,.hd34-leaderboard .hdsv2-rank-list,.hd34-leaderboard .hdsv2-self-position{margin-top:7px}
+
+/* Profile: core information stays visible; exploration/achievement detail is opt-in. */
+.hd34-profile-root{gap:10px!important}
+.hd34-profile-head{margin-bottom:0!important}.hd34-profile-head h1{font-size:1.42rem!important}
+.hd34-profile-fold{margin:0!important}
+.hd34-profile-fold-body{display:grid;gap:10px;padding-top:8px!important}
+.hd34-profile-fold-body>.hd257-orbit-card,.hd34-profile-fold-body>.hd257-collections-card,.hd34-profile-fold-body>.hd257-achievements-card{margin:0!important}
+.hd34-profile-fold-body .hd257-section-head p{max-width:48ch}
+
+@media(max-width:640px){
+  .hd34-discipline-grid{grid-template-columns:1fr}
+  .hd34-rank-controls{grid-template-columns:1fr}
+  .hd34-solved-next{grid-template-columns:1fr}
+  .hd34-theme-context{align-items:flex-start}
+  .hd34-my-rank>small{display:none}
+}
+
+/* =========================================================
+   HistoDaily RC35 — Product polish / mobile-first consistency
+   No new card layer: fewer visual containers, stronger hierarchy.
+   ========================================================= */
+:root{
+  --hd35-radius-xl:24px;
+  --hd35-radius-card:18px;
+  --hd35-radius-control:14px;
+  --hd35-gap:12px;
+  --hd35-line:rgba(255,255,255,.078);
+  --hd35-surface:rgba(255,255,255,.032);
+  --hd35-surface-strong:rgba(255,255,255,.055);
+  --hd35-shadow:0 14px 36px rgba(0,0,0,.18);
+}
+html.hd35-polish{scroll-behavior:smooth;background:#040a12}
+html.hd35-polish body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+html.hd35-polish *,html.hd35-polish *::before,html.hd35-polish *::after{box-sizing:border-box}
+html.hd35-polish .app-shell{overflow-x:clip}
+
+/* Controls: tactile and predictable, but not over-animated. */
+html.hd35-polish button,
+html.hd35-polish [role="button"],
+html.hd35-polish summary{
+  -webkit-user-select:none;user-select:none;
+}
+html.hd35-polish button,
+html.hd35-polish [role="button"]{
+  transition:transform .12s ease,border-color .16s ease,background-color .16s ease,filter .16s ease,opacity .16s ease;
+}
+html.hd35-polish button:active:not(:disabled),
+html.hd35-polish [role="button"]:active:not([aria-disabled="true"]){transform:scale(.985)}
+html.hd35-polish :where(button,[role="button"],a,input,textarea,select,summary):focus-visible{
+  outline:2px solid color-mix(in srgb,var(--discipline-accent,var(--accent,#f2c75c)) 82%,white);
+  outline-offset:3px;
+}
+html.hd35-polish button:disabled,
+html.hd35-polish [aria-disabled="true"]{opacity:.55!important;filter:saturate(.65)}
+html.hd35-polish .hd35-pending{position:relative;pointer-events:none}
+html.hd35-polish .hd35-pending::after{content:"";width:14px;height:14px;margin-left:5px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;display:inline-block;vertical-align:-2px;animation:hd35-spin .65s linear infinite}
+@keyframes hd35-spin{to{transform:rotate(360deg)}}
+
+/* One quiet language for generic surfaces. Legacy cards keep their identity, but nested lists stop looking like cards inside cards. */
+html.hd35-polish .hd35-screen>.card,
+html.hd35-polish .hd35-screen>section.card{border-color:var(--hd35-line)}
+html.hd35-polish .hd34-discipline-picker,
+html.hd35-polish .hd34-reader-toc,
+html.hd35-polish .hd34-my-rank,
+html.hd35-polish .hd34-profile-fold{border-color:var(--hd35-line);box-shadow:none}
+html.hd35-polish .hd34-discipline-picker,
+html.hd35-polish .hd34-reader-toc{background:var(--hd35-surface)}
+html.hd35-polish details>summary{touch-action:manipulation}
+html.hd35-polish details>summary em{transition:transform .18s ease}
+html.hd35-polish details[open]>summary em{transform:rotate(90deg)}
+
+/* Home: keep the cinematic hook, but show more of the product before the first scroll. */
+@media(max-width:520px){
+  html.hd35-polish.hd324-premium-home .rc24-hero{min-height:438px}
+  html.hd35-polish.hd324-premium-home .rc24-home{gap:10px}
+  html.hd35-polish.hd324-premium-home .rc24-universes summary{min-height:54px;padding-inline:14px}
+}
+@media(max-width:390px){
+  html.hd35-polish.hd324-premium-home .rc24-hero{min-height:420px}
+}
+
+/* Course library: rows are navigation, not independent floating cards. */
+html.hd35-polish .hd214-chapter-list,
+html.hd35-polish .hd214-lesson-list{gap:5px}
+html.hd35-polish .hd214-chapter-row,
+html.hd35-polish .hd214-lesson-row{
+  border-radius:14px;
+  border-color:rgba(255,255,255,.06);
+  background:rgba(255,255,255,.022);
+  box-shadow:none;
+}
+html.hd35-polish .hd214-chapter-row:hover,
+html.hd35-polish .hd214-lesson-row:hover{background:rgba(255,255,255,.04)}
+html.hd35-polish .hd214-chapter-row.in-progress,
+html.hd35-polish .hd214-lesson-row.started{background:color-mix(in srgb,var(--accent) 6%,rgba(255,255,255,.018))}
+html.hd35-polish .hd214-chapter-row.done,
+html.hd35-polish .hd214-lesson-row.done{background:rgba(72,213,151,.035)}
+html.hd35-polish .hd34-discipline-grid{gap:5px;padding:7px}
+html.hd35-polish .hd34-discipline-grid button{border-radius:12px;background:rgba(255,255,255,.018)}
+
+/* Reader: typography carries the experience instead of surrounding chrome. */
+html.hd35-polish .hd34-reader-page{margin-top:16px!important}
+html.hd35-polish .hd34-reader-page :where(p,li){font-size:1rem;line-height:1.67}
+html.hd35-polish .hd34-reader-page :where(h2,h3){letter-spacing:-.022em;line-height:1.15}
+html.hd35-polish .hd34-reader-page h2{margin-top:1.55em}
+html.hd35-polish .hd34-reader-page h3{margin-top:1.35em}
+html.hd35-polish .hd34-reader-page :where(.deep-reading-block,.key-facts,.lesson-example,.lesson-note){box-shadow:none}
+html.hd35-polish .hd34-reader-tabs{border-radius:14px!important}
+html.hd35-polish .hd34-reader-footer{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+html.hd35-polish .hd34-reader-footer>button{border-radius:15px!important;box-shadow:0 12px 28px rgba(0,0,0,.16)}
+@media(max-width:430px){
+  html.hd35-polish .hd34-reader-page{width:min(100% - 30px,680px)!important}
+  html.hd35-polish .hd34-reader-page :where(p,li){font-size:.98rem;line-height:1.64}
+}
+
+/* Expedition: answer area is the only strong surface below the dossier. */
+html.hd35-polish .tab-mystery .hd300-expedition-card{box-shadow:var(--hd35-shadow)!important}
+html.hd35-polish .tab-mystery .hd300-answer-zone{border-top-color:var(--hd35-line)}
+html.hd35-polish .tab-mystery .hd310-choice-grid{gap:8px}
+html.hd35-polish .tab-mystery .hd310-answer-choice{border-radius:14px!important;box-shadow:none!important}
+html.hd35-polish .hd34-solved-next{border-top-color:var(--hd35-line)}
+
+/* Ranking: retain the motivating podium, flatten the long list underneath. */
+html.hd35-polish .hd34-leaderboard .hdsv2-rank-list{display:grid;gap:3px}
+html.hd35-polish .hd34-leaderboard .hdsv2-rank-row{
+  border-radius:13px!important;
+  border-color:rgba(255,255,255,.055)!important;
+  background:rgba(255,255,255,.018)!important;
+  box-shadow:none!important;
+}
+html.hd35-polish .hd34-leaderboard .hdsv2-rank-row.me{background:color-mix(in srgb,var(--accent) 8%,rgba(255,255,255,.022))!important}
+html.hd35-polish .hd34-my-rank{background:rgba(255,255,255,.025)}
+
+/* Profile: fold-outs look secondary by construction. */
+html.hd35-polish .hd34-profile-fold{background:rgba(255,255,255,.018)!important;border-radius:16px!important}
+html.hd35-polish .hd34-profile-fold>summary{min-height:52px;padding:9px 12px!important}
+html.hd35-polish .hd34-profile-fold[open]{background:rgba(255,255,255,.028)!important}
+
+/* Bottom navigation: one consistent dock on every non-immersive screen. */
+html.hd35-polish .bottom-nav.hd183-bottom-nav{
+  width:min(calc(100% - 18px),552px)!important;
+  left:50%!important;right:auto!important;transform:translateX(-50%)!important;
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+  padding:6px!important;
+  border:1px solid rgba(255,255,255,.085)!important;
+  border-radius:22px!important;
+  background:rgba(5,12,20,.92)!important;
+  backdrop-filter:blur(20px) saturate(1.15)!important;
+  box-shadow:0 16px 42px rgba(0,0,0,.34)!important;
+}
+html.hd35-polish .bottom-nav.hd183-bottom-nav .nav-item{min-height:52px!important;border-radius:16px!important}
+html.hd35-polish .bottom-nav.hd183-bottom-nav .nav-item small{font-size:.58rem!important;letter-spacing:0!important}
+
+/* Screen transition: enough feedback to feel responsive, never a theatrical animation. */
+@media(prefers-reduced-motion:no-preference){
+  html.hd35-polish .app-shell.motion-enter>:not(.bottom-nav){animation:hd35-enter .2s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes hd35-enter{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
+}
+@media(prefers-reduced-motion:reduce){
+  html.hd35-polish *,html.hd35-polish *::before,html.hd35-polish *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+
+/* Boot screen: perceived loading without adding another application panel. */
+html.hd35-polish .boot-shell{position:relative;overflow:hidden}
+html.hd35-polish .boot-shell::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.045) 45%,transparent 65%);transform:translateX(-100%);animation:hd35-boot 1.25s ease-in-out infinite;pointer-events:none}
+@keyframes hd35-boot{to{transform:translateX(100%)}}
+/* RC35 first run: one decision screen, not a tutorial carousel. */
+html.hd35-polish .hd35-onboarding-one{gap:13px!important}
+html.hd35-polish .hd35-onboarding-one .hd275-onboarding-top{margin-bottom:2px!important}
+html.hd35-polish .hd35-onboarding-one h1{margin-bottom:2px!important}
+html.hd35-polish .hd35-onboarding-one .hd275-disciplines{margin-top:3px!important}
+html.hd35-polish .hd35-onboarding-one .hd275-actions{grid-template-columns:1fr!important;margin-top:4px!important}
+html.hd35-polish .hd35-onboarding-one .hd275-next{width:100%!important;min-height:54px!important}

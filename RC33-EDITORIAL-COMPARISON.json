@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0-rc.33.0",
+  "methodology_note": "Comparison uses exactly the same final editorial detector on pristine RC32 and RC33. Word count does not enter the editorial score.",
+  "catalogue": {
+    "courses": 209,
+    "mysteries": 158,
+    "quizQuestions": 1045
+  },
+  "baseline": {
+    "courseBands": {
+      "A": 92,
+      "B": 108,
+      "C": 9
+    },
+    "mysteryBands": {
+      "A": 140,
+      "B": 5,
+      "C": 12,
+      "D": 1
+    },
+    "totalSignals": 426,
+    "issueCounts": {
+      "three-caricatured-distractors": 70,
+      "generated-filler-section": 213,
+      "duplicate-section-title": 20,
+      "duplicate-section-number": 27,
+      "malformed-section-title": 2,
+      "generic-quiz-explanation": 13,
+      "no-reasoning-question": 13,
+      "repeated-training-template": 40,
+      "broken-quote-in-explanation": 7,
+      "english-grammar-error-despite-raining": 1,
+      "corrupted-clue-text": 6,
+      "answer-leaked-in-prompt": 13,
+      "intentional-reference-resolution": 1
+    }
+  },
+  "final": {
+    "courseBands": {
+      "A": 209
+    },
+    "mysteryBands": {
+      "A": 158
+    },
+    "totalSignals": 1,
+    "actionableSignals": 0,
+    "issueCounts": {
+      "intentional-reference-resolution": 1
+    }
+  },
+  "actionableSignalsRemoved": 425,
+  "runtimeCorrections": {
+    "removedGeneratedFillerSections": 213,
+    "bespokeEnglishPhilosophyPractices": 32,
+    "automaticQuizExplanationRepairs": 142,
+    "manualQuizExplanationOverrides": 48,
+    "mysteryObjectsRevised": 19,
+    "reasoningQuizUpgrades": 13,
+    "caricaturedDistractorSetsRewritten": 70,
+    "sectionTitlesCorrected": 42
+  },
+  "remaining": [
+    {
+      "kind": "mystery",
+      "id": "english-mystery-one-reference-rc19",
+      "discipline": "english",
+      "severity": "info",
+      "code": "intentional-reference-resolution",
+      "answer": "Charger"
+    }
+  ],
+  "structuralNote": "One course is 278 words against a 280-word secondary floor. It is intentionally left as a non-blocking warning rather than padded to satisfy a count."
+}

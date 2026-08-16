@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0-rc.34.0",
+  "status": "passed",
+  "philosophy": "une action principale visible; contexte secondaire à la demande",
+  "before": {
+    "courseLibrary": "discipline rail + hero + reprise + chapitres",
+    "themePage": "header chapitre + rail thèmes + hero thème + titre cours",
+    "lesson": "tabs header + barre de progression + tabs dans article + CTA article + footer",
+    "expeditionGuided": "3 choix visibles + formulaire technique conservé en arrière-plan",
+    "expeditionSolved": "résultat + carte étape suivante + archives + teaser classement",
+    "ranking": "2 rangées de filtres + grosse carte score explicative + classement",
+    "profile": "hero + carte orbitale + rythme + communauté + progression + collections + succès + réglages tous ouverts"
+  },
+  "after": {
+    "courseLibrary": "sélecteur discipline replié + reprise + chapitres",
+    "themePage": "rail thèmes + contexte actif + liste des cours",
+    "lesson": "tabs uniques + contenu + un CTA contextuel",
+    "expeditionGuided": "3 choix uniquement; champ libre uniquement en mode libre",
+    "expeditionSolved": "résultat et prochaine action fusionnés; archives repliées",
+    "ranking": "filtres + ligne personnelle compacte + classement",
+    "profile": "hero + rythme/communauté + progression; curiosité, collections et succès repliés"
+  },
+  "checks": {
+    "rc33EditorialPatchBundledByBuild": {
+      "pass": true,
+      "detail": "La revue éditoriale RC33 doit être incluse dans le bundle réel."
+    },
+    "courseIndexNoGiantHero": {
+      "pass": true,
+      "detail": "La bibliothèque ne doit plus empiler switch discipline + grand hero + reprise + chapitres."
+    },
+    "themePageNoDuplicateChapterHero": {
+      "pass": true,
+      "detail": "Le chapitre ne doit être présenté qu’une fois."
+    },
+    "themePageNoDuplicateWorldHero": {
+      "pass": true,
+      "detail": "Le thème ne doit pas être répété dans une seconde grande carte."
+    },
+    "readerSingleFormatControl": {
+      "pass": true,
+      "detail": "Un seul sélecteur Express / Complet / Quiz doit rester visible."
+    },
+    "readerNoDuplicateInlineCTA": {
+      "pass": true,
+      "detail": "Les CTA internes redondants doivent être retirés au profit du footer contextuel."
+    },
+    "quizNoSecondFooter": {
+      "pass": true,
+      "detail": "Le quiz possède déjà sa navigation et son bilan : aucun second footer ne doit être ajouté."
+    },
+    "courseNoDecorativeReadingLayers": {
+      "pass": true,
+      "detail": "La lecture ne doit plus empiler phrase à garder + guide + barre de lecture autour du vrai contenu."
+    },
+    "quizSingleCompletionSurface": {
+      "pass": true,
+      "detail": "Le bilan, la maîtrise et la prochaine action doivent être fusionnés dans une seule surface."
+    },
+    "guidedMysteryOneAnswerMode": {
+      "pass": true,
+      "detail": "Le mode guidé doit montrer des choix OU un champ libre, jamais les deux."
+    },
+    "solvedMysteryNextActionMerged": {
+      "pass": true,
+      "detail": "La suite après résolution doit rester dans le résultat, sans carte additionnelle."
+    },
+    "mysteryNoRankingDetour": {
+      "pass": true,
+      "detail": "Le classement n’a rien à faire dans le flux de résolution."
+    },
+    "rankingNoExplanatoryScoreCard": {
+      "pass": true,
+      "detail": "Le classement doit commencer par les filtres puis les positions, pas par une grande carte explicative."
+    },
+    "profileSecondaryWowCollapsed": {
+      "pass": true,
+      "detail": "La progression utile doit précéder les modules décoratifs secondaires."
+    },
+    "homeSingleStageIndicator": {
+      "pass": true,
+      "detail": "Le parcours du jour ne doit pas afficher deux fois le même indicateur d’étape."
+    }
+  },
+  "errors": []
+}

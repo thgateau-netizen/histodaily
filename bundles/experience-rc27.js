@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.32.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.35.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -3889,11 +3889,16 @@
     return started || lessons.find(lesson => !lessonDone(lesson.id)) || lessons[0] || null;
   }
   function disciplineRailMarkup(selectedId){
-    return `<nav class="hd214-discipline-rail" aria-label="Disciplines">${DISCIPLINES.map(discipline => {
-      const progress = disciplineProgress(discipline.id);
-      const active = discipline.id === selectedId;
-      return `<button type="button" data-hd214-discipline="${esc(discipline.id)}" class="${active ? "active" : ""}" style="--hd214-accent:${esc(discipline.accent)}" aria-current="${active ? "true" : "false"}"><span>${HD_ICONS.discipline(discipline)}</span><b>${esc(discipline.title)}</b><small>${progress.ready ? `${progress.progress}%` : "bientôt"}</small></button>`;
-    }).join("")}</nav>`;
+    const current = disciplineById(selectedId);
+    const currentProgress = disciplineProgress(selectedId);
+    return `<details class="hd34-discipline-picker">
+      <summary><span>${HD_ICONS.discipline(current)} <b>${esc(current.title)}</b><small>${currentProgress.ready ? `${currentProgress.progress}%` : "bientôt"}</small></span><em>Changer</em></summary>
+      <div class="hd34-discipline-grid" aria-label="Changer de discipline">${DISCIPLINES.map(discipline => {
+        const progress = disciplineProgress(discipline.id);
+        const active = discipline.id === selectedId;
+        return `<button type="button" data-hd214-discipline="${esc(discipline.id)}" class="${active ? "active" : ""}" style="--hd214-accent:${esc(discipline.accent)}" aria-current="${active ? "true" : "false"}"><span>${HD_ICONS.discipline(discipline)}</span><b>${esc(discipline.title)}</b><small>${progress.ready ? `${progress.progress}%` : "bientôt"}</small></button>`;
+      }).join("")}</div>
+    </details>`;
   }
   function learnTopbarMarkup({ back = "home", title = "Cours", eyebrow = "Bibliothèque" } = {}){
     return `<header class="hd214-learn-topbar"><button type="button" data-hd214-back="${esc(back)}" aria-label="Retour">←</button><div><p>${esc(eyebrow)}</p><h1>${esc(title)}</h1></div><button type="button" class="hd214-search-button" data-hd187-open-search aria-label="Rechercher dans les cours">⌕</button></header>`;
@@ -3920,7 +3925,7 @@
     </button>`;
   }
   function chapterRowsMarkup(groups, disciplineId){
-    return `<section class="hd214-chapters"><div class="hd214-section-heading"><div><span>GRANDS CHAPITRES</span><h2>Choisis une période</h2></div><small>${groups.length} étapes</small></div><div class="hd214-chapter-list">${groups.map((group, index) => {
+    return `<section class="hd214-chapters"><div class="hd214-section-heading"><div><span>PARCOURS</span><h2>Chapitres</h2></div><small>${groups.length}</small></div><div class="hd214-chapter-list">${groups.map((group, index) => {
       const worlds = treeWorldsForGroup(group.id, disciplineId);
       const total = treeLessonCountForGroup(group.id, disciplineId);
       const done = treeDoneCountForGroup(group.id, disciplineId);
@@ -3934,7 +3939,7 @@
     }).join("")}</div></section>`;
   }
   function renderChapterIndex(disciplineId, discipline, groups){
-    renderShell(`${learnTopbarMarkup({ back: "home", title: "Cours", eyebrow: "Bibliothèque" })}${disciplineRailMarkup(disciplineId)}${disciplineHeroMarkup(disciplineId)}${continueMarkup(disciplineId)}${chapterRowsMarkup(groups, disciplineId)}`);
+    renderShell(`${learnTopbarMarkup({ back: "home", title: discipline.title, eyebrow: "Cours" })}${disciplineRailMarkup(disciplineId)}${continueMarkup(disciplineId)}${chapterRowsMarkup(groups, disciplineId)}`);
     const shell = document.querySelector(".app-shell.tab-learn");
     if (shell) { shell.classList.add("hd214-course-library", "hd214-chapter-index-screen"); shell.dataset.hd187Enhanced = "1"; }
     bindLearnActions(disciplineId);
@@ -3971,7 +3976,7 @@
       const status = done ? "Validé" : started ? "En cours" : "À découvrir";
       return `<button type="button" class="hd214-lesson-row ${done ? "done" : ""} ${started ? "started" : ""}" data-hd214-open-lesson="${esc(lesson.id)}">
         <span class="hd214-lesson-number">${String(index + 1).padStart(2, "0")}</span>
-        <span class="hd214-lesson-copy"><small>${esc(content.period || lesson.period || world.timeframe || "Repère historique")}</small><strong>${esc(lessonLabel(lesson))}</strong><em>${lessonMinutes(lesson)} min · Express, complet et quiz</em></span>
+        <span class="hd214-lesson-copy"><small>${esc(content.period || lesson.period || world.timeframe || "Repère historique")}</small><strong>${esc(lessonLabel(lesson))}</strong><em>${lessonMinutes(lesson)} min</em></span>
         <span class="hd214-lesson-state"><i></i><b>${status}</b><em>›</em></span>
       </button>`;
     }).join("")}</div>`;
@@ -3981,11 +3986,10 @@
     const all = activeWorld ? treeLessonsForWorld(activeWorld.id) : [];
     const done = all.filter(lesson => lessonDone(lesson.id)).length;
     const progress = pct(done, all.length);
-    renderShell(`${learnTopbarMarkup({ back: "chapters", title: "Chapitre", eyebrow: discipline.title })}
-      <section class="hd214-chapter-header" style="--hd214-accent:${esc(discipline.accent)}"><div><span>${esc(group.range || "Période")}</span><h2>${esc(chapterDisplayTitle(group.title, "Chapitre"))}</h2><p>${esc(group.description || "Choisis ensuite un thème pour afficher uniquement ses cours.")}</p></div><div><strong>${treeDoneCountForGroup(group.id, disciplineId)}/${treeLessonCountForGroup(group.id, disciplineId) || 0}</strong><small>cours validés</small></div></section>
+    renderShell(`${learnTopbarMarkup({ back: "chapters", title: chapterDisplayTitle(group.title, "Chapitre"), eyebrow: discipline.title })}
       ${themeRailMarkup(worlds, activeWorld)}
-      ${activeWorld ? `<section class="hd214-world-hero" style="--hd214-world-accent:${esc(activeWorld.accent || discipline.accent)}"><div class="hd214-world-icon">${HD_ICONS.world(activeWorld, discipline)}</div><div><span>${esc(activeWorld.timeframe || "Thème")}</span><h2>${esc(activeWorld.title)}</h2><p>${esc(activeWorld.subtitle || "Cours regroupés par sujet pour garder une navigation claire.")}</p></div><div class="hd214-world-progress"><strong>${progress}%</strong><small>${done}/${all.length || 0}</small></div><i><b style="width:${progress}%"></b></i></section>` : ""}
-      <section class="hd214-lessons-section"><div class="hd214-section-heading"><div><span>COURS DU THÈME</span><h2>${activeWorld ? esc(activeWorld.title) : "À venir"}</h2></div><small>${lessons.length}/${all.length || 0}</small></div>${lessonFilterMarkup()}${lessonCardsMarkup(activeWorld, lessons)}</section>`);
+      ${activeWorld ? `<section class="hd34-theme-context" style="--hd214-world-accent:${esc(activeWorld.accent || discipline.accent)}"><div><span>${esc(activeWorld.timeframe || group.range || "Thème")}</span><h2>${esc(activeWorld.title)}</h2></div><div class="hd34-theme-progress"><strong>${done}/${all.length || 0}</strong><small>cours validés</small><i><b style="width:${progress}%"></b></i></div></section>` : ""}
+      <section class="hd214-lessons-section hd34-lessons-section">${lessonFilterMarkup()}${lessonCardsMarkup(activeWorld, lessons)}</section>`);
     const shell = document.querySelector(".app-shell.tab-learn");
     if (shell) { shell.classList.add("hd214-course-library", "hd214-theme-screen"); shell.dataset.hd187Enhanced = "1"; }
     bindLearnActions(disciplineId);
@@ -4063,27 +4067,26 @@
     return { label: "Cours express", meta: "L’essentiel en 90 secondes", progress: 34, stage: "1/3" };
   }
   function readerTabsMarkup(view){
-    return `<nav class="hd214-reader-tabs" aria-label="Format du cours"><button type="button" data-hd214-reader-view="express" class="${view === "express" ? "active" : ""}"><span>1</span><b>Express</b></button><button type="button" data-hd214-reader-view="complete" class="${view === "complete" ? "active" : ""}"><span>2</span><b>Complet</b></button><button type="button" data-hd214-reader-view="quiz" class="${view === "quiz" ? "active" : ""}"><span>3</span><b>Quiz</b></button></nav>`;
+    return `<nav class="hd214-reader-tabs hd34-reader-tabs" aria-label="Format du cours"><button type="button" data-hd214-reader-view="express" class="${view === "express" ? "active" : ""}"><b>Express</b><small>2 min</small></button><button type="button" data-hd214-reader-view="complete" class="${view === "complete" ? "active" : ""}"><b>Complet</b><small>5 min</small></button><button type="button" data-hd214-reader-view="quiz" class="${view === "quiz" ? "active" : ""}"><b>Quiz</b><small>5 questions</small></button></nav>`;
   }
   function readerFooterMarkup(lesson, view){
     const world = lessonWorld(lesson) || {};
     const lessons = treeLessonsForWorld(world.id);
     const index = lessons.findIndex(item => String(item.id) === String(lesson.id));
     const quiz = readerQuizStatus(lesson);
-    const back = `<button type="button" class="ghost" data-hd214-back-theme>← Retour au thème</button>`;
 
     if (view === "express") {
-      return `<footer class="hd214-reader-footer hd215-reader-footer is-reading">${back}<button type="button" data-hd214-footer-view="complete"><span>Étape suivante</span><b>Lire le cours complet</b><em>→</em></button></footer>`;
+      return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-reading"><button type="button" data-hd214-footer-view="complete"><span>Continuer</span><b>Lire le cours complet</b><em>→</em></button></footer>`;
     }
     if (view === "complete") {
-      return `<footer class="hd214-reader-footer hd215-reader-footer is-reading">${back}<button type="button" data-hd214-footer-view="quiz"><span>Dernière étape</span><b>Commencer le quiz</b><em>→</em></button></footer>`;
+      return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-reading"><button type="button" data-hd214-footer-view="quiz"><span>Continuer</span><b>Passer au quiz</b><em>→</em></button></footer>`;
     }
     if (!quiz.finished) {
       const remainingLabel = `${quiz.remaining} question${quiz.remaining > 1 ? "s" : ""} restante${quiz.remaining > 1 ? "s" : ""}`;
-      return `<footer class="hd214-reader-footer hd215-reader-footer is-quiz-running">${back}<button type="button" data-hd214-focus-quiz><span>Quiz en cours · ${quiz.answered}/${quiz.total}</span><b>${remainingLabel}</b><em>↓</em></button></footer>`;
+      return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-quiz-running"><button type="button" data-hd214-focus-quiz><span>Quiz ${quiz.answered}/${quiz.total}</span><b>${remainingLabel}</b><em>↓</em></button></footer>`;
     }
     if (!quiz.passed) {
-      return `<footer class="hd214-reader-footer hd215-reader-footer is-quiz-failed">${back}<button type="button" data-hd214-footer-reset><span>Score ${quiz.correct}/${quiz.total}</span><b>Recommencer le quiz</b><em>↻</em></button></footer>`;
+      return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-quiz-failed"><button type="button" data-hd214-footer-reset><span>Score ${quiz.correct}/${quiz.total}</span><b>Recommencer</b><em>↻</em></button></footer>`;
     }
 
     const next = index >= 0
@@ -4091,25 +4094,27 @@
       : lessons.find(item => !lessonDone(item.id));
     const themeComplete = lessons.length > 0 && lessons.every(item => lessonDone(item.id));
     if (next) {
-      return `<footer class="hd214-reader-footer hd215-reader-footer is-course-complete">${back}<button type="button" data-hd214-next-lesson="${esc(next.id)}"><span>Cours validé · suivant</span><b>${esc(lessonLabel(next))}</b><em>→</em></button></footer>`;
+      return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-course-complete"><button type="button" data-hd214-next-lesson="${esc(next.id)}"><span>Cours suivant</span><b>${esc(lessonLabel(next))}</b><em>→</em></button></footer>`;
     }
-    return `<footer class="hd214-reader-footer hd215-reader-footer is-course-complete">${back}<button type="button" data-hd214-back-theme><span>${themeComplete ? "Thème terminé" : "Cours validé"}</span><b>${themeComplete ? "Voir les autres thèmes" : "Voir les cours à terminer"}</b><em>→</em></button></footer>`;
+    return `<footer class="hd214-reader-footer hd215-reader-footer hd34-reader-footer is-course-complete"><button type="button" data-hd214-back-theme><span>${themeComplete ? "Thème terminé" : "Cours validé"}</span><b>${themeComplete ? "Choisir un autre thème" : "Voir les cours à terminer"}</b><em>→</em></button></footer>`;
   }
   function buildReaderToc(article){
     const panel = article.querySelector(".complete-course-panel");
     if (!panel || article.querySelector(".hd214-reader-toc")) return;
     const sections = Array.from(panel.querySelectorAll(".deep-reading-block"));
-    if (sections.length < 2) return;
+    if (sections.length < 3) return;
     sections.forEach((section, index) => {
       section.dataset.hd214Section = String(index + 1);
       section.id = section.id || `hd214-section-${index + 1}`;
     });
-    const toc = document.createElement("nav");
-    toc.className = "hd214-reader-toc";
-    toc.setAttribute("aria-label", "Sommaire du cours");
-    toc.innerHTML = sections.map((section, index) => `<button type="button" data-hd214-jump="${esc(section.id)}"><span>${String(index + 1).padStart(2, "0")}</span>${esc(section.querySelector("h2")?.textContent || `Partie ${index + 1}`)}</button>`).join("");
+    const toc = document.createElement("details");
+    toc.className = "hd214-reader-toc hd34-reader-toc";
+    toc.innerHTML = `<summary><span>Sommaire</span><small>${sections.length} parties</small></summary><nav aria-label="Sommaire du cours">${sections.map((section, index) => `<button type="button" data-hd214-jump="${esc(section.id)}"><span>${String(index + 1).padStart(2, "0")}</span>${esc(section.querySelector("h2")?.textContent || `Partie ${index + 1}`)}</button>`).join("")}</nav>`;
     panel.insertAdjacentElement("beforebegin", toc);
-    toc.querySelectorAll("[data-hd214-jump]").forEach(button => button.addEventListener("click", () => document.getElementById(button.dataset.hd214Jump)?.scrollIntoView({ behavior: "smooth", block: "start" })));
+    toc.querySelectorAll("[data-hd214-jump]").forEach(button => button.addEventListener("click", () => {
+      document.getElementById(button.dataset.hd214Jump)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      toc.open = false;
+    }));
   }
   function enhanceLesson(){
     const shell = document.querySelector(".app-shell.tab-lesson");
@@ -4130,9 +4135,9 @@
       const back = topbar.querySelector("[data-back-learn]");
       if (back) { back.textContent = "←"; back.setAttribute("aria-label", "Retour au thème"); }
       const copy = topbar.querySelector(":scope > div");
-      if (copy) copy.innerHTML = `<p class="hd214-reader-path">${esc(chapterDisplayTitle(group?.title, discipline?.title || "Cours"))} · ${esc(world.title || "Parcours")}</p><h1>${esc(content.title || lesson.title)}</h1><div class="hd214-reader-meta"><span>${esc(mode.label)}</span><span>${esc(mode.meta)}</span>${lessonDone(lesson.id) ? `<span>✓ Validé</span>` : ""}</div>`;
+      if (copy) copy.innerHTML = `<p class="hd214-reader-path">${esc(chapterDisplayTitle(group?.title, discipline?.title || "Cours"))} · ${esc(world.title || "Parcours")}</p><h1>${esc(content.title || lesson.title)}</h1><div class="hd214-reader-meta"><span>${esc(mode.meta)}</span>${lessonDone(lesson.id) ? `<span>✓ Validé</span>` : ""}</div>`;
       topbar.querySelectorAll(".lesson-view-tabs,.hd183-lesson-tabs,.hd214-reader-tabs,.hd214-reader-stage").forEach(node => node.remove());
-      topbar.insertAdjacentHTML("beforeend", `${readerTabsMarkup(view)}<div class="hd214-reader-stage"><span>${esc(mode.meta)}</span><i><b style="width:${mode.progress}%"></b></i><strong>${esc(mode.stage)}</strong></div>`);
+      topbar.insertAdjacentHTML("beforeend", readerTabsMarkup(view));
       topbar.querySelectorAll("[data-hd214-reader-view]").forEach(button => button.addEventListener("click", () => {
         const nextView = button.dataset.hd214ReaderView;
         if (nextView === view) return;
@@ -4142,8 +4147,9 @@
     }
     const article = shell.querySelector(".lesson-full-page,.reading-card");
     if (article) {
-      article.classList.add("hd214-reader-page");
-      article.querySelectorAll(".lesson-choice-panel").forEach(node => node.remove());
+      article.classList.add("hd214-reader-page", "hd34-reader-page");
+      article.querySelectorAll(".lesson-choice-panel,.rc26-course-toolbar,.lesson-next-choice").forEach(node => node.remove());
+      if (view === "quiz") article.querySelectorAll(".beta165-quiz-facts,.key-facts").forEach(node => node.remove());
       const hook = article.querySelector(".lesson-hook");
       if (hook) {
         hook.classList.add("hd214-reader-hook");
@@ -4158,7 +4164,7 @@
       article.querySelectorAll(".express-steps.clean-express > div").forEach((node, index) => { node.dataset.hd214Step = String(index + 1); const title = node.querySelector("b"); if (title) title.textContent = String(title.textContent || "").replace(/^\s*\d+\s*[·.:-]\s*/, ""); });
       if (view === "complete") buildReaderToc(article);
       article.querySelectorAll(".deep-reading-block").forEach((node, index) => node.dataset.hd214Section = String(index + 1));
-      article.insertAdjacentHTML("afterend", readerFooterMarkup(lesson, view));
+      if (view !== "quiz") article.insertAdjacentHTML("afterend", readerFooterMarkup(lesson, view));
     }
     shell.querySelectorAll("[data-hd214-footer-view]").forEach(button => button.addEventListener("click", () => {
       const nextView = button.dataset.hd214FooterView;
@@ -7752,13 +7758,15 @@
     const pending = pendingScoreCount();
     const audienceLabel = context.audience === "friends" ? "Ton cercle" : "Tous les joueurs";
 
-    renderShell(`<div class="hdsv2-screen hdsv2-rank-screen">
-      <header class="hdsv2-topbar"><div><p class="eyebrow">Classements</p><h1>${esc(periodLabel(context.period))}</h1></div><button type="button" class="hdsv2-profile-shortcut" data-open-profile aria-label="Ouvrir le profil">${esc(pseudo().charAt(0).toUpperCase() || "P")}</button></header>
-      <nav class="hdsv2-period-tabs" aria-label="Période">${[["daily", "Jour", "Aujourd’hui"], ["week", "Semaine", "Cette semaine"], ["year", "Année", "Cette année"]].map(([period, shortLabel, fullLabel]) => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}" aria-label="${fullLabel}" aria-current="${context.period === period ? "page" : "false"}">${shortLabel}</button>`).join("")}</nav>
-      <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Tous</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
-      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">${context.period === "year" ? "Ta progression" : "Ta performance"} · ${esc(audienceLabel)}</span><h2>${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "points"}</h2><p>${context.period === "year" ? "L’année classe la progression réelle : cours, quiz, révisions, ateliers et expéditions alimentent ton XP." : context.audience === "friends" ? `Ta place parmi ${Math.max(1, s.friends.length + 1)} joueur${s.friends.length ? "s" : ""} de ton cercle.` : `Total de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" class="ghost" data-social-refresh>Mettre à jour</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${context.period === "year" ? Number(me?.level || levelValue()) : Number(me?.solvedInPeriod || 0)}</b><span>${context.period === "year" ? "niveau" : "dossiers comptés"}</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div>${context.period === "year" ? `<small class="hdsv2-zero-friends">L’XP déjà visible sur les profils est reprise automatiquement : un joueur actif n’apparaît plus artificiellement à 0.</small>` : ""}<div class="hdsv2-sync-line"><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${pending ? `<span class="hdsv2-sync-pill pending"><i></i>${pending} score${pending > 1 ? "s" : ""} à envoyer</span>` : `<span class="hdsv2-sync-pill ok">✓ aucun score en attente</span>`}</div>${context.period === "daily" && context.audience === "general" ? `<small class="hdsv2-zero-friends">Tous les joueurs inscrits sont affichés, y compris ceux qui n’ont pas encore marqué de point aujourd’hui.</small>` : ""}${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score ${Number(status.zeroScoreFriendCount) > 1 ? "restent" : "reste"} visible${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""}.</small>` : ""}</section>
+    renderShell(`<div class="hdsv2-screen hdsv2-rank-screen hd34-rank-screen">
+      <header class="hdsv2-topbar hd34-rank-topbar"><div><p class="eyebrow">Classement</p><h1>${esc(audienceLabel)}</h1></div></header>
+      <div class="hd34-rank-controls">
+        <nav class="hdsv2-period-tabs" aria-label="Période">${[["daily", "Jour", "Aujourd’hui"], ["week", "Semaine", "Cette semaine"], ["year", "Année", "Cette année"]].map(([period, shortLabel, fullLabel]) => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}" aria-label="${fullLabel}" aria-current="${context.period === period ? "page" : "false"}">${shortLabel}</button>`).join("")}</nav>
+        <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Tous</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
+      </div>
+      <section class="hd34-my-rank" aria-label="Ta position"><div><span>Toi · ${esc(periodLabel(context.period))}</span><strong>${me?.rank ? `#${me.rank} · ` : ""}${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "pts"}</strong></div><button type="button" class="ghost" data-social-refresh aria-label="Actualiser le classement">↻</button>${pending ? `<small>${pending} score${pending > 1 ? "s" : ""} à envoyer</small>` : status.phase === "error" ? `<small>Actualisation indisponible</small>` : ""}</section>
       ${context.audience === "friends" ? requestMarkup() : ""}
-      <section class="card hdsv2-card hdsv2-leaderboard"><div class="hdsv2-section-head hdsv2-ranking-head"><div><span class="card-label">${context.audience === "friends" ? "Entre amis" : "Classement général"}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2><p>${context.audience === "friends" ? "Ta position reste affichée au-dessus du classement, même loin du podium." : "Le podium met en avant les trois premiers, puis la liste complète continue juste dessous."}</p></div></div>${leaderboardMarkup(rows, context, status)}</section>
+      <section class="hdsv2-leaderboard hd34-leaderboard"><div class="hd34-leaderboard-head"><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2><small>${context.period === "year" ? "classés par XP" : context.audience === "friends" ? "dans ton cercle" : "classement général"}</small></div>${leaderboardMarkup(rows, context, status)}</section>
       ${context.audience === "friends" ? friendsMarkup({ includeAdd: true, context }) : ""}
     </div>`);
 
@@ -8044,14 +8052,13 @@
   renderProfile = function socialV2RenderProfile() {
     const s = social();
     const model = profileCuriosityModel();
-    renderShell(`<div class="hdsv2-screen hdsv2-profile-screen hd257-profile-root">
-      <header class="hd257-page-head"><div><p class="eyebrow">Espace joueur</p><h1>Ton profil</h1></div><button type="button" class="ghost" data-home>Accueil</button></header>
+    renderShell(`<div class="hdsv2-screen hdsv2-profile-screen hd257-profile-root hd34-profile-root">
+      <header class="hd257-page-head hd34-profile-head"><div><p class="eyebrow">Profil</p><h1>${esc(pseudo())}</h1></div></header>
       ${profileHeroMarkup(model)}
-      ${profileOrbitMarkup(model)}
       <section class="hd257-dashboard">${profileRhythmMarkup()}${profileCommunityMarkup(s)}</section>
       ${profileProgressMarkup(model)}
-      ${profileCollectionsMarkup()}
-      ${profileAchievementsMarkup(s)}
+      <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("spark")}</span><div><b>Carte de curiosité et collections</b><small>Affinités, univers explorés et trophées</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileOrbitMarkup(model)}${profileCollectionsMarkup()}</div></details>
+      <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("trophy")}</span><div><b>Succès</b><small>Objectifs débloqués et prochain défi</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileAchievementsMarkup(s)}</div></details>
       ${profileDetailsMarkup(s)}
     </div>`);
     sealSocialProfileShell();
@@ -9240,37 +9247,23 @@
     const disciplines = readyDisciplines().map(disciplineInfo);
     const selected = disciplines.find(item => item.id === selectedDiscipline) || disciplines[0];
     if (selected) selectedDiscipline = selected.id;
-    const commonTop = `<div class="hd275-onboarding-top"><div class="hd275-logo"><i>⌛</i><span>HistoDaily</span></div><span class="hd275-step-count">${step + 1} / 2</span></div>`;
-    let content = "";
-    if (step === 0) content = `${commonTop}
+    return `<div class="hd275-onboarding-inner hd35-onboarding-one" style="--hd275-accent:${esc(selected?.accent || "#f6c453")}">
+      <div class="hd275-onboarding-top"><div class="hd275-logo"><i>⌛</i><span>HistoDaily</span></div></div>
       <p class="hd275-kicker">Ta dose quotidienne de culture</p>
-      <h1>Un dossier.<br>Trois choix.<br>Quelques minutes.</h1>
-      <p class="hd275-lead">Tu lis une situation, tu déduis la meilleure réponse, puis l’app t’explique le pourquoi. Les premières expéditions sont volontairement accessibles.</p>
-      <div class="hd275-flow hd310-onboarding-flow">
-        <article><span>1</span><div><b>Déduis</b><small>Un contexte et un premier indice sont déjà visibles.</small></div></article>
-        <article><span>2</span><div><b>Choisis</b><small>Au début, trois propositions évitent l’effet « question de concours ».</small></div></article>
-        <article><span>3</span><div><b>Comprends</b><small>La réponse ouvre ensuite le résumé, le cours et le quiz.</small></div></article>
-      </div>`;
-    if (step === 1) content = `${commonTop}
-      <p class="hd275-kicker">Choisis ton premier univers</p>
-      <h1>Par quoi veux-tu commencer ?</h1>
-      <p class="hd275-lead">Ce choix règle seulement ton accueil. Tous les autres univers restent accessibles à tout moment.</p>
-      <div class="hd275-disciplines">${disciplines.map(item => `<button type="button" class="hd275-discipline ${item.id === selectedDiscipline ? "is-selected" : ""}" data-hd275-discipline="${esc(item.id)}" style="--discipline-accent:${esc(item.accent || "#f6c453")}"><span>${item.icon}</span><div><b>${esc(item.title)}</b><small>${item.lessons} cours disponibles</small></div></button>`).join("")}</div>
-      ${selected?.id === "english" ? '<div class="hd275-selected-note"><b>Anglais</b><span>Contexte, écoute, registre, reformulation et implicite — pas de listes de mots à réciter.</span></div>' : selected?.id === "philosophy" ? '<div class="hd275-selected-note"><b>Philosophie</b><span>Arguments, distinctions, objections et expériences de pensée avant la récitation d’auteurs.</span></div>' : ""}`;
-    return `<div class="hd275-onboarding-inner" style="--hd275-accent:${esc(selected?.accent || "#f6c453")}">${content}
-      <div class="hd275-actions">${step > 0 ? '<button type="button" class="hd275-back" data-hd275-back>Retour</button>' : ""}<button type="button" class="hd275-next" data-hd275-next>${step < 1 ? "Continuer" : (replayMode ? "Fermer" : "Lancer mon expédition")}</button></div>
-      ${step === 1 && !replayMode ? '<button type="button" class="hd275-skip" data-hd275-home>Voir d’abord l’accueil</button>' : ""}
-      <div class="hd275-dots" aria-hidden="true">${[0,1].map(index => `<i class="${index === step ? "is-active" : ""}"></i>`).join("")}</div>
+      <h1>Un dossier.<br>Quelques minutes.<br>Une chose retenue.</h1>
+      <p class="hd275-lead">Lis le contexte, choisis la réponse qui te paraît la plus logique, puis comprends pourquoi. Commence simplement par l’univers qui t’attire.</p>
+      <div class="hd275-disciplines">${disciplines.map(item => `<button type="button" class="hd275-discipline ${item.id === selectedDiscipline ? "is-selected" : ""}" data-hd275-discipline="${esc(item.id)}" style="--discipline-accent:${esc(item.accent || "#f6c453")}"><span>${item.icon}</span><div><b>${esc(item.title)}</b><small>${item.lessons} cours</small></div></button>`).join("")}</div>
+      ${selected?.id === "english" ? '<div class="hd275-selected-note"><b>Anglais</b><span>Comprendre le sens, le registre et l’implicite — pas réciter des listes de mots.</span></div>' : selected?.id === "philosophy" ? '<div class="hd275-selected-note"><b>Philosophie</b><span>Raisonner, distinguer et objecter avant de réciter des auteurs.</span></div>' : ""}
+      <div class="hd275-actions"><button type="button" class="hd275-next" data-hd275-next>${replayMode ? "Fermer" : "Lancer mon expédition"}</button></div>
+      ${!replayMode ? '<button type="button" class="hd275-skip" data-hd275-home>Voir d’abord l’accueil</button>' : ""}
     </div>`;
   }
 
   function bindOverlay(){
     overlay?.querySelector("[data-hd275-next]")?.addEventListener("click", () => {
-      if (step < 1) { step += 1; draw(); }
-      else if (replayMode) close();
+      if (replayMode) close();
       else complete("mystery");
     });
-    overlay?.querySelector("[data-hd275-back]")?.addEventListener("click", () => { step = Math.max(0, step - 1); draw(); });
     overlay?.querySelector("[data-hd275-home]")?.addEventListener("click", () => complete("home"));
     overlay?.querySelectorAll("[data-hd275-discipline]").forEach(button => button.addEventListener("click", () => {
       selectedDiscipline = button.dataset.hd275Discipline || "history";
@@ -9779,21 +9772,6 @@
       let html = String(previousRenderLessonText(lesson, content) || '');
       const memory = takeawayText(lesson, content);
 
-      if (view === 'express') {
-        const card = `<aside class="hd283-memory-card"><span>La phrase à garder</span><p>${esc(memory)}</p></aside>`;
-        if (!html.includes('hd283-memory-card')) {
-          html = html.replace(/<section class="lesson-next-choice"/, `${card}<section class="lesson-next-choice"`);
-        }
-      }
-
-      if (view === 'complete') {
-        const blocks = Array.isArray(content?.complete) ? content.complete.filter(Boolean).length : 0;
-        const guide = `<div class="hd283-reading-guide"><span>Lecture guidée</span><p>${blocks || 'Plusieurs'} parties courtes : avance à ton rythme, le sommaire reste accessible en haut du cours.</p></div>`;
-        if (!html.includes('hd283-reading-guide')) {
-          html = html.replace(/(<section class="complete-course-panel"[^>]*>)/, `$1${guide}`);
-        }
-      }
-
       if (view === 'quiz') {
         const snapshot = quizSnapshot(lesson, content);
         html = html.replace(/class="quiz-section isolated-quiz final-quiz/, `class="quiz-section isolated-quiz final-quiz hd283-quiz-surface${snapshot.finished ? ' hd283-quiz-complete' : ''}`);
@@ -9866,11 +9844,6 @@
     const view = ['express', 'complete', 'quiz'].includes(state?.lessonView) ? state.lessonView : 'express';
     shell.dataset.hd283View = view;
 
-    const header = shell.querySelector('.hd214-reader-header,.lesson-full-topbar');
-    if (header && view !== 'quiz' && !header.querySelector('.hd283-reader-progress')) {
-      header.insertAdjacentHTML('beforeend', `<div class="hd283-reader-progress" role="progressbar" aria-label="Progression dans la lecture" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span><i></i></span><small>${view === 'complete' ? 'Début du cours' : 'Lecture express'}</small><b>0%</b></div>`);
-    }
-
     shell.querySelectorAll('.deep-reading-block').forEach((section, index) => {
       section.style.setProperty('--hd283-section-order', String(index));
     });
@@ -9879,15 +9852,12 @@
     if (result) result.setAttribute('tabindex', '-1');
 
     installSectionObserver(shell);
-    scheduleProgress();
   }
 
   function run() {
     try { enhanceLesson(); } catch (error) { try { console.warn('HistoDaily RC8 course polish', error); } catch {} }
   }
 
-  window.addEventListener('scroll', scheduleProgress, { passive: true });
-  window.addEventListener('resize', scheduleProgress, { passive: true });
   const observer = new MutationObserver(() => window.requestAnimationFrame(run));
   observer.observe(document.documentElement, { childList: true, subtree: true });
   window.addEventListener('DOMContentLoaded', run, { once: true });
@@ -11157,7 +11127,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.32.0";
+  const VERSION = "1.0.0-rc.35.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11270,7 +11240,7 @@
       <section class="rc24-hero${heroClass}" aria-labelledby="rc24-hero-title">
         <div class="rc24-hero-image" aria-hidden="true"></div>
         <div class="rc24-hero-vignette" aria-hidden="true"></div>
-        <div class="rc24-hero-top"><span>Aujourd’hui · ${esc(disciplineName(d))}</span><small>${s.index>3?"✓":`${routeIndex}/3`}</small></div>
+        <div class="rc24-hero-top"><span>Aujourd’hui · ${esc(disciplineName(d))}</span></div>
         <div class="rc24-hero-content">
           <p>${esc(s.kicker)}</p>
           <h2 id="rc24-hero-title">${esc(s.title)}</h2>
@@ -11472,7 +11442,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.32.0";
+  const VERSION = "1.0.0-rc.35.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -11542,10 +11512,10 @@
     const memory = memoryStatus(lesson);
     const next = nextLesson(lesson);
     const nextTitle = next ? String(next.title || "Cours suivant") : "";
-    return `<section class="rc31-completion" aria-label="Suite du parcours">
+    return `<section class="rc31-completion hd34-course-result" aria-label="Bilan et suite du parcours">
       <div class="rc31-completion-memory">
         <div class="rc31-mastery-ring" style="--rc31-mastery:${memory.mastery}" aria-label="Maîtrise ${memory.mastery} pour cent"><strong>${memory.mastery}%</strong><span>maîtrise</span></div>
-        <div><span class="card-label">Ce qui se passe maintenant</span><h3>${esc(memory.label)}</h3><p>${esc(memory.detail)}</p></div>
+        <div><span class="card-label">Bilan · ${snapshot.correct}/${snapshot.total}</span><h3>${snapshot.correct === snapshot.total ? "Parfaitement validé" : "Cours validé"}</h3><p><strong>${esc(memory.label)}.</strong> ${esc(memory.detail)}</p></div>
       </div>
       <div class="rc31-completion-actions">
         ${memory.due ? `<button type="button" data-rc31-review="${esc(lessonDiscipline(lesson))}">Réviser maintenant</button>` : ""}
@@ -11571,14 +11541,7 @@
       const hero = fragment.querySelector(".hd283-quiz-result-hero");
       const quiz = fragment.querySelector(".beta165-quiz-runner,.final-quiz");
 
-      if (hero) {
-        const label = hero.querySelector(".card-label");
-        if (label) label.textContent = "Bilan du cours";
-        const title = hero.querySelector("h2");
-        if (title && snapshot.passed) title.textContent = snapshot.correct === snapshot.total ? "Parfaitement validé" : "Cours validé";
-        const copy = hero.querySelector("p");
-        if (copy && snapshot.passed) copy.textContent = "Tu as validé l’essentiel. La maîtrise se consolide maintenant avec des rappels espacés, pas avec une relecture immédiate.";
-      }
+      hero?.remove();
 
       if (quiz) {
         quiz.classList.add("rc31-quiz-finish");
@@ -11627,6 +11590,100 @@
   window.setTimeout(() => bind(document), 0);
 
   window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, qualityPassRC31: true };
+})();
+
+;
+
+/* ===== SOURCE: product-polish-rc35.js ===== */
+/* HistoDaily RC35 — product polish: coherent mobile interaction without new feature layers. */
+(() => {
+  "use strict";
+  const VERSION = "1.0.0-rc.35.0";
+  const root = document.documentElement;
+  const app = document.getElementById("app");
+  let scheduled = false;
+
+  root.classList.add("hd35-polish");
+  root.dataset.productPolish = "rc35";
+
+  function syncDetails(details) {
+    const summary = details.querySelector(":scope > summary");
+    if (!summary) return;
+    summary.setAttribute("aria-expanded", details.open ? "true" : "false");
+    if (details.dataset.hd35ToggleBound === "1") return;
+    details.dataset.hd35ToggleBound = "1";
+    details.addEventListener("toggle", () => summary.setAttribute("aria-expanded", details.open ? "true" : "false"), { passive: true });
+  }
+
+  function decorateNav(shell) {
+    shell.querySelectorAll(".bottom-nav .nav-item").forEach(button => {
+      if (button.classList.contains("active")) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
+  }
+
+  function decoratePrimaryActions(shell) {
+    shell.querySelectorAll(".hd35-primary-action").forEach(node => node.classList.remove("hd35-primary-action"));
+    const candidate =
+      shell.querySelector(".rc24-hero-cta") ||
+      shell.querySelector(".hd214-continue-card") ||
+      shell.querySelector(".hd34-reader-footer > button") ||
+      shell.querySelector(".hd300-guess button[type='submit']") ||
+      shell.querySelector(".rc31-completion-actions button:not(.rc31-secondary)");
+    candidate?.classList.add("hd35-primary-action");
+  }
+
+  function decorateLongLists(shell) {
+    shell.querySelectorAll(".hd214-chapter-row,.hd214-lesson-row,.hdsv2-rank-row").forEach(row => row.classList.add("hd35-list-row"));
+  }
+
+  function decorateRefresh(shell) {
+    shell.querySelectorAll("[data-social-refresh]").forEach(button => {
+      if (button.dataset.hd35PendingBound === "1") return;
+      button.dataset.hd35PendingBound = "1";
+      button.addEventListener("click", () => {
+        button.classList.add("hd35-pending");
+        button.setAttribute("aria-busy", "true");
+        window.setTimeout(() => {
+          if (!button.isConnected) return;
+          button.classList.remove("hd35-pending");
+          button.removeAttribute("aria-busy");
+        }, 650);
+      }, { passive: true });
+    });
+  }
+
+  function polish() {
+    scheduled = false;
+    const shell = app?.querySelector(".app-shell");
+    if (!shell) return;
+    shell.classList.add("hd35-screen");
+    shell.querySelectorAll("details").forEach(syncDetails);
+    decorateNav(shell);
+    decoratePrimaryActions(shell);
+    decorateLongLists(shell);
+    decorateRefresh(shell);
+  }
+
+  function schedule() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(polish);
+  }
+
+  if (app && typeof MutationObserver === "function") {
+    new MutationObserver(schedule).observe(app, { childList: true, subtree: true });
+  }
+  schedule();
+
+  try {
+    window.HistoDaily = {
+      ...(window.HistoDaily || {}),
+      version: VERSION,
+      productPolishVersion: VERSION,
+      productPolish: true
+    };
+  } catch {}
 })();
 
 ;

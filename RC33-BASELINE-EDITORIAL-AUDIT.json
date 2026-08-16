@@ -1,0 +1,4170 @@
+{
+  "version": "1.0.0-rc.32.0",
+  "methodology": {
+    "note": "Audit qualitatif structurel : redondance, remplissage générique, spécificité des exercices, qualité des explications de quiz, plausibilité minimale des distracteurs, cohérence des sections, intégrité des formulations et mystères qui ne doivent jamais révéler leur réponse. La longueur n’entre pas dans le score.",
+    "interpretation": "La bande A signifie qu’aucun défaut couvert par cette grille n’a été détecté. Elle ne constitue ni une certification factuelle phrase par phrase ni une note absolue de qualité littéraire.",
+    "courseDimensions": [
+      "distinctiveness",
+      "pedagogical-specificity",
+      "quiz-explanation-quality",
+      "reasoning-balance",
+      "distractor-plausibility",
+      "section-coherence",
+      "language-integrity"
+    ],
+    "mysteryDimensions": [
+      "answer-concealment",
+      "clue-distinctiveness",
+      "explanation-value",
+      "text-integrity"
+    ]
+  },
+  "catalogue": {
+    "courses": 209,
+    "mysteries": 158,
+    "quizQuestions": 1045
+  },
+  "courseGrades": {
+    "A": 92,
+    "B": 108,
+    "C": 9
+  },
+  "mysteryGrades": {
+    "A": 140,
+    "B": 5,
+    "C": 12,
+    "D": 1
+  },
+  "byDiscipline": {
+    "art": {
+      "courses": 12,
+      "courseAverage": 90.9,
+      "courseGrades": {
+        "A": 8,
+        "B": 3,
+        "C": 1
+      },
+      "mysteries": 12,
+      "mysteryAverage": 97.5,
+      "mysteryGrades": {
+        "A": 11,
+        "C": 1
+      }
+    },
+    "astronomy": {
+      "courses": 27,
+      "courseAverage": 89.6,
+      "courseGrades": {
+        "B": 9,
+        "A": 18
+      },
+      "mysteries": 17,
+      "mysteryAverage": 96.5,
+      "mysteryGrades": {
+        "A": 15,
+        "C": 2
+      }
+    },
+    "cinema": {
+      "courses": 11,
+      "courseAverage": 90.6,
+      "courseGrades": {
+        "A": 7,
+        "B": 3,
+        "C": 1
+      },
+      "mysteries": 11,
+      "mysteryAverage": 97.3,
+      "mysteryGrades": {
+        "A": 10,
+        "C": 1
+      }
+    },
+    "economy": {
+      "courses": 10,
+      "courseAverage": 89.4,
+      "courseGrades": {
+        "A": 4,
+        "B": 6
+      },
+      "mysteries": 11,
+      "mysteryAverage": 96.2,
+      "mysteryGrades": {
+        "A": 10,
+        "D": 1
+      }
+    },
+    "english": {
+      "courses": 16,
+      "courseAverage": 84.5,
+      "courseGrades": {
+        "C": 3,
+        "B": 12,
+        "A": 1
+      },
+      "mysteries": 14,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 14
+      }
+    },
+    "geography": {
+      "courses": 11,
+      "courseAverage": 87.1,
+      "courseGrades": {
+        "A": 3,
+        "B": 6,
+        "C": 2
+      },
+      "mysteries": 12,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 12
+      }
+    },
+    "history": {
+      "courses": 64,
+      "courseAverage": 89.7,
+      "courseGrades": {
+        "A": 32,
+        "B": 31,
+        "C": 1
+      },
+      "mysteries": 29,
+      "mysteryAverage": 96.1,
+      "mysteryGrades": {
+        "A": 24,
+        "B": 2,
+        "C": 3
+      }
+    },
+    "literature": {
+      "courses": 16,
+      "courseAverage": 86.6,
+      "courseGrades": {
+        "A": 5,
+        "B": 11
+      },
+      "mysteries": 12,
+      "mysteryAverage": 90,
+      "mysteryGrades": {
+        "C": 4,
+        "A": 8
+      }
+    },
+    "music": {
+      "courses": 10,
+      "courseAverage": 90.1,
+      "courseGrades": {
+        "A": 5,
+        "B": 5
+      },
+      "mysteries": 11,
+      "mysteryAverage": 98.9,
+      "mysteryGrades": {
+        "A": 10,
+        "B": 1
+      }
+    },
+    "philosophy": {
+      "courses": 16,
+      "courseAverage": 85.3,
+      "courseGrades": {
+        "B": 13,
+        "A": 2,
+        "C": 1
+      },
+      "mysteries": 14,
+      "mysteryAverage": 100,
+      "mysteryGrades": {
+        "A": 14
+      }
+    },
+    "science-inventions": {
+      "courses": 16,
+      "courseAverage": 88.9,
+      "courseGrades": {
+        "A": 7,
+        "B": 9
+      },
+      "mysteries": 15,
+      "mysteryAverage": 96.4,
+      "mysteryGrades": {
+        "A": 12,
+        "C": 1,
+        "B": 2
+      }
+    }
+  },
+  "issueCounts": {
+    "three-caricatured-distractors": 70,
+    "generated-filler-section": 213,
+    "duplicate-section-title": 20,
+    "duplicate-section-number": 27,
+    "malformed-section-title": 2,
+    "generic-quiz-explanation": 13,
+    "no-reasoning-question": 13,
+    "repeated-training-template": 40,
+    "broken-quote-in-explanation": 7,
+    "english-grammar-error-despite-raining": 1,
+    "corrupted-clue-text": 6,
+    "answer-leaked-in-prompt": 13,
+    "intentional-reference-resolution": 1
+  },
+  "priorityItems": [
+    {
+      "id": "economy-mystery-inflation-235",
+      "discipline": "economy",
+      "score": 58,
+      "grade": "D",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "science-mystery-natural-selection-177",
+      "discipline": "science-inventions",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "moyen",
+      "kind": "mystery"
+    },
+    {
+      "id": "astro-mystery-orbit-186",
+      "discipline": "astronomy",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "literature-mystery-windmills-232",
+      "discipline": "literature",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "literature-mystery-press-232",
+      "discipline": "literature",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "moyen",
+      "kind": "mystery"
+    },
+    {
+      "id": "literature-mystery-three-unities-232",
+      "discipline": "literature",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "difficile",
+      "kind": "mystery"
+    },
+    {
+      "id": "cinema-mystery-documentary-233",
+      "discipline": "cinema",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "history-mystery-meiji-234",
+      "discipline": "history",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "moyen",
+      "kind": "mystery"
+    },
+    {
+      "id": "art-mystery-linear-perspective-235",
+      "discipline": "art",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "history-mystery-industrial-revolution-236",
+      "discipline": "history",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "history-mystery-cold-war-236",
+      "discipline": "history",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "astronomy-mystery-apollo11-236",
+      "discipline": "astronomy",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "literature-mystery-science-fiction-236",
+      "discipline": "literature",
+      "score": 70,
+      "grade": "C",
+      "difficulty": "facile",
+      "kind": "mystery"
+    },
+    {
+      "id": "eng-context-inference",
+      "discipline": "english",
+      "score": 75,
+      "grade": "C",
+      "sections": 8,
+      "quizQuestions": 5,
+      "reasoningQuestions": 0,
+      "kind": "course"
+    },
+    {
+      "id": "cinema-documentary-truth",
+      "discipline": "cinema",
+      "score": 76,
+      "grade": "C",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 5,
+      "kind": "course"
+    },
+    {
+      "id": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "score": 77,
+      "grade": "C",
+      "sections": 11,
+      "quizQuestions": 5,
+      "reasoningQuestions": 0,
+      "kind": "course"
+    },
+    {
+      "id": "eng-connectors-concession",
+      "discipline": "english",
+      "score": 77,
+      "grade": "C",
+      "sections": 8,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    },
+    {
+      "id": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "score": 77,
+      "grade": "C",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    },
+    {
+      "id": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "score": 77,
+      "grade": "C",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "geo-climate-change-unequal-territories",
+      "discipline": "geography",
+      "score": 77,
+      "grade": "C",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "score": 79,
+      "grade": "C",
+      "sections": 8,
+      "quizQuestions": 5,
+      "reasoningQuestions": 0,
+      "kind": "course"
+    },
+    {
+      "id": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "score": 79,
+      "grade": "C",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "score": 80,
+      "grade": "B",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "score": 80,
+      "grade": "B",
+      "sections": 6,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    },
+    {
+      "id": "lit-greek-tragedy",
+      "discipline": "literature",
+      "score": 80,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "lit-classical-theatre",
+      "discipline": "literature",
+      "score": 80,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    },
+    {
+      "id": "lit-poetry-modernity",
+      "discipline": "literature",
+      "score": 80,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    },
+    {
+      "id": "eng-phrasal-get",
+      "discipline": "english",
+      "score": 80,
+      "grade": "B",
+      "sections": 8,
+      "quizQuestions": 5,
+      "reasoningQuestions": 0,
+      "kind": "course"
+    },
+    {
+      "id": "philo-argument-validity",
+      "discipline": "philosophy",
+      "score": 80,
+      "grade": "B",
+      "sections": 8,
+      "quizQuestions": 5,
+      "reasoningQuestions": 0,
+      "kind": "course"
+    },
+    {
+      "id": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "score": 80,
+      "grade": "B",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "sci-vaccination-immune-memory",
+      "discipline": "science-inventions",
+      "score": 80,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 4,
+      "kind": "course"
+    },
+    {
+      "id": "eco-inflation-prices-central-bank",
+      "discipline": "economy",
+      "score": 80,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 4,
+      "kind": "course"
+    },
+    {
+      "id": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "score": 80,
+      "grade": "B",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "history-cold-war-bipolar-world",
+      "discipline": "history",
+      "score": 80,
+      "grade": "B",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 3,
+      "kind": "course"
+    },
+    {
+      "id": "art-surrealism-dream-automatism-image",
+      "discipline": "art",
+      "score": 80,
+      "grade": "B",
+      "sections": 10,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "geo-energy-transition-networks-minerals",
+      "discipline": "geography",
+      "score": 80,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 4,
+      "kind": "course"
+    },
+    {
+      "id": "eng-connectors-logic",
+      "discipline": "english",
+      "score": 81,
+      "grade": "B",
+      "sections": 8,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    },
+    {
+      "id": "philo-hume-induction",
+      "discipline": "philosophy",
+      "score": 81,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "score": 81,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 2,
+      "kind": "course"
+    },
+    {
+      "id": "philo-social-contract-comparison",
+      "discipline": "philosophy",
+      "score": 81,
+      "grade": "B",
+      "sections": 9,
+      "quizQuestions": 5,
+      "reasoningQuestions": 1,
+      "kind": "course"
+    }
+  ],
+  "issues": [
+    {
+      "kind": "course",
+      "id": "prehistory-hominids",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "prehistory-fire",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "prehistory-hunt",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "7. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "civilizations-fertile-crescent",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "civilizations-fertile-crescent",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "aegean-mediterranean-minoens-crete",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "aegean-mediterranean-myceniens-palais",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        1,
+        9
+      ],
+      "title": "Des palais fortifiés"
+    },
+    {
+      "kind": "course",
+      "id": "aegean-mediterranean-effondrement-egeen",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-nile",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-two-lands",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-pharaoh-maat",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "13. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-pyramids",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-ramses",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "13. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-ramses",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        1,
+        10
+      ],
+      "title": "Un règne très long"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-ramses",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        11
+      ],
+      "title": "Le Nouvel Empire et le Levant"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-connected",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-connected",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        10
+      ],
+      "title": "La Nubie, partenaire et enjeu"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-connected",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "greece-athens-democracy",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "greece-athens-democracy",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "greece-persian-wars",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        11
+      ],
+      "title": "Marathon : victoire militaire et capital politique"
+    },
+    {
+      "kind": "course",
+      "id": "greece-peloponnesian-war",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "13. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "rome-foundation-kings",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "rome-foundation-kings",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        1,
+        9
+      ],
+      "title": "Une ville qui ne naît pas en un jour"
+    },
+    {
+      "kind": "course",
+      "id": "rome-italy-expansion",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "13. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "rome-italy-expansion",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        1,
+        10
+      ],
+      "title": "Une expansion par étapes"
+    },
+    {
+      "kind": "course",
+      "id": "rome-italy-expansion",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        11
+      ],
+      "title": "Les Samnites, adversaires majeurs"
+    },
+    {
+      "kind": "course",
+      "id": "rome-italy-expansion",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "rome-punic-wars",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "13. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "rome-punic-wars",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        1,
+        10
+      ],
+      "title": "Carthage et Rome, deux puissances"
+    },
+    {
+      "kind": "course",
+      "id": "rome-punic-wars",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        11
+      ],
+      "title": "La Sicile comme verrou"
+    },
+    {
+      "kind": "course",
+      "id": "rome-republic-crisis",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "rome-republic-crisis",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "rome-augustus-principate",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "rome-augustus-principate",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "13. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "rome-christianity-late-empire",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "rome-christianity-late-empire",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        10
+      ],
+      "title": "Des persécutions réelles mais discontinues"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-raids-vikings",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-colonisation-atlantique",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-colonisation-atlantique",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        8
+      ],
+      "title": "L’Islande : une société de colons"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-viking-commerce",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-viking-commerce",
+      "discipline": "history",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        7
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-christianisation-nord",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-vie-quotidienne",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-societe-droit-femmes",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-croyances-sagas-runes",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "13. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "atlantic-revolutions-revolution-francaise-1789",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "1789-crisis",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        1,
+        10
+      ],
+      "title": "Une monarchie endettée"
+    },
+    {
+      "kind": "course",
+      "id": "1789-crisis",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "rights-new-france",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "republic-terror-war",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "republic-terror-war",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        9
+      ],
+      "title": "Le procès du roi"
+    },
+    {
+      "kind": "course",
+      "id": "napoleon-empire",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "napoleon-empire",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        1,
+        10
+      ],
+      "title": "Sortir du désordre révolutionnaire"
+    },
+    {
+      "kind": "course",
+      "id": "napoleon-empire",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "europe-after-napoleon",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "europe-after-napoleon",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "russian-revolution-postwar",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "12. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "second-world-war-detail-resistances-collaborations",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "13. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "second-world-war-detail-resistances-collaborations",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        1,
+        10
+      ],
+      "title": "L’Occupation comme cadre"
+    },
+    {
+      "kind": "course",
+      "id": "art-renaissance-perspective",
+      "discipline": "art",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "geo-mercator-projection",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "music-jazz-birth",
+      "discipline": "music",
+      "severity": "medium",
+      "code": "malformed-section-title",
+      "section": 6,
+      "title": "n’est pas la naissance du jazz"
+    },
+    {
+      "kind": "course",
+      "id": "civilizations-uruk-writing-state",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "civilizations-uruk-writing-state",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "civilizations-hammurabi-babylon-law",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-kingdoms-dynasties",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "egypt-kingdoms-dynasties",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "greece-alexander-hellenistic-kingdoms",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "greece-alexander-hellenistic-kingdoms",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "rome-caesar-civil-wars",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "rome-caesar-civil-wars",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-kings-kingdoms",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-kings-kingdoms",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-normandy-england-kiev",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "northern-viking-worlds-normandy-england-kiev",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-clovis-merovingians",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-clovis-merovingians",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "11. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-charlemagne-carolingians",
+      "discipline": "history",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "medieval-west-capetians-monarchy",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "sci-natural-selection",
+      "discipline": "science-inventions",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "sci-natural-selection",
+      "discipline": "science-inventions",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "eco-inflation-interest-rates",
+      "discipline": "economy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "eco-inflation-interest-rates",
+      "discipline": "economy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "eco-inflation-interest-rates",
+      "discipline": "economy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "art-dada-readymade",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "art-street-art-public-space",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "5. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-italian-neorealism",
+      "discipline": "cinema",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "cinema-blockbuster-system",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-radioactivity-atom",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-radioactivity-atom",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "7. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "sci-computers-microprocessor",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "7. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-computers-microprocessor",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "eco-bank-money-creation",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-great-depression",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-great-depression",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "7. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "geo-metropolization",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "5. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "geo-metropolization",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "geo-risk-vulnerability",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "geo-risk-vulnerability",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "music-baroque-opera",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "music-studio-instrument",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "5. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "music-studio-instrument",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "6. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "astro-observable-universe",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-observable-universe",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        6
+      ],
+      "title": "Voir loin, c’est voir ancien"
+    },
+    {
+      "kind": "course",
+      "id": "astro-light-years-distances",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-big-bang",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-big-bang",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        4,
+        8
+      ],
+      "title": "Ce que le modèle ne résout pas seul"
+    },
+    {
+      "kind": "course",
+      "id": "astro-expansion-dark-universe",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-expansion-dark-universe",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "astro-star-birth-fusion",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-stellar-deaths",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "astro-sun-structure",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-solar-activity-auroras",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-solar-activity-auroras",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-solar-system-formation",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-solar-system-formation",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-rocky-planets",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-rocky-planets",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "astro-giant-planets",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-giant-planets",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-ocean-moons",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-ocean-moons",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-ocean-moons",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "astro-ocean-moons",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "astro-asteroids-comets",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-asteroids-comets",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-meteors-impacts",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-meteors-impacts",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-exoplanet-detection",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-exoplanet-detection",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-habitable-zone-biosignatures",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-habitable-zone-biosignatures",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-telescopes-spectrum",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-telescopes-spectrum",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-space-telescopes",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-space-telescopes",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-space-telescopes",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "astro-rockets-orbits",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-rockets-orbits",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-moon-mars-exploration",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-moon-mars-exploration",
+      "discipline": "astronomy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "lit-epic-oral-traditions",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-greek-tragedy",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-greek-tragedy",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "lit-greek-tragedy",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "lit-medieval-epic-romance",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-medieval-epic-romance",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "lit-humanism-printing",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-don-quixote-modern-novel",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-classical-theatre",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-classical-theatre",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "lit-classical-theatre",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "lit-romanticism",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-romanticism",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "lit-realism-naturalism",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-poetry-modernity",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-poetry-modernity",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "lit-poetry-modernity",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "lit-dystopia",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-dystopia",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "philo-argument-thesis-objection",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-argument-thesis-objection",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "philo-fact-opinion-value",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-fact-opinion-value",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "philo-socrates-questioning",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-control",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-control",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-control",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "philo-descartes-doubt",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-hume-causality",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-hume-causality",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "philo-ethics-principles-consequences",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-ethics-principles-consequences",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "philo-social-contract-liberty",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-social-contract-liberty",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "philo-social-contract-liberty",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "eng-context-inference",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-context-inference",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-context-inference",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "eng-context-inference",
+      "discipline": "english",
+      "severity": "major",
+      "code": "broken-quote-in-explanation",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "eng-context-inference",
+      "discipline": "english",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "eng-false-friends-core",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-false-friends-core",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-still-yet-already-even",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-still-yet-already-even",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-still-yet-already-even",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "eng-polite-register",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-polite-register",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-polite-register",
+      "discipline": "english",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "eng-phrasal-context",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-phrasal-context",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-phrasal-context",
+      "discipline": "english",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "eng-paraphrase-repair",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-paraphrase-repair",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-paraphrase-repair",
+      "discipline": "english",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "eng-connectors-logic",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-connectors-logic",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-connectors-logic",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "eng-connectors-logic",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "eng-implicit-meaning",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-implicit-meaning",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-context-reference",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-context-reference",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-context-reference",
+      "discipline": "english",
+      "severity": "major",
+      "code": "broken-quote-in-explanation",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "eng-false-friends-second-wave",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-false-friends-second-wave",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-small-words-just-quite",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-register-email-directness",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-register-email-directness",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-register-email-directness",
+      "discipline": "english",
+      "severity": "major",
+      "code": "broken-quote-in-explanation",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "eng-phrasal-get",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-phrasal-get",
+      "discipline": "english",
+      "severity": "major",
+      "code": "broken-quote-in-explanation",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "eng-phrasal-get",
+      "discipline": "english",
+      "severity": "major",
+      "code": "broken-quote-in-explanation",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "eng-phrasal-get",
+      "discipline": "english",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "severity": "major",
+      "code": "broken-quote-in-explanation",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "eng-paraphrase-clarify",
+      "discipline": "english",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "eng-connectors-concession",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-connectors-concession",
+      "discipline": "english",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eng-connectors-concession",
+      "discipline": "english",
+      "severity": "major",
+      "code": "english-grammar-error-despite-raining"
+    },
+    {
+      "kind": "course",
+      "id": "eng-implicit-understatement",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Entraînement actif"
+    },
+    {
+      "kind": "course",
+      "id": "eng-implicit-understatement",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "eng-implicit-understatement",
+      "discipline": "english",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "philo-argument-validity",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-argument-validity",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-argument-validity",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-argument-validity",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-argument-validity",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        7,
+        8
+      ],
+      "number": 7
+    },
+    {
+      "kind": "course",
+      "id": "philo-distinction-necessary-sufficient",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "broken-quote-in-explanation",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "philo-socrates-definition",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-socrates-definition",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-socrates-definition",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-socrates-definition",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        7,
+        8
+      ],
+      "number": 7
+    },
+    {
+      "kind": "course",
+      "id": "philo-socrates-definition",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        7,
+        8
+      ],
+      "number": 7
+    },
+    {
+      "kind": "course",
+      "id": "philo-stoic-impressions",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "philo-descartes-cogito",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-descartes-cogito",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-descartes-cogito",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-descartes-cogito",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        7,
+        8
+      ],
+      "number": 7
+    },
+    {
+      "kind": "course",
+      "id": "philo-hume-induction",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-hume-induction",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-hume-induction",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-hume-induction",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-hume-induction",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        7,
+        8
+      ],
+      "number": 7
+    },
+    {
+      "kind": "course",
+      "id": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-ethics-frameworks",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        7,
+        8
+      ],
+      "number": 7
+    },
+    {
+      "kind": "course",
+      "id": "philo-social-contract-comparison",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-social-contract-comparison",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-social-contract-comparison",
+      "discipline": "philosophy",
+      "severity": "medium",
+      "code": "repeated-training-template",
+      "title": "7. Mise à l’épreuve"
+    },
+    {
+      "kind": "course",
+      "id": "philo-social-contract-comparison",
+      "discipline": "philosophy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "philo-social-contract-comparison",
+      "discipline": "philosophy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        7,
+        8
+      ],
+      "number": 7
+    },
+    {
+      "kind": "course",
+      "id": "history-reformations-print-culture",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "history-reformations-print-culture",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "history-early-modern-empires-comparison",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "history-early-modern-empires-comparison",
+      "discipline": "history",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "history-early-modern-empires-comparison",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "history-atlantic-slavery-plantations",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "history-atlantic-slavery-plantations",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "art-photography-new-vision",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "art-photography-new-vision",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-documentary-truth",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-documentary-truth",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-documentary-truth",
+      "discipline": "cinema",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "cinema-documentary-truth",
+      "discipline": "cinema",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "sci-genetics-dna-history",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-genetics-dna-history",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "sci-thermodynamics-energy",
+      "discipline": "science-inventions",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "astro-black-holes-relativity",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-black-holes-relativity",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "astro-galaxies-cosmic-web",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-galaxies-cosmic-web",
+      "discipline": "astronomy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "eco-comparative-advantage-trade",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-comparative-advantage-trade",
+      "discipline": "economy",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "eco-comparative-advantage-trade",
+      "discipline": "economy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "malformed-section-title",
+      "section": 7,
+      "title": "milles"
+    },
+    {
+      "kind": "course",
+      "id": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "geo-oceans-cables-maritime-power",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "music-recording-studio-industry",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "music-recording-studio-industry",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "lit-shakespeare-stage-language",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-shakespeare-stage-language",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "lit-magical-realism-memory",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-magical-realism-memory",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "history-indian-ocean-monsoon-networks",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "history-meiji-restoration-industrial-japan",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "art-islamic-space-calligraphy-pattern",
+      "discipline": "art",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "art-islamic-space-calligraphy-pattern",
+      "discipline": "art",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "art-islamic-space-calligraphy-pattern",
+      "discipline": "art",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "art-bauhaus-modern-design",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-animation-movement-techniques",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "science-plate-tectonics-evidence",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "science-plate-tectonics-evidence",
+      "discipline": "science-inventions",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "science-antibiotics-resistance-public-health",
+      "discipline": "science-inventions",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "astro-gaia-milky-way-map",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-externalities-public-goods-policy",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-externalities-public-goods-policy",
+      "discipline": "economy",
+      "severity": "medium",
+      "code": "generic-quiz-explanation",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "eco-externalities-public-goods-policy",
+      "discipline": "economy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "geo-global-food-systems",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "geo-global-food-systems",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "geo-global-food-systems",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "music-beethoven-symphony-public",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "music-beethoven-symphony-public",
+      "discipline": "music",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "lit-modernism-stream-consciousness",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-modernism-stream-consciousness",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "history-mali-songhai-sahel",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "history-mali-songhai-sahel",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "history-haiti-revolution-slavery",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "history-haiti-revolution-slavery",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        3,
+        8
+      ],
+      "title": "L’atelier derrière le chef-d’œuvre"
+    },
+    {
+      "kind": "course",
+      "id": "art-renaissance-perspective-workshop",
+      "discipline": "art",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "cinema-montage-continuity-collision",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-montage-continuity-collision",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-montage-continuity-collision",
+      "discipline": "cinema",
+      "severity": "minor",
+      "code": "no-reasoning-question"
+    },
+    {
+      "kind": "course",
+      "id": "sci-vaccination-immune-memory",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-vaccination-immune-memory",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "sci-vaccination-immune-memory",
+      "discipline": "science-inventions",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "sci-electromagnetism-fields-induction",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-electromagnetism-fields-induction",
+      "discipline": "science-inventions",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "astro-exoplanets-methods-habitability",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-exoplanets-methods-habitability",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "eco-inflation-prices-central-bank",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-inflation-prices-central-bank",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "eco-inflation-prices-central-bank",
+      "discipline": "economy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "geo-metropolization-networks-segregation",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "geo-metropolization-networks-segregation",
+      "discipline": "geography",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "geo-metropolization-networks-segregation",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "geo-metropolization-networks-segregation",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "music-jazz-blues-swing-bebop",
+      "discipline": "music",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 2
+    },
+    {
+      "kind": "course",
+      "id": "lit-negritude-cesaire-senghor-damas",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-negritude-cesaire-senghor-damas",
+      "discipline": "literature",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "history-industrial-revolution-steam-factory",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "history-cold-war-bipolar-world",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "history-cold-war-bipolar-world",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "history-cold-war-bipolar-world",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "art-baroque-light-movement-power",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "art-baroque-light-movement-power",
+      "discipline": "art",
+      "severity": "minor",
+      "code": "duplicate-section-number",
+      "sections": [
+        5,
+        6
+      ],
+      "number": 5
+    },
+    {
+      "kind": "course",
+      "id": "cinema-new-wave-auteur-street-editing",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "8. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "cinema-new-wave-auteur-street-editing",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "sci-newton-motion-universal-gravitation",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-newton-motion-universal-gravitation",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "sci-quantum-quanta-probability",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-quantum-quanta-probability",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "astro-moon-phases-eclipses-tides",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "astro-space-race-apollo-11",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-gdp-growth-limits",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-gdp-growth-limits",
+      "discipline": "economy",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "geo-climate-change-unequal-territories",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "geo-climate-change-unequal-territories",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "geo-climate-change-unequal-territories",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "duplicate-section-title",
+      "sections": [
+        2,
+        7
+      ],
+      "title": "Des causes mesurables"
+    },
+    {
+      "kind": "course",
+      "id": "geo-climate-change-unequal-territories",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 3
+    },
+    {
+      "kind": "course",
+      "id": "music-rock-blues-studio-youth",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "music-rock-blues-studio-youth",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "lit-science-fiction-worlds-critique",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-science-fiction-worlds-critique",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "history-decolonization-india-algeria-bandung",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "history-decolonization-india-algeria-bandung",
+      "discipline": "history",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "history-european-integration-coal-eu",
+      "discipline": "history",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "art-surrealism-dream-automatism-image",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "art-surrealism-dream-automatism-image",
+      "discipline": "art",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "art-surrealism-dream-automatism-image",
+      "discipline": "art",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "cinema-sound-voice-microphone-musical",
+      "discipline": "cinema",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-relativity-spacetime-gravity",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-periodic-table-mendeleev-elements",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "sci-periodic-table-mendeleev-elements",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "10. Comment raisonner sur ce sujet"
+    },
+    {
+      "kind": "course",
+      "id": "astro-seasons-tilt-solstice-equinox",
+      "discipline": "astronomy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "eco-inequality-income-wealth-redistribution",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "geo-demographic-transition-fertility-aging",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "geo-demographic-transition-fertility-aging",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "geo-energy-transition-networks-minerals",
+      "discipline": "geography",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "geo-energy-transition-networks-minerals",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 0
+    },
+    {
+      "kind": "course",
+      "id": "geo-energy-transition-networks-minerals",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "geo-energy-transition-networks-minerals",
+      "discipline": "geography",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "course",
+      "id": "music-electronic-tape-synth-house-techno",
+      "discipline": "music",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-enlightenment-critique-encyclopedia",
+      "discipline": "literature",
+      "severity": "major",
+      "code": "generated-filler-section",
+      "title": "9. Synthèse : relier les idées"
+    },
+    {
+      "kind": "course",
+      "id": "lit-enlightenment-critique-encyclopedia",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 1
+    },
+    {
+      "kind": "course",
+      "id": "lit-enlightenment-critique-encyclopedia",
+      "discipline": "literature",
+      "severity": "medium",
+      "code": "three-caricatured-distractors",
+      "questionIndex": 4
+    },
+    {
+      "kind": "mystery",
+      "id": "mystery-1789-rc39",
+      "discipline": "history",
+      "severity": "major",
+      "code": "corrupted-clue-text"
+    },
+    {
+      "kind": "mystery",
+      "id": "mystery-russian-revolution-rc39",
+      "discipline": "history",
+      "severity": "major",
+      "code": "corrupted-clue-text"
+    },
+    {
+      "kind": "mystery",
+      "id": "science-mystery-natural-selection-177",
+      "discipline": "science-inventions",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "La sélection naturelle"
+    },
+    {
+      "kind": "mystery",
+      "id": "music-mystery-sampling-177",
+      "discipline": "music",
+      "severity": "major",
+      "code": "corrupted-clue-text"
+    },
+    {
+      "kind": "mystery",
+      "id": "astro-mystery-orbit-186",
+      "discipline": "astronomy",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "Une orbite"
+    },
+    {
+      "kind": "mystery",
+      "id": "literature-mystery-windmills-232",
+      "discipline": "literature",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "Don Quichotte"
+    },
+    {
+      "kind": "mystery",
+      "id": "literature-mystery-press-232",
+      "discipline": "literature",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "L’imprimerie typographique"
+    },
+    {
+      "kind": "mystery",
+      "id": "literature-mystery-three-unities-232",
+      "discipline": "literature",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "La règle des trois unités"
+    },
+    {
+      "kind": "mystery",
+      "id": "english-mystery-one-reference-rc19",
+      "discipline": "english",
+      "severity": "info",
+      "code": "intentional-reference-resolution",
+      "answer": "Charger"
+    },
+    {
+      "kind": "mystery",
+      "id": "cinema-mystery-documentary-233",
+      "discipline": "cinema",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "Le documentaire"
+    },
+    {
+      "kind": "mystery",
+      "id": "history-mystery-meiji-234",
+      "discipline": "history",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "La restauration de Meiji"
+    },
+    {
+      "kind": "mystery",
+      "id": "art-mystery-linear-perspective-235",
+      "discipline": "art",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "La perspective linéaire"
+    },
+    {
+      "kind": "mystery",
+      "id": "science-mystery-induction-235",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "corrupted-clue-text"
+    },
+    {
+      "kind": "mystery",
+      "id": "economy-mystery-inflation-235",
+      "discipline": "economy",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "L’inflation"
+    },
+    {
+      "kind": "mystery",
+      "id": "economy-mystery-inflation-235",
+      "discipline": "economy",
+      "severity": "major",
+      "code": "corrupted-clue-text"
+    },
+    {
+      "kind": "mystery",
+      "id": "history-mystery-industrial-revolution-236",
+      "discipline": "history",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "La révolution industrielle"
+    },
+    {
+      "kind": "mystery",
+      "id": "history-mystery-cold-war-236",
+      "discipline": "history",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "La guerre froide"
+    },
+    {
+      "kind": "mystery",
+      "id": "science-mystery-quantum-236",
+      "discipline": "science-inventions",
+      "severity": "major",
+      "code": "corrupted-clue-text"
+    },
+    {
+      "kind": "mystery",
+      "id": "astronomy-mystery-apollo11-236",
+      "discipline": "astronomy",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "Apollo 11"
+    },
+    {
+      "kind": "mystery",
+      "id": "literature-mystery-science-fiction-236",
+      "discipline": "literature",
+      "severity": "critical",
+      "code": "answer-leaked-in-prompt",
+      "answer": "La science-fiction"
+    }
+  ]
+}

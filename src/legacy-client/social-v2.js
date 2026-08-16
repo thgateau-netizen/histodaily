@@ -715,13 +715,15 @@
     const pending = pendingScoreCount();
     const audienceLabel = context.audience === "friends" ? "Ton cercle" : "Tous les joueurs";
 
-    renderShell(`<div class="hdsv2-screen hdsv2-rank-screen">
-      <header class="hdsv2-topbar"><div><p class="eyebrow">Classements</p><h1>${esc(periodLabel(context.period))}</h1></div><button type="button" class="hdsv2-profile-shortcut" data-open-profile aria-label="Ouvrir le profil">${esc(pseudo().charAt(0).toUpperCase() || "P")}</button></header>
-      <nav class="hdsv2-period-tabs" aria-label="Période">${[["daily", "Jour", "Aujourd’hui"], ["week", "Semaine", "Cette semaine"], ["year", "Année", "Cette année"]].map(([period, shortLabel, fullLabel]) => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}" aria-label="${fullLabel}" aria-current="${context.period === period ? "page" : "false"}">${shortLabel}</button>`).join("")}</nav>
-      <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Tous</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
-      <section class="card hdsv2-card hdsv2-score-card"><div class="hdsv2-score-head"><div><span class="card-label">${context.period === "year" ? "Ta progression" : "Ta performance"} · ${esc(audienceLabel)}</span><h2>${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "points"}</h2><p>${context.period === "year" ? "L’année classe la progression réelle : cours, quiz, révisions, ateliers et expéditions alimentent ton XP." : context.audience === "friends" ? `Ta place parmi ${Math.max(1, s.friends.length + 1)} joueur${s.friends.length ? "s" : ""} de ton cercle.` : `Total de tes dossiers résolus ${periodShort(context.period)}.`}</p></div><button type="button" class="ghost" data-social-refresh>Mettre à jour</button></div><div class="hdsv2-kpis"><div><b>${me?.rank ? `#${me.rank}` : "—"}</b><span>ta place</span></div><div><b>${context.period === "year" ? Number(me?.level || levelValue()) : Number(me?.solvedInPeriod || 0)}</b><span>${context.period === "year" ? "niveau" : "dossiers comptés"}</span></div>${context.audience === "friends" ? `<div><b>${s.friends.length}</b><span>amis confirmés</span></div>` : ""}</div>${context.period === "year" ? `<small class="hdsv2-zero-friends">L’XP déjà visible sur les profils est reprise automatiquement : un joueur actif n’apparaît plus artificiellement à 0.</small>` : ""}<div class="hdsv2-sync-line"><small class="hdsv2-status ${status.phase || "idle"}">${esc(statusText(status))}</small>${pending ? `<span class="hdsv2-sync-pill pending"><i></i>${pending} score${pending > 1 ? "s" : ""} à envoyer</span>` : `<span class="hdsv2-sync-pill ok">✓ aucun score en attente</span>`}</div>${context.period === "daily" && context.audience === "general" ? `<small class="hdsv2-zero-friends">Tous les joueurs inscrits sont affichés, y compris ceux qui n’ont pas encore marqué de point aujourd’hui.</small>` : ""}${context.audience === "friends" && Number(status.zeroScoreFriendCount || 0) > 0 ? `<small class="hdsv2-zero-friends">${Number(status.zeroScoreFriendCount)} ami${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""} sans score ${Number(status.zeroScoreFriendCount) > 1 ? "restent" : "reste"} visible${Number(status.zeroScoreFriendCount) > 1 ? "s" : ""}.</small>` : ""}</section>
+    renderShell(`<div class="hdsv2-screen hdsv2-rank-screen hd34-rank-screen">
+      <header class="hdsv2-topbar hd34-rank-topbar"><div><p class="eyebrow">Classement</p><h1>${esc(audienceLabel)}</h1></div></header>
+      <div class="hd34-rank-controls">
+        <nav class="hdsv2-period-tabs" aria-label="Période">${[["daily", "Jour", "Aujourd’hui"], ["week", "Semaine", "Cette semaine"], ["year", "Année", "Cette année"]].map(([period, shortLabel, fullLabel]) => `<button type="button" data-social-period="${period}" class="${context.period === period ? "active" : ""}" aria-label="${fullLabel}" aria-current="${context.period === period ? "page" : "false"}">${shortLabel}</button>`).join("")}</nav>
+        <nav class="hdsv2-audience-tabs" aria-label="Joueurs affichés"><button type="button" data-social-audience="general" class="${context.audience === "general" ? "active" : ""}">Tous</button><button type="button" data-social-audience="friends" class="${context.audience === "friends" ? "active" : ""}">Amis${incoming ? `<span>${incoming}</span>` : ""}</button></nav>
+      </div>
+      <section class="hd34-my-rank" aria-label="Ta position"><div><span>Toi · ${esc(periodLabel(context.period))}</span><strong>${me?.rank ? `#${me.rank} · ` : ""}${Number(me?.score || 0)} ${context.period === "year" ? "XP" : "pts"}</strong></div><button type="button" class="ghost" data-social-refresh aria-label="Actualiser le classement">↻</button>${pending ? `<small>${pending} score${pending > 1 ? "s" : ""} à envoyer</small>` : status.phase === "error" ? `<small>Actualisation indisponible</small>` : ""}</section>
       ${context.audience === "friends" ? requestMarkup() : ""}
-      <section class="card hdsv2-card hdsv2-leaderboard"><div class="hdsv2-section-head hdsv2-ranking-head"><div><span class="card-label">${context.audience === "friends" ? "Entre amis" : "Classement général"}</span><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2><p>${context.audience === "friends" ? "Ta position reste affichée au-dessus du classement, même loin du podium." : "Le podium met en avant les trois premiers, puis la liste complète continue juste dessous."}</p></div></div>${leaderboardMarkup(rows, context, status)}</section>
+      <section class="hdsv2-leaderboard hd34-leaderboard"><div class="hd34-leaderboard-head"><h2>${rows.length} joueur${rows.length > 1 ? "s" : ""}</h2><small>${context.period === "year" ? "classés par XP" : context.audience === "friends" ? "dans ton cercle" : "classement général"}</small></div>${leaderboardMarkup(rows, context, status)}</section>
       ${context.audience === "friends" ? friendsMarkup({ includeAdd: true, context }) : ""}
     </div>`);
 
@@ -1007,14 +1009,13 @@
   renderProfile = function socialV2RenderProfile() {
     const s = social();
     const model = profileCuriosityModel();
-    renderShell(`<div class="hdsv2-screen hdsv2-profile-screen hd257-profile-root">
-      <header class="hd257-page-head"><div><p class="eyebrow">Espace joueur</p><h1>Ton profil</h1></div><button type="button" class="ghost" data-home>Accueil</button></header>
+    renderShell(`<div class="hdsv2-screen hdsv2-profile-screen hd257-profile-root hd34-profile-root">
+      <header class="hd257-page-head hd34-profile-head"><div><p class="eyebrow">Profil</p><h1>${esc(pseudo())}</h1></div></header>
       ${profileHeroMarkup(model)}
-      ${profileOrbitMarkup(model)}
       <section class="hd257-dashboard">${profileRhythmMarkup()}${profileCommunityMarkup(s)}</section>
       ${profileProgressMarkup(model)}
-      ${profileCollectionsMarkup()}
-      ${profileAchievementsMarkup(s)}
+      <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("spark")}</span><div><b>Carte de curiosité et collections</b><small>Affinités, univers explorés et trophées</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileOrbitMarkup(model)}${profileCollectionsMarkup()}</div></details>
+      <details class="hd257-fold hd34-profile-fold"><summary><span>${profileActionIcon("trophy")}</span><div><b>Succès</b><small>Objectifs débloqués et prochain défi</small></div><em>›</em></summary><div class="hd257-fold-body hd34-profile-fold-body">${profileAchievementsMarkup(s)}</div></details>
       ${profileDetailsMarkup(s)}
     </div>`);
     sealSocialProfileShell();

@@ -1,9 +1,9 @@
 {
-  "version": "1.0.0-rc.33.0",
-  "status": "failed",
+  "version": "1.0.0-rc.34.0",
+  "status": "passed",
   "checks": {
     "runtimeVersionAligned": true,
-    "cacheVersionAligned": false,
+    "cacheVersionAligned": true,
     "cssAssetsChecked": 18,
     "pwaAssetsChecked": 19,
     "activeSvgPlaceholders": [],
@@ -11,7 +11,5 @@
     "qualityModuleBundled": true
   },
   "warnings": [],
-  "errors": [
-    "service-worker: cache RC32 absent"
-  ]
+  "errors": []
 }
