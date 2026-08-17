@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0-rc.54.0",
+  "status": "passed",
+  "checks": {
+    "users": true,
+    "solveRate": true,
+    "deepDiveRate": true,
+    "d1": true,
+    "d3": true,
+    "d7": true,
+    "cohorts": true,
+    "disciplines": true,
+    "offlineIngestionGraceful": true,
+    "adminRouteProtected": true
+  },
+  "summary": {
+    "users": 3,
+    "firstSession": {
+      "opened": 3,
+      "onboarding": 0,
+      "started": 3,
+      "solved": 2,
+      "deepDive": 1,
+      "startRate": 100,
+      "solveRate": 66.7,
+      "deepDiveRate": 33.3
+    },
+    "retention": {
+      "D1": 2,
+      "eligibleD1": 3,
+      "D1Rate": 66.7,
+      "D3": 2,
+      "eligibleD3": 2,
+      "D3Rate": 100,
+      "D7": 1,
+      "eligibleD7": 2,
+      "D7Rate": 50
+    },
+    "cohorts": [
+      {
+        "day": "2026-08-16",
+        "users": 1,
+        "started": 1,
+        "solved": 1,
+        "deepDive": 0,
+        "eligibleD1": 1,
+        "D1": 1,
+        "eligibleD3": 0,
+        "D3": 0,
+        "eligibleD7": 0,
+        "D7": 0,
+        "startRate": 100,
+        "solveRate": 100,
+        "deepDiveRate": 0,
+        "D1Rate": 100,
+        "D3Rate": null,
+        "D7Rate": null
+      },
+      {
+        "day": "2026-08-10",
+        "users": 2,
+        "started": 2,
+        "solved": 1,
+        "deepDive": 1,
+        "eligibleD1": 2,
+        "D1": 1,
+        "eligibleD3": 2,
+        "D3": 2,
+        "eligibleD7": 2,
+        "D7": 1,
+        "startRate": 100,
+        "solveRate": 50,
+        "deepDiveRate": 50,
+        "D1Rate": 50,
+        "D3Rate": 100,
+        "D7Rate": 50
+      }
+    ],
+    "byDiscipline": [
+      {
+        "discipline": "history",
+        "users": 2,
+        "solved": 2,
+        "eligibleD1": 2,
+        "D1": 2,
+        "eligibleD7": 1,
+        "D7": 1,
+        "solveRate": 100,
+        "D1Rate": 100,
+        "D7Rate": 100
+      },
+      {
+        "discipline": "science",
+        "users": 1,
+        "solved": 0,
+        "eligibleD1": 1,
+        "D1": 0,
+        "eligibleD7": 1,
+        "D7": 0,
+        "solveRate": 0,
+        "D1Rate": 0,
+        "D7Rate": 0
+      }
+    ]
+  },
+  "errors": []
+}

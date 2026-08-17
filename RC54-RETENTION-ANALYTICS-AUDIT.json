@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0-rc.54.0",
+  "status": "passed",
+  "focus": "centralized privacy-minimized retention analytics",
+  "checks": {
+    "version": true,
+    "clientBundledLast": true,
+    "privacyMinimized": true,
+    "localFirst": true,
+    "automaticRetry": true,
+    "boundedBatch": true,
+    "idempotentStore": true,
+    "eventAllowlist": true,
+    "cohortD1D3D7": true,
+    "protectedReport": true,
+    "aggregateOnly": true,
+    "healthProbe": true,
+    "migrationTable": true,
+    "migrationRls": true,
+    "migrationIndexes": true,
+    "migrationNotPublic": true,
+    "recentWindow": true,
+    "gracefulFallback": true
+  },
+  "errors": []
+}

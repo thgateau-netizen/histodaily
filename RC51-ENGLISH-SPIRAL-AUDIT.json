@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0-rc.54.0",
+  "status": "passed",
+  "principle": "Un bloc d’anglais utile doit revenir avant d’être oublié : reconnaissance douce d’abord, rappel actif ensuite. Le rituel court compte autant que le cours complet.",
+  "behavior": {
+    "courseChunksPerLesson": 6,
+    "courseAnchorGroups": 3,
+    "initialScheduleDays": [
+      1,
+      3,
+      7
+    ],
+    "dailyMysteryPackScheduledNextDay": true,
+    "firstExposure": "contextual recognition",
+    "laterExposure": "active recall + self assessment + optional TTS",
+    "legacyBackfill": "one completed English lesson per startup max"
+  },
+  "guardrails": {
+    "noNewMandatoryScreen": true,
+    "usesExistingReviewQueue": true,
+    "noExactStringGradingForProduction": true,
+    "userMaySpeakInsteadOfType": true
+  },
+  "errors": []
+}

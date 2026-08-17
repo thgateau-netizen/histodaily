@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.50.0",
+  "version": "1.0.0-rc.54.0",
   "status": "passed",
   "principle": "Chaque discipline recommence doucement pour un nouvel utilisateur : bases/familier → confiance → application → difficulté réelle. La progression est locale à la discipline, pas au niveau global du compte.",
   "disciplines": 11,
@@ -97,77 +97,77 @@
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "history-mystery-cold-war-236",
+      "mysteryId": "history-mystery-industrial-revolution-236",
       "difficulty": "facile"
     },
     "art": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "art-mystery-composition-122",
+      "mysteryId": "art-mystery-linear-perspective-235",
       "difficulty": "facile"
     },
     "cinema": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "cinema-mystery-kuleshov-235",
+      "mysteryId": "cinema-mystery-offscreen-sound-237",
       "difficulty": "facile"
     },
     "science-inventions": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "science-mystery-hypothesis-122",
+      "mysteryId": "science-mystery-universal-gravity-236",
       "difficulty": "facile"
     },
     "astronomy": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "astronomy-mystery-solstice-237",
+      "mysteryId": "astronomy-mystery-apollo11-236",
       "difficulty": "facile"
     },
     "economy": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "economy-mystery-opportunity-cost-175",
+      "mysteryId": "economy-mystery-scarcity-122",
       "difficulty": "facile"
     },
     "geography": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "geography-mystery-coordinates-122",
+      "mysteryId": "geography-mystery-map-projection-175",
       "difficulty": "facile"
     },
     "music": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "music-mystery-multitrack-233",
+      "mysteryId": "music-mystery-sampling-177",
       "difficulty": "facile"
     },
     "literature": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "literature-mystery-science-fiction-236",
+      "mysteryId": "literature-mystery-press-232",
       "difficulty": "facile"
     },
     "philosophy": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "philo-mystery-validity-rc19",
+      "mysteryId": "philo-mystery-assent-rc19",
       "difficulty": "facile"
     },
     "english": {
       "stage": "discovery",
       "solved": 0,
       "lessons": 0,
-      "mysteryId": "english-mystery-one-reference-rc19",
+      "mysteryId": "english-mystery-afraid-318",
       "difficulty": "facile"
     }
   },

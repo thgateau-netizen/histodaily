@@ -14,7 +14,7 @@ const pass = (condition, message) => { if (!condition) errors.push(message); };
 for (const rel of ['index.html','manifest.webmanifest','service-worker.js']) {
   pass(read(rel).includes(version), `${rel}: version ${version} absente`);
 }
-pass(read('service-worker.js').includes('histodaily-rc50-english-useful-packs-v1'), 'service-worker: cache RC50 absent');
+pass(read('service-worker.js').includes('histodaily-rc53-daily-value-v1'), 'service-worker: cache RC53 absent');
 pass(read('RC49-BUNDLE-MANIFEST.json').includes('content-editorial-rc33.js'), 'bundle manifest: content-editorial-rc33.js absent');
 pass(read('bundles/content-rc27.js').includes('SOURCE: content-editorial-rc33.js'), 'bundle réel: content-editorial-rc33.js absent');
 pass(read('RC49-BUNDLE-MANIFEST.json').includes('content-english-redesign-rc37.js'), 'bundle manifest: content-english-redesign-rc37.js absent');
@@ -70,7 +70,7 @@ const result = {
   status: errors.length ? 'failed' : 'passed',
   checks: {
     runtimeVersionAligned: !errors.some(e => e.includes('version')),
-    cacheVersionAligned: sw.includes('histodaily-rc50-english-useful-packs-v1'),
+    cacheVersionAligned: sw.includes('histodaily-rc53-daily-value-v1'),
     cssAssetsChecked: new Set(cssUrls).size,
     pwaAssetsChecked: new Set(swAssets).size,
     activeSvgPlaceholders: placeholderRefs.filter(ref => css.includes(ref) || sw.includes(ref)),

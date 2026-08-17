@@ -1707,7 +1707,7 @@
     pack.keyFacts=spec.targets.map(([phrase,use])=>`${phrase} — ${use}`);
     pack.contentRevision="rc50-english-useful-pack";
     pack.englishExperience={mode:"usable-chunks-situations-production",redesigned:true,targetCount:spec.targets.length};
-    pack.englishExperienceRC50={targetExpressions:spec.targets.map(([phrase])=>phrase),minimumRecall:4,productionPrompt:spec.productionPrompt};
+    pack.englishExperienceRC50={targetExpressions:spec.targets.map(([phrase])=>phrase),targetEntries:spec.targets.map(([phrase,use])=>({phrase,use})),minimumRecall:4,productionPrompt:spec.productionPrompt};
     PUBLISHED_LESSON_IDS.add(id);
   }
   try{

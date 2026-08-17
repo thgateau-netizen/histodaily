@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.50.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.54.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: content-library.js ===== */
 /* HistoDaily LTS — bibliothèque de contenus publiés */
@@ -38695,7 +38695,7 @@ try { if (typeof invalidateCatalogCaches === "function") invalidateCatalogCaches
     pack.keyFacts=spec.targets.map(([phrase,use])=>`${phrase} — ${use}`);
     pack.contentRevision="rc50-english-useful-pack";
     pack.englishExperience={mode:"usable-chunks-situations-production",redesigned:true,targetCount:spec.targets.length};
-    pack.englishExperienceRC50={targetExpressions:spec.targets.map(([phrase])=>phrase),minimumRecall:4,productionPrompt:spec.productionPrompt};
+    pack.englishExperienceRC50={targetExpressions:spec.targets.map(([phrase])=>phrase),targetEntries:spec.targets.map(([phrase,use])=>({phrase,use})),minimumRecall:4,productionPrompt:spec.productionPrompt};
     PUBLISHED_LESSON_IDS.add(id);
   }
   try{

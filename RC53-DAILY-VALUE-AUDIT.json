@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0-rc.54.0",
+  "status": "passed",
+  "focus": "daily knowledge density and curiosity-first tomorrow teaser",
+  "metrics": {
+    "nonEnglishMysteries": 144,
+    "threeAnchorPacks": 144,
+    "narrativeTitleTeasers": 144
+  },
+  "checks": {
+    "moduleExposed": true,
+    "threeAnchorsForAll": true,
+    "noEnglishPack": true,
+    "teaserAvoidsMissionQuestion": true,
+    "teaserUsesNarrativeTitle": true,
+    "teaserDoesNotLeakAnswer": true,
+    "cssPresent": true,
+    "bundledLast": true
+  },
+  "errors": []
+}

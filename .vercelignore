@@ -7,3 +7,6 @@ RC*.md
 
 # Export de travail généré par les audits, jamais servi en production.
 catalogue-export-temp.json
+
+# Migrations de développement, jamais servies statiquement.
+supabase/

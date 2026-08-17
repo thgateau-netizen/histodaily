@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.50.0",
+  "version": "1.0.0-rc.54.0",
   "bundleOrder": [
     "core-rc27.js",
     "content-rc27.js",
@@ -71,9 +71,13 @@
       "adaptive-comfort-rc41.js",
       "global-difficulty-ramp-rc40.js",
       "daily-freshness-rc43.js",
-      "daily-hook-rc49.js"
+      "daily-hook-rc49.js",
+      "english-spiral-rc51.js",
+      "product-loop-rc52.js",
+      "daily-value-rc53.js",
+      "retention-analytics-rc54.js"
     ]
   },
-  "uiPass": "RC50 English Useful Packs",
-  "importantFix": "English lessons now teach six reusable chunks; daily English mysteries reveal three useful expressions"
+  "uiPass": "RC54 Central Retention Analytics",
+  "importantFix": "Centralized privacy-minimized retention events with protected D1/D3/D7 cohort reporting"
 }

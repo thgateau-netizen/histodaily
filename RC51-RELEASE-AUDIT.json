@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0-rc.51.0",
+  "status": "passed",
+  "focus": "English retention and active recall",
+  "english": {
+    "courses": 16,
+    "reusableChunks": 96,
+    "courseAnchorGroups": 3,
+    "chunksPerAnchor": 2,
+    "initialAnchorDays": [1, 3, 7],
+    "dailyMysteryChunks": 3,
+    "dailyPackReturns": true,
+    "dailyPackMasterySuccesses": 3,
+    "firstReviewMode": "contextual recognition",
+    "laterReviewMode": "active recall with self assessment and optional TTS"
+  },
+  "migration": {
+    "oldCompletedEnglishLessons": "backfilled progressively",
+    "maxLegacyLessonsSeededPerStartup": 1,
+    "obsoleteGenericCourseAnchorsRemoved": true,
+    "realQuizMistakesPreserved": true
+  },
+  "checks": {
+    "clientBundlesSyntax": "passed",
+    "fullQualityPipeline": "passed",
+    "englishSpiralStaticAudit": "passed",
+    "englishSpiralBehaviorTest": "passed",
+    "dailyEnglishPackScheduling": "passed",
+    "courseSixChunkCoverage": "passed",
+    "activeRecallFlow": "passed"
+  },
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  }
+}

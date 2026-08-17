@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0-rc.54.0",
+  "status": "passed",
+  "checks": {
+    "threeCourseAnchors": true,
+    "twoPhrasesPerAnchor": true,
+    "firstReviewRecognition": true,
+    "secondReviewActiveRecall": true,
+    "dailyPackScheduled": true,
+    "metadataExposed": true
+  },
+  "observed": {
+    "added": 3,
+    "courseEntries": [
+      {
+        "source": "english-chunk",
+        "phrases": 2,
+        "dueAt": 1786998843810,
+        "questionIndex": 0
+      },
+      {
+        "source": "english-chunk",
+        "phrases": 2,
+        "dueAt": 1786998843810,
+        "questionIndex": 1
+      },
+      {
+        "source": "english-chunk",
+        "phrases": 2,
+        "dueAt": 1786998843810,
+        "questionIndex": 2
+      }
+    ],
+    "recognition": {
+      "mode": "english-recognition",
+      "choices": 3,
+      "context": "Situation : Tu n’as pas bien entendu.."
+    },
+    "recall": {
+      "mode": "english-recall",
+      "answer": "Could you say that again?",
+      "prompt": "Que dirais-tu spontanément en anglais ?"
+    },
+    "dailyAdded": 1,
+    "dailyEntry": {
+      "phrases": 3,
+      "source": "english-daily-chunk"
+    },
+    "meta": {
+      "version": "1.0.0-rc.54.0",
+      "courseAnchors": 3,
+      "initialDays": [
+        1,
+        3,
+        7
+      ],
+      "dailyPackReturns": true,
+      "progression": [
+        "recognition",
+        "active-recall",
+        "spaced-recall"
+      ]
+    }
+  },
+  "errors": []
+}

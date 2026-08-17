@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0-rc.54.0",
+  "featureVersion": "RC52",
+  "status": "passed",
+  "checks": {
+    "visibleProgress": true,
+    "guiltFreeReturn": true,
+    "noMandatoryScreen": true,
+    "funnelSnapshot": true,
+    "learningCounts": true,
+    "activeSevenDays": true,
+    "cssPresent": true,
+    "bundledLast": true
+  },
+  "errors": []
+}

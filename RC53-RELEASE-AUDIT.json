@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0-rc.53.0",
+  "status": "passed",
+  "focus": "daily knowledge density and curiosity-first return hook",
+  "dailyValue": {
+    "nonEnglishMysteries": 144,
+    "threeAnchorPacks": 144,
+    "narrativeTitleTeasers": 144,
+    "englishSpecificFlowPreserved": true,
+    "newMandatoryScreen": false
+  },
+  "regressions": {
+    "fullQualityPipeline": "passed",
+    "clientSyntax": "passed",
+    "dailyHook": "passed",
+    "disciplineSwitchBehavior": "passed",
+    "englishSpiral": "passed",
+    "productLoopRC52": "passed",
+    "clientServerVersionAligned": true
+  },
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  },
+  "knownLimits": [
+    "Retention analytics remain local per device; RC53 improves the hook but does not yet centralize funnel analytics.",
+    "Existing structural UI/runtime debt remains documented by the product-health audit."
+  ]
+}

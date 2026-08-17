@@ -1094,6 +1094,8 @@ function submitGuess(event) {
     if (isArchive) state.achievements.firstArchive = true;
     state.rewardFeedback = { ...(state.rewardFeedback || {}), [mystery.id]: dailyReward || (isArchive ? "Archive résolue : XP gagné, mais les gemmes restent réservées au rendez-vous quotidien." : "") };
     if (state.mysteryFeedback) delete state.mysteryFeedback[mystery.id];
+    // RC51: the short English ritual must leave a memory trace even when the optional course is skipped.
+    try { window.HistoDaily?.memory?.scheduleEnglishDailyPackReview?.(mystery); } catch {}
     awardXP(score, "mystère résolu");
     if (isArchive) {
       state.lastScoreSubmit = {

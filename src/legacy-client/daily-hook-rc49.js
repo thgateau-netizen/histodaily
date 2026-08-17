@@ -5,7 +5,7 @@
 */
 (function histodailyRc49DailyHook(){
   "use strict";
-  const VERSION = "1.0.0-rc.50.0";
+  const VERSION = "1.0.0-rc.54.0";
   const ANALYTICS_KEY = "histodaily_retention_rc47"; // keep the same analytics history across the bug-fix release
   const TEASER_HISTORY_LIMIT = 120;
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };

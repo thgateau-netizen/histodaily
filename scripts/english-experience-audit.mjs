@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
-const manifest=JSON.parse(fs.readFileSync(path.join(root,'RC50-BUNDLE-MANIFEST.json'),'utf8'));
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'RC51-BUNDLE-MANIFEST.json'),'utf8'));
 const readSource=n=>fs.readFileSync(path.join(root,'src','legacy-client',n),'utf8');
 const noop=()=>{};
 const element=new Proxy({style:{},dataset:{},classList:{add:noop,remove:noop,toggle:noop,contains:()=>false},appendChild:noop,append:noop,remove:noop,setAttribute:noop,addEventListener:noop,querySelector:()=>null,querySelectorAll:()=>[]},{get:(t,p)=>p in t?t[p]:noop});

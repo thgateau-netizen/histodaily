@@ -11,7 +11,7 @@ const module = read('src/legacy-client/product-polish-rc35.js');
 const build = read('scripts/build-client.mjs');
 const onboarding = read('src/legacy-client/onboarding-v275.js');
 const bundle = read('bundles/experience-rc27.js');
-const finalLayer = read('src/legacy-client/daily-freshness-rc43.js');
+const finalLayer = read('src/legacy-client/daily-value-rc53.js');
 const errors = [];
 const checks = {};
 const pass = (name, condition, detail) => {
@@ -34,7 +34,7 @@ pass('detailsStateAccessible', module.includes('aria-expanded') && module.includ
 pass('activeNavCurrentPage', module.includes('aria-current", "page"') && module.includes('removeAttribute("aria-current")'), 'La navigation doit annoncer uniquement l’onglet actif comme page courante.');
 pass('noBlockingLoadingOverlay', !css.includes('hd35-loading-overlay') && !module.includes('hd35-loading-overlay'), 'Le feedback de chargement ne doit pas ajouter un écran bloquant.');
 pass('firstRunSingleDecision', onboarding.includes('hd35-onboarding-one') && !onboarding.includes('hd275-step-count') && !onboarding.includes('data-hd275-back'), 'La première ouverture doit conduire directement au choix de l’univers puis à l’expédition.');
-pass('releaseVersionExposed', finalLayer.includes(`const VERSION = "${pkg.version}"`) && finalLayer.includes('version:VERSION'), 'La dernière couche d’expérience doit exposer la vraie version du build.');
+pass('releaseVersionExposed', finalLayer.includes(`const VERSION = "${pkg.version}"`) && /version\s*:\s*VERSION/.test(finalLayer), 'La dernière couche d’expérience doit exposer la vraie version du build.');
 
 const result = {
   version: pkg.version,

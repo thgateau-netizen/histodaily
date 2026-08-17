@@ -1,4 +1,4 @@
-/* HistoDaily 1.0.0-rc.50.0 — generated bundle. Source order is intentional. */
+/* HistoDaily 1.0.0-rc.54.0 — generated bundle. Source order is intentional. */
 
 /* ===== SOURCE: app-runtime.js ===== */
 /* HistoDaily LTS — comportements métier et expérience active */
@@ -606,6 +606,8 @@
   state.reviewQueue = state.reviewQueue && typeof state.reviewQueue === "object" ? state.reviewQueue : {};
   state.reviewStats = state.reviewStats && typeof state.reviewStats === "object" ? state.reviewStats : { wrong: 0, corrected: 0 };
   state.reviewSeededLessons = state.reviewSeededLessons && typeof state.reviewSeededLessons === "object" ? state.reviewSeededLessons : {};
+  state.englishPhraseSeededLessonsRC51 = state.englishPhraseSeededLessonsRC51 && typeof state.englishPhraseSeededLessonsRC51 === "object" ? state.englishPhraseSeededLessonsRC51 : {};
+  state.englishDailyPhraseSeedsRC51 = state.englishDailyPhraseSeedsRC51 && typeof state.englishDailyPhraseSeedsRC51 === "object" ? state.englishDailyPhraseSeedsRC51 : {};
   state.synthesisPassed = state.synthesisPassed && typeof state.synthesisPassed === "object" ? state.synthesisPassed : {};
   state.synthesisAttempts = state.synthesisAttempts && typeof state.synthesisAttempts === "object" ? state.synthesisAttempts : {};
   state.collectionUnlocks = state.collectionUnlocks && typeof state.collectionUnlocks === "object" ? state.collectionUnlocks : {};
@@ -851,10 +853,11 @@
       return { ok: true, correct: false, mastered: false, nextDueAt: now(), memoryText: "" };
     }
     const nextStage = Math.max(0, Number(current.stage || 0)) + 1;
+    const masteryStage = current.source === "english-daily-chunk" ? 3 : REVIEW_MASTERY_STAGE;
     let mastered = false;
     let nextDueAt = 0;
     let memoryText = "";
-    if (nextStage >= REVIEW_MASTERY_STAGE) {
+    if (nextStage >= masteryStage) {
       delete state.reviewQueue[entryKey];
       mastered = true;
       memoryText = "Cette notion est maintenant considérée comme maîtrisée.";
@@ -904,15 +907,104 @@
     return date.getTime();
   }
 
+  function englishTargetEntriesForLesson(lessonId) {
+    const id = String(lessonId || "");
+    try {
+      const pack = typeof READY_LESSON_PACKS === "object" ? READY_LESSON_PACKS?.[id] : null;
+      const entries = pack?.englishExperienceRC50?.targetEntries;
+      if (Array.isArray(entries) && entries.length) return entries.filter(item => item?.phrase).map(item => ({ phrase: String(item.phrase), use: String(item.use || "") }));
+      const phrases = pack?.englishExperienceRC50?.targetExpressions;
+      if (Array.isArray(phrases)) return phrases.filter(Boolean).map(phrase => ({ phrase: String(phrase), use: "une situation où cette tournure est naturelle" }));
+    } catch {}
+    return [];
+  }
+
+  function englishChunkReviewKey(scope, id, slot = 0) {
+    return `eng51:${String(scope || "course")}:${String(id || "")}:${Number(slot || 0)}`;
+  }
+
+  function scheduleEnglishLessonChunkAnchors(lessonId) {
+    const id = String(lessonId || "");
+    if (!id || state.englishPhraseSeededLessonsRC51?.[id]) return 0;
+    const lesson = lessonById(id);
+    if (!lesson || lessonDisciplineId(lesson) !== "english") return 0;
+    const targets = englishTargetEntriesForLesson(id).slice(0, 6);
+    const quizCount = normalizeQuizPack(buildLessonContent(lesson).quiz, lesson, buildLessonContent(lesson)).length;
+    if (targets.length < 4 || !quizCount) return 0;
+    // Replace old generic course anchors for this English lesson, but never erase a real mistake.
+    Object.entries(state.reviewQueue || {}).forEach(([key, entry]) => {
+      if (String(entry?.lessonId || "") === id && entry?.source === "course-anchor") delete state.reviewQueue[key];
+    });
+    const groups = [targets.slice(0, 2), targets.slice(2, 4), targets.slice(4, 6)].filter(group => group.length);
+    const initialDays = [1, 3, 7];
+    let added = 0;
+    groups.forEach((group, slot) => {
+      const key = englishChunkReviewKey("course", id, slot);
+      if (state.reviewQueue?.[key]) return;
+      state.reviewQueue[key] = {
+        lessonId: id,
+        questionIndex: Math.min(slot, Math.max(0, quizCount - 1)),
+        question: "Réactiver une tournure utile",
+        wrongCount: 0,
+        stage: 0,
+        dueAt: reviewDueAtAfterDays(initialDays[slot] || 7),
+        lastResult: "scheduled",
+        source: "english-chunk",
+        anchorKind: "english-spiral",
+        englishPhrases: group,
+        firstScheduledAt: now()
+      };
+      added += 1;
+    });
+    state.englishPhraseSeededLessonsRC51 = { ...(state.englishPhraseSeededLessonsRC51 || {}), [id]: { at: now(), anchors: added } };
+    state.reviewSeededLessons = { ...(state.reviewSeededLessons || {}), [id]: { ...(state.reviewSeededLessons?.[id] || {}), at: state.reviewSeededLessons?.[id]?.at || now(), anchors: Math.max(Number(state.reviewSeededLessons?.[id]?.anchors || 0), added), englishSpiralRC51: true } };
+    persistSoon();
+    return added;
+  }
+
+  function scheduleEnglishDailyPackReview(mystery) {
+    if (!mystery?.id || mystery?.discipline !== "english" || !mystery?.lessonId || !Array.isArray(mystery.englishDailyPack)) return 0;
+    const phrases = mystery.englishDailyPack.filter(item => item?.phrase).slice(0, 3).map(item => ({ phrase: String(item.phrase), use: String(item.use || "") }));
+    if (phrases.length < 2) return 0;
+    const dayKey = currentDayKey();
+    const seedKey = `${dayKey}:${mystery.id}`;
+    if (state.englishDailyPhraseSeedsRC51?.[seedKey]) return 0;
+    const lesson = lessonById(mystery.lessonId);
+    if (!lesson) return 0;
+    const quizCount = normalizeQuizPack(buildLessonContent(lesson).quiz, lesson, buildLessonContent(lesson)).length;
+    if (!quizCount) return 0;
+    const key = englishChunkReviewKey("daily", seedKey, 0);
+    state.reviewQueue[key] = {
+      lessonId: String(mystery.lessonId),
+      questionIndex: 0,
+      question: "Réactiver le dossier d’anglais d’hier",
+      wrongCount: 0,
+      stage: 0,
+      dueAt: reviewDueAtAfterDays(1),
+      lastResult: "scheduled",
+      source: "english-daily-chunk",
+      anchorKind: "english-spiral",
+      englishPhrases: phrases,
+      mysteryId: mystery.id,
+      firstScheduledAt: now()
+    };
+    state.englishDailyPhraseSeedsRC51 = { ...(state.englishDailyPhraseSeedsRC51 || {}), [seedKey]: { at: now(), reviewKey: key } };
+    persistSoon();
+    return 1;
+  }
+
   function scheduleLessonReviewAnchors(lessonId) {
     const id = String(lessonId || "");
-    if (!id || state.reviewSeededLessons?.[id]) return 0;
+    if (!id) return 0;
     const lesson = lessonById(id);
     if (!lesson) return 0;
+    const disciplineId = lessonDisciplineId(lesson);
+    // RC51: English courses seed reusable chunks rather than two generic quiz questions.
+    if (disciplineId === "english" && englishTargetEntriesForLesson(id).length >= 4) return scheduleEnglishLessonChunkAnchors(id);
+    if (state.reviewSeededLessons?.[id]) return 0;
     const content = buildLessonContent(lesson);
     const quizItems = normalizeQuizPack(content.quiz, lesson, content);
     if (!quizItems.length) return 0;
-    const disciplineId = lessonDisciplineId(lesson);
     const first = quizSeed(`${id}-memory-anchor-a`) % quizItems.length;
     let second = quizSeed(`${id}-memory-anchor-b`) % quizItems.length;
     if (quizItems.length > 1 && second === first) second = (first + 1) % quizItems.length;
@@ -932,7 +1024,7 @@
         dueAt: reviewDueAtAfterDays(slot === 0 ? 1 : 3),
         lastResult: "scheduled",
         source: "course-anchor",
-        anchorKind: slot === 0 && ["english", "philosophy"].includes(disciplineId) ? "lab" : "quiz",
+        anchorKind: slot === 0 && disciplineId === "philosophy" ? "lab" : "quiz",
         firstScheduledAt: now()
       };
       added += 1;
@@ -948,8 +1040,23 @@
     let seeded = 0;
     for (const lessonId of completed) {
       if (seeded >= lessonLimit || allReviewEntries().length >= memoryCap) break;
+      const lesson = lessonById(lessonId);
+      if (lesson && lessonDisciplineId(lesson) === "english") continue;
       if (state.reviewSeededLessons?.[lessonId]) continue;
       if (scheduleLessonReviewAnchors(lessonId) > 0) seeded += 1;
+    }
+    return seeded;
+  }
+
+  function backfillEnglishPhraseAnchors({ lessonLimit = 1, memoryCap = 15 } = {}) {
+    if (allReviewEntries().length >= memoryCap) return 0;
+    const completed = Object.keys(state.completedLessons || {}).reverse();
+    let seeded = 0;
+    for (const lessonId of completed) {
+      if (seeded >= lessonLimit || allReviewEntries().length >= memoryCap) break;
+      const lesson = lessonById(lessonId);
+      if (!lesson || lessonDisciplineId(lesson) !== "english" || state.englishPhraseSeededLessonsRC51?.[lessonId]) continue;
+      if (scheduleEnglishLessonChunkAnchors(lessonId) > 0) seeded += 1;
     }
     return seeded;
   }
@@ -1178,11 +1285,54 @@
     return { modal, content: modal.querySelector(".beta179-modal-content") };
   }
 
+  function englishSpiralReviewRecord(entry, base) {
+    const phrases = Array.isArray(entry?.englishPhrases) ? entry.englishPhrases.filter(item => item?.phrase) : [];
+    if (!phrases.length) return null;
+    const stage = Math.max(0, Number(entry.stage || 0));
+    const target = phrases[stage % phrases.length];
+    const lessonPool = englishTargetEntriesForLesson(entry.lesson?.id);
+    const candidatePool = [...phrases, ...lessonPool].filter((item, index, all) => item?.phrase && all.findIndex(other => String(other?.phrase) === String(item.phrase)) === index);
+    const wrong = candidatePool
+      .filter(item => String(item.phrase) !== String(target.phrase))
+      .sort((a, b) => quizSeed(`${entry.key}:${stage}:${a.phrase}`) - quizSeed(`${entry.key}:${stage}:${b.phrase}`))
+      .slice(0, 2);
+    const context = target.use ? `Situation : ${target.use}.` : "Retrouve une tournure que tu pourrais vraiment utiliser dans cette situation.";
+    const why = `${target.phrase}${target.use ? ` — ${target.use}` : ""}. Le but est de retrouver le bloc anglais par sa fonction, pas de réciter une traduction isolée.`;
+    if (stage >= 1) {
+      return {
+        ...base,
+        reviewMode: "english-recall",
+        context,
+        productionPrompt: "Que dirais-tu spontanément en anglais ?",
+        modelAnswer: target.phrase,
+        listenAfter: target.phrase,
+        item: { q: "Retrouve une formulation naturelle sans regarder le cours.", a: target.phrase, why },
+        choices: []
+      };
+    }
+    const choices = [{ text: target.phrase, correct: true, feedback: why }, ...wrong.map(item => ({
+      text: item.phrase,
+      correct: false,
+      feedback: item.use ? `Cette tournure sert plutôt à : ${item.use}.` : "Cette tournure ne fait pas exactement le même travail dans cette scène."
+    }))].sort((a, b) => quizSeed(`${entry.key}:${a.text}`) - quizSeed(`${entry.key}:${b.text}`));
+    return {
+      ...base,
+      reviewMode: "english-recognition",
+      context,
+      item: { q: "Quelle tournure ferait le bon travail ici ?", a: target.phrase, why },
+      choices
+    };
+  }
+
   function adaptiveReviewRecord(entry) {
     const base = questionRecord(entry?.lesson, Number(entry?.questionIndex));
-    if (!base || entry?.source !== "course-anchor" || entry?.anchorKind !== "lab") return base ? { ...base, reviewMode: "quiz" } : null;
+    if (!base) return null;
+    if (["english-chunk", "english-daily-chunk"].includes(entry?.source) || entry?.anchorKind === "english-spiral") {
+      return englishSpiralReviewRecord(entry, base) || { ...base, reviewMode: "quiz" };
+    }
+    if (entry?.source !== "course-anchor" || entry?.anchorKind !== "lab") return { ...base, reviewMode: "quiz" };
     const disciplineId = lessonDisciplineId(entry.lesson);
-    if (!["english", "philosophy"].includes(disciplineId)) return { ...base, reviewMode: "quiz" };
+    if (disciplineId !== "philosophy") return { ...base, reviewMode: "quiz" };
     try {
       const api = window.HistoDaily?.courseInteractionsRC20;
       const lab = api?.labForLesson?.(entry.lesson.id, disciplineId);
@@ -1193,7 +1343,7 @@
         reviewMode: "lab",
         lab,
         context: lab.context || "",
-        speak: disciplineId === "english" ? (lab.speak || "") : "",
+        speak: "",
         item: { q: lab.prompt || base.item.q, a: correct?.text || base.item.a, why: lab.takeaway || base.item.why },
         choices: lab.choices.map(choice => ({ text: choice.text, correct: Boolean(choice.correct), feedback: choice.feedback || "" }))
       };
@@ -1203,7 +1353,8 @@
   function openReviewSession(disciplineId = "") {
     const entries = validReviewEntries(disciplineId).slice(0, 5);
     const discipline = disciplineId ? disciplineById(disciplineId) : null;
-    const dialog = createProgressionModal("Révisions intelligentes", discipline ? `Consolider ta mémoire en ${discipline.title}` : "Consolider ta mémoire");
+    const isEnglishReview = disciplineId === "english";
+    const dialog = createProgressionModal(isEnglishReview ? "Réactiver ton anglais" : "Révisions intelligentes", isEnglishReview ? "Retrouver les tournures avant de les oublier" : (discipline ? `Consolider ta mémoire en ${discipline.title}` : "Consolider ta mémoire"));
     if (!entries.length) {
       const scheduled = allReviewEntries(disciplineId);
       const next = nextScheduledReview(disciplineId);
@@ -1230,8 +1381,55 @@
         return renderQuestion();
       }
       answered = false;
-      const stageLabel = Number(entry.stage || 0) === 0 ? (entry.source === "course-anchor" ? "premier rappel" : "à corriger") : `niveau mémoire ${Number(entry.stage || 0)}/${REVIEW_MASTERY_STAGE}`;
-      dialog.content.innerHTML = `<div class="beta179-session-progress"><span>Question ${cursor + 1}/${entries.length}</span><div><i style="width:${pct(cursor, entries.length)}%"></i></div><b>${validReviewEntries(disciplineId).length} dues</b></div>
+      const englishSpiral = ["english-chunk", "english-daily-chunk"].includes(entry.source) || entry.anchorKind === "english-spiral";
+      const stageLabel = englishSpiral
+        ? (Number(entry.stage || 0) === 0 ? "reconnaître" : "retrouver sans aide")
+        : (Number(entry.stage || 0) === 0 ? (entry.source === "course-anchor" ? "premier rappel" : "à corriger") : `niveau mémoire ${Number(entry.stage || 0)}/${REVIEW_MASTERY_STAGE}`);
+      if (record.reviewMode === "english-recall") {
+        dialog.content.innerHTML = `<div class="beta179-session-progress"><span>Expression ${cursor + 1}/${entries.length}</span><div><i style="width:${pct(cursor, entries.length)}%"></i></div><b>rappel actif</b></div>
+          <article class="beta179-question-card hd51-english-recall">
+            <small>🇬🇧 ${esc(entry.lesson.title)} · ${stageLabel}</small>
+            ${record.context ? `<p class="hd21-review-context">${esc(record.context)}</p>` : ""}
+            <h3>${esc(record.productionPrompt || record.item.q)}</h3>
+            <p class="hd51-recall-help">Dis-la à voix haute ou écris une réponse. Pas besoin d’être mot pour mot identique : cherche une formulation naturelle qui fait le même travail.</p>
+            <textarea rows="3" data-hd51-recall-input placeholder="Ta phrase en anglais…"></textarea>
+            <button type="button" class="hd51-reveal" data-hd51-reveal>Voir une réponse possible</button>
+            <div class="hd51-recall-answer" data-hd51-recall-answer hidden></div>
+            <div class="beta179-answer-feedback" aria-live="polite"></div>
+          </article>`;
+        const reveal = dialog.content.querySelector("[data-hd51-reveal]");
+        const answerBox = dialog.content.querySelector("[data-hd51-recall-answer]");
+        const input = dialog.content.querySelector("[data-hd51-recall-input]");
+        reveal?.addEventListener("click", () => {
+          reveal.hidden = true;
+          if (input) input.disabled = true;
+          if (answerBox) {
+            answerBox.hidden = false;
+            answerBox.innerHTML = `<span>Une réponse naturelle</span><strong>${esc(record.modelAnswer || record.item.a)}</strong><p>${esc(record.item.why || "")}</p><div class="hd51-recall-actions"><button type="button" data-hd51-self="again">À revoir</button><button type="button" data-hd51-self="known">Je l’avais</button>${record.listenAfter ? `<button type="button" class="ghost" data-hd51-listen="${esc(record.listenAfter)}">▶ Écouter</button>` : ""}</div>`;
+          }
+          answerBox?.querySelector("[data-hd51-listen]")?.addEventListener("click", event => {
+            try { window.HistoDaily?.courseInteractionsRC20?.speakEnglish?.(event.currentTarget.dataset.hd51Listen || "", event.currentTarget); } catch {}
+          });
+          answerBox?.querySelectorAll("[data-hd51-self]").forEach(button => button.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            answerBox.querySelectorAll("[data-hd51-self]").forEach(item => item.disabled = true);
+            const knewIt = button.dataset.hd51Self === "known";
+            const outcome = applyReviewAnswer(entry.key, knewIt);
+            const feedback = dialog.content.querySelector(".beta179-answer-feedback");
+            if (outcome.correct) {
+              if (outcome.mastered) mastered += 1;
+              reinforced += 1;
+              feedback.innerHTML = `<p class="good"><b>Bien.</b> Tu as réactivé la tournure au lieu de simplement la reconnaître. ${esc(outcome.memoryText)} <span>+${REVIEW_XP} XP</span></p><button type="button" data-beta179-next>Continuer</button>`;
+            } else {
+              feedback.innerHTML = `<p class="bad"><b>À revoir.</b> Aucun problème : la phrase revient bientôt. Relis-la une fois, écoute-la si tu veux, puis passe à la suite.</p><button type="button" data-beta179-next>Continuer</button>`;
+            }
+            feedback.querySelector("[data-beta179-next]")?.addEventListener("click", () => { cursor += 1; renderQuestion(); });
+          }));
+        });
+        return;
+      }
+      dialog.content.innerHTML = `<div class="beta179-session-progress"><span>${englishSpiral ? "Expression" : "Question"} ${cursor + 1}/${entries.length}</span><div><i style="width:${pct(cursor, entries.length)}%"></i></div><b>${validReviewEntries(disciplineId).length} dues</b></div>
         <article class="beta179-question-card">
           <small>${HD_ICONS.lesson(entry.lesson)} ${esc(entry.lesson.title)} · ${stageLabel}</small>
           ${record.context ? `<p class="hd21-review-context">${esc(record.context)}</p>` : ""}
@@ -1554,7 +1752,9 @@
         disciplineMastery,
         lessonMastery,
         unresolvedForLesson,
-        openReviewSession
+        openReviewSession,
+        scheduleEnglishDailyPackReview,
+        scheduleEnglishLessonChunkAnchors
       }
     };
   } catch {}
@@ -1742,7 +1942,11 @@
       } catch {}
     }
   };
-  const runMemoryBackfill = () => { try { backfillReviewAnchors({ lessonLimit: 2, memoryCap: 12 }); } catch {} };
+  const runMemoryBackfill = () => {
+    try { backfillReviewAnchors({ lessonLimit: 2, memoryCap: 12 }); } catch {}
+    // RC51 migration: seed at most one already-completed English course per startup so old users are not flooded.
+    try { backfillEnglishPhraseAnchors({ lessonLimit: 1, memoryCap: 15 }); } catch {}
+  };
   if (typeof requestIdleCallback === "function") {
     requestIdleCallback(runStartupReconciliation, { timeout: 2200 });
     requestIdleCallback(runMemoryBackfill, { timeout: 2800 });
@@ -1771,7 +1975,12 @@
         allReviewEntries,
         openReviewSession,
         scheduleLessonReviewAnchors,
+        scheduleEnglishDailyPackReview,
+        scheduleEnglishLessonChunkAnchors,
         backfillReviewAnchors,
+        backfillEnglishPhraseAnchors,
+        adaptiveReviewRecord,
+        englishTargetEntriesForLesson,
         openDailyCourse,
         relatedLessonsFor
       },
@@ -7053,7 +7262,7 @@
 (function histoDailySocialV2() {
   "use strict";
 
-  const VERSION = "1.0.0-rc.50.0";
+  const VERSION = "1.0.0-rc.54.0";
   const API_ROOT = "/api/v1/social-v2";
   const STALE_MS = 30_000;
   const LOADING_TIMEOUT_MS = 15_000;
@@ -11244,7 +11453,7 @@
 /* HistoDaily RC24 — premium editorial home. */
 (function histodailyRC24PremiumHome(){
   "use strict";
-  const VERSION = "1.0.0-rc.50.0";
+  const VERSION = "1.0.0-rc.54.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
   const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
@@ -11425,7 +11634,7 @@
 (function histodailyRc29DailyRotation(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.50.0";
+  const VERSION = "1.0.0-rc.54.0";
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
   const STARTER_HISTORY = new Set([
     "mystery-fire", "mystery-pyramids", "mystery-athens", "mystery-napoleon",
@@ -11574,7 +11783,7 @@
 (function histodailyRC31QualityPass(){
   "use strict";
 
-  const VERSION = "1.0.0-rc.50.0";
+  const VERSION = "1.0.0-rc.54.0";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
 
@@ -12144,7 +12353,7 @@
 */
 (function histodailyRc43DailyFreshness(){
   "use strict";
-  const VERSION = "1.0.0-rc.50.0";
+  const VERSION = "1.0.0-rc.54.0";
   const RECENT_DAYS = 10;
   const HARD_RECENT_ID_DAYS = 7;
   const previousForDiscipline = typeof mysteryForDisciplineDayOffset === "function" ? mysteryForDisciplineDayOffset : null;
@@ -12302,7 +12511,7 @@
 */
 (function histodailyRc49DailyHook(){
   "use strict";
-  const VERSION = "1.0.0-rc.50.0";
+  const VERSION = "1.0.0-rc.54.0";
   const ANALYTICS_KEY = "histodaily_retention_rc47"; // keep the same analytics history across the bug-fix release
   const TEASER_HISTORY_LIMIT = 120;
   const safe = (fn, fallback = null) => { try { const v = fn(); return v == null ? fallback : v; } catch { return fallback; } };
@@ -12590,6 +12799,432 @@
   window.HistoDailyDailyHookRC47=api; // compatibility alias
   try { window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,dailyHookRC47:true,dailyHookRC48:true,dailyHookRC49:true,dailyHook:api}; } catch {}
   try { if(state?.tab==="home") window.setTimeout(()=>{renderHome();},0); else if(state?.tab==="mystery") window.setTimeout(enhanceSolvedMystery,0); } catch {}
+})();
+
+;
+
+/* ===== SOURCE: english-spiral-rc51.js ===== */
+/* HistoDaily RC51 — English spiral: useful chunks come back through spaced recognition and active recall. */
+(function histodailyRc51EnglishSpiral(){
+  "use strict";
+  const VERSION = "1.0.0-rc.54.0";
+  try {
+    window.HistoDaily = {
+      ...(window.HistoDaily || {}),
+      version: VERSION,
+      englishSpiralRC51: {
+        version: VERSION,
+        courseAnchors: 3,
+        initialDays: [1, 3, 7],
+        dailyPackReturns: true,
+        progression: ["recognition", "active-recall", "spaced-recall"],
+        openPractice(){ try { return window.HistoDaily?.memory?.openReviewSession?.("english"); } catch { return null; } }
+      }
+    };
+  } catch {}
+})();
+
+;
+
+/* ===== SOURCE: product-loop-rc52.js ===== */
+/* HistoDaily RC52 — Product loop: make learning progress visible, welcome returning users without debt,
+   and expose a compact funnel snapshot for real retention diagnosis. */
+(function histodailyRc52ProductLoop(){
+  "use strict";
+  const VERSION = "1.0.0-rc.54.0";
+  const ANALYTICS_KEY = "histodaily_retention_rc47";
+  const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+
+  function todayKey(){ return safe(() => localDayKey(Date.now()), new Date().toISOString().slice(0,10)); }
+  function dayNumber(key){
+    const match = String(key || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if(!match) return NaN;
+    return Math.floor(new Date(Number(match[1]), Number(match[2])-1, Number(match[3]), 12).getTime()/86400000);
+  }
+  function analytics(){
+    try { const data = JSON.parse(localStorage.getItem(ANALYTICS_KEY) || "null"); return data && typeof data === "object" ? data : {}; }
+    catch { return {}; }
+  }
+  function activeDays(){ return Object.keys(analytics().activeDays || {}).sort(); }
+  function priorActiveDay(){
+    const today = todayKey();
+    return activeDays().filter(day => day < today).at(-1) || null;
+  }
+  function returnGapDays(){
+    const previous = priorActiveDay();
+    if(!previous) return null;
+    const gap = dayNumber(todayKey()) - dayNumber(previous);
+    return Number.isFinite(gap) ? Math.max(0, gap) : null;
+  }
+  function currentDiscipline(){ return safe(() => disciplineById(activeDisciplineId()), null); }
+  function disciplineName(id){ return safe(() => disciplineById(id)?.name, String(id || "ce domaine")); }
+  function lessons(id){ return safe(() => lessonsForDiscipline(id), []) || []; }
+  function mysteries(id){ return safe(() => publicMysteries(id), []) || []; }
+  function doneLessons(id){ return lessons(id).filter(item => safe(() => lessonDone(item.id), false)).length; }
+  function solvedMysteries(id){ return mysteries(id).filter(item => safe(() => mysterySolved(item.id), Boolean(state?.solvedMysteries?.[item.id]))).length; }
+  function dueReviews(id){ return (safe(() => window.HistoDaily?.memory?.validReviewEntries?.(id), []) || []).length; }
+  function lastSevenActive(){
+    const now = dayNumber(todayKey());
+    return activeDays().filter(day => { const n = dayNumber(day); return Number.isFinite(n) && now - n >= 0 && now - n <= 6; }).length;
+  }
+  function totalLearning(){
+    return {
+      lessons: Object.keys(state?.completedLessons || {}).length,
+      mysteries: Object.keys(state?.solvedMysteries || {}).length,
+      active7: lastSevenActive()
+    };
+  }
+  function progressSnapshot(rawId){
+    const id = safe(() => disciplineById(rawId || activeDisciplineId()).id, rawId || activeDisciplineId());
+    const lessonTotal = lessons(id).length;
+    const mysteryTotal = mysteries(id).length;
+    const lessonDoneCount = doneLessons(id);
+    const mysterySolvedCount = solvedMysteries(id);
+    return {
+      disciplineId: id,
+      discipline: disciplineName(id),
+      lessonsDone: lessonDoneCount,
+      lessonsTotal: lessonTotal,
+      mysteriesSolved: mysterySolvedCount,
+      mysteriesTotal: mysteryTotal,
+      dueReviews: dueReviews(id),
+      total: totalLearning()
+    };
+  }
+  function record(type, meta={}){ safe(() => window.HistoDailyDailyHookRC49?.record?.(type, meta)); }
+
+  function progressMarkup(snapshot, {solvedToday=false, compact=false, hideDue=false}={}){
+    const discoveryLabel = snapshot.mysteriesSolved === 1 ? "dossier exploré" : "dossiers explorés";
+    const courseLabel = snapshot.lessonsDone === 1 ? "cours maîtrisé" : "cours maîtrisés";
+    const streakFree = snapshot.total.active7 > 0 ? `${snapshot.total.active7}/7 jours actifs récemment` : "ta progression commence ici";
+    return `<div class="rc52-progress ${compact ? "is-compact" : ""}" data-rc52-progress>
+      <div class="rc52-progress-head"><small>${solvedToday ? "Ce que tu construis" : "Ta progression"}</small><strong>${esc(snapshot.discipline)}</strong></div>
+      <div class="rc52-progress-values">
+        <span><b>${snapshot.mysteriesSolved}</b> ${discoveryLabel}</span>
+        <span><b>${snapshot.lessonsDone}</b> ${courseLabel}</span>
+      </div>
+      <p>${solvedToday ? "Aujourd’hui : +1 découverte qui reste dans ton parcours." : esc(streakFree)}${!hideDue && snapshot.dueReviews ? ` · ${snapshot.dueReviews} à consolider` : ""}</p>
+    </div>`;
+  }
+
+  function welcomeBackMarkup(gap){
+    const missed = Math.max(1, Number(gap || 0) - 1);
+    const absence = missed === 1 ? "une journée" : `${missed} jours`;
+    return `<section class="rc52-welcome" data-rc52-welcome aria-label="Retour dans HistoDaily">
+      <span aria-hidden="true">↩</span><div><small>Content de te revoir</small><strong>Rien à rattraper.</strong><p>Après ${esc(absence)} sans ouvrir l’app, le dossier du jour suffit. Tu reprends exactement ici.</p></div>
+    </section>`;
+  }
+
+  function enhanceHome(){
+    const home = document.querySelector(".rc24-home");
+    const hero = home?.querySelector(".rc24-hero");
+    if(!home || !hero) return;
+    home.querySelectorAll("[data-rc52-progress],[data-rc52-welcome]").forEach(node => node.remove());
+    const discipline = currentDiscipline();
+    const id = discipline?.id || safe(() => activeDisciplineId(), "history");
+    const snapshot = progressSnapshot(id);
+    const mystery = safe(() => window.HistoDailyDailyHookRC49?.dailyMysteryFor?.(id), null);
+    const solved = Boolean(mystery?.id && safe(() => mysterySolved(mystery.id), Boolean(state?.solvedMysteries?.[mystery.id])));
+    const gap = returnGapDays();
+
+    if(!solved && Number(gap) >= 2){
+      hero.insertAdjacentHTML("afterend", welcomeBackMarkup(gap));
+      record("comeback_message_seen", { gapDays: gap, disciplineId: id, source: "home" });
+    }
+
+    const anchor = home.querySelector(".rc47-deep-dive") || home.querySelector(".rc44-optional-next") || home.querySelector("[data-rc52-welcome]") || hero;
+    anchor.insertAdjacentHTML("afterend", progressMarkup(snapshot, {solvedToday: solved, hideDue: !solved && Number(gap) >= 2}));
+    record("progress_visible", { disciplineId: id, solvedToday: solved, mysteriesSolved: snapshot.mysteriesSolved, lessonsDone: snapshot.lessonsDone, source: "home" });
+  }
+
+  function enhanceSolvedMystery(){
+    const solution = document.querySelector(".hd300-solution");
+    if(!solution || solution.querySelector("[data-rc52-progress]")) return;
+    const mystery = safe(() => currentMystery(), null);
+    if(!mystery?.id || !safe(() => mysterySolved(mystery.id), false)) return;
+    const id = safe(() => mysteryDisciplineId(mystery), safe(() => activeDisciplineId(), "history"));
+    const snapshot = progressSnapshot(id);
+    const actions = solution.querySelector(".hd34-solved-next");
+    const wrap = document.createElement("div");
+    wrap.innerHTML = progressMarkup(snapshot, {solvedToday:true, compact:true});
+    const block = wrap.firstElementChild;
+    if(actions) actions.insertAdjacentElement("beforebegin", block); else solution.append(block);
+    record("progress_visible", { disciplineId:id, solvedToday:true, mysteriesSolved:snapshot.mysteriesSolved, lessonsDone:snapshot.lessonsDone, source:"solution" });
+  }
+
+  function funnelSnapshot(){
+    const data = analytics();
+    const events = Array.isArray(data.events) ? data.events : [];
+    const days = Object.keys(data.activeDays || {}).sort();
+    const has = type => events.some(event => event?.type === type);
+    const firstDay = data.firstSeenDay || days[0] || null;
+    const firstDayEvents = events.filter(event => event?.day === firstDay).map(event => event.type);
+    return {
+      version: VERSION,
+      firstSeenDay: firstDay,
+      activeDays: days.length,
+      activeLast7: lastSevenActive(),
+      returnGapDays: returnGapDays(),
+      firstSession: {
+        opened: firstDayEvents.includes("app_open"),
+        started: firstDayEvents.includes("mystery_start"),
+        solved: firstDayEvents.includes("mystery_solved"),
+        deepDive: firstDayEvents.includes("deep_dive")
+      },
+      ever: {
+        started: has("mystery_start"),
+        solved: has("mystery_solved"),
+        sawTomorrow: has("teaser_seen"),
+        deepDive: has("deep_dive"),
+        returnedAfterGap: has("comeback_message_seen")
+      },
+      retention: {
+        D1: Boolean(data.milestones?.D1),
+        D3: Boolean(data.milestones?.D3),
+        D7: Boolean(data.milestones?.D7)
+      },
+      learning: totalLearning()
+    };
+  }
+
+  const previousRenderHome = typeof renderHome === "function" ? renderHome : null;
+  if(previousRenderHome) renderHome = function rc52RenderHome(){ const out = previousRenderHome(); window.setTimeout(enhanceHome, 0); return out; };
+  const previousRenderMystery = typeof renderMystery === "function" ? renderMystery : null;
+  if(previousRenderMystery) renderMystery = function rc52RenderMystery(){ const out = previousRenderMystery(); window.setTimeout(enhanceSolvedMystery, 0); return out; };
+
+  const api = Object.freeze({ version: VERSION, progressSnapshot, returnGapDays, funnelSnapshot, enhanceHome, enhanceSolvedMystery });
+  window.HistoDailyProductLoopRC52 = api;
+  try { window.HistoDaily = { ...(window.HistoDaily || {}), version: VERSION, productLoopRC52: api }; } catch {}
+  try { if(state?.tab === "home") window.setTimeout(enhanceHome, 0); else if(state?.tab === "mystery") window.setTimeout(enhanceSolvedMystery, 0); } catch {}
+})();
+
+;
+
+/* ===== SOURCE: daily-value-rc53.js ===== */
+/* HistoDaily RC53 — Daily value: the short ritual must leave three memorable anchors,
+   and tomorrow's teaser must create curiosity instead of repeating a generic mission label. */
+(function histodailyRc53DailyValue(){
+  "use strict";
+  const VERSION = "1.0.0-rc.54.0";
+  const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
+  const clean = value => String(value || "").replace(/\s+/g, " ").trim();
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  const normalize = value => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+  function sentences(text){
+    const value=clean(text);
+    if(!value) return [];
+    return (value.match(/[^.!?]+[.!?]?/g)||[value]).map(clean).filter(Boolean);
+  }
+  function stripRescue(text){
+    return clean(String(text||"")
+      .replace(/\s*Dernier coup de pouce\s*:[\s\S]*$/i, "")
+      .replace(/\s*Last hint\s*:[\s\S]*$/i, ""));
+  }
+  function uniquePush(out, item){
+    const text=clean(item?.text); if(!text) return;
+    const key=normalize(text); if(!key) return;
+    if(out.some(row=>{ const k=normalize(row.text); return k===key || (k.length>28 && key.includes(k)) || (key.length>28 && k.includes(key)); })) return;
+    out.push({label:clean(item.label)||"À retenir",text});
+  }
+  function knowledgePack(mystery){
+    if(!mystery || mystery.discipline==="english") return [];
+    const out=[];
+    const answer=clean(mystery.answer);
+    const period=clean(mystery.periodHint);
+    const subject=clean(mystery.subjectType);
+    if(answer) uniquePush(out,{label:"Repère",text:period?`${answer} — ${period}`:answer});
+
+    const exp=sentences(mystery.explanation||"");
+    if(exp[0]) uniquePush(out,{label:"Idée clé",text:exp[0]});
+
+    const clues=(Array.isArray(mystery.clues)?mystery.clues:[]).map(stripRescue).filter(Boolean);
+    const concrete=clues.find((text,index)=>index>0 && text.length>=38) || clues.find(text=>text.length>=38) || "";
+    if(concrete) uniquePush(out,{label:"Indice concret",text:concrete});
+    if(out.length<3 && exp[1]) uniquePush(out,{label:"Pourquoi ça compte",text:exp[1]});
+    if(out.length<3 && subject) uniquePush(out,{label:"Type",text:`À reconnaître comme ${subject}.`});
+    return out.slice(0,3);
+  }
+  function curiosityTeaser(mystery){
+    if(!mystery) return "Un nouveau dossier t’attendra demain.";
+    const title=clean(mystery.title||mystery.caseTitle);
+    const period=clean(mystery.periodHint);
+    const subject=clean(mystery.subjectType);
+    let hook=title || subject || "Un nouveau dossier";
+    const answer=normalize(mystery.answer);
+    if(answer && normalize(hook).includes(answer)) hook=subject || "Un nouveau dossier";
+    const suffix=period && !normalize(hook).includes(normalize(period)) ? ` · ${period}` : "";
+    return `${hook}${suffix}`;
+  }
+  function packMarkup(items){
+    if(!items.length) return "";
+    return `<small>3 choses à garder</small><ul>${items.map(item=>`<li><b>${esc(item.label)}</b><span>${esc(item.text)}</span></li>`).join("")}</ul>`;
+  }
+  function tomorrowMystery(){ return safe(()=>window.HistoDailyDailyHookRC49?.ensureTomorrowTeaser?.(),null); }
+
+  function enhanceSolved(){
+    const mystery=safe(()=>currentMystery(),null);
+    if(!mystery?.id || mystery.discipline==="english" || !safe(()=>mysterySolved(mystery.id),false)) return;
+    const solution=document.querySelector(".hd300-solution"); if(!solution) return;
+    const items=knowledgePack(mystery); if(!items.length) return;
+    let block=solution.querySelector("[data-rc47-takeaway]");
+    if(!block){ block=document.createElement("div"); block.className="rc47-takeaway"; block.dataset.rc47Takeaway="true"; const anchor=solution.querySelector(".hd300-result-line"); if(anchor) anchor.insertAdjacentElement("beforebegin",block); else solution.append(block); }
+    block.classList.add("rc53-knowledge-pack"); block.dataset.rc53KnowledgePack="true"; block.innerHTML=packMarkup(items);
+    const teaser=solution.querySelector(".rc47-tomorrow-teaser p"); const tomorrow=tomorrowMystery();
+    if(teaser&&tomorrow){ teaser.textContent=curiosityTeaser(tomorrow); teaser.closest(".rc47-tomorrow-teaser")?.setAttribute("data-rc53-curiosity","true"); }
+  }
+  function enhanceHome(){
+    const home=document.querySelector(".rc24-home"); if(!home) return;
+    const teaser=home.querySelector(".rc47-home-teaser strong"); if(!teaser) return;
+    const tomorrow=tomorrowMystery(); if(!tomorrow) return;
+    teaser.textContent=curiosityTeaser(tomorrow); teaser.closest(".rc47-home-teaser")?.setAttribute("data-rc53-curiosity","true");
+  }
+
+  const previousRenderMystery=typeof renderMystery==="function"?renderMystery:null;
+  if(previousRenderMystery) renderMystery=function rc53RenderMystery(){ const out=previousRenderMystery(); window.setTimeout(enhanceSolved,0); return out; };
+  const previousRenderHome=typeof renderHome==="function"?renderHome:null;
+  if(previousRenderHome) renderHome=function rc53RenderHome(){ const out=previousRenderHome(); window.setTimeout(enhanceHome,0); return out; };
+
+  const api=Object.freeze({version:VERSION,knowledgePack,curiosityTeaser,enhanceSolved,enhanceHome});
+  window.HistoDailyDailyValueRC53=api;
+  try { window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,dailyValueRC53:api}; } catch {}
+})();
+
+;
+
+/* ===== SOURCE: retention-analytics-rc54.js ===== */
+/* HistoDaily RC54 — centralized retention analytics.
+   Local analytics remain the source of truth while offline. This layer synchronizes
+   a small, allow-listed event set to the server without sending pseudo, email or friend code. */
+(function histodailyRc54RetentionAnalytics(){
+  "use strict";
+  const VERSION = "1.0.0-rc.54.0";
+  const LOCAL_KEY = "histodaily_retention_rc47";
+  const SYNC_KEY = "histodaily_retention_rc54_sync";
+  const ENDPOINT = "/api/v1/analytics/events";
+  const MAX_BATCH = 24;
+  const ALLOWED = new Set([
+    "app_open", "push_open", "mystery_start", "mystery_solved", "teaser_seen",
+    "deep_dive", "comeback_message_seen", "onboarding_completed"
+  ]);
+  const safe = (fn, fallback = null) => { try { const value = fn(); return value == null ? fallback : value; } catch { return fallback; } };
+  const text = (value, max=90) => String(value || "").trim().replace(/\s+/g," ").slice(0,max);
+
+  function localAnalytics(){
+    try { const data=JSON.parse(localStorage.getItem(LOCAL_KEY)||"null"); return data&&typeof data==="object"?data:{}; }
+    catch { return {}; }
+  }
+  function syncState(){
+    try { const data=JSON.parse(localStorage.getItem(SYNC_KEY)||"null"); return data&&typeof data==="object"?data:{sent:{}}; }
+    catch { return {sent:{}}; }
+  }
+  function writeSync(data){
+    try {
+      const sent=data?.sent&&typeof data.sent==="object"?data.sent:{};
+      const keys=Object.keys(sent).sort((a,b)=>Number(sent[b]||0)-Number(sent[a]||0));
+      if(keys.length>700) keys.slice(700).forEach(key=>delete sent[key]);
+      localStorage.setItem(SYNC_KEY,JSON.stringify({...data,sent}));
+    } catch {}
+  }
+  function playerId(){
+    return text(safe(()=>playerIdMe(), safe(()=>`me-${localUserId()}`,"anonymous-device")),90) || "anonymous-device";
+  }
+  function localDateFromTime(at){
+    const time=Number(at||Date.now());
+    return safe(()=>localDayKey(time),new Date(time).toISOString().slice(0,10));
+  }
+  function firstSeenDay(){
+    const analytics=localAnalytics();
+    return text(analytics.firstSeenDay || Object.keys(analytics.activeDays||{}).sort()[0] || localDateFromTime(Date.now()),10);
+  }
+  function recentEnough(day){
+    const parsed=Date.parse(`${String(day||"")}T12:00:00Z`);
+    const today=Date.parse(`${localDateFromTime(Date.now())}T12:00:00Z`);
+    if(!Number.isFinite(parsed)||!Number.isFinite(today)) return false;
+    const age=Math.round((today-parsed)/86400000);
+    return age>=-1&&age<=45;
+  }
+  function metaFor(event){
+    const meta={};
+    const copy=(key,max=90)=>{ if(event?.[key]!==undefined&&event?.[key]!==null&&event?.[key]!=="") meta[key]=text(event[key],max); };
+    copy("disciplineId",32); copy("mysteryId",90); copy("lessonId",90); copy("source",48);
+    if(Number.isFinite(Number(event?.gapDays))) meta.gapDays=Math.max(0,Math.min(90,Number(event.gapDays)));
+    if(Number.isFinite(Number(event?.tries))) meta.tries=Math.max(0,Math.min(50,Number(event.tries)));
+    if(Number.isFinite(Number(event?.hints))) meta.hints=Math.max(0,Math.min(10,Number(event.hints)));
+    return meta;
+  }
+  function eventRow(event){
+    if(!event || !ALLOWED.has(String(event.type||""))) return null;
+    const pid=playerId();
+    const day=text(event.day || localDateFromTime(event.at),10);
+    const signature=text(event.signature || `${day}|${event.type}|${event.mysteryId||event.lessonId||event.source||""}`,180);
+    if(!signature) return null;
+    const meta=metaFor(event);
+    return {
+      eventId:text(`${pid}|${signature}`,220),
+      playerId:pid,
+      type:String(event.type),
+      day,
+      at:new Date(Number(event.at||Date.now())).toISOString(),
+      firstSeenDay:firstSeenDay(),
+      disciplineId:meta.disciplineId||"",
+      mysteryId:meta.mysteryId||"",
+      lessonId:meta.lessonId||"",
+      source:meta.source||"",
+      meta
+    };
+  }
+  function onboardingEvent(){
+    const at=Date.parse(String(state?.onboardingCompletedAt||""));
+    if(!Number.isFinite(at)) return null;
+    const day=localDateFromTime(at);
+    return eventRow({
+      signature:`${day}|onboarding_completed|${String(state?.onboardingVersion||"v1")}`,
+      type:"onboarding_completed", day, at,
+      disciplineId:safe(()=>activeDisciplineId(),state?.currentDiscipline||""), source:"onboarding"
+    });
+  }
+  function pendingRows(){
+    const analytics=localAnalytics();
+    const sync=syncState();
+    const sent=sync.sent&&typeof sync.sent==="object"?sync.sent:{};
+    const rows=(Array.isArray(analytics.events)?analytics.events:[]).map(eventRow).filter(Boolean);
+    const onboard=onboardingEvent(); if(onboard) rows.push(onboard);
+    const unique=new Map(); rows.forEach(row=>unique.set(row.eventId,row));
+    return Array.from(unique.values()).filter(row=>recentEnough(row.day)&&!sent[row.eventId]).slice(0,MAX_BATCH);
+  }
+  let syncing=false;
+  async function syncNow(){
+    if(syncing || navigator.onLine===false) return {ok:false,skipped:true,reason:"offline-or-busy"};
+    const events=pendingRows();
+    if(!events.length) return {ok:true,stored:0,pending:0};
+    syncing=true;
+    try {
+      const response=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({events}),keepalive:true,cache:"no-store"});
+      const json=await response.json().catch(()=>({}));
+      if(!response.ok || json?.ok===false || json?.stored===false) return {ok:false,stored:0,pending:events.length,mode:json?.mode||`http-${response.status}`};
+      const sync=syncState(); sync.sent=sync.sent&&typeof sync.sent==="object"?sync.sent:{};
+      const stamp=Date.now(); events.forEach(row=>{sync.sent[row.eventId]=stamp;});
+      sync.lastSyncAt=stamp; sync.lastMode=json?.mode||"server"; writeSync(sync);
+      return {ok:true,stored:Number(json?.accepted||events.length),pending:Math.max(0,pendingRows().length),mode:json?.mode||"server"};
+    } catch(error){ return {ok:false,stored:0,pending:events.length,mode:"network-error"}; }
+    finally { syncing=false; }
+  }
+  function snapshot(){
+    const sync=syncState();
+    return {version:VERSION,playerId:playerId(),firstSeenDay:firstSeenDay(),pending:pendingRows().length,lastSyncAt:sync.lastSyncAt||null,lastMode:sync.lastMode||null};
+  }
+
+  window.setTimeout(syncNow,250);
+  window.setInterval(syncNow,5000);
+  window.addEventListener("online",()=>window.setTimeout(syncNow,100));
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") syncNow(); });
+  window.addEventListener("pagehide",()=>syncNow());
+
+  const api=Object.freeze({version:VERSION,syncNow,snapshot,pendingRows});
+  window.HistoDailyRetentionRC54=api;
+  try { window.HistoDaily={...(window.HistoDaily||{}),version:VERSION,retentionRC54:api}; } catch {}
 })();
 
 ;

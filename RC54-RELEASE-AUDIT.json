@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0-rc.54.0",
+  "status": "passed",
+  "focus": "centralized retention funnel and D1/D3/D7 cohorts",
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  },
+  "analytics": {
+    "events": [
+      "app_open",
+      "push_open",
+      "mystery_start",
+      "mystery_solved",
+      "teaser_seen",
+      "deep_dive",
+      "comeback_message_seen",
+      "onboarding_completed"
+    ],
+    "privacyMinimized": true,
+    "idempotent": true,
+    "offlineQueue": true,
+    "recentSyncWindowDays": 45,
+    "adminReportProtected": true,
+    "cohorts": [
+      "D1",
+      "D3",
+      "D7"
+    ],
+    "segmentedByFirstDiscipline": true
+  },
+  "deployment": {
+    "migration": "supabase/RC54-ANALYTICS-MIGRATION.sql",
+    "adminTokenEnv": "ANALYTICS_ADMIN_TOKEN",
+    "healthFlag": "deployment.analyticsReady",
+    "centralStorageRequiresMigration": true
+  },
+  "regressions": {
+    "fullQualityPipeline": "passed",
+    "clientSyntax": "passed",
+    "serverSyntax": "passed",
+    "dailyHook": "passed",
+    "englishSpiral": "passed",
+    "productLoopRC52": "passed",
+    "dailyValueRC53": "passed"
+  },
+  "dedicatedAudits": {
+    "static": "passed",
+    "behavior": "passed"
+  },
+  "knownLimits": [
+    "Central storage is active only after the Supabase RC54 migration is applied.",
+    "Analytics use an anonymous client installation identifier; without strong account authentication they are suitable for product cohorts, not fraud-proof identity analytics.",
+    "The admin cohort endpoint is intentionally unavailable without a server-side ANALYTICS_ADMIN_TOKEN."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-rc.52.0",
+  "status": "passed",
+  "focus": "visible learning progress and guilt-free return",
+  "product_loop": {
+    "progressVisibleOnHome": true,
+    "progressVisibleAfterDailySolve": true,
+    "returnAfterAbsenceHandled": true,
+    "reviewDebtHiddenOnReturn": true,
+    "newMandatoryScreen": false,
+    "funnelSnapshotAvailable": true
+  },
+  "regressions": {
+    "fullQualityPipeline": "passed",
+    "clientSyntax": "passed",
+    "dailyHook": "passed",
+    "englishSpiral": "passed",
+    "clientServerVersionAligned": true
+  },
+  "catalogue": {
+    "courses": 219,
+    "mysteries": 158
+  },
+  "knownLimits": [
+    "Retention analytics remain local per device; server score data can measure completed-day recurrence but this is not yet a centralized event analytics system.",
+    "Existing structural UI/runtime debt remains documented by the product-health audit."
+  ]
+}

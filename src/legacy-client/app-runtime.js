@@ -603,6 +603,8 @@
   state.reviewQueue = state.reviewQueue && typeof state.reviewQueue === "object" ? state.reviewQueue : {};
   state.reviewStats = state.reviewStats && typeof state.reviewStats === "object" ? state.reviewStats : { wrong: 0, corrected: 0 };
   state.reviewSeededLessons = state.reviewSeededLessons && typeof state.reviewSeededLessons === "object" ? state.reviewSeededLessons : {};
+  state.englishPhraseSeededLessonsRC51 = state.englishPhraseSeededLessonsRC51 && typeof state.englishPhraseSeededLessonsRC51 === "object" ? state.englishPhraseSeededLessonsRC51 : {};
+  state.englishDailyPhraseSeedsRC51 = state.englishDailyPhraseSeedsRC51 && typeof state.englishDailyPhraseSeedsRC51 === "object" ? state.englishDailyPhraseSeedsRC51 : {};
   state.synthesisPassed = state.synthesisPassed && typeof state.synthesisPassed === "object" ? state.synthesisPassed : {};
   state.synthesisAttempts = state.synthesisAttempts && typeof state.synthesisAttempts === "object" ? state.synthesisAttempts : {};
   state.collectionUnlocks = state.collectionUnlocks && typeof state.collectionUnlocks === "object" ? state.collectionUnlocks : {};
@@ -848,10 +850,11 @@
       return { ok: true, correct: false, mastered: false, nextDueAt: now(), memoryText: "" };
     }
     const nextStage = Math.max(0, Number(current.stage || 0)) + 1;
+    const masteryStage = current.source === "english-daily-chunk" ? 3 : REVIEW_MASTERY_STAGE;
     let mastered = false;
     let nextDueAt = 0;
     let memoryText = "";
-    if (nextStage >= REVIEW_MASTERY_STAGE) {
+    if (nextStage >= masteryStage) {
       delete state.reviewQueue[entryKey];
       mastered = true;
       memoryText = "Cette notion est maintenant considérée comme maîtrisée.";
@@ -901,15 +904,104 @@
     return date.getTime();
   }
 
+  function englishTargetEntriesForLesson(lessonId) {
+    const id = String(lessonId || "");
+    try {
+      const pack = typeof READY_LESSON_PACKS === "object" ? READY_LESSON_PACKS?.[id] : null;
+      const entries = pack?.englishExperienceRC50?.targetEntries;
+      if (Array.isArray(entries) && entries.length) return entries.filter(item => item?.phrase).map(item => ({ phrase: String(item.phrase), use: String(item.use || "") }));
+      const phrases = pack?.englishExperienceRC50?.targetExpressions;
+      if (Array.isArray(phrases)) return phrases.filter(Boolean).map(phrase => ({ phrase: String(phrase), use: "une situation où cette tournure est naturelle" }));
+    } catch {}
+    return [];
+  }
+
+  function englishChunkReviewKey(scope, id, slot = 0) {
+    return `eng51:${String(scope || "course")}:${String(id || "")}:${Number(slot || 0)}`;
+  }
+
+  function scheduleEnglishLessonChunkAnchors(lessonId) {
+    const id = String(lessonId || "");
+    if (!id || state.englishPhraseSeededLessonsRC51?.[id]) return 0;
+    const lesson = lessonById(id);
+    if (!lesson || lessonDisciplineId(lesson) !== "english") return 0;
+    const targets = englishTargetEntriesForLesson(id).slice(0, 6);
+    const quizCount = normalizeQuizPack(buildLessonContent(lesson).quiz, lesson, buildLessonContent(lesson)).length;
+    if (targets.length < 4 || !quizCount) return 0;
+    // Replace old generic course anchors for this English lesson, but never erase a real mistake.
+    Object.entries(state.reviewQueue || {}).forEach(([key, entry]) => {
+      if (String(entry?.lessonId || "") === id && entry?.source === "course-anchor") delete state.reviewQueue[key];
+    });
+    const groups = [targets.slice(0, 2), targets.slice(2, 4), targets.slice(4, 6)].filter(group => group.length);
+    const initialDays = [1, 3, 7];
+    let added = 0;
+    groups.forEach((group, slot) => {
+      const key = englishChunkReviewKey("course", id, slot);
+      if (state.reviewQueue?.[key]) return;
+      state.reviewQueue[key] = {
+        lessonId: id,
+        questionIndex: Math.min(slot, Math.max(0, quizCount - 1)),
+        question: "Réactiver une tournure utile",
+        wrongCount: 0,
+        stage: 0,
+        dueAt: reviewDueAtAfterDays(initialDays[slot] || 7),
+        lastResult: "scheduled",
+        source: "english-chunk",
+        anchorKind: "english-spiral",
+        englishPhrases: group,
+        firstScheduledAt: now()
+      };
+      added += 1;
+    });
+    state.englishPhraseSeededLessonsRC51 = { ...(state.englishPhraseSeededLessonsRC51 || {}), [id]: { at: now(), anchors: added } };
+    state.reviewSeededLessons = { ...(state.reviewSeededLessons || {}), [id]: { ...(state.reviewSeededLessons?.[id] || {}), at: state.reviewSeededLessons?.[id]?.at || now(), anchors: Math.max(Number(state.reviewSeededLessons?.[id]?.anchors || 0), added), englishSpiralRC51: true } };
+    persistSoon();
+    return added;
+  }
+
+  function scheduleEnglishDailyPackReview(mystery) {
+    if (!mystery?.id || mystery?.discipline !== "english" || !mystery?.lessonId || !Array.isArray(mystery.englishDailyPack)) return 0;
+    const phrases = mystery.englishDailyPack.filter(item => item?.phrase).slice(0, 3).map(item => ({ phrase: String(item.phrase), use: String(item.use || "") }));
+    if (phrases.length < 2) return 0;
+    const dayKey = currentDayKey();
+    const seedKey = `${dayKey}:${mystery.id}`;
+    if (state.englishDailyPhraseSeedsRC51?.[seedKey]) return 0;
+    const lesson = lessonById(mystery.lessonId);
+    if (!lesson) return 0;
+    const quizCount = normalizeQuizPack(buildLessonContent(lesson).quiz, lesson, buildLessonContent(lesson)).length;
+    if (!quizCount) return 0;
+    const key = englishChunkReviewKey("daily", seedKey, 0);
+    state.reviewQueue[key] = {
+      lessonId: String(mystery.lessonId),
+      questionIndex: 0,
+      question: "Réactiver le dossier d’anglais d’hier",
+      wrongCount: 0,
+      stage: 0,
+      dueAt: reviewDueAtAfterDays(1),
+      lastResult: "scheduled",
+      source: "english-daily-chunk",
+      anchorKind: "english-spiral",
+      englishPhrases: phrases,
+      mysteryId: mystery.id,
+      firstScheduledAt: now()
+    };
+    state.englishDailyPhraseSeedsRC51 = { ...(state.englishDailyPhraseSeedsRC51 || {}), [seedKey]: { at: now(), reviewKey: key } };
+    persistSoon();
+    return 1;
+  }
+
   function scheduleLessonReviewAnchors(lessonId) {
     const id = String(lessonId || "");
-    if (!id || state.reviewSeededLessons?.[id]) return 0;
+    if (!id) return 0;
     const lesson = lessonById(id);
     if (!lesson) return 0;
+    const disciplineId = lessonDisciplineId(lesson);
+    // RC51: English courses seed reusable chunks rather than two generic quiz questions.
+    if (disciplineId === "english" && englishTargetEntriesForLesson(id).length >= 4) return scheduleEnglishLessonChunkAnchors(id);
+    if (state.reviewSeededLessons?.[id]) return 0;
     const content = buildLessonContent(lesson);
     const quizItems = normalizeQuizPack(content.quiz, lesson, content);
     if (!quizItems.length) return 0;
-    const disciplineId = lessonDisciplineId(lesson);
     const first = quizSeed(`${id}-memory-anchor-a`) % quizItems.length;
     let second = quizSeed(`${id}-memory-anchor-b`) % quizItems.length;
     if (quizItems.length > 1 && second === first) second = (first + 1) % quizItems.length;
@@ -929,7 +1021,7 @@
         dueAt: reviewDueAtAfterDays(slot === 0 ? 1 : 3),
         lastResult: "scheduled",
         source: "course-anchor",
-        anchorKind: slot === 0 && ["english", "philosophy"].includes(disciplineId) ? "lab" : "quiz",
+        anchorKind: slot === 0 && disciplineId === "philosophy" ? "lab" : "quiz",
         firstScheduledAt: now()
       };
       added += 1;
@@ -945,8 +1037,23 @@
     let seeded = 0;
     for (const lessonId of completed) {
       if (seeded >= lessonLimit || allReviewEntries().length >= memoryCap) break;
+      const lesson = lessonById(lessonId);
+      if (lesson && lessonDisciplineId(lesson) === "english") continue;
       if (state.reviewSeededLessons?.[lessonId]) continue;
       if (scheduleLessonReviewAnchors(lessonId) > 0) seeded += 1;
+    }
+    return seeded;
+  }
+
+  function backfillEnglishPhraseAnchors({ lessonLimit = 1, memoryCap = 15 } = {}) {
+    if (allReviewEntries().length >= memoryCap) return 0;
+    const completed = Object.keys(state.completedLessons || {}).reverse();
+    let seeded = 0;
+    for (const lessonId of completed) {
+      if (seeded >= lessonLimit || allReviewEntries().length >= memoryCap) break;
+      const lesson = lessonById(lessonId);
+      if (!lesson || lessonDisciplineId(lesson) !== "english" || state.englishPhraseSeededLessonsRC51?.[lessonId]) continue;
+      if (scheduleEnglishLessonChunkAnchors(lessonId) > 0) seeded += 1;
     }
     return seeded;
   }
@@ -1175,11 +1282,54 @@
     return { modal, content: modal.querySelector(".beta179-modal-content") };
   }
 
+  function englishSpiralReviewRecord(entry, base) {
+    const phrases = Array.isArray(entry?.englishPhrases) ? entry.englishPhrases.filter(item => item?.phrase) : [];
+    if (!phrases.length) return null;
+    const stage = Math.max(0, Number(entry.stage || 0));
+    const target = phrases[stage % phrases.length];
+    const lessonPool = englishTargetEntriesForLesson(entry.lesson?.id);
+    const candidatePool = [...phrases, ...lessonPool].filter((item, index, all) => item?.phrase && all.findIndex(other => String(other?.phrase) === String(item.phrase)) === index);
+    const wrong = candidatePool
+      .filter(item => String(item.phrase) !== String(target.phrase))
+      .sort((a, b) => quizSeed(`${entry.key}:${stage}:${a.phrase}`) - quizSeed(`${entry.key}:${stage}:${b.phrase}`))
+      .slice(0, 2);
+    const context = target.use ? `Situation : ${target.use}.` : "Retrouve une tournure que tu pourrais vraiment utiliser dans cette situation.";
+    const why = `${target.phrase}${target.use ? ` — ${target.use}` : ""}. Le but est de retrouver le bloc anglais par sa fonction, pas de réciter une traduction isolée.`;
+    if (stage >= 1) {
+      return {
+        ...base,
+        reviewMode: "english-recall",
+        context,
+        productionPrompt: "Que dirais-tu spontanément en anglais ?",
+        modelAnswer: target.phrase,
+        listenAfter: target.phrase,
+        item: { q: "Retrouve une formulation naturelle sans regarder le cours.", a: target.phrase, why },
+        choices: []
+      };
+    }
+    const choices = [{ text: target.phrase, correct: true, feedback: why }, ...wrong.map(item => ({
+      text: item.phrase,
+      correct: false,
+      feedback: item.use ? `Cette tournure sert plutôt à : ${item.use}.` : "Cette tournure ne fait pas exactement le même travail dans cette scène."
+    }))].sort((a, b) => quizSeed(`${entry.key}:${a.text}`) - quizSeed(`${entry.key}:${b.text}`));
+    return {
+      ...base,
+      reviewMode: "english-recognition",
+      context,
+      item: { q: "Quelle tournure ferait le bon travail ici ?", a: target.phrase, why },
+      choices
+    };
+  }
+
   function adaptiveReviewRecord(entry) {
     const base = questionRecord(entry?.lesson, Number(entry?.questionIndex));
-    if (!base || entry?.source !== "course-anchor" || entry?.anchorKind !== "lab") return base ? { ...base, reviewMode: "quiz" } : null;
+    if (!base) return null;
+    if (["english-chunk", "english-daily-chunk"].includes(entry?.source) || entry?.anchorKind === "english-spiral") {
+      return englishSpiralReviewRecord(entry, base) || { ...base, reviewMode: "quiz" };
+    }
+    if (entry?.source !== "course-anchor" || entry?.anchorKind !== "lab") return { ...base, reviewMode: "quiz" };
     const disciplineId = lessonDisciplineId(entry.lesson);
-    if (!["english", "philosophy"].includes(disciplineId)) return { ...base, reviewMode: "quiz" };
+    if (disciplineId !== "philosophy") return { ...base, reviewMode: "quiz" };
     try {
       const api = window.HistoDaily?.courseInteractionsRC20;
       const lab = api?.labForLesson?.(entry.lesson.id, disciplineId);
@@ -1190,7 +1340,7 @@
         reviewMode: "lab",
         lab,
         context: lab.context || "",
-        speak: disciplineId === "english" ? (lab.speak || "") : "",
+        speak: "",
         item: { q: lab.prompt || base.item.q, a: correct?.text || base.item.a, why: lab.takeaway || base.item.why },
         choices: lab.choices.map(choice => ({ text: choice.text, correct: Boolean(choice.correct), feedback: choice.feedback || "" }))
       };
@@ -1200,7 +1350,8 @@
   function openReviewSession(disciplineId = "") {
     const entries = validReviewEntries(disciplineId).slice(0, 5);
     const discipline = disciplineId ? disciplineById(disciplineId) : null;
-    const dialog = createProgressionModal("Révisions intelligentes", discipline ? `Consolider ta mémoire en ${discipline.title}` : "Consolider ta mémoire");
+    const isEnglishReview = disciplineId === "english";
+    const dialog = createProgressionModal(isEnglishReview ? "Réactiver ton anglais" : "Révisions intelligentes", isEnglishReview ? "Retrouver les tournures avant de les oublier" : (discipline ? `Consolider ta mémoire en ${discipline.title}` : "Consolider ta mémoire"));
     if (!entries.length) {
       const scheduled = allReviewEntries(disciplineId);
       const next = nextScheduledReview(disciplineId);
@@ -1227,8 +1378,55 @@
         return renderQuestion();
       }
       answered = false;
-      const stageLabel = Number(entry.stage || 0) === 0 ? (entry.source === "course-anchor" ? "premier rappel" : "à corriger") : `niveau mémoire ${Number(entry.stage || 0)}/${REVIEW_MASTERY_STAGE}`;
-      dialog.content.innerHTML = `<div class="beta179-session-progress"><span>Question ${cursor + 1}/${entries.length}</span><div><i style="width:${pct(cursor, entries.length)}%"></i></div><b>${validReviewEntries(disciplineId).length} dues</b></div>
+      const englishSpiral = ["english-chunk", "english-daily-chunk"].includes(entry.source) || entry.anchorKind === "english-spiral";
+      const stageLabel = englishSpiral
+        ? (Number(entry.stage || 0) === 0 ? "reconnaître" : "retrouver sans aide")
+        : (Number(entry.stage || 0) === 0 ? (entry.source === "course-anchor" ? "premier rappel" : "à corriger") : `niveau mémoire ${Number(entry.stage || 0)}/${REVIEW_MASTERY_STAGE}`);
+      if (record.reviewMode === "english-recall") {
+        dialog.content.innerHTML = `<div class="beta179-session-progress"><span>Expression ${cursor + 1}/${entries.length}</span><div><i style="width:${pct(cursor, entries.length)}%"></i></div><b>rappel actif</b></div>
+          <article class="beta179-question-card hd51-english-recall">
+            <small>🇬🇧 ${esc(entry.lesson.title)} · ${stageLabel}</small>
+            ${record.context ? `<p class="hd21-review-context">${esc(record.context)}</p>` : ""}
+            <h3>${esc(record.productionPrompt || record.item.q)}</h3>
+            <p class="hd51-recall-help">Dis-la à voix haute ou écris une réponse. Pas besoin d’être mot pour mot identique : cherche une formulation naturelle qui fait le même travail.</p>
+            <textarea rows="3" data-hd51-recall-input placeholder="Ta phrase en anglais…"></textarea>
+            <button type="button" class="hd51-reveal" data-hd51-reveal>Voir une réponse possible</button>
+            <div class="hd51-recall-answer" data-hd51-recall-answer hidden></div>
+            <div class="beta179-answer-feedback" aria-live="polite"></div>
+          </article>`;
+        const reveal = dialog.content.querySelector("[data-hd51-reveal]");
+        const answerBox = dialog.content.querySelector("[data-hd51-recall-answer]");
+        const input = dialog.content.querySelector("[data-hd51-recall-input]");
+        reveal?.addEventListener("click", () => {
+          reveal.hidden = true;
+          if (input) input.disabled = true;
+          if (answerBox) {
+            answerBox.hidden = false;
+            answerBox.innerHTML = `<span>Une réponse naturelle</span><strong>${esc(record.modelAnswer || record.item.a)}</strong><p>${esc(record.item.why || "")}</p><div class="hd51-recall-actions"><button type="button" data-hd51-self="again">À revoir</button><button type="button" data-hd51-self="known">Je l’avais</button>${record.listenAfter ? `<button type="button" class="ghost" data-hd51-listen="${esc(record.listenAfter)}">▶ Écouter</button>` : ""}</div>`;
+          }
+          answerBox?.querySelector("[data-hd51-listen]")?.addEventListener("click", event => {
+            try { window.HistoDaily?.courseInteractionsRC20?.speakEnglish?.(event.currentTarget.dataset.hd51Listen || "", event.currentTarget); } catch {}
+          });
+          answerBox?.querySelectorAll("[data-hd51-self]").forEach(button => button.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+            answerBox.querySelectorAll("[data-hd51-self]").forEach(item => item.disabled = true);
+            const knewIt = button.dataset.hd51Self === "known";
+            const outcome = applyReviewAnswer(entry.key, knewIt);
+            const feedback = dialog.content.querySelector(".beta179-answer-feedback");
+            if (outcome.correct) {
+              if (outcome.mastered) mastered += 1;
+              reinforced += 1;
+              feedback.innerHTML = `<p class="good"><b>Bien.</b> Tu as réactivé la tournure au lieu de simplement la reconnaître. ${esc(outcome.memoryText)} <span>+${REVIEW_XP} XP</span></p><button type="button" data-beta179-next>Continuer</button>`;
+            } else {
+              feedback.innerHTML = `<p class="bad"><b>À revoir.</b> Aucun problème : la phrase revient bientôt. Relis-la une fois, écoute-la si tu veux, puis passe à la suite.</p><button type="button" data-beta179-next>Continuer</button>`;
+            }
+            feedback.querySelector("[data-beta179-next]")?.addEventListener("click", () => { cursor += 1; renderQuestion(); });
+          }));
+        });
+        return;
+      }
+      dialog.content.innerHTML = `<div class="beta179-session-progress"><span>${englishSpiral ? "Expression" : "Question"} ${cursor + 1}/${entries.length}</span><div><i style="width:${pct(cursor, entries.length)}%"></i></div><b>${validReviewEntries(disciplineId).length} dues</b></div>
         <article class="beta179-question-card">
           <small>${HD_ICONS.lesson(entry.lesson)} ${esc(entry.lesson.title)} · ${stageLabel}</small>
           ${record.context ? `<p class="hd21-review-context">${esc(record.context)}</p>` : ""}
@@ -1551,7 +1749,9 @@
         disciplineMastery,
         lessonMastery,
         unresolvedForLesson,
-        openReviewSession
+        openReviewSession,
+        scheduleEnglishDailyPackReview,
+        scheduleEnglishLessonChunkAnchors
       }
     };
   } catch {}
@@ -1739,7 +1939,11 @@
       } catch {}
     }
   };
-  const runMemoryBackfill = () => { try { backfillReviewAnchors({ lessonLimit: 2, memoryCap: 12 }); } catch {} };
+  const runMemoryBackfill = () => {
+    try { backfillReviewAnchors({ lessonLimit: 2, memoryCap: 12 }); } catch {}
+    // RC51 migration: seed at most one already-completed English course per startup so old users are not flooded.
+    try { backfillEnglishPhraseAnchors({ lessonLimit: 1, memoryCap: 15 }); } catch {}
+  };
   if (typeof requestIdleCallback === "function") {
     requestIdleCallback(runStartupReconciliation, { timeout: 2200 });
     requestIdleCallback(runMemoryBackfill, { timeout: 2800 });
@@ -1768,7 +1972,12 @@
         allReviewEntries,
         openReviewSession,
         scheduleLessonReviewAnchors,
+        scheduleEnglishDailyPackReview,
+        scheduleEnglishLessonChunkAnchors,
         backfillReviewAnchors,
+        backfillEnglishPhraseAnchors,
+        adaptiveReviewRecord,
+        englishTargetEntriesForLesson,
         openDailyCourse,
         relatedLessonsFor
       },
